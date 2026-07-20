@@ -341,8 +341,6 @@ input[type="number"] {
   line-height: 1.35;
 }
 .stepper li.active::before {
-  background-color: var(--color-navy);
-  color: #fff;
   box-shadow: 0 0 0 4px rgba(15, 42, 74, 0.12);
 }
 .stepper li.active .step-jp {
@@ -358,18 +356,27 @@ input[type="number"] {
 .stepper li.done::after {
   background-color: var(--color-blue);
 }
+/* 簡易版STEP1〜3の入力充足状況: 未入力=赤、要件を満たしていれば青(.doneより後段のため優先される) */
+.stepper li.step-incomplete::before {
+  background-color: var(--color-red);
+  color: #fff;
+}
+.stepper li.step-complete::before {
+  background-color: var(--color-blue);
+  color: #fff;
+}
 
-/* 見出しのSTEPバッジ */
+/* 見出しのSTEPバッジ(視認性重視でやや大きめ) */
 .step-badge {
   display: inline-block;
   background-color: var(--color-navy);
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  padding: 0.18rem 0.55rem;
+  letter-spacing: 0.06em;
+  padding: 0.28rem 0.75rem;
   border-radius: 9999px;
-  margin-right: 0.5rem;
+  margin-right: 0.55rem;
   vertical-align: middle;
 }
 

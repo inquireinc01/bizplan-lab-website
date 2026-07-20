@@ -56,7 +56,42 @@ document.addEventListener('DOMContentLoaded', function () {
   // 版切替時に更新(stock-detail.js のカードクリック後)
   document.querySelectorAll('.version-card').forEach(function (c) {
     c.addEventListener('click', function () {
-      setTimeout(function () { syncVisibility(); updateActive(); }, 60);
+      setTimeout(function () { syncVisibility(); updateActive(); updateValidity(); }, 60);
     });
   });
+
+  // ===== 簡易版STEP1〜3の入力充足状況: 未入力=赤丸、要件を満たしていれば青丸 =====
+  function numVal(id) {
+    var el = document.getElementById(id);
+    if (!el) return NaN;
+    return window.numClean ? window.numClean(el.value) : parseFloat(String(el.value).replace(/,/g, ''));
+  }
+  function stepValidity() {
+    var step1 = numVal('ssShares') > 0 && numVal('ssParValue') > 0;
+    var step2 = numVal('ssV_saizoku') > 0 && numVal('ssV_junsisan') > 0;
+    var step3 = false;
+    document.querySelectorAll('#ssHolderBody .ss-holder').forEach(function (r) {
+      var hs = r.querySelector('.hs'), hr = r.querySelector('.hr');
+      var sVal = hs ? (window.numClean ? window.numClean(hs.value) : parseFloat(hs.value)) : NaN;
+      var rVal = hr ? (window.numClean ? window.numClean(hr.value) : parseFloat(hr.value)) : NaN;
+      if ((!isNaN(sVal) && sVal > 0) || (!isNaN(rVal) && rVal > 0)) step3 = true;
+    });
+    return [step1, step2, step3];
+  }
+  function updateValidity() {
+    if (detailVisible()) return; // 詳細版のSTEP1〜6は対象外(従来通りスクロール連動のみ)
+    var results = stepValidity();
+    var items = stepperSimple.querySelectorAll('li');
+    items.forEach(function (li, i) {
+      var ok = !!results[i];
+      li.classList.toggle('step-complete', ok);
+      li.classList.toggle('step-incomplete', !ok);
+    });
+  }
+  updateValidity();
+  var form = document.getElementById('stockCalcForm');
+  if (form) {
+    form.addEventListener('input', updateValidity);
+    form.addEventListener('change', updateValidity);
+  }
 });
