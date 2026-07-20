@@ -239,6 +239,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function drawChart(series, retirementYear) {
     const svg = document.getElementById('trendChart');
     const W = 800, H = 320, padL = 80, padR = 20, padT = 20, padB = 40;
+    // SVG本体のviewBoxはWより少し広く(830)確保してあり、30年目のイベントフラッグ(幅76px)が
+    // 軸の右端でクランプされず正しい位置に表示できるようにしている(バー・軸はWを基準に従来通り描画)
+    const SVG_W = 830;
     const plotW = W - padL - padR;
     const plotH = H - padT - padB;
 
@@ -307,14 +310,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function drawEventFlag(year, label, color, topY, drawGuide) {
       if (year === null || year === undefined || isNaN(year) || year < 1 || year > 30) return { line: '', flag: '' };
       const rxc = padL + year * slotWidth + slotWidth / 2;
-      const clampX = Math.max(padL + EVENT_FLAG_WIDTH / 2, Math.min(W - padR - EVENT_FLAG_WIDTH / 2, rxc));
+      const clampX = Math.max(padL + EVENT_FLAG_WIDTH / 2, Math.min(SVG_W - EVENT_FLAG_WIDTH / 2 - 4, rxc));
       let flag = `<rect x="${(clampX - EVENT_FLAG_WIDTH / 2).toFixed(1)}" y="${topY.toFixed(1)}" width="${EVENT_FLAG_WIDTH}" height="${EVENT_FLAG_H}" rx="8" fill="${color}"/>
         <text x="${clampX.toFixed(1)}" y="${(topY + 11.5).toFixed(1)}" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">${label}</text>`;
       let line = '';
       if (drawGuide) {
         const triY = topY + EVENT_FLAG_H;
+        // 三角の頂点・ガイド線は常にclampX(フラッグの実際の位置)を基準にし、フラッグと視覚的に必ず繋がるようにする
         flag += `<path d="M ${(clampX - 4).toFixed(1)} ${(triY + 1).toFixed(1)} L ${(clampX + 4).toFixed(1)} ${(triY + 1).toFixed(1)} L ${clampX.toFixed(1)} ${(triY + 6).toFixed(1)} Z" fill="${color}"/>`;
-        line = `<line x1="${rxc.toFixed(1)}" y1="${(triY + 6).toFixed(1)}" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="${hexToRgba(color, 0.38)}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+        line = `<line x1="${clampX.toFixed(1)}" y1="${(triY + 6).toFixed(1)}" x2="${clampX.toFixed(1)}" y2="${yBottom}" stroke="${hexToRgba(color, 0.38)}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
       }
       return { line, flag: `<g>${flag}</g>` };
     }
