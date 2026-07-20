@@ -209,6 +209,87 @@ input[type="number"] {
   color: var(--color-red) !important;
 }
 
+/* ========== ？ヘルプツールチップ(国税庁明細書の記載方法の注釈) ========== */
+.help-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 9999px;
+  background-color: var(--color-blue-soft);
+  color: var(--color-blue-dark);
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: help;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+  user-select: none;
+}
+.help-tip .help-text {
+  display: none;
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  max-width: 70vw;
+  background-color: var(--color-navy);
+  color: #fff;
+  font-weight: 400;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.55rem;
+  box-shadow: 0 10px 26px rgba(15, 42, 74, 0.28);
+  z-index: 60;
+  text-align: left;
+  white-space: normal;
+}
+.help-tip .help-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--color-navy);
+}
+.help-tip:hover .help-text,
+.help-tip.open .help-text {
+  display: block;
+}
+
+/* 版選択カード */
+.version-card {
+  cursor: pointer;
+  border: 2px solid var(--color-gray-200);
+  border-radius: 0.9rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.version-card:hover {
+  border-color: var(--color-blue);
+}
+.version-card.selected {
+  border-color: var(--color-navy);
+  background-color: var(--color-blue-soft);
+  box-shadow: 0 6px 16px rgba(15, 42, 74, 0.12);
+}
+
+/* 判定結果の強調バッジ */
+.judge-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background-color: var(--color-navy);
+  color: #fff;
+}
+
 /* ナビゲーションのピル型ボタン: すべて同じ幅で揃える。枠無し・薄いブルーグレー基調 */
 .nav-btn {
   position: relative;
