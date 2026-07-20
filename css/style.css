@@ -194,6 +194,16 @@ button:active,
 .num-input {
   text-align: right;
 }
+/* 数値入力欄の上下スピナー(1ずつ増減)を完全に非表示 */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
 /* マイナスの試算結果は赤字(数字の前に△、△はJS側で付与) */
 .neg-val {
   color: var(--color-red) !important;
