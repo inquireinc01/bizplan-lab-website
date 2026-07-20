@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!raw) return null;
       const data = JSON.parse(raw);
       if (data[fsField] === undefined) return null;
-      const yen = parseFloat(data[fsField]);
+      const yen = window.numClean ? window.numClean(data[fsField]) : parseFloat(data[fsField]);
       if (isNaN(yen)) return null;
       return Math.round(yen / 10000);
     } catch (e) {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tbody.appendChild(tr);
   });
 
-  const man = (n) => Math.round(n).toLocaleString('ja-JP') + ' 万円';
+  const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
 
   const showError = (msg) => {
     errorArea.textContent = msg;
@@ -71,8 +71,9 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     clearError();
 
-    const execCompShift = parseFloat(document.getElementById('execCompShift').value);
-    const socialInsRate = parseFloat(document.getElementById('socialInsRate').value);
+    const pnum = (v) => (window.numClean ? window.numClean(v) : parseFloat(v));
+    const execCompShift = pnum(document.getElementById('execCompShift').value);
+    const socialInsRate = pnum(document.getElementById('socialInsRate').value);
     if (isNaN(execCompShift) || isNaN(socialInsRate)) {
       showError('すべての項目を入力してください。');
       return;
@@ -102,8 +103,8 @@ document.addEventListener('DOMContentLoaded', function () {
     for (const item of ITEMS) {
       const amountEl = document.getElementById(`pf_${item.id}_amount`);
       const rateEl = document.getElementById(`pf_${item.id}_rate`);
-      const amount = parseFloat(amountEl.value);
-      const rate = parseFloat(rateEl.value);
+      const amount = pnum(amountEl.value);
+      const rate = pnum(rateEl.value);
       if (isNaN(amount) || isNaN(rate)) {
         showError('すべての項目を入力してください。');
         amountEl.focus();

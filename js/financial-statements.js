@@ -19,7 +19,11 @@
   function saveValues() {
     var data = {};
     inputs.forEach(function (el) {
-      if (el.value !== '') data[el.id] = el.value;
+      if (el.value !== '') {
+        // カンマを除いた実数値で保存(他ツールが数値として読むため)
+        var c = window.numClean ? window.numClean(el.value) : parseFloat(String(el.value).replace(/,/g, ''));
+        data[el.id] = isNaN(c) ? el.value : String(c);
+      }
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }

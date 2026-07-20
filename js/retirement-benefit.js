@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return { value: v, el };
   };
 
-  const man = (n) => Math.round(n).toLocaleString('ja-JP') + ' 万円';
+  const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
 
   const showError = (msg) => {
     errorArea.textContent = msg;

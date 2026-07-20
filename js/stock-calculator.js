@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Object.keys(DEFAULTS).forEach((key) => {
       if (key === 'companySize') return;
       const raw = src[key];
-      const parsed = raw === undefined || raw === '' ? NaN : parseFloat(raw);
+      const parsed = raw === undefined || raw === '' ? NaN : (window.numClean ? window.numClean(raw) : parseFloat(raw));
       v[key] = isNaN(parsed) ? DEFAULTS[key] : parsed;
     });
     return { v, usedDefaults };
@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   let selectedMetrics = ['saizoku_A'];
 
-  const yen = (n) => Math.round(n).toLocaleString('ja-JP') + ' 円';
-  const man = (n) => Math.round(n).toLocaleString('ja-JP') + ' 万円';
+  const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
+  const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
   const yearLabel = (y) => (y === 0 ? '現在' : `${y}年後`);
 
   function hexToRgba(hex, alpha) {
@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pSize').textContent = lastYear0.sizeLabel;
 
     const p0 = lastSeries[0];
-    const roundMan = (n) => Math.round(n).toLocaleString('ja-JP');
+    const roundMan = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
     Object.keys(BASE_METRICS).forEach((base) => {
       const elA = document.getElementById(`pcv_${base}_A`);
       const elB = document.getElementById(`pcv_${base}_B`);

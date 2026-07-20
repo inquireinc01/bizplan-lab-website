@@ -189,6 +189,16 @@ button:active,
   border-color: var(--color-navy);
 }
 
+/* ========== 数値の表示ルール ========== */
+/* 入力欄(金額・数値)は右寄せ */
+.num-input {
+  text-align: right;
+}
+/* マイナスの試算結果は赤字(数字の前に△、△はJS側で付与) */
+.neg-val {
+  color: var(--color-red) !important;
+}
+
 /* ナビゲーションのピル型ボタン: すべて同じ幅で揃える。枠無し・薄いブルーグレー基調 */
 .nav-btn {
   position: relative;

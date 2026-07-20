@@ -70,14 +70,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
     }
+    const clean = (v) => (window.numClean ? window.numClean(v) : parseFloat((v || '').replace(/,/g, '')));
     const sharesEl = document.getElementById('sharesOutstanding');
-    if (parseFloat(sharesEl.value) <= 0) {
+    if (clean(sharesEl.value) <= 0) {
       showError('発行済株式数は1以上で入力してください。', 'sharesOutstanding');
       return;
     }
     for (const id of ['simB', 'simC', 'simD']) {
       const el = document.getElementById(id);
-      if (parseFloat(el.value) === 0) {
+      if (clean(el.value) === 0) {
         showError('類似業種のB・C・Dに0は入力できません(比準計算で0除算になります)。', id);
         return;
       }
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const data = { companySize: document.getElementById('companySize').value };
     REQUIRED_BASE_IDS.forEach((id) => {
       const el = document.getElementById(id);
-      data[id] = el.value;
+      data[id] = String(clean(el.value)); // カンマを除いた実数値で保存
     });
 
     try {
