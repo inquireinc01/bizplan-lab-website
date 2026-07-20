@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>退職金×生命保険 | BizPlan Laboratory</title>
+<meta name="description" content="退職金を給与として受け取る場合と、生命保険を活用して退職金として一括受給する場合の、税務メリットを比較試算します。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn active"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center active"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">RETIREMENT &amp; INSURANCE</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">退職金×生命保険</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="text-gray-600 leading-relaxed mb-8">
+        同じ金額を「給与として一括で受け取る場合」と「生命保険の解約返戻金を原資に退職金として一括受給する場合」とで、所得税・住民税の負担がどれだけ変わるかを比較します。退職所得は退職所得控除と1/2課税により税負担が大きく軽減される仕組みです。
+      </p>
+
+      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
+        本ツールは概算把握を目的とした簡易シミュレーターです。所得税は2024年分の速算表、住民税は一律10%、基礎控除は48万円として計算しています。実際の税額は、他の所得との合算や各種控除の適用状況により異なります。
+      </div>
+
+      <div class="flex justify-end mb-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <form id="retirementForm" class="space-y-10">
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">1. 退職金額の算定(功績倍率法)</h3>
+          <p class="text-xs text-gray-500 mb-5">役員退職金の適正額の目安を、実務でよく用いられる功績倍率法で算定します。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="finalMonthlySalary">最終報酬月額(万円)</label>
+              <input type="number" id="finalMonthlySalary" value="150" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 150" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="yearsOfService">役員在任年数(年)</label>
+              <input type="number" id="yearsOfService" value="25" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 25" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="meritMultiplier">功績倍率</label>
+              <input type="number" id="meritMultiplier" value="3.0" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 3.0" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="meritAddRate">功労加算率(%)</label>
+              <input type="number" id="meritAddRate" value="0" step="1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+          </div>
+          <details class="mt-4 text-xs text-gray-500">
+            <summary class="cursor-pointer font-medium text-gray-600">功績倍率の目安を見る</summary>
+            <p class="mt-2 leading-relaxed">
+              功績倍率は役職により異なり、代表取締役はおおむね3.0倍程度、専務・常務クラスは2.2〜2.4倍程度が実務上の目安とされています。功労加算は特別な功労があった場合に上乗せするもので、一般に30%程度が上限の目安とされています。実際の適正額は会社の規模や同業他社の水準等を踏まえて個別に判断する必要があります。
+            </p>
+          </details>
+          <div class="notice-box text-sm rounded-lg p-4 mt-5 leading-relaxed">
+            算定される退職金額(万円): <span id="retirementAmountDisplay" class="font-black text-base">-</span>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">2. 生命保険(退職金原資)の情報</h3>
+          <p class="text-xs text-gray-500 mb-5">退職時に解約し、退職金の原資とする生命保険の解約返戻金の情報を入力してください。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="surrenderValue">解約返戻金見込額(万円)</label>
+              <input type="number" id="surrenderValue" value="4500" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 4500" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="bookValue">資産計上額(万円)</label>
+              <input type="number" id="bookValue" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="corpTaxRateRb">法人税率(%)</label>
+              <input type="number" id="corpTaxRateRb" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
+            </div>
+          </div>
+        </div>
+
+        <div id="rbErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">比較する</button>
+          <button type="button" id="rbResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+        </div>
+      </form>
+
+      <div class="flex justify-end mt-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <!-- 結果表示 -->
+      <div id="rbResultArea" class="hidden mt-10 space-y-8">
+
+        <div class="calc-section bg-white p-6">
+          <h4 class="font-bold text-sm mb-4">法人側への影響(参考)</h4>
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">退職金の損金算入額</dt><dd id="rbCorpDeduction" class="font-bold text-[#a83d3d]"></dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">保険差益(益金算入額)</dt><dd id="rbCorpGain" class="font-bold"></dd></div>
+            <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">法人税への影響額</dt><dd id="rbCorpTaxImpact" class="font-black text-[#2d5580]"></dd></div>
+          </dl>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <!-- シナリオA -->
+          <div class="calc-section bg-white p-6">
+            <h4 class="font-bold text-sm mb-4">A. 給与として一括受給</h4>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between"><dt class="text-gray-500">支給額</dt><dd id="aIncome" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">給与所得控除額</dt><dd id="aDeduction" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">課税所得(基礎控除後)</dt><dd id="aTaxable" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">所得税</dt><dd id="aIncomeTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">住民税(10%)</dt><dd id="aResidentTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">手取り額</dt><dd id="aNet" class="font-black text-[#2d5580]"></dd></div>
+            </dl>
+          </div>
+
+          <!-- シナリオB -->
+          <div class="calc-section bg-white p-6">
+            <h4 class="font-bold text-sm mb-4">B. 退職金として一括受給(生命保険活用)</h4>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between"><dt class="text-gray-500">支給額</dt><dd id="bIncome" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">退職所得控除額</dt><dd id="bDeduction" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">退職所得(1/2後)</dt><dd id="bTaxable" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">所得税</dt><dd id="bIncomeTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">住民税(10%)</dt><dd id="bResidentTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">手取り額</dt><dd id="bNet" class="font-black text-[#2d5580]"></dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- 比較サマリー -->
+        <div class="calc-result-card p-6 sm:p-10">
+          <h3 class="font-black text-xl mb-6">手取り額の比較</h3>
+          <div class="mb-8">
+            <div class="flex justify-between text-xs text-white/70 mb-1">
+              <span>A. 給与として受給</span>
+              <span>B. 退職金として受給</span>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                <div id="barA" class="h-full bg-white rounded-full" style="width:0%"></div>
+              </div>
+              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                <div id="barB" class="h-full bg-[#7bb0dc] rounded-full" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-6">
+            <div>
+              <p class="text-xs text-white/70 mb-1">A. 給与で受給した場合の手取り</p>
+              <p id="sumA" class="text-xl font-black"></p>
+            </div>
+            <div>
+              <p class="text-xs text-white/70 mb-1">B. 退職金で受給した場合の手取り</p>
+              <p id="sumB" class="text-xl font-black"></p>
+            </div>
+            <div>
+              <p class="text-xs text-white/70 mb-1">差額(B-A)</p>
+              <p id="sumDiff" class="text-xl font-black"></p>
+            </div>
+          </div>
+          <div class="border-t border-white/20 mt-8 pt-6 text-right">
+            <button type="button" class="js-pdf-btn inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold bg-white text-[#0f2a4a] hover:bg-gray-100 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+              PDFに出力する
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ===== 印刷用シート(PDF出力) ===== -->
+<div class="print-sheet" id="printSheet">
+  <div class="print-head">
+    <div class="print-brand">BizPlan Laboratory</div>
+    <h1 class="print-title">
+      <span class="print-ic">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </span>
+      退職金×生命保険 シミュレーション
+    </h1>
+    <div class="print-meta">作成日: <span id="pDate"></span></div>
+  </div>
+
+  <div class="print-sec">法人側への影響(参考)</div>
+  <table class="print-table">
+    <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+    <tbody>
+      <tr><td class="lbl">退職金の損金算入額</td><td class="neg" id="pRbCorpDeduction"></td></tr>
+      <tr><td class="lbl">保険差益(益金算入額)</td><td id="pRbCorpGain"></td></tr>
+      <tr class="highlight"><td class="lbl">法人税への影響額</td><td id="pRbCorpTaxImpact"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="print-cols">
+    <div>
+      <div class="print-sec">A. 給与として一括受給</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">支給額</td><td id="pAIncome"></td></tr>
+          <tr><td class="lbl">給与所得控除額</td><td id="pADeduction"></td></tr>
+          <tr><td class="lbl">課税所得(基礎控除後)</td><td id="pATaxable"></td></tr>
+          <tr><td class="lbl">所得税</td><td class="neg" id="pAIncomeTax"></td></tr>
+          <tr><td class="lbl">住民税(10%)</td><td class="neg" id="pAResidentTax"></td></tr>
+          <tr class="highlight"><td class="lbl">手取り額</td><td id="pANet"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="print-sec">B. 退職金として一括受給</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">支給額</td><td id="pBIncome"></td></tr>
+          <tr><td class="lbl">退職所得控除額</td><td id="pBDeduction"></td></tr>
+          <tr><td class="lbl">退職所得(1/2後)</td><td id="pBTaxable"></td></tr>
+          <tr><td class="lbl">所得税</td><td class="neg" id="pBIncomeTax"></td></tr>
+          <tr><td class="lbl">住民税(10%)</td><td class="neg" id="pBResidentTax"></td></tr>
+          <tr class="highlight"><td class="lbl">手取り額</td><td id="pBNet"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="print-sec">手取り額の比較</div>
+  <table class="print-table">
+    <thead>
+      <tr><th class="lbl">比較</th><th>A. 給与で受給</th><th>B. 退職金で受給</th><th>差額(B-A)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="total"><td class="lbl">手取り額</td><td id="pSumA"></td><td id="pSumB"></td><td id="pSumDiff"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="print-keymsg">生命保険を活用し退職金として一括受給することで、同じ支給額でも手取り額が大きく変わる場合があります。</div>
+
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。所得税は2024年分の速算表、住民税は一律10%、基礎控除は48万円として計算しており、実際の税額は他の所得との合算状況等により異なります。</p>
+    <p class="cr">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</div>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script src="js/retirement-benefit.js?v=20260720a"></script>
+</body>
+</html>

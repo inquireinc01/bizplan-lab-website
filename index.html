@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>BizPlan Laboratory | 生命保険の価値を最大化する試算ツール</title>
+<meta name="description" content="自社株×生命保険、将来負債×生命保険、金庫株×生命保険。中小企業における生命保険の活用・効果・価値の最大化を、数字で見える化する試算ツールです。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input active">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center active">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ヒーロー ===== -->
+  <section class="hero-pattern relative py-12 sm:py-16">
+    <div class="relative z-10 max-w-4xl mx-auto px-5 sm:px-8 text-center">
+      <h1 class="text-white font-black text-2xl sm:text-3xl leading-tight mb-3">
+        生命保険の価値を<br class="sm:hidden" />最大化する試算ツール
+      </h1>
+      <p class="font-brand-en text-white/75 font-bold tracking-[0.2em] text-xs sm:text-sm uppercase">
+        Maximize the Value of Life Insurance
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 基本情報入力 ===== -->
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="font-brand-en text-[#3b6ea5] font-bold tracking-widest text-sm mb-2">BASIC INFORMATION</p>
+      <h2 class="font-bold text-2xl mb-2">基本情報の入力</h2>
+      <p class="text-sm text-gray-600 leading-relaxed mb-8">
+        試算・ご提案の前に、ご担当者様と対象法人の基本情報をご入力ください。入力内容はブラウザ内に保存され、各ツールでの試算やPDF出力の際に共通してご利用いただけます。
+      </p>
+
+      <form id="basicInfoForm" class="space-y-8">
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-4">ご担当者情報</h3>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biRepCompany">会社名</label>
+              <input type="text" id="biRepCompany" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 株式会社ビズプランラボラトリー" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biBranch">所属支社</label>
+              <input type="text" id="biBranch" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 東京本社" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biName">氏名</label>
+              <input type="text" id="biName" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 山田 太郎" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biNameKana">フリガナ</label>
+              <input type="text" id="biNameKana" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: ヤマダ タロウ" />
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-4">対象法人情報</h3>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium mb-1.5" for="biCorpName">法人名</label>
+              <input type="text" id="biCorpName" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 株式会社サンプル商事" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biFiscalMonth">決算月</label>
+              <select id="biFiscalMonth" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+                <option value="">選択してください</option>
+                <option value="1">1月</option>
+                <option value="2">2月</option>
+                <option value="3">3月</option>
+                <option value="4">4月</option>
+                <option value="5">5月</option>
+                <option value="6">6月</option>
+                <option value="7">7月</option>
+                <option value="8">8月</option>
+                <option value="9">9月</option>
+                <option value="10">10月</option>
+                <option value="11">11月</option>
+                <option value="12">12月</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biCorpNumber">法人番号</label>
+              <input type="text" id="biCorpNumber" maxlength="13" inputmode="numeric" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1234567890123" />
+            </div>
+          </div>
+        </div>
+
+        <div id="biSavedMsg" class="hidden notice-box text-sm rounded-lg p-4 leading-relaxed">保存しました。</div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary py-3.5 px-8 rounded-full font-bold">保存する</button>
+          <a href="financial-statements.html" class="btn-outline py-3.5 px-8 rounded-full font-bold text-center">次へ: 決算書情報を入力する →</a>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== ツール一覧 ===== -->
+  <section class="py-16 sm:py-20 md:py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <a href="stock-valuation.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus<span style="color:#3b6ea5">.1</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Stock &amp; Insurance</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">自社株</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">生命保険の活用による損金創出が、自社株評価にどう影響するかを試算します。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a href="future-liability.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus<span style="color:#3b6ea5">.2</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Liability &amp; Insurance</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">将来負債</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">退職金や事業承継資金など将来必ず発生する負債に、生命保険でどう備えられるかを見える化します。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a href="treasury-stock.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus<span style="color:#3b6ea5">.3</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Treasury Stock &amp; Insurance</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">金庫株</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">生命保険を原資とした金庫株活用の資金効率を、給与で負担する場合と比較します。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a href="retirement-benefit.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus<span style="color:#3b6ea5">.4</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Retirement &amp; Insurance</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">退職金</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">退職金を給与化する場合と生命保険を活用して一括支給する場合の、法人・個人トータルの税務メリットを比較します。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a href="premium-funding.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus<span style="color:#3b6ea5">.5</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Premium Funding</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">保険料原資創出</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">役員報酬や各種経費の適正化により、無理なく生命保険料の原資となるキャッシュフローを積み上げて試算します。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a href="reduced-new-contract.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus<span style="color:#3b6ea5">.6</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Reduction &amp; New Contract</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">減額新契約</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">既契約の保険金額を減額し、その解約返戻金を新契約の原資に充てることで生まれる法人税への影響を試算します。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script src="js/basic-info.js?v=20260720a"></script>
+</body>
+</html>

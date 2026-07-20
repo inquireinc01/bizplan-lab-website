@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>金庫株×生命保険 | BizPlan Laboratory</title>
+<meta name="description" content="生命保険を原資とした金庫株活用により、自社株の相続税を「給与」で負担する場合と比べて資金効率がどう変わるかを比較試算します。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn active"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center active"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">TREASURY STOCK &amp; INSURANCE</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">金庫株×生命保険</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="text-gray-600 leading-relaxed mb-8">
+        自社株にかかる相続税を「給与を原資に個人で負担する場合」と「生命保険を活用した金庫株の買い取り資金を原資とする場合」とで、法人・個人トータルの最終的な手残りがどう変わるかを比較します。
+      </p>
+
+      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
+        本ツールは概算把握を目的とした簡易シミュレーターです。実際の税額計算には、各種特例の適用要件や個別事情の確認が必要です。
+      </div>
+
+      <div class="flex justify-end mb-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <form id="treasuryForm" class="space-y-10">
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">前提条件</h3>
+          <p class="text-xs text-gray-500 mb-5">金額は万円単位、税率等は%で入力してください。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="cash">法人の現金(万円)</label>
+              <input type="number" id="cash" value="20000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 20000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="capital">資本金(万円)</label>
+              <input type="number" id="capital" value="1000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="corpTaxRate">法人税率(%)</label>
+              <input type="number" id="corpTaxRate" value="30" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" step="0.1" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="incomeTaxRate">所得税・社保率(%)</label>
+              <input type="number" id="incomeTaxRate" value="50" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 50" step="0.1" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="inheritanceTaxRate">相続税率(%)</label>
+              <input type="number" id="inheritanceTaxRate" value="40" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 40" step="0.1" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="insuranceGainRate">保険差益(運用成果)率(%)</label>
+              <input type="number" id="insuranceGainRate" value="100" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 100" step="0.1" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="stockInheritanceValue">自社株の相続税評価額(万円)</label>
+              <input type="number" id="stockInheritanceValue" value="10000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 10000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="stockCorpValue">自社株の法人税法上の評価額(万円)</label>
+              <input type="number" id="stockCorpValue" value="14000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 14000" />
+            </div>
+          </div>
+        </div>
+
+        <div id="tsErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">比較する</button>
+          <button type="button" id="tsResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+        </div>
+      </form>
+
+      <div class="flex justify-end mt-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <!-- 結果表示 -->
+      <div id="tsResultArea" class="hidden mt-10 space-y-8">
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <!-- シナリオ1 -->
+          <div class="calc-section bg-white p-6">
+            <h4 class="font-bold text-sm mb-4">① 給与を原資に個人で負担</h4>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between"><dt class="text-gray-500">給与支給額</dt><dd id="s1Salary" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">所得税・住民税・社保</dt><dd id="s1SalaryTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">社長の手残り</dt><dd id="s1PresidentNet" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">保険差益</dt><dd id="s1InsuranceGain" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">現金の相続税</dt><dd id="s1CashTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">自社株の相続税</dt><dd id="s1StockTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">遺族の最終手残り</dt><dd id="s1Final" class="font-black text-[#2d5580]"></dd></div>
+            </dl>
+          </div>
+
+          <!-- シナリオ2 -->
+          <div class="calc-section bg-white p-6">
+            <h4 class="font-bold text-sm mb-4">② 金庫株を原資に法人で負担</h4>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between"><dt class="text-gray-500">法人税</dt><dd id="s2CorpTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">保険差益</dt><dd id="s2InsuranceGain" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">保険差益への法人税</dt><dd id="s2InsuranceTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">遺族から自社株買い</dt><dd id="s2Buyback" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="text-gray-500">法人の最終残高</dt><dd id="s2CorpFinal" class="font-bold"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">自社株の相続税</dt><dd id="s2StockTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">譲渡所得税・住民税</dt><dd id="s2CapitalGainsTax" class="font-bold text-[#a83d3d]"></dd></div>
+              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">個人の最終手残り</dt><dd id="s2IndividualFinal" class="font-black text-[#2d5580]"></dd></div>
+              <div class="flex justify-between"><dt class="font-bold">法人+個人 合計残高</dt><dd id="s2Total" class="font-black text-[#2d5580]"></dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- 比較サマリー -->
+        <div class="calc-result-card p-6 sm:p-10">
+          <h3 class="font-black text-xl mb-6">法人・個人トータルの比較</h3>
+          <div class="mb-8">
+            <div class="flex justify-between text-xs text-white/70 mb-1">
+              <span>① 給与で負担(合計残高)</span>
+              <span>② 金庫株で負担(合計残高)</span>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                <div id="barS1" class="h-full bg-white rounded-full" style="width:0%"></div>
+              </div>
+              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                <div id="barS2" class="h-full bg-[#7bb0dc] rounded-full" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-6">
+            <div>
+              <p class="text-xs text-white/70 mb-1">① 給与で負担</p>
+              <p id="sumS1Total" class="text-xl font-black"></p>
+            </div>
+            <div>
+              <p class="text-xs text-white/70 mb-1">② 金庫株で負担</p>
+              <p id="sumS2Total" class="text-xl font-black"></p>
+            </div>
+            <div>
+              <p class="text-xs text-white/70 mb-1">差額(②-①)</p>
+              <p id="sumDiff" class="text-xl font-black"></p>
+            </div>
+          </div>
+          <div class="border-t border-white/20 mt-8 pt-6 text-right">
+            <button type="button" class="js-pdf-btn inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold bg-white text-[#0f2a4a] hover:bg-gray-100 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+              PDFに出力する
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ===== 印刷用シート(PDF出力) ===== -->
+<div class="print-sheet" id="printSheet">
+  <div class="print-head">
+    <div class="print-brand">BizPlan Laboratory</div>
+    <h1 class="print-title">
+      <span class="print-ic">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 7h18M3 12h18M3 17h18"/></svg>
+      </span>
+      金庫株×生命保険 シミュレーション
+    </h1>
+    <div class="print-meta">作成日: <span id="pDate"></span></div>
+  </div>
+
+  <div class="print-cols">
+    <div>
+      <div class="print-sec">① 給与を原資に個人で負担</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">給与支給額</td><td id="pS1Salary"></td></tr>
+          <tr><td class="lbl">所得税・住民税・社保</td><td class="neg" id="pS1SalaryTax"></td></tr>
+          <tr><td class="lbl">社長の手残り</td><td id="pS1PresidentNet"></td></tr>
+          <tr><td class="lbl">保険差益</td><td id="pS1InsuranceGain"></td></tr>
+          <tr><td class="lbl">現金の相続税</td><td class="neg" id="pS1CashTax"></td></tr>
+          <tr><td class="lbl">自社株の相続税</td><td class="neg" id="pS1StockTax"></td></tr>
+          <tr class="highlight"><td class="lbl">遺族の最終手残り</td><td id="pS1Final"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="print-sec">② 金庫株を原資に法人で負担</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">法人税</td><td class="neg" id="pS2CorpTax"></td></tr>
+          <tr><td class="lbl">保険差益</td><td id="pS2InsuranceGain"></td></tr>
+          <tr><td class="lbl">保険差益への法人税</td><td class="neg" id="pS2InsuranceTax"></td></tr>
+          <tr><td class="lbl">遺族から自社株買い</td><td class="neg" id="pS2Buyback"></td></tr>
+          <tr><td class="lbl">法人の最終残高</td><td id="pS2CorpFinal"></td></tr>
+          <tr><td class="lbl">自社株の相続税</td><td class="neg" id="pS2StockTax"></td></tr>
+          <tr><td class="lbl">譲渡所得税・住民税</td><td class="neg" id="pS2CapitalGainsTax"></td></tr>
+          <tr class="highlight"><td class="lbl">個人の最終手残り</td><td id="pS2IndividualFinal"></td></tr>
+          <tr class="highlight"><td class="lbl">法人+個人 合計残高</td><td id="pS2Total"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="print-sec">法人・個人トータルの比較</div>
+  <table class="print-table">
+    <thead>
+      <tr><th class="lbl">比較</th><th>① 給与で負担</th><th>② 金庫株で負担</th><th>差額(②-①)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="total"><td class="lbl">法人・個人 合計残高</td><td id="pSumS1"></td><td id="pSumS2"></td><td id="pSumDiff"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="print-keymsg">相続税の負担方法の違いにより、法人・個人トータルで残る資金が大きく変わる場合があります。</div>
+
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の税額計算には、各種特例の適用要件や個別事情の確認が必要です。譲渡所得税は取得費加算の特例を前提に約20%で試算しています。</p>
+    <p class="cr">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</div>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script src="js/treasury-stock.js"></script>
+</body>
+</html>

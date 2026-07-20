@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>減額新契約 | BizPlan Laboratory</title>
+<meta name="description" content="既契約の保険金額を減額し、その解約返戻金を新契約の保険料原資に充てることで生まれる法人税への影響を試算します。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn active"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center active"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">REDUCTION &amp; NEW CONTRACT</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">減額新契約</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="text-gray-600 leading-relaxed mb-8">
+        既契約の保険金額を一部減額し、その解約返戻金を新契約の保険料原資に充てることで、保障内容を見直しながら法人税にどのような影響が生じるかを試算します。
+      </p>
+
+      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
+        本ツールは概算把握を目的とした簡易シミュレーターです。保険契約の減額・見直しには解約控除や保障内容の変化など個別の確認が必要です。実際の会計処理は保険種類や経理処理方法により異なります。
+      </div>
+
+      <div class="flex justify-end mb-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <form id="rncForm" class="space-y-10">
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">1. 既契約の減額情報</h3>
+          <p class="text-xs text-gray-500 mb-5">保険金額を減額(部分解約)した際の解約返戻金の変化を入力してください。</p>
+          <div class="grid sm:grid-cols-3 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="oldBefore">減額前の解約返戻金(万円)</label>
+              <input type="number" id="oldBefore" value="3000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="oldAfter">減額後の解約返戻金(万円)</label>
+              <input type="number" id="oldAfter" value="1000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="bookReduction">取崩される資産計上額(万円)</label>
+              <input type="number" id="bookReduction" value="1500" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+          </div>
+          <div class="notice-box text-sm rounded-lg p-4 mt-5 leading-relaxed">
+            減額により捻出される原資(万円): <span id="fundedAmountDisplay" class="font-black text-base">-</span>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">2. 新契約の情報</h3>
+          <p class="text-xs text-gray-500 mb-5">減額で捻出した原資を保険料に充てる、新たな生命保険契約の情報を入力してください。</p>
+          <div class="grid sm:grid-cols-3 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="newPremium">新契約 年間保険料(万円)</label>
+              <input type="number" id="newPremium" value="400" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="deductibleRate">損金算入割合(%)</label>
+              <input type="number" id="deductibleRate" value="100" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="corpTaxRateRnc">法人税率(%)</label>
+              <input type="number" id="corpTaxRateRnc" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div id="rncErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">試算する</button>
+          <button type="button" id="rncResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+        </div>
+      </form>
+
+      <div class="flex justify-end mt-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <!-- 結果表示 -->
+      <div id="rncResultArea" class="hidden mt-10 space-y-8">
+
+        <div class="calc-section bg-white p-6">
+          <h4 class="font-bold text-sm mb-4">試算結果の内訳</h4>
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">減額により捻出される原資</dt><dd id="rncFunded" class="font-bold"></dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">雑収入(益金算入額)</dt><dd id="rncMisc" class="font-bold text-[#a83d3d]"></dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">新契約保険料の損金算入額(年額)</dt><dd id="rncDeduction" class="font-bold"></dd></div>
+            <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">初年度の法人税への影響額</dt><dd id="rncTaxImpact" class="font-black text-[#2d5580]"></dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">原資で賄える新契約保険料</dt><dd id="rncFundedYears" class="font-bold"></dd></div>
+          </dl>
+        </div>
+
+        <!-- サマリー -->
+        <div class="calc-result-card p-6 sm:p-10">
+          <h3 class="font-black text-xl mb-2">初年度の法人税への影響額</h3>
+          <p class="text-white/70 text-sm mb-6">マイナスは節税効果、プラスは初年度の追加納税額を示します。</p>
+          <p id="rncSummaryTax" class="text-4xl font-black mb-2">-</p>
+          <p id="rncSummaryNote" class="text-sm text-white/70"></p>
+          <div class="border-t border-white/20 mt-8 pt-6 text-right">
+            <button type="button" class="js-pdf-btn inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold bg-white text-[#0f2a4a] hover:bg-gray-100 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+              PDFに出力する
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ===== 印刷用シート(PDF出力) ===== -->
+<div class="print-sheet" id="printSheet">
+  <div class="print-head">
+    <div class="print-brand">BizPlan Laboratory</div>
+    <h1 class="print-title">
+      <span class="print-ic">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 12a8 8 0 11-16 0 8 8 0 0116 0zM12 8v4l3 3"/></svg>
+      </span>
+      減額新契約 シミュレーション
+    </h1>
+    <div class="print-meta">作成日: <span id="pDate"></span></div>
+  </div>
+
+  <div class="print-sec">試算結果の内訳</div>
+  <table class="print-table">
+    <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+    <tbody>
+      <tr><td class="lbl">減額により捻出される原資</td><td id="pRncFunded"></td></tr>
+      <tr><td class="lbl">雑収入(益金算入額)</td><td class="neg" id="pRncMisc"></td></tr>
+      <tr><td class="lbl">新契約保険料の損金算入額(年額)</td><td id="pRncDeduction"></td></tr>
+      <tr class="highlight"><td class="lbl">初年度の法人税への影響額</td><td id="pRncTaxImpact"></td></tr>
+      <tr><td class="lbl">原資で賄える新契約保険料</td><td id="pRncFundedYears"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="print-keymsg">保険契約の減額と新契約の組み合わせにより、保障内容を見直しながら法人税への影響をコントロールできます。</div>
+
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の会計処理・税務処理は保険種類や経理処理方法により異なります。</p>
+    <p class="cr">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</div>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script src="js/reduced-new-contract.js?v=20260720a"></script>
+</body>
+</html>

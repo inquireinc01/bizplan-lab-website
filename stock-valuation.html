@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>自社株×生命保険(入力) | BizPlan Laboratory</title>
+<meta name="description" content="生命保険の活用が自社株評価に与える効果を試算するための入力ページです。純資産価額方式・類似業種比準方式に基づき算定します。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn active"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center active"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">STOCK &amp; INSURANCE — INPUT</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">自社株×生命保険(1/2 入力)</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="text-gray-600 leading-relaxed mb-8">
+        生命保険の活用が自社株評価にもたらす効果を、相続税評価の考え方に基づく「純資産価額方式」と「類似業種比準方式」で試算します。まず必要な数値を入力し、「試算する」を押すと結果ページ(グラフ・推移表)に移動します。
+      </p>
+
+      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
+        本ツールは概算把握を目的とした簡易シミュレーターです。実際の相続税・贈与税申告等に用いる評価額は、直近の国税庁公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。
+      </div>
+
+      <div id="resumeLink" class="hidden mb-6 text-sm">
+        <a href="stock-valuation-result.html" class="text-[#0f2a4a] underline font-bold">前回入力した内容の試算結果を見る →</a>
+      </div>
+
+      <form id="stockCalcForm" class="space-y-10">
+
+        <!-- 会社規模 -->
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">1. 会社規模の選択</h3>
+          <p class="text-xs text-gray-500 mb-4">従業員数・総資産価額・取引金額をもとに国税庁の基準で判定した区分を選択してください(斟酌率・Lの割合が自動設定されます)。</p>
+          <select id="companySize" class="form-select w-full sm:w-80 rounded-lg px-4 py-3 text-sm">
+            <option value="large">大会社</option>
+            <option value="mid-large">中会社(大)</option>
+            <option value="mid-mid" selected>中会社(中)</option>
+            <option value="mid-small">中会社(小)</option>
+            <option value="small">小会社</option>
+          </select>
+          <details class="mt-4 text-xs text-gray-500">
+            <summary class="cursor-pointer font-medium text-gray-600">区分の目安を見る</summary>
+            <p class="mt-2 leading-relaxed">
+              従業員数が70人以上の場合は原則として「大会社」です。70人未満の場合は、総資産価額・従業員数による判定と、取引金額(売上高)による判定のいずれか大きい区分を採用します(業種により基準値が異なります)。正確な区分は国税庁の最新の判定基準でご確認ください。
+            </p>
+          </details>
+        </div>
+
+        <!-- 純資産価額方式 -->
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">2. 純資産価額方式の入力</h3>
+          <p class="text-xs text-gray-500 mb-5">直前期末時点の金額を万円単位で入力してください。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="taxAssets">相続税評価額による総資産(万円)</label>
+              <input type="number" id="taxAssets" value="15000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 15000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="taxLiabilities">相続税評価額による負債(万円)</label>
+              <input type="number" id="taxLiabilities" value="8000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 8000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="bookAssets">帳簿価額による総資産(万円)</label>
+              <input type="number" id="bookAssets" value="12000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 12000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="bookLiabilities">帳簿価額による負債(万円)</label>
+              <input type="number" id="bookLiabilities" value="8000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 8000" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 類似業種比準方式 -->
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">3. 類似業種比準方式の入力</h3>
+          <p class="text-xs text-gray-500 mb-2">A〜Dは国税庁公表の類似業種比準価額計算上の業種目データ、b〜dは自社の数値です(いずれも「1株(50円)当たり」で統一してください)。</p>
+          <p class="text-xs text-gray-500 mb-5">
+            A〜Dの数値は国税庁サイトでPDF形式で毎月公表されており、自動取得はできないため
+            <a href="https://www.nta.go.jp/law/tsutatsu/kobetsu/hyoka/index.htm" target="_blank" rel="noopener" class="underline text-[#0f2a4a]">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」</a>
+            から該当業種の最新データを確認のうえ手入力してください。
+          </p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="simA">類似業種の株価(A・円)</label>
+              <input type="number" id="simA" value="480" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 480" />
+            </div>
+            <div></div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="simB">類似業種の1株当たり配当金額(B・円)</label>
+              <input type="number" id="simB" value="6.0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 6.0" step="0.01" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ownB">自社の1株当たり配当金額(b・円)</label>
+              <input type="number" id="ownB" value="4.0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 4.0" step="0.01" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="simC">類似業種の1株当たり利益金額(C・円)</label>
+              <input type="number" id="simC" value="45" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 45" step="0.01" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ownC">自社の1株当たり利益金額(c・円)</label>
+              <input type="number" id="ownC" value="60" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 60" step="0.01" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="simD">類似業種の1株当たり純資産価額(D・円)</label>
+              <input type="number" id="simD" value="350" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 350" step="0.01" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ownD">自社の1株当たり純資産価額(d・円)</label>
+              <input type="number" id="ownD" value="420" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 420" step="0.01" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 株式数・資本金 -->
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1">4. 発行株式数・資本金等</h3>
+          <p class="text-xs text-gray-500 mb-5">類似業種比準価額は「1株50円換算」で計算されるため、資本金等の額から実際の株式数への換算を行います。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="sharesOutstanding">発行済株式数(株)</label>
+              <input type="number" id="sharesOutstanding" value="2000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 2000" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="capitalAmount">資本金等の額(円)</label>
+              <input type="number" id="capitalAmount" value="1000000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1000000" />
+            </div>
+          </div>
+        </div>
+
+        <div class="notice-box text-sm rounded-lg p-4 leading-relaxed">
+          法人税率・年間税引前利益(A/B)・配当・退職金・M&amp;A関連数値は、次の結果ページでグラフを見ながらリアルタイムに調整できます。
+        </div>
+
+        <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">この内容で試算する →</button>
+          <button type="button" id="calcResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script src="js/stock-valuation-input.js?v=20260720a"></script>
+</body>
+</html>

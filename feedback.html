@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>不具合報告・改善提案 | BizPlan Laboratory</title>
+<meta name="description" content="ツールの不具合報告や改善提案をお寄せください。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">FEEDBACK</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">不具合報告・改善提案</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-2xl mx-auto px-5">
+
+      <div class="notice-box text-sm rounded-lg p-4 mb-10 leading-relaxed">
+        送信ボタンを押すと、お使いのメールソフトが起動し、内容が入力された状態で下書きが作成されます。そのまま送信してください。
+      </div>
+
+      <form id="feedbackForm" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="fbType">種別 <span class="text-red-500">*</span></label>
+          <select id="fbType" required class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+            <option value="">選択してください</option>
+            <option value="bug">不具合報告</option>
+            <option value="improvement">改善提案</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="fbTool">対象ツール</label>
+          <select id="fbTool" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+            <option value="">指定なし</option>
+            <option value="stock">自社株×生命保険</option>
+            <option value="future-liability">将来負債×生命保険</option>
+            <option value="treasury-stock">金庫株×生命保険</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="fbEmail">メールアドレス(返信をご希望の場合)</label>
+          <input type="email" id="fbEmail" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="fbMessage">内容 <span class="text-red-500">*</span></label>
+          <textarea id="fbMessage" required rows="6" class="form-input w-full rounded-lg px-4 py-2.5 text-sm"></textarea>
+        </div>
+
+        <div id="fbNotice" class="hidden bg-gray-100 text-gray-700 text-sm rounded-lg p-4"></div>
+
+        <button type="submit" class="btn-primary w-full py-3.5 rounded-full font-bold">送信する</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script>
+  const FEEDBACK_TO = 'taku_matsuda@bizplanlabo.com';
+  const typeLabels = { bug: '不具合報告', improvement: '改善提案', other: 'その他' };
+  const toolLabels = {
+    stock: '自社株×生命保険',
+    'future-liability': '将来負債×生命保険',
+    'treasury-stock': '金庫株×生命保険',
+  };
+
+  document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const type = document.getElementById('fbType').value;
+    const tool = document.getElementById('fbTool').value;
+    const email = document.getElementById('fbEmail').value;
+    const message = document.getElementById('fbMessage').value;
+
+    const subject = `【BizPlan Laboratory】${typeLabels[type] || 'お問い合わせ'}`;
+    const bodyLines = [
+      `種別: ${typeLabels[type] || ''}`,
+      `対象ツール: ${toolLabels[tool] || '指定なし'}`,
+      `返信先メールアドレス: ${email || '(未入力)'}`,
+      '',
+      '内容:',
+      message,
+    ];
+    const mailtoUrl = `mailto:${FEEDBACK_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
+
+    window.location.href = mailtoUrl;
+
+    const notice = document.getElementById('fbNotice');
+    notice.textContent = 'メールソフトが起動しない場合は、お手数ですが ' + FEEDBACK_TO + ' 宛に直接ご連絡ください。';
+    notice.classList.remove('hidden');
+    notice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+</script>
+</body>
+</html>

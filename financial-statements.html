@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>決算書情報 | BizPlan Laboratory</title>
+<meta name="description" content="3期分の決算書(貸借対照表・損益計算書)の勘定科目明細を入力するページです。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260721n" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn nav-input">基本情報</a>
+        <a href="financial-statements.html" class="nav-btn nav-input active">決算書情報</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span>退職金</a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num">5</span>保険料原資</a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num">6</span>減額新契約</a>
+      </nav>
+
+      <div class="flex items-center shrink-0">
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center active">決算書情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num">6</span>減額新契約</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">FINANCIAL STATEMENTS</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">決算書情報</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="text-gray-600 leading-relaxed mb-8">
+        直前期・２期前・３期前、3期分の決算書(貸借対照表・損益計算書)の勘定科目明細を入力してください。ここで入力した内容はブラウザ内に保存され、生命保険の活用効果を試算する各ツールでの参考データとしてご利用いただけます。
+      </p>
+
+      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
+        金額はすべて円単位で入力してください。該当する科目がない場合は空欄のままで構いません(0として扱われます)。
+      </div>
+
+      <div class="flex justify-end mb-8">
+        <a href="excel-import.html" class="btn-outline inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"/></svg>
+          Excelから取り込む
+        </a>
+      </div>
+
+      <form id="financialStatementsForm" class="space-y-10">
+
+        <div class="calc-section bg-white p-6 sm:p-8 overflow-x-auto">
+          <h3 class="font-bold text-base mb-1">1. 貸借対照表 - 資産の部</h3>
+          <p class="text-xs text-gray-500 mb-4">直前期・２期前・３期前の決算書(貸借対照表)の金額を、勘定科目ごとに円単位で入力してください。空欄の科目は0として扱われます。</p>
+          <table class="w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-[#0f2a4a] text-white">
+                <th class="text-left font-bold px-3 py-2 rounded-tl-lg">勘定科目</th>
+                <th class="text-right font-bold px-3 py-2 w-28">3期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28">2期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28 rounded-tr-lg">直前期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">流動資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_currentAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_currentAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_currentAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">現金・預金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_cash_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_cash_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_cash_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">受取手形</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_notesReceivable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_notesReceivable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_notesReceivable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">売掛金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_accountsReceivable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_accountsReceivable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_accountsReceivable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">有価証券</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_securities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_securities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_securities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">商品・棚卸資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_inventory_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_inventory_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_inventory_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">未収金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_accruedIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_accruedIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_accruedIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">前払費用</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_prepaidExpenses_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_prepaidExpenses_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_prepaidExpenses_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">短期貸付金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_shortTermLoansReceivable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_shortTermLoansReceivable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_shortTermLoansReceivable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">貸倒引当金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_allowanceDoubtfulAccounts_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_allowanceDoubtfulAccounts_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_allowanceDoubtfulAccounts_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(流動資産)</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherCurrentAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherCurrentAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherCurrentAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">固定資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_fixedAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_fixedAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_fixedAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">有形固定資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_tangibleFixedAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_tangibleFixedAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_tangibleFixedAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">減価償却資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_depreciableAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_depreciableAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_depreciableAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">土地</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_land_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_land_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_land_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">リース</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_leaseAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_leaseAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_leaseAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(有形固定資産)</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherTangibleAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherTangibleAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherTangibleAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">無形固定資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_intangibleFixedAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_intangibleFixedAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_intangibleFixedAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">投資その他資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_investmentsAndOtherAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_investmentsAndOtherAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_investmentsAndOtherAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">投資有価証券</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_investmentSecurities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_investmentSecurities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_investmentSecurities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">長期貸付金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_longTermLoansReceivable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_longTermLoansReceivable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_longTermLoansReceivable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">保険積立金</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_insuranceReserve_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_insuranceReserve_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_insuranceReserve_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">前払保険料</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_prepaidInsurance_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_prepaidInsurance_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_prepaidInsurance_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">長期前払費用</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_longTermPrepaidExpenses_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_longTermPrepaidExpenses_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_longTermPrepaidExpenses_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(投資その他資産)</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherInvestments_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherInvestments_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_otherInvestments_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">繰延資産</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_deferredAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_deferredAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_deferredAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#0f2a4a] text-white font-bold">
+                <td class="px-3 py-1.5 text-white">資産合計(総資産)</td>
+                <td class="px-1 py-1"><input type="number" id="bsA_totalAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_totalAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsA_totalAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8 overflow-x-auto">
+          <h3 class="font-bold text-base mb-1">2. 貸借対照表 - 負債・純資産の部</h3>
+          <p class="text-xs text-gray-500 mb-4">直前期・２期前・３期前の決算書(貸借対照表)の金額を、勘定科目ごとに円単位で入力してください。</p>
+          <table class="w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-[#0f2a4a] text-white">
+                <th class="text-left font-bold px-3 py-2 rounded-tl-lg">勘定科目</th>
+                <th class="text-right font-bold px-3 py-2 w-28">3期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28">2期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28 rounded-tr-lg">直前期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">流動負債</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentLiabilities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentLiabilities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentLiabilities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">支払手形</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_notesPayable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_notesPayable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_notesPayable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">買掛金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_accountsPayable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_accountsPayable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_accountsPayable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">短期借入金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shortTermLoansPayable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shortTermLoansPayable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shortTermLoansPayable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">短期役員借入金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shortTermOfficerLoans_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shortTermOfficerLoans_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shortTermOfficerLoans_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">1年以内長期借入金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentPortionLongTermLoans_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentPortionLongTermLoans_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentPortionLongTermLoans_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">1年以内償還社債</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentPortionBonds_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentPortionBonds_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_currentPortionBonds_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">未払金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_unpaidAmount_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_unpaidAmount_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_unpaidAmount_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">未払法人税等</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_unpaidCorporateTax_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_unpaidCorporateTax_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_unpaidCorporateTax_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(流動負債)</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherCurrentLiabilities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherCurrentLiabilities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherCurrentLiabilities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">固定負債</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_fixedLiabilities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_fixedLiabilities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_fixedLiabilities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">社債</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_bonds_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_bonds_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_bonds_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">長期借入金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_longTermLoansPayable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_longTermLoansPayable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_longTermLoansPayable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">役員借入金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_officerLoansPayable_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_officerLoansPayable_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_officerLoansPayable_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(固定負債)</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherFixedLiabilities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherFixedLiabilities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherFixedLiabilities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">負債合計</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalLiabilities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalLiabilities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalLiabilities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">株主資本</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shareholdersEquity_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shareholdersEquity_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_shareholdersEquity_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">資本金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_capitalStock_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_capitalStock_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_capitalStock_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">法定準備金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_legalReserve_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_legalReserve_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_legalReserve_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">資本準備金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_capitalReserve_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_capitalReserve_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_capitalReserve_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">利益準備金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_retainedEarningsReserve_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_retainedEarningsReserve_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_retainedEarningsReserve_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">別途積立金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherReserve_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherReserve_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherReserve_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">繰越利益剰余金</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_retainedEarnings_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_retainedEarnings_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_retainedEarnings_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">自己株式</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_treasuryStock_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_treasuryStock_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_treasuryStock_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(株主資本)</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherEquity_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherEquity_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_otherEquity_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">純資産合計</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalNetAssets_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalNetAssets_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalNetAssets_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#0f2a4a] text-white font-bold">
+                <td class="px-3 py-1.5 text-white">負債・純資産合計</td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalLiabEquity_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalLiabEquity_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="bsL_totalLiabEquity_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8 overflow-x-auto">
+          <h3 class="font-bold text-base mb-1">3. 損益計算書</h3>
+          <p class="text-xs text-gray-500 mb-4">直前期・２期前・３期前の決算書(損益計算書)の金額を、勘定科目ごとに円単位で入力してください。</p>
+          <table class="w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-[#0f2a4a] text-white">
+                <th class="text-left font-bold px-3 py-2 rounded-tl-lg">勘定科目</th>
+                <th class="text-right font-bold px-3 py-2 w-28">3期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28">2期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28 rounded-tr-lg">直前期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">売上高</td>
+                <td class="px-1 py-1"><input type="number" id="pl_sales_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_sales_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_sales_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">売上原価</td>
+                <td class="px-1 py-1"><input type="number" id="pl_costOfSales_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_costOfSales_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_costOfSales_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">期首棚卸高</td>
+                <td class="px-1 py-1"><input type="number" id="pl_beginningInventory_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_beginningInventory_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_beginningInventory_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">当期商品仕入高</td>
+                <td class="px-1 py-1"><input type="number" id="pl_purchases_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_purchases_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_purchases_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">当期製造原価</td>
+                <td class="px-1 py-1"><input type="number" id="pl_manufacturingCost_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_manufacturingCost_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_manufacturingCost_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">合計(売上原価)</td>
+                <td class="px-1 py-1"><input type="number" id="pl_costOfSalesSubtotal_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_costOfSalesSubtotal_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_costOfSalesSubtotal_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">期末棚卸高</td>
+                <td class="px-1 py-1"><input type="number" id="pl_endingInventory_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_endingInventory_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_endingInventory_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">売上総利益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_grossProfit_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_grossProfit_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_grossProfit_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">販売費・一般管理費</td>
+                <td class="px-1 py-1"><input type="number" id="pl_sga_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_sga_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_sga_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">営業利益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_operatingIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_operatingIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_operatingIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">営業外収益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_nonOperatingIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_nonOperatingIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_nonOperatingIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">受取利息・配当金</td>
+                <td class="px-1 py-1"><input type="number" id="pl_interestDividendIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_interestDividendIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_interestDividendIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(営業外収益)</td>
+                <td class="px-1 py-1"><input type="number" id="pl_otherNonOperatingIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_otherNonOperatingIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_otherNonOperatingIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">営業外費用</td>
+                <td class="px-1 py-1"><input type="number" id="pl_nonOperatingExpense_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_nonOperatingExpense_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_nonOperatingExpense_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">支払利息</td>
+                <td class="px-1 py-1"><input type="number" id="pl_interestExpense_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_interestExpense_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_interestExpense_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他(営業外費用)</td>
+                <td class="px-1 py-1"><input type="number" id="pl_otherNonOperatingExpense_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_otherNonOperatingExpense_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_otherNonOperatingExpense_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">経常利益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_ordinaryIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_ordinaryIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_ordinaryIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">特別利益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_extraordinaryIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_extraordinaryIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_extraordinaryIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">特別損失</td>
+                <td class="px-1 py-1"><input type="number" id="pl_extraordinaryLoss_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_extraordinaryLoss_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_extraordinaryLoss_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#eef1f4] font-bold">
+                <td class="px-3 py-1.5 text-[#0f2a4a]">税引前当期利益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_incomeBeforeTax_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_incomeBeforeTax_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_incomeBeforeTax_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-[#0f2a4a]" placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">法人税等</td>
+                <td class="px-1 py-1"><input type="number" id="pl_corporateTaxes_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_corporateTaxes_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_corporateTaxes_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#0f2a4a] text-white font-bold">
+                <td class="px-3 py-1.5 text-white">当期純利益</td>
+                <td class="px-1 py-1"><input type="number" id="pl_netIncome_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_netIncome_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="pl_netIncome_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8 overflow-x-auto">
+          <h3 class="font-bold text-base mb-1">4. 販管費明細</h3>
+          <p class="text-xs text-gray-500 mb-4">損益計算書の「販売費・一般管理費」の内訳を入力してください。</p>
+          <table class="w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-[#0f2a4a] text-white">
+                <th class="text-left font-bold px-3 py-2 rounded-tl-lg">勘定科目</th>
+                <th class="text-right font-bold px-3 py-2 w-28">3期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28">2期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28 rounded-tr-lg">直前期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">役員報酬</td>
+                <td class="px-1 py-1"><input type="number" id="sga_executiveCompensation_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_executiveCompensation_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_executiveCompensation_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">従業員給与</td>
+                <td class="px-1 py-1"><input type="number" id="sga_employeeSalary_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_employeeSalary_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_employeeSalary_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">退職金</td>
+                <td class="px-1 py-1"><input type="number" id="sga_retirementBenefit_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_retirementBenefit_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_retirementBenefit_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">法定福利費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_statutoryWelfare_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_statutoryWelfare_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_statutoryWelfare_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">福利厚生費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_welfare_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_welfare_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_welfare_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">旅費交通費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_travelExpenses_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_travelExpenses_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_travelExpenses_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">交際費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_entertainmentExpenses_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_entertainmentExpenses_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_entertainmentExpenses_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">地代・家賃</td>
+                <td class="px-1 py-1"><input type="number" id="sga_rent_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_rent_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_rent_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">保険料</td>
+                <td class="px-1 py-1"><input type="number" id="sga_insurancePremium_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_insurancePremium_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_insurancePremium_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">水道光熱費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_utilities_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_utilities_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_utilities_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">租税公課</td>
+                <td class="px-1 py-1"><input type="number" id="sga_taxesAndDues_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_taxesAndDues_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_taxesAndDues_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">減価償却費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_depreciation_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_depreciation_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_depreciation_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">広告宣伝費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_advertising_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_advertising_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_advertising_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">顧問料</td>
+                <td class="px-1 py-1"><input type="number" id="sga_advisoryFee_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_advisoryFee_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_advisoryFee_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他経費</td>
+                <td class="px-1 py-1"><input type="number" id="sga_otherExpenses_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_otherExpenses_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_otherExpenses_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#0f2a4a] text-white font-bold">
+                <td class="px-3 py-1.5 text-white">合計</td>
+                <td class="px-1 py-1"><input type="number" id="sga_sgaTotal_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_sgaTotal_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="sga_sgaTotal_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8 overflow-x-auto">
+          <h3 class="font-bold text-base mb-1">5. 製造原価報告書</h3>
+          <p class="text-xs text-gray-500 mb-4">製造業等で「当期製造原価」の内訳がある場合のみ入力してください。該当がない場合は空欄で構いません。</p>
+          <table class="w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-[#0f2a4a] text-white">
+                <th class="text-left font-bold px-3 py-2 rounded-tl-lg">勘定科目</th>
+                <th class="text-right font-bold px-3 py-2 w-28">3期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28">2期前</th>
+                <th class="text-right font-bold px-3 py-2 w-28 rounded-tr-lg">直前期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">賃金</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_wages_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_wages_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_wages_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">福利厚生費</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_welfare_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_welfare_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_welfare_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">法定福利費</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_statutoryWelfare_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_statutoryWelfare_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_statutoryWelfare_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">減価償却費</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_depreciation_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_depreciation_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_depreciation_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">保険料</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_insurancePremium_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_insurancePremium_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_insurancePremium_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">外注費</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_outsourcing_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_outsourcing_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_outsourcing_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-3 py-1.5 text-gray-800">その他</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_other_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_other_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_other_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm " placeholder="0" /></td>
+              </tr>
+              <tr class="border-b border-gray-100 bg-[#0f2a4a] text-white font-bold">
+                <td class="px-3 py-1.5 text-white">合計</td>
+                <td class="px-1 py-1"><input type="number" id="mfg_mfgTotal_3" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_mfgTotal_2" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+                <td class="px-1 py-1"><input type="number" id="mfg_mfgTotal_1" class="fs-input form-input w-full rounded px-2 py-1.5 text-right text-sm font-bold text-white bg-transparent border-white/30" placeholder="0" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="fsSavedMsg" class="hidden notice-box text-sm rounded-lg p-4 leading-relaxed">保存しました。</div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">保存する</button>
+          <button type="button" id="fsResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      各ツールの試算結果は概算の目安であり、実際の税務・法務上の判断を保証するものではありません。
+    </p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4">
+      ご入力いただいた会社名・氏名等の情報は、本サイトでの試算・ご提案の目的にのみ使用し、法令に基づく場合を除き第三者に提供することはありません。
+    </p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260720a"></script>
+<script src="js/financial-statements.js?v=20260720a"></script>
+</body>
+</html>

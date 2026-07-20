@@ -1,0 +1,697 @@
+:root {
+  --color-navy: #0f2a4a;
+  --color-navy-dark: #091a30;
+  --color-navy-light: #1c3f68;
+  --color-slate: #55677d;
+  --color-slate-light: #8b98a8;
+  --color-slate-soft: #eef1f4;
+  --color-blue: #3b6ea5;
+  --color-blue-dark: #2d5580;
+  --color-blue-soft: #e8eef5;
+  --color-red: #a83d3d;
+  --color-red-dark: #832f2f;
+  --color-red-soft: #f6e9e9;
+  --color-green-gray: #5c8272;
+  --color-green-gray-dark: #456155;
+  --color-green-gray-soft: #e7efeb;
+  --color-gray-800: #2b323d;
+  --color-gray-600: #56626f;
+  --color-gray-400: #8d97a3;
+  --color-gray-200: #dde3e8;
+  --color-gray-100: #eef1f4;
+  --color-off-white: #f8f9fb;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, "BIZ UDPGothic", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  background-color: #fff;
+}
+
+/* 装飾用の英語表記(キッカー・カード英字ラベル・フッター表記)に使うブランドフォント */
+/* 印刷シート(PDF出力)やボタン等の業務用テキストにはあえて適用しない */
+.font-brand-en {
+  /* Tailwind CDNのユーティリティ(font-bold等)より後に読み込まれるため、weight/stretchはimportantで確実に上書きする */
+  font-family: "Bahnschrift SemiLight Condensed", Bahnschrift, "Yu Gothic UI Semilight", "Segoe UI", Arial, sans-serif !important;
+  font-weight: 350 !important;
+  font-stretch: condensed !important;
+}
+
+/* 注釈・補足文・本文説明はボールドを解除 */
+.annotation,
+.notice-box,
+.warning-box,
+.form-input,
+.form-select,
+input,
+textarea,
+select,
+.text-xs,
+p.text-gray-600,
+.text-sm.text-gray-400,
+.text-sm.text-gray-600 {
+  font-weight: 400;
+}
+
+/* ヘッダー */
+#site-header {
+  background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+/* モバイルメニュー: 文字幅に合わせた縦長ドロップダウン */
+#mobile-menu {
+  position: absolute;
+  top: 100%;
+  right: 1.25rem;
+  width: 15rem;
+  max-width: calc(100vw - 2rem);
+  background-color: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.85rem;
+  box-shadow: 0 14px 34px rgba(15, 42, 74, 0.16);
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+#mobile-menu.open {
+  max-height: 34rem;
+  opacity: 1;
+}
+
+/* セクション見出しのアンダーライン */
+.heading-underline::after {
+  content: "";
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  background-color: var(--color-blue);
+  margin-top: 0.9rem;
+  border-radius: 2px;
+}
+.heading-underline.center::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ボタン全般: ホバーで上品に浮き上がるエフェクト(ヘッダーの.nav-btnは対象外、色のフェードのみ) */
+button,
+.btn-primary,
+.btn-accent,
+.btn-outline,
+.js-pdf-btn,
+.metric-tile,
+.wobble {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+button:hover,
+.btn-primary:hover,
+.btn-accent:hover,
+.btn-outline:hover,
+.js-pdf-btn:hover,
+.metric-tile:hover,
+.wobble:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 42, 74, 0.14);
+}
+button:active,
+.btn-primary:active,
+.btn-accent:active,
+.btn-outline:active,
+.js-pdf-btn:active,
+.metric-tile:active,
+.wobble:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 42, 74, 0.1);
+}
+
+.nav-btn {
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+/* ホバー時に色が左から右へスライドインする塗り(共通) */
+.btn-primary,
+.btn-accent,
+.btn-outline {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+.btn-primary::before,
+.btn-accent::before,
+.btn-outline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: -1;
+}
+.btn-primary:hover::before,
+.btn-accent:hover::before,
+.btn-outline:hover::before {
+  transform: scaleX(1);
+}
+
+.btn-primary {
+  background-color: var(--color-navy);
+  color: #fff;
+}
+.btn-primary::before {
+  background-color: var(--color-navy-light);
+}
+.btn-accent {
+  background-color: var(--color-blue);
+  color: #fff;
+}
+.btn-accent::before {
+  background-color: var(--color-blue-dark);
+}
+.btn-outline {
+  border: 1.5px solid var(--color-gray-400);
+  color: var(--color-gray-800);
+}
+.btn-outline::before {
+  background-color: var(--color-gray-100);
+}
+.btn-outline:hover {
+  border-color: var(--color-navy);
+}
+
+/* ナビゲーションのピル型ボタン: すべて同じ幅で揃える。枠無し・薄いブルーグレー基調 */
+.nav-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6.6rem;
+  padding: 0.5rem 0.3rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  background-color: var(--color-blue-soft);
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: visible;
+  z-index: 0;
+}
+/* ホバー時に色だけがふわっとフェードするエフェクト(位置は動かさない) */
+.nav-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: var(--color-navy);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+}
+.nav-btn:hover::before {
+  opacity: 1;
+}
+.nav-btn:hover {
+  color: #fff;
+}
+
+/* ナビの番号: カードのOpus.数字と同じ配色で、ボタンから大胆にはみ出す大きな数字 */
+.nav-num {
+  position: absolute;
+  top: -0.85rem;
+  left: -0.3rem;
+  font-size: 1.65rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-blue);
+  z-index: 2;
+  pointer-events: none;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(15, 42, 74, 0.15);
+}
+/* DS(ディスカッションシート)系ツール7〜9はグリーングレー */
+.nav-num.ds {
+  color: var(--color-green-gray);
+}
+
+/* 入力エリア(基本情報・決算書情報)だけグリーングレー基調にし、番号付きツールと区別する */
+.nav-btn.nav-input {
+  background-color: var(--color-green-gray-soft);
+}
+.nav-btn.nav-input::before {
+  background-color: var(--color-green-gray);
+}
+.nav-btn.nav-input.active {
+  background-color: var(--color-green-gray);
+  color: #fff;
+}
+.nav-btn.nav-input.active:hover {
+  background-color: var(--color-green-gray-dark);
+  color: #fff;
+}
+.nav-btn.active {
+  background-color: var(--color-navy);
+  color: #fff;
+}
+.nav-btn.active:hover {
+  background-color: var(--color-navy-light);
+  color: #fff;
+}
+.nav-btn.block-btn {
+  display: flex;
+  width: 100%;
+}
+
+/* ヘッダー: 横幅不足でナビが収まらない場合はハンバーガーへ切替(JSが .nav-collapsed を付与) */
+.site-desktop-nav {
+  display: flex;
+}
+.site-menu-btn {
+  display: none;
+}
+#site-header.nav-collapsed .site-desktop-nav {
+  display: none;
+}
+#site-header.nav-collapsed .site-menu-btn {
+  display: inline-flex;
+}
+
+/* カードホバー */
+.lift-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.lift-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(15, 42, 74, 0.1);
+}
+
+/* フォーム */
+.form-input,
+.form-select {
+  border: 1.5px solid var(--color-gray-200);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-navy);
+  box-shadow: 0 0 0 3px rgba(15, 42, 74, 0.12);
+}
+
+/* 注意書きボックス(ベースカラーのブルーグレー系) */
+.notice-box {
+  background-color: var(--color-slate-soft);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-navy);
+}
+
+/* 警告ボックス(赤系) */
+.warning-box {
+  background-color: var(--color-red-soft);
+  border: 1px solid #e0bcbc;
+  color: var(--color-red-dark);
+}
+
+/* ========== ヒーロー(写真なし・パターン背景) ========== */
+.hero-pattern {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy) 55%, var(--color-navy-light) 100%);
+  overflow: hidden;
+}
+.hero-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 30% 30%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 30%, black 0%, transparent 70%);
+}
+.hero-pattern::after {
+  content: "";
+  position: absolute;
+  right: -10%;
+  top: -20%;
+  width: 60%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(59, 110, 165, 0.16) 0%, transparent 65%);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+::selection {
+  background-color: var(--color-navy);
+  color: #fff;
+}
+
+/* ========== ツール(計算機)カード ========== */
+.tool-badge-live {
+  background-color: var(--color-blue-soft);
+  color: var(--color-blue-dark);
+}
+.tool-badge-soon {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+.calc-section {
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 1rem;
+}
+
+.calc-result-card {
+  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-navy));
+  color: #fff;
+  border-radius: 1rem;
+}
+
+/* ========== グラフ: 棒が左から順に伸びるアニメーション ========== */
+@keyframes barGrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.chart-bar {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: barGrow 0.5s cubic-bezier(0.22, 1.4, 0.4, 1) backwards;
+}
+
+/* 評価額タイル(クリックで選択、JSが背景色・文字色を切り替える) */
+.metric-tile {
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+.metric-tile .tile-label {
+  transition: color 0.15s ease;
+}
+
+/* ========== 印刷用シート(PDF出力・A4横) ========== */
+.print-sheet {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm 12mm;
+  }
+
+  html, body {
+    background: #fff !important;
+  }
+
+  /* 画面用要素をすべて隠す */
+  body > header,
+  body > main,
+  body > footer {
+    display: none !important;
+  }
+
+  /* 印刷シートのみ表示 */
+  .print-sheet {
+    display: block !important;
+    color: #1f2733;
+    font-weight: 400;
+  }
+
+  .print-sheet * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* 印刷シートの内部レイアウト(画面プレビュー時にも同じ見た目) */
+.print-sheet {
+  font-size: 10pt;
+  line-height: 1.5;
+}
+
+/* ヘッダー帯 */
+.print-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2.5px solid var(--color-navy);
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+}
+.print-brand {
+  font-weight: 700;
+  font-size: 13pt;
+  color: var(--color-navy);
+  letter-spacing: 0.02em;
+}
+.print-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15pt;
+  color: var(--color-navy);
+}
+.print-title .print-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: var(--color-navy);
+  border-radius: 4px;
+  color: #fff;
+}
+.print-meta {
+  font-size: 9pt;
+  color: var(--color-gray-600);
+  text-align: right;
+}
+.print-unit {
+  text-align: right;
+  font-size: 8.5pt;
+  color: var(--color-gray-600);
+  margin-bottom: 4px;
+}
+
+/* セクション見出し(■) */
+.print-sec {
+  font-weight: 700;
+  font-size: 11pt;
+  color: var(--color-navy);
+  margin: 14px 0 6px;
+}
+.print-sec::before {
+  content: "\25A0";
+  margin-right: 6px;
+  color: var(--color-navy);
+}
+
+/* テーブル */
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+.print-table th {
+  background: var(--color-navy);
+  color: #fff;
+  font-weight: 700;
+  padding: 5px 10px;
+  text-align: right;
+  border: 1px solid var(--color-navy);
+}
+.print-table th.lbl {
+  text-align: left;
+}
+.print-table td {
+  border: 1px solid var(--color-gray-200);
+  padding: 5px 10px;
+  text-align: right;
+}
+.print-table td.lbl {
+  text-align: left;
+  background: var(--color-off-white);
+  font-weight: 700;
+}
+.print-table tr.highlight td {
+  background: var(--color-blue-soft);
+  font-weight: 700;
+}
+.print-table tr.total td {
+  background: var(--color-slate-soft);
+  font-weight: 700;
+}
+.print-table td.neg {
+  color: var(--color-red-dark);
+}
+
+/* 2カラムレイアウト */
+.print-cols {
+  display: flex;
+  gap: 18px;
+}
+.print-cols > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* グラフ枠 */
+.print-chart {
+  width: 100%;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 4px;
+}
+.print-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.print-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 8.5pt;
+  color: var(--color-gray-600);
+  margin-top: 4px;
+}
+.print-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.print-legend i {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* 数値サマリーの小箱 */
+.print-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.print-stats > div {
+  flex: 1;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.print-stats .k {
+  font-size: 8.5pt;
+  color: var(--color-gray-600);
+}
+.print-stats .v {
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+/* 下部キーメッセージ */
+.print-keymsg {
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 11.5pt;
+  color: var(--color-navy);
+  border-top: 2px solid var(--color-navy);
+  border-bottom: 2px solid var(--color-navy);
+  padding: 8px 0;
+}
+
+/* フッター */
+.print-foot {
+  margin-top: 12px;
+  font-size: 7.5pt;
+  color: var(--color-gray-600);
+  line-height: 1.6;
+}
+.print-foot .cr {
+  text-align: right;
+  margin-top: 4px;
+  color: var(--color-gray-400);
+}
+
+.print-note {
+  font-size: 8pt;
+  color: var(--color-gray-600);
+  margin-top: 4px;
+}
+
+/* ========== PC・iPad 最適化 ========== */
+
+/* 横スクロールするテーブル等はiOSで慣性スクロール */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* タップ時の青いハイライトを上品な色に */
+a,
+button,
+.nav-btn,
+.lift-card {
+  -webkit-tap-highlight-color: rgba(15, 42, 74, 0.06);
+}
+
+/* SVGグラフ・画像はコンテナ幅に追従(はみ出し防止) */
+svg {
+  max-width: 100%;
+}
+
+/* タブレット(iPad縦横)向けの調整 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* ヒーロー見出しの折り返しを自然に */
+  .hero-pattern h1 {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* タッチ端末(iPad・iPhone等)専用の最適化 */
+@media (hover: none) and (pointer: coarse) {
+  /* iOS Safariはフォントが16px未満の入力欄でフォーカス時に自動ズームするため防止 */
+  input,
+  select,
+  textarea,
+  .form-input,
+  .form-select {
+    font-size: 16px;
+  }
+
+  /* ホバーが無い端末ではタップで押下フィードバックを出す */
+  .lift-card:active {
+    transform: scale(0.985);
+    box-shadow: 0 6px 16px rgba(15, 42, 74, 0.12);
+  }
+  .nav-btn:active::before,
+  .btn-primary:active::before,
+  .btn-accent:active::before,
+  .btn-outline:active::before {
+    transform: scaleX(1);
+  }
+  .nav-btn:active {
+    color: #fff;
+  }
+
+  /* タッチしやすいよう最低限のタップ領域を確保 */
+  #mobile-menu .nav-btn {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+}
