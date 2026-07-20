@@ -263,6 +263,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // バー配色: シナリオA(通常時)は淡色+透過50%、シナリオB(対策後)は濃色でしっかり不透明に(退職金年の枠線強調は廃止し、別途マーカーで表現)
     function barAttrs(p, m) {
+      if (m.base === 'saizoku' && m.scenario === 'B') {
+        // 相続税評価(シナリオB)のみ40%透過(fill-opacity 0.6)で表示
+        return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.15" fill-opacity="0.6"`;
+      }
       if (m.scenario === 'B') {
         return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.15" fill-opacity="0.95"`;
       }
