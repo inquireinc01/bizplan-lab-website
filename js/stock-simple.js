@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
       '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.ratio || '') + '" placeholder="％" /></td>' +
       '<td class="px-2 py-2 text-right hreka">-</td>' +
       '<td class="px-2 py-2 text-right hhojin">-</td>' +
-      '<td class="px-1 py-1"><input type="text" class="h1 js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p1 || '') + '" placeholder="0" /></td>' +
       '<td class="px-1 py-1 text-center"><button type="button" class="hdel text-gray-400 hover:text-red-500 font-bold" title="削除">×</button></td>';
     tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); recalcHolders(); });
     holderBody.appendChild(tr);
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var baseShares = num(document.getElementById('ssShares').value); // 発行済株式数を基準
     var perReka = perShareOf('saizoku');
     var perHojin = perShareOf('houjin');
-    var sumEff = 0, sumRatio = 0, tot1 = 0, totReka = 0, totHojin = 0;
+    var sumEff = 0, sumRatio = 0, totReka = 0, totHojin = 0;
     rows.forEach(function (r) {
       var shares = num(r.querySelector('.hs').value);
       var ratioIn = num(r.querySelector('.hr').value); // ％入力
@@ -74,13 +73,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!isNaN(hojin)) totHojin += hojin;
       var ratioVal = !isNaN(ratioIn) ? ratioIn : ((!isNaN(shares) && baseShares > 0) ? (shares / baseShares) * 100 : NaN);
       if (!isNaN(ratioVal)) sumRatio += ratioVal;
-      var p1 = num(r.querySelector('.h1').value); if (!isNaN(p1)) tot1 += p1;
     });
     setTxt('ssTotShares', fmt(sumEff));
     setTxt('ssTotRatio', sumRatio ? sumRatio.toFixed(2) + '%' : '-');
     setTxt('ssTotReka', totReka ? fmt(totReka) : '-');
     setTxt('ssTotHojin', totHojin ? fmt(totHojin) : '-');
-    setTxt('ssTot1', fmt(tot1));
   }
 
   function recalcAll() { recalcEval(); recalcHolders(); }
@@ -112,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
         name: r.querySelector('.hn').value,
         shares: r.querySelector('.hs').value,
         ratio: r.querySelector('.hr').value,
-        p1: r.querySelector('.h1').value,
       });
     });
     data.ss_holders = JSON.stringify(holders);
@@ -169,9 +165,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function seedHolders() {
     holderBody.innerHTML = '';
     [
-      { name: '社長', shares: '300', p1: '300' },
-      { name: '専務', shares: '60', p1: '60' },
-      { name: 'その他株主', shares: '40', p1: '40' },
+      { name: '社長', shares: '300' },
+      { name: '専務', shares: '60' },
+      { name: 'その他株主', shares: '40' },
     ].forEach(holderRow);
   }
   function seedEval() {

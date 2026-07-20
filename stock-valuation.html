@@ -216,8 +216,8 @@
 
         <!-- 株主の状況(DSレイアウト) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="sstep3">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 3</span>株主の状況（保有株数の推移）</h3>
-          <p class="text-xs text-gray-500 mb-4">株主名・株数・保有株数の推移を転記してください。比率・相続税評価額・法人税法上評価額は自動計算されます。</p>
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 3</span>株主の状況</h3>
+          <p class="text-xs text-gray-500 mb-4">株主名・株数(または比率)を入力してください。比率・相続税評価額・法人税法上評価額は自動計算されます。</p>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse min-w-[640px]">
               <thead>
@@ -227,7 +227,6 @@
                   <th class="text-right font-bold px-2 py-2">比率</th>
                   <th class="text-right font-bold px-2 py-2">相続税評価額</th>
                   <th class="text-right font-bold px-2 py-2">法人税法上評価額</th>
-                  <th class="text-right font-bold px-2 py-2">直前期の保有株数</th>
                   <th class="px-2 py-2 rounded-tr-lg w-8"></th>
                 </tr>
               </thead>
@@ -239,7 +238,6 @@
                   <td class="px-2 py-2 text-right" id="ssTotRatio">-</td>
                   <td class="px-2 py-2 text-right" id="ssTotReka">-</td>
                   <td class="px-2 py-2 text-right" id="ssTotHojin">-</td>
-                  <td class="px-2 py-2 text-right" id="ssTot1">-</td>
                   <td></td>
                 </tr>
               </tfoot>
@@ -474,7 +472,7 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-simple.js?v=20260721c"></script>
+<script src="js/stock-simple.js?v=20260721d"></script>
 <script src="js/stock-detail.js?v=20260721a"></script>
 <script src="js/stock-stepper.js?v=20260721a"></script>
 </body>
