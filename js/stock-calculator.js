@@ -91,6 +91,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
+  // 評価額タイル専用: 数字だけ大きく(老眼対応)、単位「万円」は従来サイズのまま
+  const manTile = (n) => {
+    const numStr = window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP');
+    return `<span class="tile-num">${numStr}</span><span class="tile-unit">万円</span>`;
+  };
   const yearLabel = (y) => (y === 0 ? '現在' : `${y}年後`);
 
   function hexToRgba(hex, alpha) {
@@ -246,10 +251,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const plotH = H - padT - padB;
 
     const activeFields = selectedMetrics.map((k) => METRICS[k].field);
-    let maxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f])), 1);
-    if (showInsurance && currentValues && currentValues.insuranceAmount > maxV) {
-      maxV = currentValues.insuranceAmount;
-    }
+    // 死亡保険金額(showInsurance)はスケールに含めない: 上限を超えたら天井に張り付く仕様でよいため。
+    // バーの最大値には少し余白(8%)を持たせ、一番高い棒がグラフ上端にぴったり付かないようにする。
+    const rawMaxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f])), 1);
+    const maxV = rawMaxV * 1.08;
     const minV = 0;
     const yBottom = H - padB;
     const y = (val) => yBottom - ((val - minV) / (maxV - minV || 1)) * plotH;
@@ -324,15 +329,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let retireLine = '', retireFlag = '', lossLine = '', lossFlag = '';
-    const sameYearEvent = showRetirement && showSpecialLoss && currentValues &&
+    const bothEventsActive = showRetirement && showSpecialLoss && currentValues &&
       retirementYear !== null && currentValues.specialLossYear !== null &&
-      retirementYear === currentValues.specialLossYear;
+      retirementYear >= 1 && retirementYear <= 30 &&
+      currentValues.specialLossYear >= 1 && currentValues.specialLossYear <= 30;
+    // 年が近く(ピクセル距離がフラッグ幅未満)フラッグ同士が重なって隠れてしまう場合は縦に並べる。
+    // 完全に同じ年のときだけ、ガイド線は下段(特別損失)側にまとめて重複を避ける。
+    const yearGapPx = bothEventsActive ? Math.abs(retirementYear - currentValues.specialLossYear) * slotWidth : Infinity;
+    const exactSameYear = bothEventsActive && retirementYear === currentValues.specialLossYear;
+    const needStack = bothEventsActive && yearGapPx < EVENT_FLAG_WIDTH + 8;
 
     if (showRetirement) {
-      if (sameYearEvent) {
-        // 同じ年に重なる場合: 退職金を上段に配置(ガイド線・三角は下段の特別損失側でまとめて描く)
-        const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 1, false);
-        retireFlag = m.flag;
+      if (needStack) {
+        const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 1, !exactSameYear);
+        retireLine = m.line; retireFlag = m.flag;
       } else {
         const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 1, true);
         retireLine = m.line; retireFlag = m.flag;
@@ -340,8 +350,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (showSpecialLoss && currentValues) {
-      if (sameYearEvent) {
-        // 同じ年に重なる場合: 特別損失を下段に配置し、ガイド線・三角はここから伸ばす
+      if (needStack) {
+        // 縦並び時は特別損失を下段に配置し、ガイド線・三角はここから伸ばす
         const m = drawEventFlag(currentValues.specialLossYear, '特別損失', '#b0651b', 1 + EVENT_FLAG_H + 3, true);
         lossLine = m.line; lossFlag = m.flag;
       } else {
@@ -415,8 +425,8 @@ document.addEventListener('DOMContentLoaded', function () {
     Object.keys(BASE_METRICS).forEach((base) => {
       const elA = document.getElementById(`cv_${base}_A`);
       const elB = document.getElementById(`cv_${base}_B`);
-      if (elA) elA.textContent = man(p0[`${base}T_A`]);
-      if (elB) elB.textContent = man(p0[`${base}T_B`]);
+      if (elA) elA.innerHTML = manTile(p0[`${base}T_A`]);
+      if (elB) elB.innerHTML = manTile(p0[`${base}T_B`]);
     });
   }
 
