@@ -105,109 +105,133 @@
       <div id="simpleArea" class="hidden">
       <form id="stockCalcForm" class="space-y-10">
 
-        <!-- 会社規模 -->
+        <!-- 会社の基本情報 -->
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">1. 会社規模の選択</h3>
-          <p class="text-xs text-gray-500 mb-4">従業員数・総資産価額・取引金額をもとに国税庁の基準で判定した区分を選択してください(斟酌率・Lの割合が自動設定されます)。</p>
-          <select id="companySize" class="form-select w-full sm:w-80 rounded-lg px-4 py-3 text-sm">
-            <option value="large">大会社</option>
-            <option value="mid-large">中会社(大)</option>
-            <option value="mid-mid" selected>中会社(中)</option>
-            <option value="mid-small">中会社(小)</option>
-            <option value="small">小会社</option>
-          </select>
-          <details class="mt-4 text-xs text-gray-500">
-            <summary class="cursor-pointer font-medium text-gray-600">区分の目安を見る</summary>
-            <p class="mt-2 leading-relaxed">
-              従業員数が70人以上の場合は原則として「大会社」です。70人未満の場合は、総資産価額・従業員数による判定と、取引金額(売上高)による判定のいずれか大きい区分を採用します(業種により基準値が異なります)。正確な区分は国税庁の最新の判定基準でご確認ください。
-            </p>
-          </details>
-        </div>
-
-        <!-- 純資産価額方式 -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">2. 純資産価額方式の入力</h3>
-          <p class="text-xs text-gray-500 mb-5">直前期末時点の金額を万円単位で入力してください。</p>
-          <div class="grid sm:grid-cols-2 gap-5">
+          <h3 class="font-bold text-base mb-1">会社の基本情報</h3>
+          <p class="text-xs text-gray-500 mb-5">評価額の1株換算・株主別評価額の計算に使います。</p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <div>
-              <label class="block text-sm font-medium mb-1.5" for="taxAssets">相続税評価額による総資産(万円)</label>
-              <input type="number" id="taxAssets" value="15000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 15000" />
+              <label class="block text-sm font-medium mb-1.5" for="ssShares">発行済株式数（株）</label>
+              <input type="number" id="ssShares" value="400" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1.5" for="taxLiabilities">相続税評価額による負債(万円)</label>
-              <input type="number" id="taxLiabilities" value="8000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 8000" />
+              <label class="block text-sm font-medium mb-1.5" for="ssParValue">額面（1株・円）</label>
+              <input type="number" id="ssParValue" value="50000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1.5" for="bookAssets">帳簿価額による総資産(万円)</label>
-              <input type="number" id="bookAssets" value="12000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 12000" />
+              <label class="block text-sm font-medium mb-1.5" for="ssSize">会社規模</label>
+              <select id="ssSize" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+                <option value="large">大会社</option>
+                <option value="mid-large">中会社（大）</option>
+                <option value="mid-mid" selected>中会社（中）</option>
+                <option value="mid-small">中会社（小）</option>
+                <option value="small">小会社</option>
+              </select>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1.5" for="bookLiabilities">帳簿価額による負債(万円)</label>
-              <input type="number" id="bookLiabilities" value="8000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 8000" />
+              <label class="block text-sm font-medium mb-1.5" for="ssL">Lの割合</label>
+              <input type="text" id="ssL" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" />
             </div>
           </div>
         </div>
 
-        <!-- 類似業種比準方式 -->
+        <!-- ■自社株評価(DSレイアウト) -->
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">3. 類似業種比準方式の入力</h3>
-          <p class="text-xs text-gray-500 mb-2">A〜Dは国税庁公表の類似業種比準価額計算上の業種目データ、b〜dは自社の数値です(いずれも「1株(50円)当たり」で統一してください)。</p>
-          <p class="text-xs text-gray-500 mb-5">
-            A〜Dの数値は国税庁サイトでPDF形式で毎月公表されており、自動取得はできないため
-            <a href="https://www.nta.go.jp/law/tsutatsu/kobetsu/hyoka/index.htm" target="_blank" rel="noopener" class="underline text-[#0f2a4a]">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」</a>
-            から該当業種の最新データを確認のうえ手入力してください。
-          </p>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="simA">類似業種の株価(A・円)</label>
-              <input type="number" id="simA" value="480" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 480" />
-            </div>
-            <div></div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="simB">類似業種の1株当たり配当金額(B・円)</label>
-              <input type="number" id="simB" value="6.0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 6.0" step="0.01" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ownB">自社の1株当たり配当金額(b・円)</label>
-              <input type="number" id="ownB" value="4.0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 4.0" step="0.01" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="simC">類似業種の1株当たり利益金額(C・円)</label>
-              <input type="number" id="simC" value="45" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 45" step="0.01" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ownC">自社の1株当たり利益金額(c・円)</label>
-              <input type="number" id="ownC" value="60" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 60" step="0.01" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="simD">類似業種の1株当たり純資産価額(D・円)</label>
-              <input type="number" id="simD" value="350" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 350" step="0.01" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ownD">自社の1株当たり純資産価額(d・円)</label>
-              <input type="number" id="ownD" value="420" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 420" step="0.01" />
-            </div>
+          <h3 class="font-bold text-base mb-1">■ 自社株評価</h3>
+          <p class="text-xs text-gray-500 mb-4">ディスカッションシートの自社株評価を、時価総額（円）でそのまま転記してください。一株あたり・額面倍率は自動計算されます。</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[480px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">評価方式</th>
+                  <th class="text-right font-bold px-3 py-2">時価総額（円）</th>
+                  <th class="text-right font-bold px-3 py-2">一株あたり（円）</th>
+                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">額面倍率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">相続税評価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_saizoku" data-eval="saizoku" class="ss-eval form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_saizoku">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_saizoku">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">類似業種比準価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_ruiji" data-eval="ruiji" class="ss-eval form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_ruiji">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_ruiji">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">純資産価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_junsisan" data-eval="junsisan" class="ss-eval form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_junsisan">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_junsisan">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">併用方式</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_heiyo" data-eval="heiyo" class="ss-eval form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_heiyo">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_heiyo">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">法人税法上評価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_houjin" data-eval="houjin" class="ss-eval form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_houjin">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_houjin">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">配当還元評価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_haito" data-eval="haito" class="ss-eval form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_haito">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_haito">-</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+          <p class="text-xs text-gray-500 mt-3">※ 相続税評価額・類似業種比準価額・純資産価額は、下のグラフ（30年推移・保険加入による比較）の起点として使われます。</p>
         </div>
 
-        <!-- 株式数・資本金 -->
+        <!-- 株主の状況(DSレイアウト) -->
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">4. 発行株式数・資本金等</h3>
-          <p class="text-xs text-gray-500 mb-5">類似業種比準価額は「1株50円換算」で計算されるため、資本金等の額から実際の株式数への換算を行います。</p>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="sharesOutstanding">発行済株式数(株)</label>
-              <input type="number" id="sharesOutstanding" value="2000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 2000" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="capitalAmount">資本金等の額(円)</label>
-              <input type="number" id="capitalAmount" value="1000000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1000000" />
-            </div>
+          <h3 class="font-bold text-base mb-1">株主の状況（保有株数の推移）</h3>
+          <p class="text-xs text-gray-500 mb-4">株主名・株数・保有株数の推移を転記してください。比率・相続税評価額・法人税法上評価額は自動計算されます。</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[720px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-2 py-2 rounded-tl-lg">株主名</th>
+                  <th class="text-right font-bold px-2 py-2">株数</th>
+                  <th class="text-right font-bold px-2 py-2">比率</th>
+                  <th class="text-right font-bold px-2 py-2">相続税評価額</th>
+                  <th class="text-right font-bold px-2 py-2">法人税法上評価額</th>
+                  <th class="text-right font-bold px-2 py-2">3期前</th>
+                  <th class="text-right font-bold px-2 py-2">2期前</th>
+                  <th class="text-right font-bold px-2 py-2">直前期</th>
+                  <th class="px-2 py-2 rounded-tr-lg w-8"></th>
+                </tr>
+              </thead>
+              <tbody id="ssHolderBody"></tbody>
+              <tfoot>
+                <tr class="bg-[#eef1f4] font-bold">
+                  <td class="px-2 py-2 text-left">合計</td>
+                  <td class="px-2 py-2 text-right" id="ssTotShares">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTotRatio">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTotReka">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTotHojin">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTot3">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTot2">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTot1">-</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
+          <button type="button" id="ssAddHolder" class="btn-outline mt-4 px-5 py-2 rounded-full text-sm font-bold">＋ 株主を追加</button>
         </div>
 
         <div class="notice-box text-sm rounded-lg p-4 leading-relaxed">
-          法人税率・年間税引前利益(A/B)・配当・退職金・M&amp;A関連数値は、次の結果ページでグラフを見ながらリアルタイムに調整できます。
+          法人税率・年間税引前利益（A/B）・配当・退職金・M&amp;A関連数値は、次の結果ページでグラフを見ながらリアルタイムに調整できます。
         </div>
 
         <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
@@ -429,7 +453,7 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721b"></script>
-<script src="js/stock-valuation-input.js?v=20260721b"></script>
+<script src="js/stock-simple.js?v=20260721a"></script>
 <script src="js/stock-detail.js?v=20260721a"></script>
 </body>
 </html>

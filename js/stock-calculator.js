@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
     sharesOutstanding: 2000, capitalAmount: 1000000,
     corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
     retirementYear: 10, retirementAmount: 5000, mvNetAssets: 20000, realOpProfit: 2500,
+    // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
+    ss0_saizoku: 30237, ss0_ruiji: 23557, ss0_junsisan: 50277, ss0_houjin: 36917,
   };
   const SIZE_CONFIG = {
     large: { l: 1.00, shin: 0.7, label: '大会社' },
@@ -87,36 +89,28 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // 年0(現在時点)の評価額(1株当たり)を計算
+  // 簡易版(DSレイアウト)で転記した時価総額(万円)を起点として使用する
   function computeYear0(v) {
     const sizeCfg = SIZE_CONFIG[v.companySize] || SIZE_CONFIG['mid-mid'];
     const L = sizeCfg.l;
     const shinshaku = sizeCfg.shin;
     const sizeLabel = sizeCfg.label;
+    const shares = v.sharesOutstanding;
 
-    const taxNetAssets = v.taxAssets - v.taxLiabilities;
-    const bookNetAssets = v.bookAssets - v.bookLiabilities;
-    const hyokaSagaku = Math.max(0, taxNetAssets - bookNetAssets);
-    const corpTaxEquivalent = hyokaSagaku * 0.37;
-    const netAssetsAtValuation = taxNetAssets - corpTaxEquivalent; // 万円
-    const netAssetPerShare = (netAssetsAtValuation * 10000) / v.sharesOutstanding;
+    const netAssetsAtValuation = v.ss0_junsisan; // 純資産価額(万円)
+    const netAssetPerShare = (netAssetsAtValuation * 10000) / shares;
+    const similarPerShareActual = (v.ss0_ruiji * 10000) / shares; // 類似業種比準(1株)
+    const saizokuPerShare = (v.ss0_saizoku * 10000) / shares; // 相続税評価(採用)
+    const houjinPerShare = (v.ss0_houjin * 10000) / shares; // 法人税法上評価
 
-    const ratio = (v.ownB / v.simB + v.ownC / v.simC + v.ownD / v.simD) / 3;
-    const similarPerShare50Yen = v.simA * ratio * shinshaku;
-    const shares50YenBasis = v.capitalAmount / 50;
-    const similarPerShareActual = shares50YenBasis > 0
-      ? (similarPerShare50Yen * shares50YenBasis) / v.sharesOutstanding
-      : similarPerShare50Yen;
-
-    const combined = similarPerShareActual * L + netAssetPerShare * (1 - L);
-    const finalPerShare = Math.min(combined, netAssetPerShare);
-    const houjinPerShare = similarPerShareActual * 0.5 + netAssetPerShare * 0.5;
-    const finalTotal = finalPerShare * v.sharesOutstanding;
+    const combined = saizokuPerShare;
+    const finalPerShare = saizokuPerShare;
+    const finalTotal = finalPerShare * shares;
 
     return {
       sizeLabel, L, shinshaku,
       netAssetsAtValuation, netAssetPerShare,
-      similarPerShareActual, combined, finalPerShare, houjinPerShare, finalTotal,
-      d0: v.ownD,
+      similarPerShareActual, saizokuPerShare, combined, finalPerShare, houjinPerShare, finalTotal,
     };
   }
 
@@ -133,12 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function metricsFor(t, netAssetsT) {
       const netAssetPerShare = (netAssetsT * 10000) / shares;
       const growthRatio = year0.netAssetPerShare !== 0 ? netAssetPerShare / year0.netAssetPerShare : 1;
-      const dT = year0.d0 * growthRatio;
-      const ratio = (v.ownB / v.simB + v.ownC / v.simC + dT / v.simD) / 3;
-      const similarPerShare50Yen = v.simA * ratio * shinshaku;
-      const similarPerShareActual = shares50YenBasis > 0
-        ? (similarPerShare50Yen * shares50YenBasis) / shares
-        : similarPerShare50Yen;
+      // 類似業種比準は起点値を純資産の成長率に比例させて推移(利益A/Bの差が反映される)
+      const similarPerShareActual = year0.similarPerShareActual * growthRatio;
       const combined = similarPerShareActual * L + netAssetPerShare * (1 - L);
       const finalPerShare = Math.min(combined, netAssetPerShare);
       const houjinPerShare = similarPerShareActual * 0.5 + netAssetPerShare * 0.5;
