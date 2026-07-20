@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260721u" />
+<link rel="stylesheet" href="css/style.css?v=20260721v" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -103,7 +103,7 @@
         <!-- 現在の評価額(総額)・クリックでグラフに表示する指標を選択(最大2つ、利益A/Bで10種類) -->
         <div id="metricTiles" class="mb-6">
           <div class="flex items-center gap-2 mb-1.5">
-            <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#6d7f92">シナリオA</span>
+            <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#3b6ea5">シナリオA</span>
             <p class="text-xs font-bold text-gray-600">通常時（生命保険による対策なし）</p>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
@@ -119,7 +119,7 @@
               <p class="tile-label text-[11px] mb-0.5 leading-tight">類似業種比準</p>
               <p id="cv_ruiji_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_A" data-color="#5f7fa8">
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_A" data-color="#b3b8bd">
               <p class="tile-label text-[11px] mb-0.5 leading-tight">純資産</p>
               <p id="cv_junsisan_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
@@ -130,7 +130,7 @@
             </button>
           </div>
           <div class="flex items-center gap-2 mb-1.5">
-            <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#2f4864">シナリオB</span>
+            <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#0f2a4a">シナリオB</span>
             <p class="text-xs font-bold text-gray-600">生命保険で損金をつくった場合（対策後）</p>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -146,7 +146,7 @@
               <p class="tile-label text-[11px] mb-0.5 leading-tight">類似業種比準</p>
               <p id="cv_ruiji_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_B" data-color="#2f4864">
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_B" data-color="#6b7075">
               <p class="tile-label text-[11px] mb-0.5 leading-tight">純資産</p>
               <p id="cv_junsisan_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
@@ -256,11 +256,11 @@
                   <th class="px-2 py-1.5 text-right font-bold border-l border-white/20" style="background-color:#6d7f92">相続税評価</th>
                   <th class="px-2 py-1.5 text-right font-bold" style="background-color:#7c8f7a">法人税法上</th>
                   <th class="px-2 py-1.5 text-right font-bold" style="background-color:#b3b8bd">類似業種比準</th>
-                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#5f7fa8">純資産</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#b3b8bd">純資産</th>
                   <th class="px-2 py-1.5 text-right font-bold border-l border-white/20" style="background-color:#3f4c5c">相続税評価</th>
                   <th class="px-2 py-1.5 text-right font-bold" style="background-color:#4f5f4d">法人税法上</th>
                   <th class="px-2 py-1.5 text-right font-bold" style="background-color:#6b7075">類似業種比準</th>
-                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#2f4864">純資産</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#6b7075">純資産</th>
                 </tr>
               </thead>
               <tbody id="trendTableBody"></tbody>
@@ -399,6 +399,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721f"></script>
+<script src="js/stock-calculator.js?v=20260721g"></script>
 </body>
 </html>

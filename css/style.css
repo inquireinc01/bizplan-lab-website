@@ -646,11 +646,11 @@ img {
 #trendTable td.col-saizoku-a { background-color: rgba(109, 127, 146, 0.08); }
 #trendTable td.col-houjin-a { background-color: rgba(124, 143, 122, 0.08); }
 #trendTable td.col-ruiji-a { background-color: rgba(179, 184, 189, 0.12); }
-#trendTable td.col-junsisan-a { background-color: rgba(95, 127, 168, 0.08); }
+#trendTable td.col-junsisan-a { background-color: rgba(179, 184, 189, 0.12); }
 #trendTable td.col-saizoku-b { background-color: rgba(63, 76, 92, 0.1); }
 #trendTable td.col-houjin-b { background-color: rgba(79, 95, 77, 0.1); }
 #trendTable td.col-ruiji-b { background-color: rgba(107, 112, 117, 0.1); }
-#trendTable td.col-junsisan-b { background-color: rgba(47, 72, 100, 0.1); }
+#trendTable td.col-junsisan-b { background-color: rgba(107, 112, 117, 0.1); }
 
 /* 別枠強調ボックス(退職金・生命保険の契約条件) */
 .field-highlight {

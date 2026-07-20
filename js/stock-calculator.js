@@ -69,8 +69,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const BASE_COLORS = {
     saizoku: { light: '#6d7f92', dark: '#3f4c5c' },
     houjin: { light: '#7c8f7a', dark: '#4f5f4d' },
+    // 類似業種比準・純資産は参考指標のため、区別せず薄灰/濃灰に統一(重要な指標=相続税評価・法人税法上の評価を目立たせる)
     ruiji: { light: '#b3b8bd', dark: '#6b7075' },
-    junsisan: { light: '#5f7fa8', dark: '#2f4864' },
+    junsisan: { light: '#b3b8bd', dark: '#6b7075' },
     manda: { light: '#9c5866', dark: '#6b3540' },
   };
   const METRICS = {};
