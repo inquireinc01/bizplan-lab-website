@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260722c" />
+<link rel="stylesheet" href="css/style.css?v=20260722d" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -35,7 +35,7 @@
       </nav>
 
       <div class="flex items-center gap-3 shrink-0">
-        <a href="basic-info.html" class="nav-square site-desktop-only">基本情報</a>
+        <a href="basic-info.html" class="nav-square site-desktop-only">基本情報入力</a>
         <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -71,9 +71,7 @@
 
   <section class="py-16 sm:py-20">
     <div class="max-w-6xl mx-auto px-5">
-      <p class="text-gray-600 leading-relaxed mb-8">
-        まず「簡易版」か「詳細版」を選んでください。<strong>簡易版</strong>は主要な数値だけで概算とグラフを試算します。<strong>詳細版</strong>は国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。
-      </p>
+      <p class="font-bold text-gray-700 mb-8 flex items-center">入力方法を選択してください<span class="help-tip" tabindex="0">?<span class="help-text">簡易版は主要な数値だけで概算とグラフを試算します。詳細版は国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。</span></span></p>
 
       <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
         本ツールは概算把握を目的とした簡易シミュレーターです。実際の相続税・贈与税申告等に用いる評価額は、直近の国税庁公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。
@@ -109,7 +107,7 @@
       <div id="versionChooser" class="grid sm:grid-cols-2 gap-4 mb-10">
         <div class="version-card p-5" data-version="simple">
           <div class="flex items-center justify-between mb-2">
-            <h3 class="font-bold text-lg">簡易版</h3>
+            <h3 class="font-bold text-lg">簡易版（DSから転記）</h3>
             <span class="text-xs font-bold text-[#3b6ea5]">SIMPLE</span>
           </div>
           <p class="text-sm text-gray-600 leading-relaxed">会社規模・純資産・類似業種の主要な数値だけを入力して、概算の評価額とグラフを試算します。まずはこちら。</p>
@@ -129,8 +127,7 @@
 
         <!-- 会社の基本情報 -->
         <div class="calc-section bg-white p-6 sm:p-8" id="sstep1">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 1</span>会社の基本情報</h3>
-          <p class="text-xs text-gray-500 mb-5">評価額の1株換算・株主別評価額の計算に使います。</p>
+          <h3 class="font-bold text-base mb-5"><span class="step-badge">STEP 1</span>会社の基本情報</h3>
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <div>
               <label class="block text-sm font-medium mb-1.5" for="ssShares">発行済株式数（株）</label>
@@ -211,7 +208,6 @@
               </tbody>
             </table>
           </div>
-          <p class="text-xs text-gray-500 mt-3">※ 相続税評価額・類似業種比準価額・純資産価額は、下のグラフ（30年推移・保険加入による比較）の起点として使われます。</p>
         </div>
 
         <!-- 株主の状況(DSレイアウト) -->
@@ -244,10 +240,6 @@
             </table>
           </div>
           <button type="button" id="ssAddHolder" class="btn-outline mt-4 px-5 py-2 rounded-full text-sm font-bold">＋ 株主を追加</button>
-        </div>
-
-        <div class="notice-box text-sm rounded-lg p-4 leading-relaxed">
-          法人税率・年間税引前利益（A/B）・配当・退職金・M&amp;A関連数値は、次の結果ページでグラフを見ながらリアルタイムに調整できます。
         </div>
 
         <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
