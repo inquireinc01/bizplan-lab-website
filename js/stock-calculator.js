@@ -261,15 +261,8 @@ document.addEventListener('DOMContentLoaded', function () {
       gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round(gv).toLocaleString('ja-JP')}</text>`;
     }
 
-    // バー配色: シナリオA(通常時)は淡色+透過50%、シナリオB(対策後)は濃色でしっかり不透明に(退職金年の枠線強調は廃止し、別途マーカーで表現)
+    // バーはすべて透過度50%で統一(退職金年の枠線強調は廃止し、別途マーカーで表現)
     function barAttrs(p, m) {
-      if (m.base === 'saizoku' && m.scenario === 'B') {
-        // 相続税評価(シナリオB)のみ40%透過(fill-opacity 0.6)で表示
-        return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.15" fill-opacity="0.6"`;
-      }
-      if (m.scenario === 'B') {
-        return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.15" fill-opacity="0.95"`;
-      }
       return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1" fill-opacity="0.5"`;
     }
 
@@ -308,29 +301,49 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ===== 年次イベント(退職金・特別損失)の洗練された強調: 枠線ではなく、破線ガイド + ラベルフラッグ、ボタンでトグル表示 =====
-    function drawEventFlag(year, label, color, boxWidth) {
+    // 2つのラベルは文字数(3文字/4文字)に関わらず同じサイズに統一。同じ年に重なる場合は縦に並べて表示する。
+    const EVENT_FLAG_WIDTH = 76;
+    const EVENT_FLAG_H = 16;
+    function drawEventFlag(year, label, color, topY, drawGuide) {
       if (year === null || year === undefined || isNaN(year) || year < 1 || year > 30) return { line: '', flag: '' };
       const rxc = padL + year * slotWidth + slotWidth / 2;
-      const clampX = Math.max(padL + boxWidth / 2, Math.min(W - padR - boxWidth / 2, rxc));
-      const line = `<line x1="${rxc.toFixed(1)}" y1="20" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="${hexToRgba(color, 0.38)}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
-      const flag = `<g>
-        <rect x="${(clampX - boxWidth / 2).toFixed(1)}" y="1" width="${boxWidth}" height="16" rx="8" fill="${color}"/>
-        <text x="${clampX.toFixed(1)}" y="12.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">${label}</text>
-        <path d="M ${(clampX - 4).toFixed(1)} 17 L ${(clampX + 4).toFixed(1)} 17 L ${clampX.toFixed(1)} 22 Z" fill="${color}"/>
-      </g>`;
-      return { line, flag };
+      const clampX = Math.max(padL + EVENT_FLAG_WIDTH / 2, Math.min(W - padR - EVENT_FLAG_WIDTH / 2, rxc));
+      let flag = `<rect x="${(clampX - EVENT_FLAG_WIDTH / 2).toFixed(1)}" y="${topY.toFixed(1)}" width="${EVENT_FLAG_WIDTH}" height="${EVENT_FLAG_H}" rx="8" fill="${color}"/>
+        <text x="${clampX.toFixed(1)}" y="${(topY + 11.5).toFixed(1)}" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">${label}</text>`;
+      let line = '';
+      if (drawGuide) {
+        const triY = topY + EVENT_FLAG_H;
+        flag += `<path d="M ${(clampX - 4).toFixed(1)} ${(triY + 1).toFixed(1)} L ${(clampX + 4).toFixed(1)} ${(triY + 1).toFixed(1)} L ${clampX.toFixed(1)} ${(triY + 6).toFixed(1)} Z" fill="${color}"/>`;
+        line = `<line x1="${rxc.toFixed(1)}" y1="${(triY + 6).toFixed(1)}" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="${hexToRgba(color, 0.38)}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+      }
+      return { line, flag: `<g>${flag}</g>` };
     }
 
-    let retireLine = '', retireFlag = '';
+    let retireLine = '', retireFlag = '', lossLine = '', lossFlag = '';
+    const sameYearEvent = showRetirement && showSpecialLoss && currentValues &&
+      retirementYear !== null && currentValues.specialLossYear !== null &&
+      retirementYear === currentValues.specialLossYear;
+
     if (showRetirement) {
-      const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 60);
-      retireLine = m.line; retireFlag = m.flag;
+      if (sameYearEvent) {
+        // 同じ年に重なる場合: 退職金を上段に配置(ガイド線・三角は下段の特別損失側でまとめて描く)
+        const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 1, false);
+        retireFlag = m.flag;
+      } else {
+        const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 1, true);
+        retireLine = m.line; retireFlag = m.flag;
+      }
     }
 
-    let lossLine = '', lossFlag = '';
     if (showSpecialLoss && currentValues) {
-      const m = drawEventFlag(currentValues.specialLossYear, '特別損失', '#b0651b', 76);
-      lossLine = m.line; lossFlag = m.flag;
+      if (sameYearEvent) {
+        // 同じ年に重なる場合: 特別損失を下段に配置し、ガイド線・三角はここから伸ばす
+        const m = drawEventFlag(currentValues.specialLossYear, '特別損失', '#b0651b', 1 + EVENT_FLAG_H + 3, true);
+        lossLine = m.line; lossFlag = m.flag;
+      } else {
+        const m = drawEventFlag(currentValues.specialLossYear, '特別損失', '#b0651b', 1, true);
+        lossLine = m.line; lossFlag = m.flag;
+      }
     }
 
     // ===== 死亡保険金額(グラフ背景の階段状エリア、ボタンでトグル表示) =====
