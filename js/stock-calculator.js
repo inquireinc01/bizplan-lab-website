@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const PROJECTION_IDS = [
     'corpTaxRateProj', 'annualProfit', 'annualProfitB', 'annualDividend',
     'retirementYear', 'retirementAmount', 'mvNetAssets', 'realOpProfit',
+    'insuranceAmount', 'coveragePeriod', 'premiumAmount', 'deductibleRatio',
   ];
 
   const STORAGE_KEY = 'bpl_stock_valuation_v1';
@@ -22,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     sharesOutstanding: 2000, capitalAmount: 1000000,
     corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
     retirementYear: 10, retirementAmount: 5000, mvNetAssets: 20000, realOpProfit: 2500,
+    // 生命保険の契約条件(死亡保険金額のグラフ表示・参考情報として保持)
+    insuranceAmount: 10000, coveragePeriod: 10, premiumAmount: 500, deductibleRatio: 100,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30237, ss0_ruiji: 23557, ss0_junsisan: 50277, ss0_houjin: 36917,
   };
@@ -79,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
     METRICS[`${base}_B`] = { label: `${BASE_METRICS[base]}(シナリオB)`, field: `${base}T_B`, color: BASE_COLORS[base].dark, base, scenario: 'B', hidden };
   });
   let selectedMetrics = ['saizoku_A'];
+  let showInsurance = false; // 死亡保険金額をグラフ背景に表示するかどうか(ボタンでトグル)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -243,7 +247,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const plotH = H - padT - padB;
 
     const activeFields = selectedMetrics.map((k) => METRICS[k].field);
-    const maxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f])), 1);
+    let maxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f])), 1);
+    if (showInsurance && currentValues && currentValues.insuranceAmount > maxV) {
+      maxV = currentValues.insuranceAmount;
+    }
     const minV = 0;
     const yBottom = H - padB;
     const y = (val) => yBottom - ((val - minV) / (maxV - minV || 1)) * plotH;
@@ -310,29 +317,48 @@ document.addEventListener('DOMContentLoaded', function () {
       </g>`;
     }
 
+    // ===== 死亡保険金額(グラフ背景の四角+左上ラベル、ボタンでトグル表示) =====
+    let insuranceRect = '', insuranceLabel = '';
+    if (showInsurance && currentValues && currentValues.insuranceAmount > 0) {
+      const amt = currentValues.insuranceAmount;
+      const period = Math.max(0, Math.min(30, currentValues.coveragePeriod || 0));
+      const rectX1 = padL;
+      const rectX2 = padL + period * slotWidth;
+      const rectY = Math.max(padT, y(amt));
+      const rectH = Math.max(0, yBottom - rectY);
+      insuranceRect = `<rect x="${rectX1.toFixed(1)}" y="${rectY.toFixed(1)}" width="${Math.max(0, rectX2 - rectX1).toFixed(1)}" height="${rectH.toFixed(1)}" fill="rgba(168,61,61,0.14)" stroke="rgba(168,61,61,0.4)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      insuranceLabel = `<g>
+        <rect x="${(padL + 6).toFixed(1)}" y="${(padT + 4).toFixed(1)}" width="86" height="18" rx="9" fill="#832f2f"/>
+        <text x="${(padL + 49).toFixed(1)}" y="${(padT + 16.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="700">死亡保険金額</text>
+      </g>`;
+    }
+
     svg.innerHTML = `
       ${gridLines}
+      ${insuranceRect}
       <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>
       <line x1="${padL}" y1="${yBottom}" x2="${W - padR}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>
       ${retireLine}
       ${xLabels}
       ${bars}
       ${retireFlag}
+      ${insuranceLabel}
     `;
 
     chartLayout = { W, padL, plotW, slotWidth, count: series.length };
   }
 
+  // 列ごとの色分け(タイル・ヘッダーと同じ配色。等間隔の列幅に合わせ、行のゼブラではなく列の色帯で識別する)
+  const TABLE_COL_CLASSES = ['col-saizoku-a', 'col-houjin-a', 'col-ruiji-a', 'col-junsisan-a', 'col-saizoku-b', 'col-houjin-b', 'col-ruiji-b', 'col-junsisan-b'];
   function renderTable(series) {
     const body = document.getElementById('trendTableBody');
     let rows = '';
-    series.forEach((p, i) => {
-      const zebra = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-      const cell = (v) => `<td class="px-3 py-1.5 text-right">${Math.round(v).toLocaleString('ja-JP')}</td>`;
-      rows += `<tr class="${zebra} border-b border-gray-100">
-        <td class="px-3 py-1.5 text-center text-gray-700 border-r border-gray-100">${yearLabel(p.year)}</td>
-        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}
-        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}
+    series.forEach((p) => {
+      const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B];
+      const cells = vals.map((v, i) => `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${i === 4 ? ' border-l border-gray-200' : ''}">${Math.round(v).toLocaleString('ja-JP')}</td>`).join('');
+      rows += `<tr class="border-b border-gray-100">
+        <td class="px-2 py-1.5 text-center text-gray-700 border-r border-gray-200 bg-white">${yearLabel(p.year)}</td>
+        ${cells}
       </tr>`;
     });
     body.innerHTML = rows;
@@ -440,6 +466,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const { v } = loadValues();
         drawChart(lastSeries, v.retirementYear);
         renderLegend(document.getElementById('chartLegend'));
+      }
+    });
+  }
+
+  // ===== 死亡保険金額の表示トグル =====
+  const insuranceToggleBtn = document.getElementById('insuranceToggleBtn');
+  if (insuranceToggleBtn) {
+    insuranceToggleBtn.addEventListener('click', function () {
+      showInsurance = !showInsurance;
+      insuranceToggleBtn.classList.toggle('is-on', showInsurance);
+      if (lastSeries) {
+        const { v } = loadValues();
+        drawChart(lastSeries, v.retirementYear);
       }
     });
   }

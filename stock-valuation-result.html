@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260721t" />
+<link rel="stylesheet" href="css/style.css?v=20260721u" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -65,7 +65,7 @@
   <section class="hero-pattern relative py-5 sm:py-6">
     <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
       <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">STOCK &amp; INSURANCE — RESULT</p>
-      <h1 class="text-white font-black text-xl sm:text-2xl">自社株×生命保険(2/2 結果)</h1>
+      <h1 class="text-white font-black text-xl sm:text-2xl">自社株×生命保険</h1>
     </div>
   </section>
 
@@ -92,7 +92,12 @@
             <h3 class="font-bold text-base">30年後までの評価額推移(総額)</h3>
             <p class="text-xs text-gray-500">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。</p>
           </div>
-          <div id="chartLegend" class="flex flex-wrap items-center gap-4 text-xs"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div id="chartLegend" class="flex flex-wrap items-center gap-4 text-xs"></div>
+            <button type="button" id="insuranceToggleBtn" class="insurance-toggle">
+              <span class="dot"></span>死亡保険金額を表示
+            </button>
+          </div>
         </div>
 
         <!-- 現在の評価額(総額)・クリックでグラフに表示する指標を選択(最大2つ、利益A/Bで10種類) -->
@@ -170,24 +175,16 @@
               <input type="number" id="corpTaxRateProj" class="form-input w-full rounded-lg px-3 py-2 text-sm" step="0.1" />
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1" for="annualProfit">税引前利益A（シナリオA・万円）</label>
+              <label class="block text-xs font-medium mb-1" for="annualProfit">年間税引前利益（現状・万円）</label>
               <input type="number" id="annualProfit" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1" for="annualProfitB">税引前利益B（シナリオB・万円）</label>
+              <label class="block text-xs font-medium mb-1" for="annualProfitB">年間保険加入後利益（万円）</label>
               <input type="number" id="annualProfitB" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label class="block text-xs font-medium mb-1" for="annualDividend">年間配当金総額(万円)</label>
               <input type="number" id="annualDividend" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-medium mb-1" for="retirementYear">退職金の支給時期(何年後)</label>
-              <input type="number" id="retirementYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-medium mb-1" for="retirementAmount">退職金支給額(万円)</label>
-              <input type="number" id="retirementAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
             <!-- M&A用の入力はM&A評価が非表示の間は隠す(次回バージョンで公開) -->
             <div class="hidden">
@@ -199,28 +196,71 @@
               <input type="number" id="realOpProfit" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
           </div>
+
+          <!-- 退職金: 別枠で強調 -->
+          <div class="field-highlight field-highlight-navy mt-4">
+            <p class="field-highlight-title">退職金の支給</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium mb-1" for="retirementYear">支給時期(何年後)</label>
+                <input type="number" id="retirementYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" for="retirementAmount">支給額(万円)</label>
+                <input type="number" id="retirementAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 生命保険の契約条件: 別枠で強調 -->
+          <div class="field-highlight field-highlight-red mt-4">
+            <p class="field-highlight-title">生命保険の契約条件</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                <label class="block text-xs font-medium mb-1" for="insuranceAmount">保険金額(万円)</label>
+                <input type="number" id="insuranceAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" for="coveragePeriod">保障期間(年)</label>
+                <input type="number" id="coveragePeriod" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" for="premiumAmount">保険料(万円/年)</label>
+                <input type="number" id="premiumAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" for="deductibleRatio">損金割合(%)</label>
+                <input type="number" id="deductibleRatio" min="0" max="100" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 推移表 -->
         <div class="mt-8">
           <h4 class="font-bold text-sm mb-2">評価額推移表(0〜30年・総額・万円)</h4>
           <div class="overflow-auto border border-gray-200 rounded-lg" style="max-height:360px">
-            <table class="w-full text-xs whitespace-nowrap" id="trendTable">
+            <table class="w-full text-xs" id="trendTable">
+              <colgroup>
+                <col style="width:11.11%">
+                <col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%">
+                <col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%">
+              </colgroup>
               <thead class="sticky top-0 z-10">
                 <tr class="bg-[#0f2a4a] text-white">
-                  <th rowspan="2" class="px-3 py-2 text-center font-bold align-middle">年</th>
-                  <th colspan="4" class="px-3 py-1 text-center font-bold border-l border-white/20">シナリオA（通常時）</th>
-                  <th colspan="4" class="px-3 py-1 text-center font-bold border-l border-white/20">シナリオB（対策後）</th>
+                  <th rowspan="2" class="px-2 py-2 text-center font-bold align-middle">年</th>
+                  <th colspan="4" class="px-2 py-1 text-center font-bold border-l border-white/20">シナリオA（通常時）</th>
+                  <th colspan="4" class="px-2 py-1 text-center font-bold border-l border-white/20">シナリオB（対策後）</th>
                 </tr>
-                <tr class="bg-[#1c3f68] text-white">
-                  <th class="px-3 py-1.5 text-right font-bold border-l border-white/20">相続税評価</th>
-                  <th class="px-3 py-1.5 text-right font-bold">法人税法上</th>
-                  <th class="px-3 py-1.5 text-right font-bold">類似業種比準</th>
-                  <th class="px-3 py-1.5 text-right font-bold">純資産</th>
-                  <th class="px-3 py-1.5 text-right font-bold border-l border-white/20">相続税評価</th>
-                  <th class="px-3 py-1.5 text-right font-bold">法人税法上</th>
-                  <th class="px-3 py-1.5 text-right font-bold">類似業種比準</th>
-                  <th class="px-3 py-1.5 text-right font-bold">純資産</th>
+                <tr class="text-white">
+                  <th class="px-2 py-1.5 text-right font-bold border-l border-white/20" style="background-color:#6d7f92">相続税評価</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#7c8f7a">法人税法上</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#b3b8bd">類似業種比準</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#5f7fa8">純資産</th>
+                  <th class="px-2 py-1.5 text-right font-bold border-l border-white/20" style="background-color:#3f4c5c">相続税評価</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#4f5f4d">法人税法上</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#6b7075">類似業種比準</th>
+                  <th class="px-2 py-1.5 text-right font-bold" style="background-color:#2f4864">純資産</th>
                 </tr>
               </thead>
               <tbody id="trendTableBody"></tbody>
@@ -235,7 +275,7 @@
       <!-- 結果表示 -->
       <div id="calcResultArea" class="mt-10 calc-result-card p-6 sm:p-10">
         <p class="text-sm text-white/70 mb-1">会社規模区分: <span id="resSizeLabel" class="font-bold text-white"></span></p>
-        <h3 class="font-black text-xl mb-8">試算結果(利益Aシナリオ・現在時点)</h3>
+        <h3 class="font-black text-xl mb-8">試算結果(シナリオA・現在時点)</h3>
 
         <div class="grid sm:grid-cols-2 gap-6 mb-8">
           <div class="bg-white/10 rounded-lg p-5">
@@ -359,6 +399,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721d"></script>
+<script src="js/stock-calculator.js?v=20260721e"></script>
 </body>
 </html>

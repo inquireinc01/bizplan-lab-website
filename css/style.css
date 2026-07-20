@@ -642,6 +642,71 @@ img {
   transform: translateY(-4px);
 }
 
+/* 評価額推移表: 列ごとの色分け(タイル・ヘッダーと同系色を淡く) */
+#trendTable td.col-saizoku-a { background-color: rgba(109, 127, 146, 0.08); }
+#trendTable td.col-houjin-a { background-color: rgba(124, 143, 122, 0.08); }
+#trendTable td.col-ruiji-a { background-color: rgba(179, 184, 189, 0.12); }
+#trendTable td.col-junsisan-a { background-color: rgba(95, 127, 168, 0.08); }
+#trendTable td.col-saizoku-b { background-color: rgba(63, 76, 92, 0.1); }
+#trendTable td.col-houjin-b { background-color: rgba(79, 95, 77, 0.1); }
+#trendTable td.col-ruiji-b { background-color: rgba(107, 112, 117, 0.1); }
+#trendTable td.col-junsisan-b { background-color: rgba(47, 72, 100, 0.1); }
+
+/* 別枠強調ボックス(退職金・生命保険の契約条件) */
+.field-highlight {
+  border-radius: 0.65rem;
+  border-left-width: 4px;
+  border-left-style: solid;
+  background-color: #fff;
+  padding: 0.9rem 1rem;
+}
+.field-highlight-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+}
+.field-highlight-navy {
+  border-left-color: var(--color-navy);
+}
+.field-highlight-navy .field-highlight-title {
+  color: var(--color-navy);
+}
+.field-highlight-red {
+  border-left-color: var(--color-red);
+}
+.field-highlight-red .field-highlight-title {
+  color: var(--color-red-dark);
+}
+
+/* 死亡保険金額の表示トグルボタン */
+.insurance-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1.5px solid var(--color-red);
+  color: var(--color-red-dark);
+  background-color: #fff;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.insurance-toggle .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--color-red);
+  transition: background-color 0.2s ease;
+}
+.insurance-toggle.is-on {
+  background-color: var(--color-red);
+  color: #fff;
+}
+.insurance-toggle.is-on .dot {
+  background-color: #fff;
+}
+
 /* ========== 印刷用シート(PDF出力・A4横) ========== */
 .print-sheet {
   display: none;
