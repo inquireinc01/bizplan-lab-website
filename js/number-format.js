@@ -32,18 +32,19 @@
     el.classList.toggle('neg-val', !isNaN(n) && n < 0);
   };
 
-  // ---- 入力欄のカンマ整形 ----
+  // ---- 入力欄のカンマ整形(マイナスは△＋赤字) ----
   function formatInput(el) {
-    var raw = String(el.value).replace(/,/g, '');
-    if (raw === '' || raw === '-' || raw === '.') return;
+    var raw = String(el.value).replace(/,/g, '').replace(/△/g, '-');
+    if (raw === '' || raw === '-' || raw === '.') { el.classList.remove('neg-val'); return; }
     var neg = raw.charAt(0) === '-';
     if (neg) raw = raw.slice(1);
     var parts = raw.split('.');
     var intNum = parseFloat(parts[0]);
-    if (isNaN(intNum)) return;
+    if (isNaN(intNum)) { el.classList.remove('neg-val'); return; }
     var out = Math.abs(intNum).toLocaleString('ja-JP');
     if (parts.length > 1) out += '.' + parts[1];
-    el.value = (neg ? '-' : '') + out;
+    el.value = (neg ? '△' : '') + out;
+    el.classList.toggle('neg-val', neg);
   }
 
   function upgradeInput(el) {
@@ -58,7 +59,9 @@
     el.classList.add('num-input');
     formatInput(el);
     el.addEventListener('focus', function () {
-      el.value = String(el.value).replace(/,/g, ''); // 編集中はカンマを外す
+      // 編集中はカンマ・△を外して素の数値(マイナスは-)にする
+      el.value = String(el.value).replace(/,/g, '').replace(/△/g, '-');
+      el.classList.remove('neg-val');
     });
     el.addEventListener('blur', function () {
       formatInput(el);

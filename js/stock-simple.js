@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     EVAL_KEYS.forEach(function (key) {
       var per = perShareOf(key);
       setTxt('ssPer_' + key, isNaN(per) ? '-' : fmt(per) + ' 円');
-      setTxt('ssMult_' + key, (isNaN(per) || isNaN(par) || par <= 0) ? '-' : (per / par).toFixed(3) + ' 倍');
+      setTxt('ssMult_' + key, (isNaN(per) || isNaN(par) || par <= 0) ? '-' : (per / par).toFixed(2) + ' 倍');
     });
     var sz = SIZE_CONFIG[document.getElementById('ssSize').value] || SIZE_CONFIG['mid-mid'];
     document.getElementById('ssL').value = sz.l.toFixed(2);
@@ -43,45 +43,45 @@ document.addEventListener('DOMContentLoaded', function () {
     tr.className = 'border-b border-gray-100 ss-holder';
     tr.innerHTML =
       '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" value="' + (d.name || '') + '" placeholder="氏名" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="hs form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="0" /></td>' +
-      '<td class="px-2 py-2 text-right hr">-</td>' +
+      '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.ratio || '') + '" placeholder="％" /></td>' +
       '<td class="px-2 py-2 text-right hreka">-</td>' +
       '<td class="px-2 py-2 text-right hhojin">-</td>' +
-      '<td class="px-1 py-1"><input type="text" class="h3 form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p3 || '') + '" placeholder="0" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="h2 form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p2 || '') + '" placeholder="0" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="h1 form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p1 || '') + '" placeholder="0" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="h3 js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p3 || '') + '" placeholder="0" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="h2 js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p2 || '') + '" placeholder="0" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="h1 js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.p1 || '') + '" placeholder="0" /></td>' +
       '<td class="px-1 py-1 text-center"><button type="button" class="hdel text-gray-400 hover:text-red-500 font-bold" title="削除">×</button></td>';
     tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); recalcHolders(); });
     holderBody.appendChild(tr);
     if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
     return tr;
   }
+  // 株数・比率のどちらの入力でも計算できる(株数優先。株数が空なら比率×発行済株式数)
   function recalcHolders() {
     var rows = holderBody.querySelectorAll('.ss-holder');
-    var totShares = 0, tot3 = 0, tot2 = 0, tot1 = 0;
+    var baseShares = num(document.getElementById('ssShares').value); // 発行済株式数を基準
+    var perReka = perShareOf('saizoku');
+    var perHojin = perShareOf('houjin');
+    var sumEff = 0, sumRatio = 0, tot3 = 0, tot2 = 0, tot1 = 0, totReka = 0, totHojin = 0;
     rows.forEach(function (r) {
-      var s = num(r.querySelector('.hs').value);
-      if (!isNaN(s)) totShares += s;
+      var shares = num(r.querySelector('.hs').value);
+      var ratioIn = num(r.querySelector('.hr').value); // ％入力
+      var eff = !isNaN(shares) ? shares : ((!isNaN(ratioIn) && !isNaN(baseShares)) ? (ratioIn / 100) * baseShares : NaN);
+      var reka = (!isNaN(eff) && !isNaN(perReka)) ? eff * perReka : NaN;
+      var hojin = (!isNaN(eff) && !isNaN(perHojin)) ? eff * perHojin : NaN;
+      r.querySelector('.hreka').textContent = isNaN(reka) ? '-' : fmt(reka);
+      r.querySelector('.hhojin').textContent = isNaN(hojin) ? '-' : fmt(hojin);
+      if (!isNaN(eff)) sumEff += eff;
+      if (!isNaN(reka)) totReka += reka;
+      if (!isNaN(hojin)) totHojin += hojin;
+      var ratioVal = !isNaN(ratioIn) ? ratioIn : ((!isNaN(shares) && baseShares > 0) ? (shares / baseShares) * 100 : NaN);
+      if (!isNaN(ratioVal)) sumRatio += ratioVal;
       var p3 = num(r.querySelector('.h3').value); if (!isNaN(p3)) tot3 += p3;
       var p2 = num(r.querySelector('.h2').value); if (!isNaN(p2)) tot2 += p2;
       var p1 = num(r.querySelector('.h1').value); if (!isNaN(p1)) tot1 += p1;
     });
-    var perReka = perShareOf('saizoku');
-    var perHojin = perShareOf('houjin');
-    var totReka = 0, totHojin = 0;
-    rows.forEach(function (r) {
-      var s = num(r.querySelector('.hs').value);
-      var ratio = (!isNaN(s) && totShares > 0) ? s / totShares : NaN;
-      r.querySelector('.hr').textContent = isNaN(ratio) ? '-' : (ratio * 100).toFixed(2) + '%';
-      var reka = (!isNaN(s) && !isNaN(perReka)) ? s * perReka : NaN;
-      var hojin = (!isNaN(s) && !isNaN(perHojin)) ? s * perHojin : NaN;
-      r.querySelector('.hreka').textContent = isNaN(reka) ? '-' : fmt(reka);
-      r.querySelector('.hhojin').textContent = isNaN(hojin) ? '-' : fmt(hojin);
-      if (!isNaN(reka)) totReka += reka;
-      if (!isNaN(hojin)) totHojin += hojin;
-    });
-    setTxt('ssTotShares', fmt(totShares));
-    setTxt('ssTotRatio', totShares > 0 ? '100.00%' : '-');
+    setTxt('ssTotShares', fmt(sumEff));
+    setTxt('ssTotRatio', sumRatio ? sumRatio.toFixed(2) + '%' : '-');
     setTxt('ssTotReka', totReka ? fmt(totReka) : '-');
     setTxt('ssTotHojin', totHojin ? fmt(totHojin) : '-');
     setTxt('ssTot3', fmt(tot3)); setTxt('ssTot2', fmt(tot2)); setTxt('ssTot1', fmt(tot1));
@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
       holders.push({
         name: r.querySelector('.hn').value,
         shares: r.querySelector('.hs').value,
+        ratio: r.querySelector('.hr').value,
         p3: r.querySelector('.h3').value, p2: r.querySelector('.h2').value, p1: r.querySelector('.h1').value,
       });
     });
