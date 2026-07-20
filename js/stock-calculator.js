@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const PROJECTION_IDS = [
     'corpTaxRateProj', 'annualProfit', 'annualProfitB', 'annualDividend',
     'retirementYear', 'retirementAmount', 'mvNetAssets', 'realOpProfit',
-    'insuranceAmount', 'coveragePeriod', 'premiumAmount', 'deductibleRatio',
+    'insuranceAmount', 'insuranceGrowthRate', 'coveragePeriod', 'premiumAmount', 'deductibleRatio',
   ];
 
   const STORAGE_KEY = 'bpl_stock_valuation_v1';
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
     retirementYear: 10, retirementAmount: 5000, mvNetAssets: 20000, realOpProfit: 2500,
     // 生命保険の契約条件(死亡保険金額のグラフ表示・参考情報として保持)
-    insuranceAmount: 10000, coveragePeriod: 10, premiumAmount: 500, deductibleRatio: 100,
+    insuranceAmount: 10000, insuranceGrowthRate: 3, coveragePeriod: 10, premiumAmount: 500, deductibleRatio: 100,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30237, ss0_ruiji: 23557, ss0_junsisan: 50277, ss0_houjin: 36917,
   };
@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   let selectedMetrics = ['saizoku_A'];
   let showInsurance = false; // 死亡保険金額をグラフ背景に表示するかどうか(ボタンでトグル)
+  let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -299,9 +300,9 @@ document.addEventListener('DOMContentLoaded', function () {
       xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yearLabel(yr)}</text>`;
     });
 
-    // ===== 退職金支給年の洗練された強調(枠線ではなく、破線ガイド + ラベルフラッグ) =====
+    // ===== 退職金支給年の洗練された強調(枠線ではなく、破線ガイド + ラベルフラッグ、ボタンでトグル表示) =====
     let retireLine = '', retireFlag = '';
-    if (retirementYear !== null && retirementYear >= 1 && retirementYear <= 30) {
+    if (showRetirement && retirementYear !== null && retirementYear >= 1 && retirementYear <= 30) {
       const rxc = padL + retirementYear * slotWidth + slotWidth / 2;
       const clampX = Math.max(padL + 30, Math.min(W - padR - 30, rxc));
       retireLine = `<line x1="${rxc.toFixed(1)}" y1="20" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="rgba(15,42,74,0.38)" stroke-width="1.3" stroke-dasharray="4 3"/>`;
@@ -312,16 +313,32 @@ document.addEventListener('DOMContentLoaded', function () {
       </g>`;
     }
 
-    // ===== 死亡保険金額(グラフ背景の四角+左上ラベル、ボタンでトグル表示) =====
+    // ===== 死亡保険金額(グラフ背景の階段状エリア+左上ラベル、ボタンでトグル表示) =====
+    // 上昇率(年%)が設定されていれば複利で増える死亡保険金額を階段状に描画する(変額保険・外貨建て保険等を想定)。
+    // グラフの表示上限(y軸最大値)を超える場合はpadTでクランプし、上限に張り付いた見た目で問題ない仕様。
     let insuranceRect = '', insuranceLabel = '';
     if (showInsurance && currentValues && currentValues.insuranceAmount > 0) {
-      const amt = currentValues.insuranceAmount;
-      const period = Math.max(0, Math.min(30, currentValues.coveragePeriod || 0));
-      const rectX1 = padL;
-      const rectX2 = padL + period * slotWidth;
-      const rectY = Math.max(padT, y(amt));
-      const rectH = Math.max(0, yBottom - rectY);
-      insuranceRect = `<rect x="${rectX1.toFixed(1)}" y="${rectY.toFixed(1)}" width="${Math.max(0, rectX2 - rectX1).toFixed(1)}" height="${rectH.toFixed(1)}" fill="rgba(168,61,61,0.14)" stroke="rgba(168,61,61,0.4)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      const amt0 = currentValues.insuranceAmount;
+      const growthFactor = 1 + (currentValues.insuranceGrowthRate || 0) / 100;
+      const period = Math.max(0, Math.min(30, Math.round(currentValues.coveragePeriod || 0)));
+      if (period > 0) {
+        let d = `M ${padL.toFixed(1)} ${yBottom.toFixed(1)} `;
+        let prevY = null;
+        for (let i = 0; i < period; i++) {
+          const amtT = amt0 * Math.pow(growthFactor, i);
+          const yTop = Math.max(padT, y(amtT));
+          const xLeft = padL + i * slotWidth;
+          const xRight = padL + (i + 1) * slotWidth;
+          if (prevY === null || Math.abs(yTop - prevY) > 0.05) {
+            d += `L ${xLeft.toFixed(1)} ${yTop.toFixed(1)} `;
+          }
+          d += `L ${xRight.toFixed(1)} ${yTop.toFixed(1)} `;
+          prevY = yTop;
+        }
+        const xEnd = padL + period * slotWidth;
+        d += `L ${xEnd.toFixed(1)} ${yBottom.toFixed(1)} Z`;
+        insuranceRect = `<path d="${d}" fill="rgba(168,61,61,0.14)" stroke="rgba(168,61,61,0.4)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      }
       insuranceLabel = `<g>
         <rect x="${(padL + 6).toFixed(1)}" y="${(padT + 4).toFixed(1)}" width="86" height="18" rx="9" fill="#832f2f"/>
         <text x="${(padL + 49).toFixed(1)}" y="${(padT + 16.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="700">死亡保険金額</text>
@@ -471,6 +488,19 @@ document.addEventListener('DOMContentLoaded', function () {
     insuranceToggleBtn.addEventListener('click', function () {
       showInsurance = !showInsurance;
       insuranceToggleBtn.classList.toggle('is-on', showInsurance);
+      if (lastSeries) {
+        const { v } = loadValues();
+        drawChart(lastSeries, v.retirementYear);
+      }
+    });
+  }
+
+  // ===== 退職金マーカーの表示トグル =====
+  const retirementToggleBtn = document.getElementById('retirementToggleBtn');
+  if (retirementToggleBtn) {
+    retirementToggleBtn.addEventListener('click', function () {
+      showRetirement = !showRetirement;
+      retirementToggleBtn.classList.toggle('is-on', showRetirement);
       if (lastSeries) {
         const { v } = loadValues();
         drawChart(lastSeries, v.retirementYear);

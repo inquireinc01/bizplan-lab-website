@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260721v" />
+<link rel="stylesheet" href="css/style.css?v=20260721w" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -94,7 +94,10 @@
           </div>
           <div class="flex flex-wrap items-center gap-3">
             <div id="chartLegend" class="flex flex-wrap items-center gap-4 text-xs"></div>
-            <button type="button" id="insuranceToggleBtn" class="insurance-toggle">
+            <button type="button" id="retirementToggleBtn" class="overlay-toggle overlay-toggle-navy is-on">
+              <span class="dot"></span>退職金を表示
+            </button>
+            <button type="button" id="insuranceToggleBtn" class="overlay-toggle overlay-toggle-red">
               <span class="dot"></span>死亡保険金額を表示
             </button>
           </div>
@@ -215,10 +218,14 @@
           <!-- 生命保険の契約条件: 別枠で強調 -->
           <div class="field-highlight field-highlight-red mt-4">
             <p class="field-highlight-title">生命保険の契約条件</p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div>
                 <label class="block text-xs font-medium mb-1" for="insuranceAmount">保険金額(万円)</label>
                 <input type="number" id="insuranceAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" for="insuranceGrowthRate">死亡保険金額上昇率(年%)</label>
+                <input type="number" id="insuranceGrowthRate" step="0.1" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
                 <label class="block text-xs font-medium mb-1" for="coveragePeriod">保障期間(年)</label>
@@ -233,6 +240,7 @@
                 <input type="number" id="deductibleRatio" min="0" max="100" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
+            <p class="text-[11px] text-gray-400 mt-2">＊変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</p>
           </div>
         </div>
 
@@ -399,6 +407,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721g"></script>
+<script src="js/stock-calculator.js?v=20260721h"></script>
 </body>
 </html>
