@@ -25,8 +25,7 @@
       </a>
 
       <nav class="site-desktop-nav items-center gap-2.5">
-        <a href="index.html" class="nav-btn nav-input active">基本情報</a>
-        <a href="financial-statements.html" class="nav-btn nav-input">決算書情報</a>
+        <a href="basic-info.html" class="nav-btn nav-input">基本情報</a>
         <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span>自社株</a>
         <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span>将来負債</a>
         <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span>金庫株</a>
@@ -47,8 +46,7 @@
 
   <div id="mobile-menu" class="hidden">
     <nav class="flex flex-col gap-2 p-3">
-      <a href="index.html" class="nav-btn nav-input block-btn justify-center active">基本情報</a>
-      <a href="financial-statements.html" class="nav-btn nav-input block-btn justify-center">決算書情報</a>
+      <a href="basic-info.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
       <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
       <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
       <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
@@ -70,80 +68,6 @@
       <p class="font-brand-en text-white/75 font-bold tracking-[0.2em] text-[11px] sm:text-xs uppercase">
         Maximize the Value of Life Insurance
       </p>
-    </div>
-  </section>
-
-  <!-- ===== 基本情報入力 ===== -->
-  <section class="py-16 sm:py-20">
-    <div class="max-w-4xl mx-auto px-5">
-      <p class="font-brand-en text-[#3b6ea5] font-bold tracking-widest text-sm mb-2">BASIC INFORMATION</p>
-      <h2 class="font-bold text-2xl mb-2">基本情報の入力</h2>
-      <p class="text-sm text-gray-600 leading-relaxed mb-8">
-        試算・ご提案の前に、ご担当者様と対象法人の基本情報をご入力ください。入力内容はブラウザ内に保存され、各ツールでの試算やPDF出力の際に共通してご利用いただけます。
-      </p>
-
-      <form id="basicInfoForm" class="space-y-8">
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-4">ご担当者情報</h3>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="biRepCompany">会社名</label>
-              <input type="text" id="biRepCompany" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 株式会社ビズプランラボラトリー" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="biBranch">所属支社</label>
-              <input type="text" id="biBranch" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 東京本社" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="biName">氏名</label>
-              <input type="text" id="biName" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 山田 太郎" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="biNameKana">フリガナ</label>
-              <input type="text" id="biNameKana" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: ヤマダ タロウ" />
-            </div>
-          </div>
-        </div>
-
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-4">対象法人情報</h3>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div class="sm:col-span-2">
-              <label class="block text-sm font-medium mb-1.5" for="biCorpName">法人名</label>
-              <input type="text" id="biCorpName" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 株式会社サンプル商事" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="biFiscalMonth">決算月</label>
-              <select id="biFiscalMonth" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
-                <option value="">選択してください</option>
-                <option value="1">1月</option>
-                <option value="2">2月</option>
-                <option value="3">3月</option>
-                <option value="4">4月</option>
-                <option value="5">5月</option>
-                <option value="6">6月</option>
-                <option value="7">7月</option>
-                <option value="8">8月</option>
-                <option value="9">9月</option>
-                <option value="10">10月</option>
-                <option value="11">11月</option>
-                <option value="12">12月</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="biCorpNumber">法人番号</label>
-              <input type="text" id="biCorpNumber" maxlength="13" inputmode="numeric" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1234567890123" />
-            </div>
-          </div>
-        </div>
-
-        <div id="biSavedMsg" class="hidden notice-box text-sm rounded-lg p-4 leading-relaxed">保存しました。</div>
-
-        <div class="flex flex-col sm:flex-row gap-4">
-          <button type="submit" class="btn-primary py-3.5 px-8 rounded-full font-bold">保存する</button>
-          <a href="financial-statements.html" class="btn-outline py-3.5 px-8 rounded-full font-bold text-center">次へ: 決算書情報を入力する →</a>
-        </div>
-      </form>
     </div>
   </section>
 
@@ -247,7 +171,5 @@
 </footer>
 
 <script src="js/menu.js?v=20260720a"></script>
-<script src="js/number-format.js?v=20260721c"></script>
-<script src="js/basic-info.js?v=20260720a"></script>
 </body>
 </html>
