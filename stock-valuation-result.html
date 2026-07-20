@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260721z" />
+<link rel="stylesheet" href="css/style.css?v=20260722a" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -90,10 +90,9 @@
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-3">
           <div>
             <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.2em] text-[11px] mb-1">STOCK VALUE PROJECTION</p>
-            <h3 class="font-black text-xl text-[#0f2a4a] mb-1">自社株評価の推移予測</h3>
-            <p class="text-xs text-gray-500">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。</p>
+            <h3 class="font-black text-xl text-[#0f2a4a] flex items-center">自社株評価の推移予測<span class="help-tip" tabindex="0">?<span class="help-text">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。</span></span></h3>
           </div>
-          <div class="flex flex-wrap items-center gap-3">
+          <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
             <button type="button" id="retirementToggleBtn" class="overlay-toggle overlay-toggle-navy is-on">
               <span class="dot"></span>退職金
             </button>
@@ -162,7 +161,6 @@
               <p id="cv_manda_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
           </div>
-          <p class="text-xs text-gray-400 mt-2">クリックで最大2つまで選択できます(例: 同じ指標のA/Bを選ぶと保険加入の効果を比較できます)。</p>
         </div>
 
         <!-- グラフ -->
@@ -418,6 +416,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721l"></script>
+<script src="js/stock-calculator.js?v=20260721m"></script>
 </body>
 </html>

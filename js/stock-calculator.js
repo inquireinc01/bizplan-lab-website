@@ -623,6 +623,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
+  // ===== ？ツールチップ(タップで開閉・モバイル対応) =====
+  document.querySelectorAll('.help-tip').forEach(function (tip) {
+    tip.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      const wasOpen = tip.classList.contains('open');
+      document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
+      if (!wasOpen) tip.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
+  });
+
   // ===== 初期表示: 入力ページの保存値(またはサンプル値)で自動試算 =====
   refreshAll();
 });
