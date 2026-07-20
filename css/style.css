@@ -279,6 +279,100 @@ input[type="number"] {
   box-shadow: 0 6px 16px rgba(15, 42, 74, 0.12);
 }
 
+/* ========== 入力ステップ(左サイドの縦型ステッパー) ========== */
+.stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.stepper li {
+  position: relative;
+  padding-left: 2.4rem;
+  padding-bottom: 1.6rem;
+  cursor: pointer;
+}
+.stepper li:last-child {
+  padding-bottom: 0;
+}
+.stepper li::before {
+  content: attr(data-num);
+  position: absolute;
+  left: 0;
+  top: -0.1rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-600);
+  z-index: 1;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.stepper li::after {
+  content: "";
+  position: absolute;
+  left: 0.82rem;
+  top: 1.7rem;
+  bottom: 0.2rem;
+  width: 2px;
+  background-color: var(--color-gray-200);
+  transition: background-color 0.25s ease;
+}
+.stepper li:last-child::after {
+  display: none;
+}
+.stepper .step-en {
+  display: block;
+  font-family: "Bahnschrift SemiLight Condensed", Bahnschrift, "Yu Gothic UI Semilight", "Segoe UI", Arial, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-gray-400);
+}
+.stepper .step-jp {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-gray-600);
+  line-height: 1.35;
+}
+.stepper li.active::before {
+  background-color: var(--color-navy);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(15, 42, 74, 0.12);
+}
+.stepper li.active .step-jp {
+  color: var(--color-navy);
+}
+.stepper li.active .step-en {
+  color: var(--color-blue);
+}
+.stepper li.done::before {
+  background-color: var(--color-blue);
+  color: #fff;
+}
+.stepper li.done::after {
+  background-color: var(--color-blue);
+}
+
+/* 見出しのSTEPバッジ */
+.step-badge {
+  display: inline-block;
+  background-color: var(--color-navy);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
 /* 判定結果の強調バッジ */
 .judge-badge {
   display: inline-block;

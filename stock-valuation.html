@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260721q" />
+<link rel="stylesheet" href="css/style.css?v=20260721r" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -70,7 +70,7 @@
   </section>
 
   <section class="py-16 sm:py-20">
-    <div class="max-w-4xl mx-auto px-5">
+    <div class="max-w-6xl mx-auto px-5">
       <p class="text-gray-600 leading-relaxed mb-8">
         まず「簡易版」か「詳細版」を選んでください。<strong>簡易版</strong>は主要な数値だけで概算とグラフを試算します。<strong>詳細版</strong>は国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。
       </p>
@@ -83,6 +83,28 @@
         <a href="stock-valuation-result.html" class="text-[#0f2a4a] underline font-bold">前回入力した内容の試算結果を見る →</a>
       </div>
 
+      <div class="lg:flex lg:gap-10">
+        <!-- 左: 入力ステップ -->
+        <aside class="hidden lg:block lg:w-44 shrink-0">
+          <div class="sticky top-24">
+            <p class="font-brand-en text-[11px] font-bold text-gray-400 tracking-[0.2em] mb-4">INPUT STEPS</p>
+            <ol id="stepperSimple" class="stepper">
+              <li data-num="1" data-target="sstep1"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
+              <li data-num="2" data-target="sstep2"><span class="step-en">STEP 2</span><span class="step-jp">自社株評価</span></li>
+              <li data-num="3" data-target="sstep3"><span class="step-en">STEP 3</span><span class="step-jp">株主の状況</span></li>
+            </ol>
+            <ol id="stepperDetail" class="stepper hidden">
+              <li data-num="1" data-target="dstep1"><span class="step-en">STEP 1</span><span class="step-jp">会社規模の判定</span></li>
+              <li data-num="2" data-target="dstep2"><span class="step-en">STEP 2</span><span class="step-jp">特定評価会社の判定</span></li>
+              <li data-num="3" data-target="dstep3"><span class="step-en">STEP 3</span><span class="step-jp">類似業種比準</span></li>
+              <li data-num="4" data-target="dstep4"><span class="step-en">STEP 4</span><span class="step-jp">純資産価額</span></li>
+              <li data-num="5" data-target="dstep5"><span class="step-en">STEP 5</span><span class="step-jp">配当還元</span></li>
+              <li data-num="6" data-target="dstep6"><span class="step-en">STEP 6</span><span class="step-jp">原則的評価</span></li>
+            </ol>
+          </div>
+        </aside>
+        <!-- 右: 入力本体 -->
+        <div class="flex-1 min-w-0">
       <!-- ===== 版選択(簡易版/詳細版) ===== -->
       <div id="versionChooser" class="grid sm:grid-cols-2 gap-4 mb-10">
         <div class="version-card p-5" data-version="simple">
@@ -106,8 +128,8 @@
       <form id="stockCalcForm" class="space-y-10">
 
         <!-- 会社の基本情報 -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">会社の基本情報</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="sstep1">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 1</span>会社の基本情報</h3>
           <p class="text-xs text-gray-500 mb-5">評価額の1株換算・株主別評価額の計算に使います。</p>
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <div>
@@ -136,8 +158,8 @@
         </div>
 
         <!-- ■自社株評価(DSレイアウト) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">■ 自社株評価</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="sstep2">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 2</span>自社株評価</h3>
           <p class="text-xs text-gray-500 mb-4">ディスカッションシートの自社株評価を、時価総額（円）でそのまま転記してください。一株あたり・額面倍率は自動計算されます。</p>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse min-w-[480px]">
@@ -193,8 +215,8 @@
         </div>
 
         <!-- 株主の状況(DSレイアウト) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">株主の状況（保有株数の推移）</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="sstep3">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 3</span>株主の状況（保有株数の推移）</h3>
           <p class="text-xs text-gray-500 mb-4">株主名・株数・保有株数の推移を転記してください。比率・相続税評価額・法人税法上評価額は自動計算されます。</p>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse min-w-[640px]">
@@ -242,8 +264,8 @@
     <!-- ===== 詳細版 ===== -->
     <div id="detailArea" class="hidden">
         <!-- 詳細1: 会社規模の判定(第1表の2) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">1. 会社規模（Lの割合）の判定</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="dstep1">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 1</span>会社規模（Lの割合）の判定</h3>
           <p class="text-xs text-gray-500 mb-5">第1表の2「3. 会社の規模（Lの割合）の判定」に対応。総資産価額・従業員数・取引金額から会社規模区分と併用方式のLの割合を自動判定します。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
@@ -282,8 +304,8 @@
         </div>
 
         <!-- 詳細2: 特定の評価会社の判定(第2表) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">2. 特定の評価会社の判定</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="dstep2">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 2</span>特定の評価会社の判定</h3>
           <p class="text-xs text-gray-500 mb-5">第2表に対応。株式等保有特定会社・土地保有特定会社・開業後3年未満等に該当すると、原則として純資産価額方式で評価します(類似業種比準は使えません)。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
@@ -310,8 +332,8 @@
         </div>
 
         <!-- 詳細3: 類似業種比準(第4表) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">3. 類似業種比準価額の計算</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="dstep3">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 3</span>類似業種比準価額の計算</h3>
           <p class="text-xs text-gray-500 mb-5">第4表に対応。A〜Dは国税庁公表の業種目データ、b〜dは自社の1株(50円)当たりの金額です。斟酌率は会社規模から自動設定されます。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
@@ -351,8 +373,8 @@
         </div>
 
         <!-- 詳細4: 純資産価額(第5表・含み益のみ) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">4. 純資産価額の計算（含み益を入力）</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="dstep4">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 4</span>純資産価額の計算（含み益を入力）</h3>
           <p class="text-xs text-gray-500 mb-5">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する37%を控除して算定します。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
@@ -383,8 +405,8 @@
         </div>
 
         <!-- 詳細5: 配当還元(第3表) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">5. 配当還元価額（参考）</h3>
+        <div class="calc-section bg-white p-6 sm:p-8" id="dstep5">
+          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 5</span>配当還元価額（参考）</h3>
           <p class="text-xs text-gray-500 mb-5">第3表に対応。少数株主(同族株主等以外)が取得する場合に用いる特例的評価。原則的評価とは別枠の参考値です。</p>
           <div class="notice-box text-sm rounded-lg p-4 flex items-center justify-between">
             <span class="flex items-center">1株当たり配当還元価額<span class="help-tip" tabindex="0">?<span class="help-text">（1株(50円)当たり年配当金額 ÷ 10%）×（1株当たり資本金等 ÷ 50円）で算定。年配当金額が2円50銭未満の場合は2円50銭とします。上の「自社の配当 b」「資本金等」「株式数」から自動計算します。</span></span></span>
@@ -402,7 +424,7 @@
         <!-- 詳細6: 原則的評価の明細(結果) -->
         <div id="dtResultArea" class="hidden mt-8">
           <div class="calc-section bg-white p-6 sm:p-8">
-            <h3 class="font-bold text-base mb-4">6. 原則的評価の明細</h3>
+            <h3 class="font-bold text-base mb-4" id="dstep6"><span class="step-badge">STEP 6</span>原則的評価の明細</h3>
             <dl class="text-sm divide-y divide-gray-100">
               <div class="flex items-center justify-between py-1.5"><span class="text-gray-600 flex items-center">類似業種比準価額（1株）<span class="help-tip" tabindex="0">?<span class="help-text">第4表で算定した1株当たりの類似業種比準価額。</span></span></span><span id="dtResSimilar" class="font-bold text-[#0f2a4a]">-</span></div>
               <div class="flex items-center justify-between py-1.5"><span class="text-gray-600 flex items-center">純資産価額（1株）<span class="help-tip" tabindex="0">?<span class="help-text">第5表で算定した1株当たりの純資産価額。</span></span></span><span id="dtResNet" class="font-bold text-[#0f2a4a]">-</span></div>
@@ -427,6 +449,9 @@
           </div>
         </div>
     </div>
+        </div><!-- /flex-1 -->
+      </div><!-- /lg:flex -->
+    </div><!-- /max-w-6xl -->
   </section>
 
 </main>
@@ -451,5 +476,6 @@
 <script src="js/number-format.js?v=20260721c"></script>
 <script src="js/stock-simple.js?v=20260721c"></script>
 <script src="js/stock-detail.js?v=20260721a"></script>
+<script src="js/stock-stepper.js?v=20260721a"></script>
 </body>
 </html>
