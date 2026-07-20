@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260721x" />
+<link rel="stylesheet" href="css/style.css?v=20260721y" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -89,7 +89,8 @@
       <div id="chartArea" class="calc-section bg-white p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-3">
           <div>
-            <h3 class="font-bold text-base">30年後までの評価額推移(総額)</h3>
+            <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.2em] text-[11px] mb-1">STOCK VALUE PROJECTION</p>
+            <h3 class="font-black text-xl text-[#0f2a4a] mb-1">自社株評価の推移予測</h3>
             <p class="text-xs text-gray-500">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。</p>
           </div>
           <div class="flex flex-wrap items-center gap-3">
@@ -112,24 +113,24 @@
             <p class="text-xs font-bold text-gray-600">通常時（生命保険による対策なし）</p>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="saizoku_A" data-color="#6d7f92" data-glow="#6d7f92"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="saizoku_A" data-color="#6d7f92"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">相続税評価</p>
               <p id="cv_saizoku_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="houjin_A" data-color="#7c8f7a" data-glow="#7c8f7a"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="houjin_A" data-color="#7c8f7a"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">法人税法上の評価</p>
               <p id="cv_houjin_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="ruiji_A" data-color="#b3b8bd" data-glow="#b3b8bd"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="ruiji_A" data-color="#b3b8bd"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">類似業種比準</p>
               <p id="cv_ruiji_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_A" data-color="#b3b8bd" data-glow="#b3b8bd"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_A" data-color="#b3b8bd"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">純資産</p>
               <p id="cv_junsisan_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
             <!-- M&A評価: 次回バージョンで公開予定のため一時非表示 -->
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5 hidden" data-metric="manda_A" data-color="#9c5866" data-glow="#9c5866"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5 hidden" data-metric="manda_A" data-color="#9c5866"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">M&amp;A評価</p>
               <p id="cv_manda_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
@@ -139,24 +140,24 @@
             <p class="text-xs font-bold text-gray-600">生命保険で損金をつくった場合（対策後）</p>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="saizoku_B" data-color="#3f4c5c" data-glow="#6d7f92"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="saizoku_B" data-color="#3f4c5c"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">相続税評価</p>
               <p id="cv_saizoku_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="houjin_B" data-color="#4f5f4d" data-glow="#7c8f7a"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="houjin_B" data-color="#4f5f4d"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">法人税法上の評価</p>
               <p id="cv_houjin_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="ruiji_B" data-color="#6b7075" data-glow="#b3b8bd"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="ruiji_B" data-color="#6b7075"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">類似業種比準</p>
               <p id="cv_ruiji_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_B" data-color="#6b7075" data-glow="#b3b8bd"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="junsisan_B" data-color="#6b7075"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">純資産</p>
               <p id="cv_junsisan_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
             <!-- M&A評価: 次回バージョンで公開予定のため一時非表示 -->
-            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5 hidden" data-metric="manda_B" data-color="#6b3540" data-glow="#9c5866"><span class="tile-lamp"></span>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5 hidden" data-metric="manda_B" data-color="#6b3540"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">M&amp;A評価</p>
               <p id="cv_manda_B" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
@@ -417,6 +418,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721j"></script>
+<script src="js/stock-calculator.js?v=20260721k"></script>
 </body>
 </html>

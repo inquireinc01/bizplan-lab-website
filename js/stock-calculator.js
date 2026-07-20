@@ -210,15 +210,13 @@ document.addEventListener('DOMContentLoaded', function () {
     metricTilesEl.querySelectorAll('.metric-tile').forEach((btn) => {
       const key = btn.dataset.metric;
       const color = btn.dataset.color;
-      const glowColor = btn.dataset.glow || color;
       const selected = selectedMetrics.includes(key);
       const isB = key.endsWith('_B');
       const labelEl = btn.querySelector('.tile-label');
       const valueEl = btn.querySelector('.tile-value');
       const lamp = btn.querySelector('.tile-lamp');
-      // 選択の表示はボタン内左上のランプのみで行う(ボタン自体の色はシナリオA/Bで固定のまま変えない)
+      // 選択の表示はボタン内左上のランプのみで行う(ボタン自体の色はシナリオA/Bで固定のまま変えない、点灯色は常に鮮やかなブルー)
       if (lamp) {
-        lamp.style.setProperty('--lamp-color', glowColor);
         lamp.classList.toggle('is-lit', selected);
       }
       if (isB) {
