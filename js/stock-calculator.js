@@ -71,9 +71,12 @@ document.addEventListener('DOMContentLoaded', function () {
     manda: { light: '#9c5866', dark: '#6b3540' },
   };
   const METRICS = {};
+  // M&A評価は次回バージョンで公開予定のため、当面グラフ・凡例・ツールチップから隠す
+  const HIDDEN_BASES = ['manda'];
   Object.keys(BASE_METRICS).forEach((base) => {
-    METRICS[`${base}_A`] = { label: `${BASE_METRICS[base]}(利益A)`, field: `${base}T_A`, color: BASE_COLORS[base].light, base, scenario: 'A' };
-    METRICS[`${base}_B`] = { label: `${BASE_METRICS[base]}(利益B)`, field: `${base}T_B`, color: BASE_COLORS[base].dark, base, scenario: 'B' };
+    const hidden = HIDDEN_BASES.includes(base);
+    METRICS[`${base}_A`] = { label: `${BASE_METRICS[base]}(シナリオA)`, field: `${base}T_A`, color: BASE_COLORS[base].light, base, scenario: 'A', hidden };
+    METRICS[`${base}_B`] = { label: `${BASE_METRICS[base]}(シナリオB)`, field: `${base}T_B`, color: BASE_COLORS[base].dark, base, scenario: 'B', hidden };
   });
   let selectedMetrics = ['saizoku_A'];
 
@@ -86,6 +89,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // 色を白方向に混ぜて淡くする(グラフのバー用)
+  function lighten(hex, ratio) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const mix = (c) => Math.round(c + (255 - c) * ratio);
+    return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
   }
 
   // 年0(現在時点)の評価額(1株当たり)を計算
@@ -194,14 +206,27 @@ document.addEventListener('DOMContentLoaded', function () {
       const key = btn.dataset.metric;
       const color = btn.dataset.color;
       const selected = selectedMetrics.includes(key);
+      const isB = key.endsWith('_B');
       const labelEl = btn.querySelector('.tile-label');
       const valueEl = btn.querySelector('.tile-value');
+      btn.style.setProperty('--glow', hexToRgba(color, 0.6));
       if (selected) {
+        // 選択中: 色地に白文字 + 光って浮き出るギミック(CSSアニメーション)
+        btn.classList.add('is-selected');
+        btn.style.backgroundColor = color;
+        btn.style.boxShadow = '';
+        if (labelEl) labelEl.style.color = 'rgba(255,255,255,0.9)';
+        if (valueEl) valueEl.style.color = '#ffffff';
+      } else if (isB) {
+        // シナリオB(対策後): もとの色を地に白抜き文字で常時強調
+        btn.classList.remove('is-selected');
         btn.style.backgroundColor = color;
         btn.style.boxShadow = 'none';
         if (labelEl) labelEl.style.color = 'rgba(255,255,255,0.85)';
         if (valueEl) valueEl.style.color = '#ffffff';
       } else {
+        // シナリオA(通常時): 淡い地に色枠
+        btn.classList.remove('is-selected');
         btn.style.backgroundColor = hexToRgba(color, 0.1);
         btn.style.boxShadow = `inset 0 0 0 1.5px ${color}`;
         if (labelEl) labelEl.style.color = '';
@@ -233,12 +258,9 @@ document.addEventListener('DOMContentLoaded', function () {
       gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round(gv).toLocaleString('ja-JP')}</text>`;
     }
 
+    // バーはもとの色を淡くして描画(退職金年の枠線強調は廃止し、別途マーカーで表現)
     function barAttrs(p, m) {
-      const isRetireYear = retirementYear !== null && p.year === retirementYear;
-      const stroke = isRetireYear ? '#0f2a4a' : '#2b323d';
-      const strokeWidth = isRetireYear ? '2.5' : '0.5';
-      const strokeOpacity = isRetireYear ? '1' : '0.15';
-      return `fill="${m.color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-opacity="${strokeOpacity}"`;
+      return `fill="${lighten(m.color, 0.18)}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1"`;
     }
 
     const barWidth = slotWidth * 0.68; // 1つ選択時と同じ太さを常に使用
@@ -275,12 +297,27 @@ document.addEventListener('DOMContentLoaded', function () {
       xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yearLabel(yr)}</text>`;
     });
 
+    // ===== 退職金支給年の洗練された強調(枠線ではなく、破線ガイド + ラベルフラッグ) =====
+    let retireLine = '', retireFlag = '';
+    if (retirementYear !== null && retirementYear >= 1 && retirementYear <= 30) {
+      const rxc = padL + retirementYear * slotWidth + slotWidth / 2;
+      const clampX = Math.max(padL + 30, Math.min(W - padR - 30, rxc));
+      retireLine = `<line x1="${rxc.toFixed(1)}" y1="20" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="rgba(15,42,74,0.38)" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+      retireFlag = `<g>
+        <rect x="${(clampX - 30).toFixed(1)}" y="1" width="60" height="16" rx="8" fill="#0f2a4a"/>
+        <text x="${clampX.toFixed(1)}" y="12.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">退職金</text>
+        <path d="M ${(clampX - 4).toFixed(1)} 17 L ${(clampX + 4).toFixed(1)} 17 L ${clampX.toFixed(1)} 22 Z" fill="#0f2a4a"/>
+      </g>`;
+    }
+
     svg.innerHTML = `
       ${gridLines}
       <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>
       <line x1="${padL}" y1="${yBottom}" x2="${W - padR}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>
+      ${retireLine}
       ${xLabels}
       ${bars}
+      ${retireFlag}
     `;
 
     chartLayout = { W, padL, plotW, slotWidth, count: series.length };
@@ -294,8 +331,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const cell = (v) => `<td class="px-3 py-1.5 text-right">${Math.round(v).toLocaleString('ja-JP')}</td>`;
       rows += `<tr class="${zebra} border-b border-gray-100">
         <td class="px-3 py-1.5 text-center text-gray-700 border-r border-gray-100">${yearLabel(p.year)}</td>
-        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}${cell(p.mandaT_A)}
-        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}${cell(p.mandaT_B)}
+        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}
+        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}
       </tr>`;
     });
     body.innerHTML = rows;
@@ -424,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
     const p = lastSeries[idx];
-    const rowsHtml = Object.keys(METRICS).map((key) => {
+    const rowsHtml = Object.keys(METRICS).filter((key) => !METRICS[key].hidden).map((key) => {
       const m = METRICS[key];
       const isSel = selectedMetrics.includes(key);
       return `<div class="flex justify-between gap-4"><span class="flex items-center gap-1.5 ${isSel ? 'font-bold' : 'text-gray-500'}"><span class="inline-block w-2 h-2 rounded-full" style="background:${m.color}"></span>${m.label}</span><span class="${isSel ? 'font-bold' : ''}">${Math.round(p[m.field]).toLocaleString('ja-JP')}</span></div>`;
@@ -469,8 +506,8 @@ document.addEventListener('DOMContentLoaded', function () {
     lastSeries.forEach((p) => {
       const cell = (v) => `<td>${roundMan(v)}</td>`;
       rows += `<tr><td class="lbl">${yearLabel(p.year)}</td>
-        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}${cell(p.mandaT_A)}
-        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}${cell(p.mandaT_B)}</tr>`;
+        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}
+        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}</tr>`;
     });
     document.getElementById('pTrendTableBody').innerHTML = rows;
 
