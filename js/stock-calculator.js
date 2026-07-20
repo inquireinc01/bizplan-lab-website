@@ -331,10 +331,10 @@ document.addEventListener('DOMContentLoaded', function () {
       lossLine = m.line; lossFlag = m.flag;
     }
 
-    // ===== 死亡保険金額(グラフ背景の階段状エリア+左上ラベル、ボタンでトグル表示) =====
+    // ===== 死亡保険金額(グラフ背景の階段状エリア、ボタンでトグル表示) =====
     // 上昇率(年%)が設定されていれば複利で増える死亡保険金額を階段状に描画する(変額保険・外貨建て保険等を想定)。
     // グラフの表示上限(y軸最大値)を超える場合はpadTでクランプし、上限に張り付いた見た目で問題ない仕様。
-    let insuranceRect = '', insuranceLabel = '';
+    let insuranceRect = '';
     if (showInsurance && currentValues && currentValues.insuranceAmount > 0) {
       const amt0 = currentValues.insuranceAmount;
       const growthFactor = 1 + (currentValues.insuranceGrowthRate || 0) / 100;
@@ -357,10 +357,6 @@ document.addEventListener('DOMContentLoaded', function () {
         d += `L ${xEnd.toFixed(1)} ${yBottom.toFixed(1)} Z`;
         insuranceRect = `<path d="${d}" fill="rgba(168,61,61,0.14)" stroke="rgba(168,61,61,0.4)" stroke-width="1" stroke-dasharray="3 3"/>`;
       }
-      insuranceLabel = `<g>
-        <rect x="${(padL + 6).toFixed(1)}" y="${(padT + 4).toFixed(1)}" width="86" height="18" rx="9" fill="#832f2f"/>
-        <text x="${(padL + 49).toFixed(1)}" y="${(padT + 16.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="700">死亡保険金額</text>
-      </g>`;
     }
 
     svg.innerHTML = `
@@ -374,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
       ${bars}
       ${retireFlag}
       ${lossFlag}
-      ${insuranceLabel}
     `;
 
     chartLayout = { W, padL, plotW, slotWidth, count: series.length };
@@ -449,7 +444,6 @@ document.addEventListener('DOMContentLoaded', function () {
     lastYear0 = year0;
     updateCurrentValues(lastSeries);
     drawChart(lastSeries, result.retirementYear);
-    renderLegend(document.getElementById('chartLegend'));
     renderTileSelection();
     renderTable(lastSeries);
     updateResultCard(year0);
@@ -497,7 +491,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (lastSeries) {
         const { v } = loadValues();
         drawChart(lastSeries, v.retirementYear);
-        renderLegend(document.getElementById('chartLegend'));
       }
     });
   }
