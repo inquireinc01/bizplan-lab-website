@@ -95,15 +95,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return `rgba(${r},${g},${b},${alpha})`;
   }
 
-  // 色を白方向に混ぜて淡くする(グラフのバー用)
-  function lighten(hex, ratio) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    const mix = (c) => Math.round(c + (255 - c) * ratio);
-    return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
-  }
-
   // 年0(現在時点)の評価額(1株当たり)を計算
   // 簡易版(DSレイアウト)で転記した時価総額(万円)を起点として使用する
   function computeYear0(v) {
@@ -265,9 +256,12 @@ document.addEventListener('DOMContentLoaded', function () {
       gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round(gv).toLocaleString('ja-JP')}</text>`;
     }
 
-    // バーはもとの色を淡くして描画(退職金年の枠線強調は廃止し、別途マーカーで表現)
+    // バー配色: シナリオA(通常時)は淡色+透過50%、シナリオB(対策後)は濃色でしっかり不透明に(退職金年の枠線強調は廃止し、別途マーカーで表現)
     function barAttrs(p, m) {
-      return `fill="${lighten(m.color, 0.18)}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1"`;
+      if (m.scenario === 'B') {
+        return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.15" fill-opacity="0.95"`;
+      }
+      return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1" fill-opacity="0.5"`;
     }
 
     const barWidth = slotWidth * 0.68; // 1つ選択時と同じ太さを常に使用
@@ -293,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
           const barY = y(p[m.field]);
           const barH = Math.max(0, yBottom - barY);
           const delay = (i * 30 + si * 15).toFixed(0);
-          bars += `<rect class="chart-bar" data-year="${i}" data-metric="${key}" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}" ${barAttrs(p, m)} fill-opacity="0.92" rx="1.5" style="animation-delay:${delay}ms"/>`;
+          bars += `<rect class="chart-bar" data-year="${i}" data-metric="${key}" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}" ${barAttrs(p, m)} rx="1.5" style="animation-delay:${delay}ms"/>`;
         });
       });
     }
