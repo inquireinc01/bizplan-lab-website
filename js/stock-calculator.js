@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const PROJECTION_IDS = [
     'corpTaxRateProj', 'annualProfit', 'annualProfitB', 'annualDividend',
-    'retirementYear', 'retirementAmount', 'mvNetAssets', 'realOpProfit',
+    'retirementYear', 'retirementAmount', 'specialLossYear', 'specialLossAmount', 'mvNetAssets', 'realOpProfit',
     'insuranceAmount', 'insuranceGrowthRate', 'coveragePeriod', 'premiumAmount', 'deductibleRatio',
   ];
 
@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     sharesOutstanding: 2000, capitalAmount: 1000000,
     corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
     retirementYear: 10, retirementAmount: 5000, mvNetAssets: 20000, realOpProfit: 2500,
+    // その他特別損失(発生時期を指定して純資産の推移に反映。未入力なら影響なし)
+    specialLossYear: 15, specialLossAmount: 0,
     // 生命保険の契約条件(死亡保険金額のグラフ表示・参考情報として保持)
     insuranceAmount: 10000, insuranceGrowthRate: 3, coveragePeriod: 10, premiumAmount: 500, deductibleRatio: 100,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
@@ -85,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let selectedMetrics = ['saizoku_A'];
   let showInsurance = false; // 死亡保険金額をグラフ背景に表示するかどうか(ボタンでトグル)
   let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
+  let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -158,6 +161,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (shared.retirementYear !== null && shared.retirementYear === t) {
         retained -= shared.retirementAmount;
       }
+      if (shared.specialLossYear !== null && shared.specialLossYear === t) {
+        retained -= shared.specialLossAmount;
+      }
       cumulative += retained;
       out.push(metricsFor(t, cumulative));
     }
@@ -171,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
       annualDividend: v.annualDividend,
       retirementYear: v.retirementYear,
       retirementAmount: v.retirementAmount,
+      specialLossYear: v.specialLossYear,
+      specialLossAmount: v.specialLossAmount,
       mv0: v.mvNetAssets,
       rop: v.realOpProfit,
     };
@@ -202,28 +210,25 @@ document.addEventListener('DOMContentLoaded', function () {
     metricTilesEl.querySelectorAll('.metric-tile').forEach((btn) => {
       const key = btn.dataset.metric;
       const color = btn.dataset.color;
+      const glowColor = btn.dataset.glow || color;
       const selected = selectedMetrics.includes(key);
       const isB = key.endsWith('_B');
       const labelEl = btn.querySelector('.tile-label');
       const valueEl = btn.querySelector('.tile-value');
-      btn.style.setProperty('--glow', hexToRgba(color, 0.6));
-      if (selected) {
-        // 選択中: 色地に白文字 + 光って浮き出るギミック(CSSアニメーション)
-        btn.classList.add('is-selected');
-        btn.style.backgroundColor = color;
-        btn.style.boxShadow = '';
-        if (labelEl) labelEl.style.color = 'rgba(255,255,255,0.9)';
-        if (valueEl) valueEl.style.color = '#ffffff';
-      } else if (isB) {
+      const lamp = btn.querySelector('.tile-lamp');
+      // 選択の表示はボタン内左上のランプのみで行う(ボタン自体の色はシナリオA/Bで固定のまま変えない)
+      if (lamp) {
+        lamp.style.setProperty('--lamp-color', glowColor);
+        lamp.classList.toggle('is-lit', selected);
+      }
+      if (isB) {
         // シナリオB(対策後): もとの色を地に白抜き文字で常時強調
-        btn.classList.remove('is-selected');
         btn.style.backgroundColor = color;
         btn.style.boxShadow = 'none';
         if (labelEl) labelEl.style.color = 'rgba(255,255,255,0.85)';
         if (valueEl) valueEl.style.color = '#ffffff';
       } else {
         // シナリオA(通常時): 淡い地に色枠
-        btn.classList.remove('is-selected');
         btn.style.backgroundColor = hexToRgba(color, 0.1);
         btn.style.boxShadow = `inset 0 0 0 1.5px ${color}`;
         if (labelEl) labelEl.style.color = '';
@@ -300,17 +305,30 @@ document.addEventListener('DOMContentLoaded', function () {
       xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yearLabel(yr)}</text>`;
     });
 
-    // ===== 退職金支給年の洗練された強調(枠線ではなく、破線ガイド + ラベルフラッグ、ボタンでトグル表示) =====
-    let retireLine = '', retireFlag = '';
-    if (showRetirement && retirementYear !== null && retirementYear >= 1 && retirementYear <= 30) {
-      const rxc = padL + retirementYear * slotWidth + slotWidth / 2;
-      const clampX = Math.max(padL + 30, Math.min(W - padR - 30, rxc));
-      retireLine = `<line x1="${rxc.toFixed(1)}" y1="20" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="rgba(15,42,74,0.38)" stroke-width="1.3" stroke-dasharray="4 3"/>`;
-      retireFlag = `<g>
-        <rect x="${(clampX - 30).toFixed(1)}" y="1" width="60" height="16" rx="8" fill="#0f2a4a"/>
-        <text x="${clampX.toFixed(1)}" y="12.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">退職金</text>
-        <path d="M ${(clampX - 4).toFixed(1)} 17 L ${(clampX + 4).toFixed(1)} 17 L ${clampX.toFixed(1)} 22 Z" fill="#0f2a4a"/>
+    // ===== 年次イベント(退職金・特別損失)の洗練された強調: 枠線ではなく、破線ガイド + ラベルフラッグ、ボタンでトグル表示 =====
+    function drawEventFlag(year, label, color, boxWidth) {
+      if (year === null || year === undefined || isNaN(year) || year < 1 || year > 30) return { line: '', flag: '' };
+      const rxc = padL + year * slotWidth + slotWidth / 2;
+      const clampX = Math.max(padL + boxWidth / 2, Math.min(W - padR - boxWidth / 2, rxc));
+      const line = `<line x1="${rxc.toFixed(1)}" y1="20" x2="${rxc.toFixed(1)}" y2="${yBottom}" stroke="${hexToRgba(color, 0.38)}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+      const flag = `<g>
+        <rect x="${(clampX - boxWidth / 2).toFixed(1)}" y="1" width="${boxWidth}" height="16" rx="8" fill="${color}"/>
+        <text x="${clampX.toFixed(1)}" y="12.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">${label}</text>
+        <path d="M ${(clampX - 4).toFixed(1)} 17 L ${(clampX + 4).toFixed(1)} 17 L ${clampX.toFixed(1)} 22 Z" fill="${color}"/>
       </g>`;
+      return { line, flag };
+    }
+
+    let retireLine = '', retireFlag = '';
+    if (showRetirement) {
+      const m = drawEventFlag(retirementYear, '退職金', '#0f2a4a', 60);
+      retireLine = m.line; retireFlag = m.flag;
+    }
+
+    let lossLine = '', lossFlag = '';
+    if (showSpecialLoss && currentValues) {
+      const m = drawEventFlag(currentValues.specialLossYear, '特別損失', '#b0651b', 76);
+      lossLine = m.line; lossFlag = m.flag;
     }
 
     // ===== 死亡保険金額(グラフ背景の階段状エリア+左上ラベル、ボタンでトグル表示) =====
@@ -351,9 +369,11 @@ document.addEventListener('DOMContentLoaded', function () {
       <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>
       <line x1="${padL}" y1="${yBottom}" x2="${W - padR}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>
       ${retireLine}
+      ${lossLine}
       ${xLabels}
       ${bars}
       ${retireFlag}
+      ${lossFlag}
       ${insuranceLabel}
     `;
 
@@ -501,6 +521,19 @@ document.addEventListener('DOMContentLoaded', function () {
     retirementToggleBtn.addEventListener('click', function () {
       showRetirement = !showRetirement;
       retirementToggleBtn.classList.toggle('is-on', showRetirement);
+      if (lastSeries) {
+        const { v } = loadValues();
+        drawChart(lastSeries, v.retirementYear);
+      }
+    });
+  }
+
+  // ===== その他特別損失マーカーの表示トグル =====
+  const specialLossToggleBtn = document.getElementById('specialLossToggleBtn');
+  if (specialLossToggleBtn) {
+    specialLossToggleBtn.addEventListener('click', function () {
+      showSpecialLoss = !showSpecialLoss;
+      specialLossToggleBtn.classList.toggle('is-on', showSpecialLoss);
       if (lastSeries) {
         const { v } = loadValues();
         drawChart(lastSeries, v.retirementYear);

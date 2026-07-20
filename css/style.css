@@ -619,27 +619,38 @@ img {
 
 /* 評価額タイル(クリックで選択、JSが背景色・文字色を切り替える) */
 .metric-tile {
+  position: relative;
   cursor: pointer;
   transition: background-color 0.15s ease, box-shadow 0.2s ease, color 0.15s ease, transform 0.2s ease;
 }
 .metric-tile .tile-label {
   transition: color 0.15s ease;
 }
-/* 選択中タイル: 光って浮き出るギミック(--glow は選択色をJSが設定) */
-@keyframes tileGlow {
+
+/* 選択状態は左上のランプ点灯のみで表現する(タイル自体の色は変えない) */
+.tile-lamp {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background-color: var(--lamp-color, #999);
+  opacity: 0.3;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+@keyframes lampPulse {
   0%, 100% {
-    box-shadow: 0 0 0 2px #fff, 0 0 8px 1px var(--glow, rgba(15, 42, 74, 0.5)), 0 5px 14px rgba(15, 42, 74, 0.22);
+    box-shadow: 0 0 4px 1px var(--lamp-color, rgba(15, 42, 74, 0.6));
   }
   50% {
-    box-shadow: 0 0 0 2px #fff, 0 0 18px 4px var(--glow, rgba(15, 42, 74, 0.5)), 0 9px 22px rgba(15, 42, 74, 0.32);
+    box-shadow: 0 0 9px 3px var(--lamp-color, rgba(15, 42, 74, 0.7));
   }
 }
-.metric-tile.is-selected {
-  transform: translateY(-3px);
-  animation: tileGlow 2.2s ease-in-out infinite;
-}
-.metric-tile.is-selected:hover {
-  transform: translateY(-4px);
+.tile-lamp.is-lit {
+  opacity: 1;
+  animation: lampPulse 1.8s ease-in-out infinite;
 }
 
 /* 評価額推移表: 列ごとの色分け(タイル・ヘッダーと同系色を淡く) */
@@ -713,6 +724,9 @@ img {
 }
 .overlay-toggle-navy {
   --accent: var(--color-navy);
+}
+.overlay-toggle-amber {
+  --accent: #b0651b;
 }
 
 /* ========== 印刷用シート(PDF出力・A4横) ========== */
