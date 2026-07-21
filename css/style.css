@@ -648,9 +648,10 @@ img {
   border: 1.5px solid var(--color-navy);
   transition: background-color 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.15s ease, transform 0.2s ease;
 }
+/* 未選択時はラベル・数字とも薄いブルーグレーで統一。選択時のみ白抜きにする */
 .metric-tile .tile-label {
   margin-left: 0.55rem;
-  color: var(--color-navy);
+  color: var(--color-slate-light);
   transition: color 0.15s ease;
 }
 .metric-tile .tile-value {
@@ -658,19 +659,20 @@ img {
   text-align: right;
   transition: color 0.15s ease;
 }
-/* 老眼対応: 数字だけ約2倍に拡大し、単位「万円」は従来サイズのまま。未選択時はブルーグレー、選択時はネイビーで強調 */
+/* 老眼対応: 数字だけ約2倍に拡大し、単位「万円」は従来サイズのまま。書体はArial Boldで統一 */
 .metric-tile .tile-value .tile-num {
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 1.7rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
-  color: var(--color-slate);
+  color: var(--color-slate-light);
   transition: color 0.15s ease;
 }
 .metric-tile .tile-value .tile-unit {
   font-size: 0.875rem;
   font-weight: 700;
   margin-left: 0.2rem;
-  color: var(--color-slate);
+  color: var(--color-slate-light);
   transition: color 0.15s ease;
 }
 .metric-tile.tile-selected .tile-label {

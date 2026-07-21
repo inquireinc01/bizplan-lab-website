@@ -396,7 +396,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let rows = '';
     series.forEach((p) => {
       const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B];
-      const cells = vals.map((v, i) => `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${i === 4 ? ' border-l border-gray-200' : ''}">${Math.round(v).toLocaleString('ja-JP')}</td>`).join('');
+      // 税引前利益がマイナス(赤字)の場合、推移が負値になり得るため、サイト共通の△+赤字表記に統一する
+      const cells = vals.map((v, i) => {
+        const negCls = v < 0 ? ' neg-val' : '';
+        const numText = window.numFmt ? window.numFmt(Math.round(v)) : Math.round(v).toLocaleString('ja-JP');
+        return `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${i === 4 ? ' border-l border-gray-200' : ''}${negCls}">${numText}</td>`;
+      }).join('');
       rows += `<tr class="border-b border-gray-100">
         <td class="px-2 py-1.5 text-center text-gray-700 border-r border-gray-200 bg-white">${yearLabel(p.year)}</td>
         ${cells}
