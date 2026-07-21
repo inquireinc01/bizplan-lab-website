@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 起点バー + 各フローバー + 最終積み上げバー(法人+個人) を構築する
     function buildBars(cfg) {
       let running = cfg.start;
-      const bars = [{ type: 'single', label: '現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false }];
+      const bars = [{ type: 'single', label: '現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false, plainMark: cfg.startMark || null }];
       cfg.flows.forEach(function (f) {
         const prev = running;
         running += f.delta;
@@ -173,18 +173,19 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 34).toFixed(1)}" r="8" fill="#0f2a4a"/>`;
           out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
-        // 保険加入チェックポイント: 隣接バーの頂点より上に出し、白背景ピル＋引き出し線で明示(重なり回避)
-        if (b.checkpoint && showInsuranceMark && i < N - 1) {
+        // バー間マーカー(白背景ピル＋引き出し線)。最上部帯に固定し、金額ラベルとの重なりを避ける。
+        // 役員給与(plainMark)は常時表示、保険加入(checkpoint)はトグル連動。文字数に応じて幅可変。
+        if (i < N - 1 && (b.plainMark || (b.checkpoint && showInsuranceMark))) {
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
-          const pillW = 52, pillH = 16;
-          // ピルは全バーの金額ラベルより上の最上部帯に固定配置し、引き出し線で接続点(保険加入時点)を示す(重なり回避)
-          const pillCY = 16;
+          const label = b.plainMark || b.checkpoint;
+          const pillH = 16, pillCY = 16;
+          const pillW = Math.max(48, label.length * 10.5 + 16);
           out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
           out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
-          out += `<rect x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
-          out += `<text x="${mx.toFixed(1)}" y="${(pillCY + 3.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${b.checkpoint}</text>`;
+          out += `<rect x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW.toFixed(1)}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
+          out += `<text x="${mx.toFixed(1)}" y="${(pillCY + 3.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${label}</text>`;
         }
 
         if (b.type === 'stacked') {
@@ -345,10 +346,10 @@ document.addEventListener('DOMContentLoaded', function () {
     drawWaterfall(
       {
         title: '① 給与を原資に個人で負担',
-        start: cash.value, startTag: 'A',
+        start: cash.value, startTag: 'A', startMark: '役員給与',
         flows: [
           { label: '給与課税', delta: -s1_salaryTax, tag: 'B' },
-          { label: '法人税', delta: 0, tag: 'C', checkpoint: '保険加入' },
+          { label: '法人税', delta: 0, tag: 'C', checkpoint: '個人で保険加入' },
           { label: '保険差益', delta: s1_insuranceGain, tag: 'D' },
           { label: '差益課税', delta: 0, tag: 'E' },
           { label: '相続税', delta: -(s1_cashInheritanceTax + s1_stockInheritanceTax), tag: 'F' },
@@ -363,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
         start: cash.value, startTag: 'A',
         flows: [
           { label: '給与課税', delta: 0, tag: 'B' },
-          { label: '法人税', delta: -s2_corpTax, tag: 'C', checkpoint: '保険加入' },
+          { label: '法人税', delta: -s2_corpTax, tag: 'C', checkpoint: '法人で保険加入' },
           { label: '保険差益', delta: s2_insuranceGain, tag: 'D' },
           { label: '差益課税', delta: -s2_insuranceTax, tag: 'E' },
           { label: '相続税', delta: -s2_stockInheritanceTax, tag: 'F' },
