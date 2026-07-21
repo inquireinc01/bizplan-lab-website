@@ -455,6 +455,14 @@ input[type="number"] {
   flex-shrink: 0;
 }
 
+/* 数値に付く単位(万円・％・年 など)は数字より一回り小さく・控えめに。全ページ共通ルール */
+.unit {
+  font-size: 0.72em;
+  font-weight: 600;
+  opacity: 0.72;
+  margin-left: 0.12em;
+}
+
 /* ナビゲーションのピル型ボタン: すべて同じ幅で揃える。枠無し・薄いブルーグレー基調 */
 .nav-btn {
   position: relative;

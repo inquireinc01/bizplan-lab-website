@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
+  // 末尾の単位「万円」を .unit で一回り小さく表示するためのHTML化(数値は内部生成のため安全)
+  const unitize = (s) => String(s).replace(/\s*万円$/, '<span class="unit">万円</span>');
 
   const showError = (msg) => {
     errorArea.textContent = msg;
@@ -85,13 +87,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) el.addEventListener('input', refreshAutoCash);
   });
 
-  // ===== ウォーターフォール比較グラフ =====
-  // 2パターン(①給与準備 / ②金庫株準備)を同一の項目列・同一スケールで上下2段に描画し、
+  // ===== 資金の流れ比較グラフ =====
+  // 2パターン(①給与準備 / ②金庫株準備)を同一の項目列・同一スケールで、上下2つの独立したSVGに描画する。
   // 最終バーは「法人の残高＋個人の手残り」の積み上げにして合計を強調する
   function drawWaterfall(cfgA, cfgB) {
-    const svg = document.getElementById('tsWaterfall');
-    if (!svg) return;
-    const NAVY = '#0f2a4a', BLUE = '#3b6ea5', RED = '#a83d3d', SLATE = '#55677d';
+    const svg1 = document.getElementById('tsWaterfall1');
+    const svg2 = document.getElementById('tsWaterfall2');
+    if (!svg1 || !svg2) return;
+    const NAVY = '#0f2a4a', BLUE = '#3b6ea5', RED = '#a83d3d';
     const fmtNum = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
 
     // 起点バー + 各フローバー + 最終積み上げバー(法人+個人) を構築する
@@ -128,32 +131,25 @@ document.addEventListener('DOMContentLoaded', function () {
     if (gMax === gMin) gMax = gMin + 1;
 
     const plotXStart = 34, plotXEnd = 712, plotW = plotXEnd - plotXStart;
-    const bandH = 200;
+    const bandH = 200, baseTop = 46, baseBottom = baseTop + bandH;
     const pxPerMan = bandH / (gMax - gMin);
+    const yOf = (v) => baseBottom - (v - gMin) * pxPerMan;
 
-    const charts = [
-      { title: cfgA.title, bars: barsA, top: 50 },
-      { title: cfgB.title, bars: barsB, top: 350 },
-    ];
-
-    let out = '';
-    charts.forEach(function (chart) {
-      const baseTop = chart.top, baseBottom = chart.top + bandH;
-      const yOf = (v) => baseBottom - (v - gMin) * pxPerMan;
+    // 1パターン(バー配列)を独立したSVGとして描画する
+    function renderChart(bars) {
       const zeroY = yOf(0);
-      const N = chart.bars.length;
+      const N = bars.length;
       const slotW = plotW / N;
       const barW = Math.min(66, slotW * 0.64);
-
-      out += `<text x="${plotXStart}" y="${(baseTop - 24).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a">${chart.title}</text>`;
+      let out = '';
       out += `<line x1="${plotXStart - 6}" y1="${zeroY.toFixed(1)}" x2="${plotXEnd}" y2="${zeroY.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
 
-      chart.bars.forEach(function (b, i) {
+      bars.forEach(function (b, i) {
         const x = plotXStart + i * slotW + (slotW - barW) / 2;
         const cx = x + barW / 2;
         // コネクター(前バーのrunAfter → 現バー左端)
         if (i > 0) {
-          const prevB = chart.bars[i - 1];
+          const prevB = bars[i - 1];
           const connY = yOf(prevB.runAfter);
           const prevX = plotXStart + (i - 1) * slotW + (slotW - barW) / 2 + barW;
           out += `<line x1="${prevX.toFixed(1)}" y1="${connY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${connY.toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
@@ -164,13 +160,16 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 34).toFixed(1)}" r="8" fill="#0f2a4a"/>`;
           out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
-        // 保険加入チェックポイント(バー間の位置に、白背景ピル＋引き出し線で明示。バーと重なっても可読)
+        // 保険加入チェックポイント: 隣接バーの頂点より上に出し、白背景ピル＋引き出し線で明示(重なり回避)
         if (b.checkpoint && i < N - 1) {
+          const nextBar = bars[i + 1];
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
           const pillW = 52, pillH = 16;
-          const pillCY = Math.max(baseTop + 12, my - 18); // バンド上端にめり込まないようクランプ
+          const nextTopY = yOf(nextBar.type === 'stacked' ? nextBar.total : nextBar.top);
+          // 自バー・次バーの頂点いずれよりも上へ(最上部の余白まで)。重なりを避ける
+          const pillCY = Math.max(20, Math.min(yOf(b.top), nextTopY, my) - 16);
           out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
           out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
           out += `<rect x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
@@ -205,8 +204,11 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<text x="${cx.toFixed(1)}" y="${(yTop - 6).toFixed(1)}" font-size="12" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amount}</text>`;
         }
       });
-    });
-    svg.innerHTML = out;
+      return out;
+    }
+
+    svg1.innerHTML = renderChart(barsA);
+    svg2.innerHTML = renderChart(barsB);
   }
 
   form.addEventListener('submit', function (e) {
@@ -280,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- 結果表示(左右で同じ項目・同じものさしの統一表) ---
     const RED = '#a83d3d', BLUE = '#2d5580', GRAY = '#8d97a3', NAVY = '#0f2a4a';
-    const fill = (id, text, color) => { const el = document.getElementById(id); if (el) { el.textContent = text; el.style.color = color || ''; } };
+    const fill = (id, text, color) => { const el = document.getElementById(id); if (el) { el.innerHTML = unitize(text); el.style.color = color || ''; } };
     const ded = (n) => (n >= 0 ? '△' + man(n) : '＋' + man(-n)); // 減算(マイナスは還付として＋)
     const add = (n) => (n >= 0 ? '＋' + man(n) : '△' + man(-n)); // 加算
     const zeroC = (n) => (n === 0 ? GRAY : null);
@@ -320,11 +322,11 @@ document.addEventListener('DOMContentLoaded', function () {
     setTip('tipS2TaxInherit', `自社株の相続税評価額 ${man(stockInheritanceValue.value)} × 相続税率 ${inheritanceTaxRate.value}% ＝ ${man(s2_stockInheritanceTax)}。金庫株化で現金化した部分の相続税は含みません。`);
     setTip('tipS2TaxCapGain', `(法人税法上評価額 ${man(stockCorpValue.value)} − 資本金 ${man(capital.value)} − 相続税 ${man(s2_stockInheritanceTax)}) × 約20% ＝ ${man(s2_capitalGainsTax)}。取得費加算の特例を前提とした金庫株売却益への課税です。`);
 
-    document.getElementById('sumS1Total').textContent = man(s1_total);
-    document.getElementById('sumS2Total').textContent = man(s2_total);
+    document.getElementById('sumS1Total').innerHTML = unitize(man(s1_total));
+    document.getElementById('sumS2Total').innerHTML = unitize(man(s2_total));
     const diff = s2_total - s1_total;
     const diffEl = document.getElementById('sumDiff');
-    diffEl.textContent = (diff >= 0 ? '+' : '') + man(diff);
+    diffEl.innerHTML = unitize((diff >= 0 ? '+' : '') + man(diff));
     diffEl.style.color = diff >= 0 ? '#2d5580' : '#a83d3d';
 
     // ウォーターフォール: 両パターンとも同一の項目列(発生しない項目は0)・同一スケールで描画
