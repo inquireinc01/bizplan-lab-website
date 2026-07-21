@@ -84,11 +84,13 @@ p.text-gray-600,
   transition: max-height 0.35s ease, opacity 0.25s ease;
   max-height: 0;
   opacity: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 #mobile-menu.open {
-  max-height: 34rem;
+  max-height: min(40rem, calc(100vh - 6rem));
   opacity: 1;
+  overflow-y: auto;
 }
 
 /* セクション見出しのアンダーライン */
@@ -563,6 +565,18 @@ input[type="number"] {
 /* 5・6(保険料原資/減額)はグリーングレー(7〜9と同じ色) */
 .nav-num.teal {
   color: var(--color-green-gray);
+}
+/* モバイルメニュー内は項目数が多いため、はみ出す装飾数字ではなくボタン内に収まるコンパクト表示にする */
+.nav-btn.block-btn .nav-num {
+  position: static;
+  top: auto;
+  left: auto;
+  display: inline-block;
+  width: 1.4rem;
+  font-size: 0.95rem;
+  margin-right: 0.4rem;
+  text-shadow: none;
+  text-align: right;
 }
 
 /* 入力エリア(基本情報・決算書情報)だけグリーングレー基調にし、番号付きツールと区別する */
