@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>非課税×生命保険 | BizPlan Laboratory</title>
+<meta name="description" content="生命保険料控除や相続税・弔慰金の非課税枠を整理し、控除枠・非課税枠の使い残しがないかを試算します。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=20260722x" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png" alt="BizPlan Laboratory" class="h-8 sm:h-9 w-auto" />
+      </a>
+
+      <nav class="site-desktop-nav items-center gap-2.5">
+        <a href="index.html" class="nav-btn font-brand-en">TOP MENU</a>
+        <a href="stock-valuation.html" class="nav-btn"><span class="nav-num">1</span><span class="nav-tooltip">自社株</span></a>
+        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span><span class="nav-tooltip">将来負債</span></a>
+        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span><span class="nav-tooltip">金庫株</span></a>
+        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span><span class="nav-tooltip">退職金</span></a>
+        <a href="tax-exemption.html" class="nav-btn active"><span class="nav-num">5</span><span class="nav-tooltip">非課税枠</span></a>
+        <a href="premium-funding.html" class="nav-btn"><span class="nav-num teal">6</span><span class="nav-tooltip">保険料原資</span></a>
+        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num teal">7</span><span class="nav-tooltip">減額充当モデル</span></a>
+        <a href="medical-ds.html" class="nav-btn"><span class="nav-num ds">8</span><span class="nav-tooltip">医療法人</span></a>
+        <a href="religious-ds.html" class="nav-btn"><span class="nav-num ds">9</span><span class="nav-tooltip">宗教法人</span></a>
+        <a href="venture-ds.html" class="nav-btn"><span class="nav-num ds">10</span><span class="nav-tooltip">ベンチャー</span></a>
+        <a href="asset-management-ds.html" class="nav-btn"><span class="nav-num ds">11</span><span class="nav-tooltip">資産管理会社</span></a>
+        <a href="deficit-company-ds.html" class="nav-btn"><span class="nav-num ds">12</span><span class="nav-tooltip">赤字会社</span></a>
+        <a href="holdings-ds.html" class="nav-btn"><span class="nav-num ds">13</span><span class="nav-tooltip">ホールディングス</span></a>
+      </nav>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="basic-info.html" class="nav-square site-desktop-only">基本情報入力</a>
+        <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <a href="index.html" class="nav-btn font-brand-en block-btn justify-center">TOP MENU</a>
+      <a href="basic-info.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
+      <a href="stock-valuation.html" class="nav-btn block-btn justify-center"><span class="nav-num">1</span>自社株</a>
+      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
+      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
+      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
+      <a href="tax-exemption.html" class="nav-btn block-btn justify-center active"><span class="nav-num">5</span>非課税枠</a>
+      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num teal">6</span>保険料原資</a>
+      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num teal">7</span>減額充当モデル</a>
+      <a href="medical-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">8</span>医療法人</a>
+      <a href="religious-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">9</span>宗教法人</a>
+      <a href="venture-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">10</span>ベンチャー</a>
+      <a href="asset-management-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">11</span>資産管理会社</a>
+      <a href="deficit-company-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">12</span>赤字会社</a>
+      <a href="holdings-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">13</span>ホールディングス</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
+      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">TAX EXEMPTION &amp; INSURANCE</p>
+      <h1 class="text-white font-black text-xl sm:text-2xl">非課税×生命保険</h1>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <p class="text-gray-600 leading-relaxed mb-8">
+        生命保険を活用できる「控除枠・非課税枠」の使い残しがないかをチェックするツールです。生命保険料控除(所得税・住民税)、相続税の非課税枠(生命保険金・死亡退職金・弔慰金)、一時所得の課税対象額を、それぞれ入力内容から試算します。
+      </p>
+
+      <div class="flex justify-end mb-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <form id="txForm" class="space-y-8">
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1 flex items-center">1. 生命保険料控除(所得税・住民税)<span class="help-tip" tabindex="0">?<span class="help-text">支払った生命保険料は、一定の算式に基づき所得税・住民税の計算上、所得から控除されます(平成24年1月1日以後契約の新制度)。区分ごとの上限は所得税4万円・住民税2.8万円、合計適用限度額は所得税12万円・住民税7万円です。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-5">区分ごとの年間払込保険料(円)を入力してください。</p>
+          <div class="grid sm:grid-cols-3 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txGeneralPremium">一般生命保険料(円/年)</label>
+              <input type="number" id="txGeneralPremium" value="80000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txPensionPremium">個人年金保険料(円/年)</label>
+              <input type="number" id="txPensionPremium" value="80000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txMedicalPremium">介護医療保険料(円/年)</label>
+              <input type="number" id="txMedicalPremium" value="80000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1 flex items-center">2. 相続税の非課税枠(生命保険金・死亡退職金)<span class="help-tip" tabindex="0">?<span class="help-text">被相続人の死亡によって支払われる生命保険金・死亡退職金は、それぞれ独立して「500万円×法定相続人の数」までが相続税の非課税財産となります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-5">法定相続人の数と、死亡保険金・死亡退職金の見込額(万円)を入力してください。</p>
+          <div class="grid sm:grid-cols-3 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txHeirs">法定相続人の数(人)</label>
+              <input type="number" id="txHeirs" value="2" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txDeathBenefit">死亡保険金の受取見込額(万円)</label>
+              <input type="number" id="txDeathBenefit" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txRetirementBenefit">死亡退職金の見込額(万円)</label>
+              <input type="number" id="txRetirementBenefit" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1 flex items-center">3. 弔慰金の非課税枠<span class="help-tip" tabindex="0">?<span class="help-text">会社が遺族に支払う弔慰金は、業務上の死亡の場合は死亡当時の普通給与の3年分(36ヶ月分)、業務外の死亡の場合は半年分(6ヶ月分)まで相続税の課税対象外とされます(相続税法基本通達3-20)。これを超える部分は死亡退職金として扱われます。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-5">最終報酬月額(万円)と死亡事由を選択してください。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txSalaryMonthly">最終報酬月額(万円)</label>
+              <input type="number" id="txSalaryMonthly" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txDeathCause">死亡事由</label>
+              <select id="txDeathCause" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+                <option value="off" selected>業務外の死亡(6ヶ月分)</option>
+                <option value="on">業務上の死亡(36ヶ月分)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1 flex items-center">4. 一時所得の課税対象額(満期保険金・解約返戻金等)<span class="help-tip" tabindex="0">?<span class="help-text">満期保険金・解約返戻金等を保険契約者本人が受け取る場合、受取額から払込保険料総額と特別控除額(年50万円)を差し引いた金額が一時所得となり、その1/2が他の所得と合算して課税されます。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-5">受取額と払込保険料の総額(万円)を入力してください。</p>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txMaturityAmount">満期保険金・解約返戻金等の受取額(万円)</label>
+              <input type="number" id="txMaturityAmount" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="txPaidPremiumTotal">払込保険料の総額(万円)</label>
+              <input type="number" id="txPaidPremiumTotal" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div class="notice-box text-sm rounded-lg p-4 leading-relaxed flex items-start">
+          <span class="font-bold mr-1">5. 生命保険契約に基づく給付金(所得税)</span>
+          <span class="help-tip" tabindex="0">?<span class="help-text">入院給付金・手術給付金・通院給付金など、身体の傷害に基因して支払われる保険金・給付金は、受取人が本人または配偶者・直系血族・生計を一にする親族である場合、原則として全額非課税です(所得税法施行令30条)。</span></span>
+        </div>
+
+        <div id="txErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">試算する</button>
+          <button type="button" id="txResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+        </div>
+      </form>
+
+      <div class="flex justify-end mt-6">
+        <button type="button" class="js-pdf-btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          PDFに出力する
+        </button>
+      </div>
+
+      <!-- 結果表示 -->
+      <div id="txResultArea" class="hidden mt-10 space-y-8">
+
+        <div class="calc-section bg-white p-6">
+          <h4 class="font-bold text-sm mb-4">1. 生命保険料控除額</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[480px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">区分</th>
+                  <th class="text-right font-bold px-3 py-2">年間払込保険料</th>
+                  <th class="text-right font-bold px-3 py-2">所得税控除額</th>
+                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">住民税控除額</th>
+                </tr>
+              </thead>
+              <tbody id="txPremiumBody"></tbody>
+              <tfoot>
+                <tr class="border-t-2 border-[#0f2a4a] font-bold">
+                  <td class="px-3 py-2">合計(上限あり)</td>
+                  <td class="px-3 py-2"></td>
+                  <td id="txIncomeTaxTotal" class="text-right px-3 py-2 text-[#2d5580]"></td>
+                  <td id="txResidentTaxTotal" class="text-right px-3 py-2 text-[#2d5580]"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6">
+          <h4 class="font-bold text-sm mb-4">2. 相続税の非課税枠</h4>
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">非課税枠(1区分あたり: 500万円×法定相続人の数)</dt><dd id="txExemptionEach" class="font-bold"></dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">生命保険金 使用額 / 課税対象額</dt><dd id="txDeathBenefitResult" class="font-bold"></dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">死亡退職金 使用額 / 課税対象額</dt><dd id="txRetirementResult" class="font-bold"></dd></div>
+          </dl>
+        </div>
+
+        <div class="calc-section bg-white p-6">
+          <h4 class="font-bold text-sm mb-4">3. 弔慰金の非課税枠</h4>
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">非課税となる弔慰金の上限額</dt><dd id="txCondolenceResult" class="font-bold"></dd></div>
+          </dl>
+        </div>
+
+        <div class="calc-section bg-white p-6">
+          <h4 class="font-bold text-sm mb-4">4. 一時所得の課税対象額</h4>
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">一時所得の金額(受取額-払込保険料-特別控除50万円)</dt><dd id="txOneTimeIncome" class="font-bold"></dd></div>
+            <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">課税対象額(1/2課税)</dt><dd id="txOneTimeTaxable" class="font-black text-[#2d5580]"></dd></div>
+          </dl>
+        </div>
+
+        <!-- サマリー -->
+        <div class="calc-result-card p-6 sm:p-10">
+          <h3 class="font-black text-xl mb-2">控除枠・非課税枠の活用状況</h3>
+          <p class="text-white/70 text-sm mb-6">生命保険料控除の合計額と、相続税の非課税枠(生命保険金+死亡退職金+弔慰金)の合計額です。</p>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div>
+              <p class="text-xs text-white/70 mb-1">生命保険料控除 合計(所得税+住民税)</p>
+              <p id="txSummaryPremium" class="text-2xl font-black"></p>
+            </div>
+            <div>
+              <p class="text-xs text-white/70 mb-1">相続税 非課税枠 合計(生命保険金+死亡退職金+弔慰金)</p>
+              <p id="txSummaryInheritance" class="text-2xl font-black"></p>
+            </div>
+          </div>
+          <div class="border-t border-white/20 mt-8 pt-6 text-right">
+            <button type="button" class="js-pdf-btn inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold bg-white text-[#0f2a4a] hover:bg-gray-100 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+              PDFに出力する
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <div class="max-w-3xl space-y-3 mb-6">
+      <p class="text-xs text-gray-500 leading-relaxed">
+        各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。
+      </p>
+      <p class="text-xs text-gray-500 leading-relaxed">
+        ご入力いただいた会社名・氏名等の情報は、お客様のブラウザ内にのみ保存され、弊社が取得することはありません。
+      </p>
+    </div>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ===== 印刷用シート(PDF出力) ===== -->
+<div class="print-sheet" id="printSheet">
+  <div class="print-head">
+    <div class="print-brand">BizPlan Laboratory</div>
+    <h1 class="print-title">
+      <span class="print-ic">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1"/></svg>
+      </span>
+      非課税×生命保険 シミュレーション
+    </h1>
+    <div class="print-meta">作成日: <span id="pDate"></span></div>
+  </div>
+
+  <div class="print-sec">1. 生命保険料控除額</div>
+  <table class="print-table" id="pPremiumTable">
+    <thead><tr><th class="lbl">区分</th><th>年間払込保険料</th><th>所得税控除額</th><th>住民税控除額</th></tr></thead>
+    <tbody id="pPremiumBody"></tbody>
+  </table>
+
+  <div class="print-stats">
+    <div>
+      <div class="k">所得税控除額 合計(上限12万円)</div>
+      <div class="v" id="pIncomeTaxTotal"></div>
+    </div>
+    <div>
+      <div class="k">住民税控除額 合計(上限7万円)</div>
+      <div class="v" id="pResidentTaxTotal"></div>
+    </div>
+  </div>
+
+  <div class="print-sec">2. 相続税の非課税枠</div>
+  <div class="print-stats">
+    <div>
+      <div class="k">非課税枠(1区分あたり)</div>
+      <div class="v" id="pExemptionEach"></div>
+    </div>
+    <div>
+      <div class="k">生命保険金 使用額/課税対象額</div>
+      <div class="v" id="pDeathBenefitResult"></div>
+    </div>
+    <div>
+      <div class="k">死亡退職金 使用額/課税対象額</div>
+      <div class="v" id="pRetirementResult"></div>
+    </div>
+  </div>
+
+  <div class="print-sec">3. 弔慰金の非課税枠</div>
+  <div class="print-stats">
+    <div>
+      <div class="k">非課税となる弔慰金の上限額</div>
+      <div class="v" id="pCondolenceResult"></div>
+    </div>
+  </div>
+
+  <div class="print-sec">4. 一時所得の課税対象額</div>
+  <div class="print-stats">
+    <div>
+      <div class="k">一時所得の金額</div>
+      <div class="v" id="pOneTimeIncome"></div>
+    </div>
+    <div>
+      <div class="k">課税対象額(1/2課税)</div>
+      <div class="v" id="pOneTimeTaxable"></div>
+    </div>
+  </div>
+
+  <div class="print-keymsg">生命保険を活用できる控除枠・非課税枠に使い残しがないかを確認し、必要に応じて契約内容の見直しをご検討ください。</div>
+
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の適用可否・金額は個別の契約内容・税制改正の状況等により異なるため、税理士等の専門家にご確認ください。</p>
+    <p class="cr">&copy; 2026 BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</div>
+
+<script src="js/menu.js?v=20260722a"></script>
+<script src="js/number-format.js?v=20260721c"></script>
+<script src="js/tax-exemption.js?v=20260722b"></script>
+</body>
+</html>
