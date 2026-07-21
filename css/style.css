@@ -655,6 +655,58 @@ input[type="number"] {
   display: none;
 }
 
+/* トップページ: 生命保険ツール(1〜7)とディスカッションシート(8〜13)を切り替えるタブ */
+.tool-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  max-width: 34rem;
+  margin: 0 auto 3rem;
+}
+.tool-tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.75rem;
+  border-radius: 0.9rem;
+  border: 1.5px solid var(--color-gray-200);
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.tool-tab-btn:hover {
+  border-color: var(--color-navy);
+}
+.tool-tab-btn.active {
+  background-color: var(--color-navy);
+  border-color: var(--color-navy);
+  box-shadow: 0 12px 28px rgba(15, 42, 74, 0.2);
+}
+.tool-tab-jp {
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--color-navy);
+  letter-spacing: 0.02em;
+}
+.tool-tab-btn.active .tool-tab-jp {
+  color: #fff;
+}
+.tool-tab-en {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-gray-400);
+}
+.tool-tab-btn.active .tool-tab-en {
+  color: rgba(255, 255, 255, 0.72);
+}
+@media (max-width: 480px) {
+  .tool-tab-jp {
+    font-size: 0.92rem;
+  }
+}
+
 /* カードホバー */
 .lift-card {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
