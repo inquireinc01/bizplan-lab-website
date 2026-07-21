@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTip('tipS1TaxInherit', `現金分 ${man(s1_afterInsurance)} × ${inheritanceTaxRate.value}% ＝ ${man(s1_cashInheritanceTax)}、自社株分 ${man(stockInheritanceValue.value)} × ${inheritanceTaxRate.value}% ＝ ${man(s1_stockInheritanceTax)}。合計 ${man(s1_cashInheritanceTax + s1_stockInheritanceTax)}(手元現金と自社株の両方に相続税)。`);
     setTip('tipS2TaxCorp', `現金(死亡保険金) ${man(cash.value)} × 法人税率 ${corpTaxRate.value}% ＝ ${man(s2_corpTax)}。受け取った死亡保険金は法人の益金となり法人税が課税されます。`);
     setTip('tipS2TaxDiff', `保険差益 ${man(s2_insuranceGain)} × 法人税率 ${corpTaxRate.value}% ＝ ${man(s2_insuranceTax)}。保険金を原資に生じた差益にも法人税が課税されます。`);
-    setTip('tipS2TaxInherit', `自社株の相続税評価額 ${man(stockInheritanceValue.value)} × 相続税率 ${inheritanceTaxRate.value}% ＝ ${man(s2_stockInheritanceTax)}。金庫株化で現金化した部分の相続税は含みません。`);
+    setTip('tipS2TaxInherit', `自社株の相続税評価額 ${man(stockInheritanceValue.value)} × 相続税率 ${inheritanceTaxRate.value}% ＝ ${man(s2_stockInheritanceTax)}。相続で取得した「自社株そのもの」にかかる相続税です。これを会社へ売却(金庫株化)して現金化した分には相続税はかからず、譲渡所得税(G)の対象になります。`);
     setTip('tipS2TaxCapGain', `(法人税法上評価額 ${man(stockCorpValue.value)} − 資本金 ${man(capital.value)} − 相続税 ${man(s2_stockInheritanceTax)}) × 約20% ＝ ${man(s2_capitalGainsTax)}。取得費加算の特例を前提とした金庫株売却益への課税です。`);
 
     document.getElementById('sumS1Total').innerHTML = unitize(man(s1_total));
