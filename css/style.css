@@ -431,16 +431,34 @@ input[type="number"] {
   overflow: visible;
   z-index: 0;
 }
-/* デスクトップナビだけ正円ボタン+頭文字1文字に縮小し、1列に収める。番号は従来通り左上に表示 */
+/* デスクトップナビだけ角丸スクエア(スクワークル)の数字ボタンにし、1列に収める。
+   通常は白地+細い枠線のみ(誠実・洗練な印象)、ホバー/アクティブでネイビー塗りつぶし。
+   数字のみを常時表示し、正式名称はホバー時のツールチップで表示する。 */
 .site-desktop-nav .nav-btn {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.3rem;
+  height: 2.3rem;
   padding: 0;
-  font-size: 1.05rem;
+  border-radius: 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background-color: #fff;
+  border: 1.5px solid var(--color-gray-200);
+  color: var(--color-navy);
 }
+.site-desktop-nav .nav-btn::before {
+  border-radius: 0.55rem;
+}
+.site-desktop-nav .nav-btn:hover,
+.site-desktop-nav .nav-btn.active {
+  border-color: var(--color-navy);
+}
+/* TOP MENUだけは正式名称のまま、他より横長のスクワークルで表示 */
 .site-desktop-nav .nav-btn.font-brand-en {
-  font-size: 0.6rem;
-  letter-spacing: 0.02em;
+  width: auto;
+  min-width: 5.6rem;
+  padding: 0 0.9rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
 }
 /* ホバー時にボタン下へ全体名称を表示するツールチップ */
 .nav-tooltip {
