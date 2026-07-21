@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260722i" />
+<link rel="stylesheet" href="css/style.css?v=20260722j" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -203,20 +203,27 @@
             </div>
           </div>
 
-          <!-- 退職金の支給・その他特別損失: 同じ枠で強調 -->
+          <!-- 退職金の支給: 別枠で強調 -->
           <div class="field-highlight field-highlight-navy mt-4">
-            <p class="field-highlight-title">退職金の支給・その他特別損失</p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <p class="field-highlight-title">退職金の支給</p>
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-medium mb-1" for="retirementYear">退職金 支給時期(何年後)</label>
+                <label class="block text-xs font-medium mb-1" for="retirementYear">支給時期(何年後)</label>
                 <input type="number" id="retirementYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1" for="retirementAmount">退職金 支給額(万円)</label>
+                <label class="block text-xs font-medium mb-1" for="retirementAmount">支給額(万円)</label>
                 <input type="number" id="retirementAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
+            </div>
+          </div>
+
+          <!-- その他特別損失: 別枠で強調(退職金とは別のボックスにして区別する) -->
+          <div class="field-highlight field-highlight-amber mt-4">
+            <p class="field-highlight-title">その他特別損失</p>
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-medium mb-1" for="specialLossYear">特別損失 発生時期(何年後)</label>
+                <label class="block text-xs font-medium mb-1" for="specialLossYear">発生時期(何年後)</label>
                 <input type="number" id="specialLossYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
@@ -228,7 +235,7 @@
 
           <!-- 生命保険の契約条件: 別枠で強調 -->
           <div class="field-highlight field-highlight-red mt-4">
-            <p class="field-highlight-title">生命保険の契約条件</p>
+            <p class="field-highlight-title flex items-center">生命保険の契約条件<span class="help-tip" tabindex="0">?<span class="help-text">変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</span></span></p>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div>
                 <label class="block text-xs font-medium mb-1" for="insuranceAmount">保険金額(万円)</label>
@@ -251,7 +258,6 @@
                 <input type="number" id="deductibleRatio" min="0" max="100" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
-            <p class="text-[11px] text-gray-400 mt-2">＊変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</p>
           </div>
         </div>
 

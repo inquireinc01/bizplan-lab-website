@@ -745,6 +745,12 @@ img {
 .field-highlight-red .field-highlight-title {
   color: var(--color-red-dark);
 }
+.field-highlight-amber {
+  border-left-color: #b0651b;
+}
+.field-highlight-amber .field-highlight-title {
+  color: #8a4f15;
+}
 
 /* グラフ背景オーバーレイの表示トグルボタン(死亡保険金額・退職金) */
 .overlay-toggle {
