@@ -48,11 +48,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const pnum = (v) => (window.numClean ? window.numClean(v) : parseFloat(v));
 
+    const MAX_YEN = 99999999; // 円(保険料)の上限
+    const MAX_MAN = 999999; // 万円(金額)の上限
+    const MAX_HEIRS = 100; // 法定相続人の数の上限
+
     const premiumValues = {};
     for (const item of PREMIUM_ITEMS) {
       const v = pnum(document.getElementById(item.id).value);
       if (isNaN(v) || v < 0) {
         showError('すべての項目を入力してください。');
+        document.getElementById(item.id).focus();
+        return;
+      }
+      if (v > MAX_YEN) {
+        showError(`保険料は ${MAX_YEN.toLocaleString('ja-JP')} 円以内で入力してください。`);
         document.getElementById(item.id).focus();
         return;
       }
@@ -71,6 +80,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (rest.some((v) => isNaN(v) || v < 0)) {
       showError('すべての項目を入力してください。');
       return;
+    }
+    const overLimit = [
+      { v: heirs, max: MAX_HEIRS, el: document.getElementById('txHeirs') },
+      { v: deathBenefit, max: MAX_MAN, el: document.getElementById('txDeathBenefit') },
+      { v: retirementBenefit, max: MAX_MAN, el: document.getElementById('txRetirementBenefit') },
+      { v: salaryMonthly, max: MAX_MAN, el: document.getElementById('txSalaryMonthly') },
+      { v: maturityAmount, max: MAX_MAN, el: document.getElementById('txMaturityAmount') },
+      { v: paidPremiumTotal, max: MAX_MAN, el: document.getElementById('txPaidPremiumTotal') },
+    ];
+    for (const c of overLimit) {
+      if (c.v > c.max) {
+        showError(`入力値が上限(${c.max.toLocaleString('ja-JP')})を超えています。数値をご確認ください。`);
+        c.el.focus();
+        return;
+      }
     }
 
     // ---- 1. 生命保険料控除 ----

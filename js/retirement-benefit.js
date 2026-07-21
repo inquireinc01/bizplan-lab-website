@@ -67,9 +67,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const corpTaxRateRb = num('corpTaxRateRb');
 
     const fields = { finalMonthlySalary, yearsOfService, meritMultiplier, meritAddRate, surrenderValue, bookValue, corpTaxRateRb };
-    for (const field of Object.values(fields)) {
+    // 各項目の上限(桁あふれ・結果表示崩れ防止)。金額=万円、年数=年、倍率=倍、率=%
+    const limits = {
+      finalMonthlySalary: 999999, surrenderValue: 999999, bookValue: 999999,
+      yearsOfService: 100, meritMultiplier: 100,
+      meritAddRate: 1000, corpTaxRateRb: 1000,
+    };
+    for (const [key, field] of Object.entries(fields)) {
       if (isNaN(field.value)) {
         showError('すべての項目を入力してください。');
+        field.el.focus();
+        return;
+      }
+      if (Math.abs(field.value) > limits[key]) {
+        showError(`入力値が上限(${limits[key].toLocaleString('ja-JP')})を超えています。数値をご確認ください。`);
         field.el.focus();
         return;
       }

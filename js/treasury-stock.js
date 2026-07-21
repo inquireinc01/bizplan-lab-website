@@ -38,9 +38,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const insuranceGainRate = num('insuranceGainRate');
 
     const fields = { cash, capital, corpTaxRate, incomeTaxRate, inheritanceTaxRate, stockInheritanceValue, stockCorpValue, insuranceGainRate };
-    for (const field of Object.values(fields)) {
+    const MAX_AMOUNT = 999999; // 万円(桁あふれ・表示崩れ防止)
+    const MAX_RATE = 1000; // %(桁あふれ防止のための上限)
+    const rateKeys = ['corpTaxRate', 'incomeTaxRate', 'inheritanceTaxRate', 'insuranceGainRate'];
+    for (const [key, field] of Object.entries(fields)) {
       if (isNaN(field.value)) {
         showError('すべての項目を入力してください。');
+        field.el.focus();
+        return;
+      }
+      const isRate = rateKeys.indexOf(key) >= 0;
+      const limit = isRate ? MAX_RATE : MAX_AMOUNT;
+      if (Math.abs(field.value) > limit) {
+        showError(isRate ? `率は ${MAX_RATE}% 以内で入力してください。` : `金額は ${man(MAX_AMOUNT)} 以内で入力してください。`);
         field.el.focus();
         return;
       }

@@ -71,11 +71,24 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     clearError();
 
+    const MAX_MAN = 999999; // 万円(金額)の上限
+    const MAX_RATE = 1000; // %(率)の上限
+
     const pnum = (v) => (window.numClean ? window.numClean(v) : parseFloat(v));
     const execCompShift = pnum(document.getElementById('execCompShift').value);
     const socialInsRate = pnum(document.getElementById('socialInsRate').value);
     if (isNaN(execCompShift) || isNaN(socialInsRate)) {
       showError('すべての項目を入力してください。');
+      return;
+    }
+    if (Math.abs(execCompShift) > MAX_MAN) {
+      showError(`金額は ${MAX_MAN.toLocaleString('ja-JP')} 万円以内で入力してください。`);
+      document.getElementById('execCompShift').focus();
+      return;
+    }
+    if (Math.abs(socialInsRate) > MAX_RATE) {
+      showError(`率は ${MAX_RATE.toLocaleString('ja-JP')}% 以内で入力してください。`);
+      document.getElementById('socialInsRate').focus();
       return;
     }
 
@@ -108,6 +121,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isNaN(amount) || isNaN(rate)) {
         showError('すべての項目を入力してください。');
         amountEl.focus();
+        return;
+      }
+      if (Math.abs(amount) > MAX_MAN || Math.abs(rate) > MAX_RATE) {
+        showError('入力値が上限を超えています。金額・率をご確認ください。');
+        (Math.abs(amount) > MAX_MAN ? amountEl : rateEl).focus();
         return;
       }
       const saving = amount * rate / 100;

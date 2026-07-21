@@ -37,9 +37,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const corpTaxRateRnc = num('corpTaxRateRnc');
 
     const fields = { oldBefore, oldAfter, bookReduction, newPremium, deductibleRate, corpTaxRateRnc };
-    for (const field of Object.values(fields)) {
+    const MAX_MAN = 999999; // 万円(金額)の上限
+    const MAX_RATE = 1000; // %(率)の上限
+    const rateKeys = ['deductibleRate', 'corpTaxRateRnc'];
+    for (const [key, field] of Object.entries(fields)) {
       if (isNaN(field.value)) {
         showError('すべての項目を入力してください。');
+        field.el.focus();
+        return;
+      }
+      const isRate = rateKeys.indexOf(key) >= 0;
+      const limit = isRate ? MAX_RATE : MAX_MAN;
+      if (Math.abs(field.value) > limit) {
+        showError(isRate ? `率は ${MAX_RATE.toLocaleString('ja-JP')}% 以内で入力してください。` : `金額は ${MAX_MAN.toLocaleString('ja-JP')} 万円以内で入力してください。`);
         field.el.focus();
         return;
       }
