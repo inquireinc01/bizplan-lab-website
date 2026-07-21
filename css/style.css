@@ -190,16 +190,24 @@ button:active,
 }
 
 /* 試算ボタン: 入力の充足状況に応じて色を切り替える(視認性重視) */
-#stockCalcForm button[type="submit"].btn-ready {
+#stockCalcForm button[type="submit"].btn-ready,
+#dtCalcBtn.btn-ready,
+#tbCalcBtn.btn-ready {
   background-color: var(--color-blue);
 }
-#stockCalcForm button[type="submit"].btn-ready::before {
+#stockCalcForm button[type="submit"].btn-ready::before,
+#dtCalcBtn.btn-ready::before,
+#tbCalcBtn.btn-ready::before {
   background-color: var(--color-blue-dark);
 }
-#stockCalcForm button[type="submit"].btn-not-ready {
+#stockCalcForm button[type="submit"].btn-not-ready,
+#dtCalcBtn.btn-not-ready,
+#tbCalcBtn.btn-not-ready {
   background-color: var(--color-red);
 }
-#stockCalcForm button[type="submit"].btn-not-ready::before {
+#stockCalcForm button[type="submit"].btn-not-ready::before,
+#dtCalcBtn.btn-not-ready::before,
+#tbCalcBtn.btn-not-ready::before {
   background-color: var(--color-red-dark);
 }
 

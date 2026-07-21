@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260722l" />
+<link rel="stylesheet" href="css/style.css?v=20260722m" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -94,6 +94,12 @@
               <li data-num="4" data-target="dstep4"><span class="step-en">STEP 4</span><span class="step-jp">純資産価額</span></li>
               <li data-num="5" data-target="dstep5"><span class="step-en">STEP 5</span><span class="step-jp">配当還元</span></li>
               <li data-num="6" data-target="dstep6"><span class="step-en">STEP 6</span><span class="step-jp">原則的評価</span></li>
+            </ol>
+            <ol id="stepperTdb" class="stepper hidden">
+              <li data-num="1" data-target="tbstep1"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
+              <li data-num="2" data-target="tbstep2"><span class="step-en">STEP 2</span><span class="step-jp">収益・純資産</span></li>
+              <li data-num="3" data-target="tbstep3"><span class="step-en">STEP 3</span><span class="step-jp">類似業種比準の参考値</span></li>
+              <li data-num="4" data-target="tbstep4"><span class="step-en">STEP 4</span><span class="step-jp">株主の状況</span></li>
             </ol>
           </div>
         </aside>
@@ -443,9 +449,7 @@
 
     <!-- ===== 公開情報から推測（TD／TSR） ===== -->
     <div id="tdbArea" class="hidden space-y-10">
-      <div class="notice-box text-sm rounded-lg p-4 leading-relaxed">
-        帝国データバンク・東京商工リサーチ等の公開情報だけを頼りに、大まかな評価額を仮説立てするための簡易ツールです。すべて額面50円で株式数を計算し、時価純資産は類似業種の1株当たり純資産価額を自社の株式数に掛けて概算します。実際の評価額とは差異が生じるため、あくまで仮説立ての参考値としてご利用ください。
-      </div>
+      <p class="text-xs text-gray-500 flex items-center">公開情報から推測（TD／TSR）について<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク・東京商工リサーチ等の公開情報だけを頼りに、大まかな評価額を仮説立てするための簡易ツールです。すべて額面50円で株式数を計算し、時価純資産は類似業種の1株当たり純資産価額を自社の株式数に掛けて概算します。実際の評価額とは差異が生じるため、あくまで仮説立ての参考値としてご利用ください。</span></span></p>
 
       <div class="calc-section bg-white p-6 sm:p-8" id="tbstep1">
         <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 1</span>会社の基本情報</h3>
@@ -571,6 +575,6 @@
 <script src="js/stock-simple.js?v=20260721d"></script>
 <script src="js/stock-detail.js?v=20260721c"></script>
 <script src="js/stock-tdb.js?v=20260722a"></script>
-<script src="js/stock-stepper.js?v=20260721d"></script>
+<script src="js/stock-stepper.js?v=20260722a"></script>
 </body>
 </html>
