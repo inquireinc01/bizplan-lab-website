@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.classList.toggle('is-on', on); // シグナルランプ(.dot)のON/OFF
       btn.setAttribute('aria-pressed', String(on));
       setState(on);
-      if (lastWfCfg) drawWaterfall(lastWfCfg.cfgA, lastWfCfg.cfgB);
+      if (lastWfCfg) drawWaterfall(lastWfCfg.cfgA, lastWfCfg.cfgB, false); // マーク切替は演出なしで即反映
     });
   }
   bindMarkToggle('toggleSalaryMark', function (on) { showSalaryMark = on; });
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 資金の流れ比較グラフ =====
   // 2パターン(①給与準備 / ②金庫株準備)を同一の項目列・同一スケールで、上下2つの独立したSVGに描画する。
   // 最終バーは「法人の残高＋個人の手残り」の積み上げにして合計を強調する
-  function drawWaterfall(cfgA, cfgB) {
+  function drawWaterfall(cfgA, cfgB, animate) {
     const svg1 = document.getElementById('tsWaterfall1');
     const svg2 = document.getElementById('tsWaterfall2');
     if (!svg1 || !svg2) return;
@@ -154,33 +154,38 @@ document.addEventListener('DOMContentLoaded', function () {
     const pxPerMan = bandH / (gMax - gMin);
     const yOf = (v) => baseBottom - (v - gMin) * pxPerMan;
 
-    // 1パターン(バー配列)を独立したSVGとして描画する
+    // 1パターン(バー配列)を独立したSVGとして描画する。
+    // 各要素に列インデックス由来の animation-delay を付け、左(税引前利益)→右(最終残高)へ順に組み上がる演出にする。
     function renderChart(bars) {
       const zeroY = yOf(0);
       const N = bars.length;
       const slotW = plotW / N;
       const barW = Math.min(66, slotW * 0.64);
+      const STEP = 105; // 列ごとの遅延(ms)
       let out = '';
+      // 基準線(ゼロ軸)は演出対象外で常時表示
       out += `<line x1="${plotXStart - 6}" y1="${zeroY.toFixed(1)}" x2="${plotXEnd}" y2="${zeroY.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
 
       bars.forEach(function (b, i) {
         const x = plotXStart + i * slotW + (slotW - barW) / 2;
         const cx = x + barW / 2;
-        // コネクター(前バーのrunAfter → 現バー左端)
+        const barDelay = i * STEP;                          // バーが伸びる
+        const connDelay = Math.max(0, (i - 0.4) * STEP);    // 点線が現バーより少し先に右へ走る
+        const fadeDelay = i * STEP + 130;                   // ラベル・金額はバーが伸びた後にフェードイン
+        // コネクター(前バーのrunAfter → 現バー左端)。点線が左→右に走る
         if (i > 0) {
           const prevB = bars[i - 1];
           const connY = yOf(prevB.runAfter);
           const prevX = plotXStart + (i - 1) * slotW + (slotW - barW) / 2 + barW;
-          out += `<line x1="${prevX.toFixed(1)}" y1="${connY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${connY.toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
+          out += `<line class="wf-conn" style="animation-delay:${connDelay.toFixed(0)}ms" x1="${prevX.toFixed(1)}" y1="${connY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${connY.toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
         }
         // 項目ラベル(基準線下)＋A〜Hタグ(丸囲みレター)
-        out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 17).toFixed(1)}" font-size="12" fill="#56626f" text-anchor="middle">${b.label}</text>`;
+        out += `<text class="wf-fade" style="animation-delay:${fadeDelay}ms" x="${cx.toFixed(1)}" y="${(baseBottom + 17).toFixed(1)}" font-size="12" fill="#56626f" text-anchor="middle">${b.label}</text>`;
         if (b.tag) {
-          out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 34).toFixed(1)}" r="8" fill="#0f2a4a"/>`;
-          out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
+          out += `<circle class="wf-fade" style="animation-delay:${fadeDelay}ms" cx="${cx.toFixed(1)}" cy="${(baseBottom + 34).toFixed(1)}" r="8" fill="#0f2a4a"/>`;
+          out += `<text class="wf-fade" style="animation-delay:${fadeDelay}ms" x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
-        // バー間マーカー(白背景ピル＋引き出し線)。最上部帯に固定し、金額ラベルとの重なりを避ける。
-        // 役員給与(plainMark)・保険加入(checkpoint)ともにそれぞれのトグルに連動。文字数に応じて幅可変。
+        // バー間マーカー(白背景ピル＋引き出し線)。該当列が組み上がった後にフェードイン。トグル連動・幅可変。
         const showPlain = b.plainMark && showSalaryMark;
         const showIns = b.checkpoint && showInsuranceMark;
         if (i < N - 1 && (showPlain || showIns)) {
@@ -190,10 +195,11 @@ document.addEventListener('DOMContentLoaded', function () {
           const label = showPlain ? b.plainMark : b.checkpoint;
           const pillH = 16, pillCY = 16;
           const pillW = Math.max(48, label.length * 10.5 + 16);
-          out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
-          out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
-          out += `<rect x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW.toFixed(1)}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
-          out += `<text x="${mx.toFixed(1)}" y="${(pillCY + 3.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${label}</text>`;
+          const st = `class="wf-fade" style="animation-delay:${fadeDelay + 70}ms"`;
+          out += `<line ${st} x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
+          out += `<circle ${st} cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
+          out += `<rect ${st} x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW.toFixed(1)}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
+          out += `<text ${st} x="${mx.toFixed(1)}" y="${(pillCY + 3.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${label}</text>`;
         }
 
         if (b.type === 'stacked') {
@@ -203,38 +209,39 @@ document.addEventListener('DOMContentLoaded', function () {
           // 最終残高は薄い塗り＋濃い文字。文字がバー幅からはみ出しても白背景上で読めるようにする
           const CORPFILL = '#c6d3e2', CORPTEXT = '#0f2a4a';   // 法人(ネイビー系の淡色)
           const INDIVFILL = '#dfe4ea', INDIVTEXT = '#41505f'; // 個人(スレート系の淡色)
+          const barSt = `class="wf-bar" style="transform-origin:center bottom;animation-delay:${barDelay}ms"`;
+          const txtSt = `class="wf-fade" style="animation-delay:${fadeDelay}ms"`;
           if (b.corp > 0) {
-            out += `<rect x="${x.toFixed(1)}" y="${yCorpTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yZero - yCorpTop).toFixed(1)}" fill="${CORPFILL}" stroke="#b3bfcd" stroke-width="0.75"/>`;
-            out += `<text x="${cx.toFixed(1)}" y="${((yCorpTop + yZero) / 2 + 4).toFixed(1)}" font-size="11" font-weight="bold" fill="${CORPTEXT}" text-anchor="middle">法人 ${fmtNum(b.corp)}</text>`;
+            out += `<rect ${barSt} x="${x.toFixed(1)}" y="${yCorpTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yZero - yCorpTop).toFixed(1)}" fill="${CORPFILL}" stroke="#b3bfcd" stroke-width="0.75"/>`;
+            out += `<text ${txtSt} x="${cx.toFixed(1)}" y="${((yCorpTop + yZero) / 2 + 4).toFixed(1)}" font-size="11" font-weight="bold" fill="${CORPTEXT}" text-anchor="middle">法人 ${fmtNum(b.corp)}</text>`;
           }
           if (b.indiv > 0) {
-            out += `<rect x="${x.toFixed(1)}" y="${yTotalTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yCorpTop - yTotalTop).toFixed(1)}" fill="${INDIVFILL}" stroke="#b3bfcd" stroke-width="0.75"/>`;
-            out += `<text x="${cx.toFixed(1)}" y="${((yTotalTop + yCorpTop) / 2 + 4).toFixed(1)}" font-size="11" font-weight="bold" fill="${INDIVTEXT}" text-anchor="middle">個人 ${fmtNum(b.indiv)}</text>`;
+            out += `<rect ${barSt} x="${x.toFixed(1)}" y="${yTotalTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yCorpTop - yTotalTop).toFixed(1)}" fill="${INDIVFILL}" stroke="#b3bfcd" stroke-width="0.75"/>`;
+            out += `<text ${txtSt} x="${cx.toFixed(1)}" y="${((yTotalTop + yCorpTop) / 2 + 4).toFixed(1)}" font-size="11" font-weight="bold" fill="${INDIVTEXT}" text-anchor="middle">個人 ${fmtNum(b.indiv)}</text>`;
           }
           // 合計を上に強調表示
-          out += `<text x="${cx.toFixed(1)}" y="${(yTotalTop - 8).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a" text-anchor="middle">計 ${fmtNum(b.total)}</text>`;
+          out += `<text ${txtSt} x="${cx.toFixed(1)}" y="${(yTotalTop - 8).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a" text-anchor="middle">計 ${fmtNum(b.total)}</text>`;
         } else if (b.zero) {
-          // 発生しない項目: バーなし、基準線レベルの通過線のみ
-          out += `<line x1="${x.toFixed(1)}" y1="${yOf(b.runAfter).toFixed(1)}" x2="${(x + barW).toFixed(1)}" y2="${yOf(b.runAfter).toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
+          // 発生しない項目: バーなし、基準線レベルの通過線のみ(点線が右へ走る)
+          out += `<line class="wf-conn" style="animation-delay:${connDelay.toFixed(0)}ms" x1="${x.toFixed(1)}" y1="${yOf(b.runAfter).toFixed(1)}" x2="${(x + barW).toFixed(1)}" y2="${yOf(b.runAfter).toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
         } else {
           const yTop = yOf(b.top), yBot = yOf(b.bottom);
           const h = Math.max(1, yBot - yTop);
-          out += `<rect x="${x.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${b.color}"/>`;
+          const originEdge = (b.color === RED) ? 'top' : 'bottom'; // 減少バーは上端から、増加/起点は下端から伸ばす
+          out += `<rect class="wf-bar" style="transform-origin:center ${originEdge};animation-delay:${barDelay}ms" x="${x.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${b.color}"/>`;
           const amtColor = b.color === RED ? '#a83d3d' : (b.color === BLUE ? '#2d5580' : '#0f2a4a');
-          out += `<text x="${cx.toFixed(1)}" y="${(yTop - 6).toFixed(1)}" font-size="12" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amount}</text>`;
+          out += `<text class="wf-fade" style="animation-delay:${fadeDelay}ms" x="${cx.toFixed(1)}" y="${(yTop - 6).toFixed(1)}" font-size="12" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amount}</text>`;
         }
       });
       return out;
     }
 
+    // animate!==false のときだけ、左→右に組み上がる演出(.wf-anim)を有効にする。
+    // クラスを先に設定してから中身を入れ替えることで、生成された各要素がその場でアニメーション再生する。
+    const doAnim = animate !== false;
+    [svg1, svg2].forEach(function (s) { s.classList.toggle('wf-anim', doAnim); });
     svg1.innerHTML = renderChart(barsA);
     svg2.innerHTML = renderChart(barsB);
-    // 再描画をなめらかに見せる(フェードアニメーションを再生し直す)
-    [svg1, svg2].forEach(function (s) {
-      s.classList.remove('wf-render');
-      void s.getBoundingClientRect(); // リフローを強制してアニメーションを確実に再生
-      s.classList.add('wf-render');
-    });
   }
 
   // 入力が変わるたびにリアルタイムで再計算・再描画する
