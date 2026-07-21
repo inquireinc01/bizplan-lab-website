@@ -640,14 +640,17 @@ img {
   animation: barGrow 0.5s cubic-bezier(0.22, 1.4, 0.4, 1) backwards;
 }
 
-/* 評価額タイル(クリックで選択、JSが背景色・文字色を切り替える) */
+/* 評価額タイル: 通常はネイビーの枠囲み+白背景+ネイビー文字で統一。選択時のみ枠がグラフの棒の色になる(JSがborder-colorを切り替え) */
 .metric-tile {
   position: relative;
   cursor: pointer;
-  transition: background-color 0.15s ease, box-shadow 0.2s ease, color 0.15s ease, transform 0.2s ease;
+  background-color: #fff;
+  border: 1.5px solid var(--color-navy);
+  transition: background-color 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.15s ease, transform 0.2s ease;
 }
 .metric-tile .tile-label {
   margin-left: 0.55rem;
+  color: var(--color-navy);
   transition: color 0.15s ease;
 }
 .metric-tile .tile-value {
@@ -655,16 +658,24 @@ img {
   text-align: right;
   transition: color 0.15s ease;
 }
-/* 老眼対応: 数字だけ約2倍に拡大し、単位「万円」は従来サイズのまま */
+/* 老眼対応: 数字だけ約2倍に拡大し、単位「万円」は従来サイズのまま。未選択時はブルーグレー、選択時はネイビーで強調 */
 .metric-tile .tile-value .tile-num {
   font-size: 1.7rem;
   font-weight: 800;
   line-height: 1;
+  color: var(--color-slate);
+  transition: color 0.15s ease;
 }
 .metric-tile .tile-value .tile-unit {
   font-size: 0.875rem;
   font-weight: 700;
   margin-left: 0.2rem;
+  color: var(--color-slate);
+  transition: color 0.15s ease;
+}
+.metric-tile.tile-selected .tile-value .tile-num,
+.metric-tile.tile-selected .tile-value .tile-unit {
+  color: var(--color-navy);
 }
 
 /* 選択状態は左上のランプ点灯のみで表現する(タイル自体の色は変えない)。点灯色は指標に関わらず鮮やかなブルーで統一 */

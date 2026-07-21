@@ -216,27 +216,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const key = btn.dataset.metric;
       const color = btn.dataset.color;
       const selected = selectedMetrics.includes(key);
-      const isB = key.endsWith('_B');
-      const labelEl = btn.querySelector('.tile-label');
-      const valueEl = btn.querySelector('.tile-value');
       const lamp = btn.querySelector('.tile-lamp');
-      // 選択の表示はボタン内左上のランプのみで行う(ボタン自体の色はシナリオA/Bで固定のまま変えない、点灯色は常に鮮やかなブルー)
-      if (lamp) {
-        lamp.classList.toggle('is-lit', selected);
-      }
-      if (isB) {
-        // シナリオB(対策後): もとの色を地に白抜き文字で常時強調
-        btn.style.backgroundColor = color;
-        btn.style.boxShadow = 'none';
-        if (labelEl) labelEl.style.color = 'rgba(255,255,255,0.85)';
-        if (valueEl) valueEl.style.color = '#ffffff';
-      } else {
-        // シナリオA(通常時): 淡い地に色枠
-        btn.style.backgroundColor = hexToRgba(color, 0.1);
-        btn.style.boxShadow = `inset 0 0 0 1.5px ${color}`;
-        if (labelEl) labelEl.style.color = '';
-        if (valueEl) valueEl.style.color = '';
-      }
+      // 通常時はネイビー枠+白背景+ネイビー文字で全タイル共通。選択時のみランプ点灯+枠がグラフの棒の色になる
+      if (lamp) lamp.classList.toggle('is-lit', selected);
+      btn.classList.toggle('tile-selected', selected);
+      btn.style.borderColor = selected ? color : '';
     });
   }
 
