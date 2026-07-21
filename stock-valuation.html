@@ -276,8 +276,7 @@
     <div id="detailArea" class="hidden space-y-10">
         <!-- 詳細1: 会社規模の判定(第1表の2) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep1">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 1</span>会社規模（Lの割合）の判定</h3>
-          <p class="text-xs text-gray-500 mb-5">第1表の2「3. 会社の規模（Lの割合）の判定」に対応。総資産価額・従業員数・取引金額から会社規模区分と併用方式のLの割合を自動判定します。</p>
+          <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 1</span>会社規模（Lの割合）の判定<span class="help-tip" tabindex="0">?<span class="help-text">第1表の2「3. 会社の規模（Lの割合）の判定」に対応。総資産価額・従業員数・取引金額から会社規模区分と併用方式のLの割合を自動判定します。</span></span></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtBiz">業種<span class="help-tip" tabindex="0">?<span class="help-text">業種によって会社規模の判定基準(総資産・取引金額のしきい値)が変わります。主たる事業の業種を選択してください。</span></span></label>
@@ -316,8 +315,7 @@
 
         <!-- 詳細2: 特定の評価会社の判定(第2表) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep2">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 2</span>特定の評価会社の判定</h3>
-          <p class="text-xs text-gray-500 mb-5">第2表に対応。株式等保有特定会社・土地保有特定会社・開業後3年未満等に該当すると、原則として純資産価額方式で評価します(類似業種比準は使えません)。</p>
+          <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 2</span>特定の評価会社の判定<span class="help-tip" tabindex="0">?<span class="help-text">第2表に対応。株式等保有特定会社・土地保有特定会社・開業後3年未満等に該当すると、原則として純資産価額方式で評価します(類似業種比準は使えません)。</span></span></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtTotalAssetsTax">相続税評価による総資産価額（千円）<span class="help-tip" tabindex="0">?<span class="help-text">第5表①に対応。相続税評価額ベースの総資産を千円単位で入力します。株式等保有割合・土地保有割合の分母になります。</span></span></label>
@@ -344,8 +342,7 @@
 
         <!-- 詳細3: 類似業種比準(第4表) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep3">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 3</span>類似業種比準価額の計算</h3>
-          <p class="text-xs text-gray-500 mb-5">第4表に対応。A〜Dは国税庁公表の業種目データ、b〜dは自社の1株(50円)当たりの金額です。斟酌率は会社規模から自動設定されます。</p>
+          <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 3</span>類似業種比準価額の計算<span class="help-tip" tabindex="0">?<span class="help-text">第4表に対応。A〜Dは国税庁公表の業種目データ、b〜dは自社の1株(50円)当たりの金額です。斟酌率は会社規模から自動設定されます。</span></span></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtA">類似業種の株価 A（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」で公表される、該当業種の株価(A)。月ごとに公表されます。</span></span></label>
@@ -385,8 +382,7 @@
 
         <!-- 詳細4: 純資産価額(第5表・含み益のみ) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep4">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 4</span>純資産価額の計算（含み益を入力）</h3>
-          <p class="text-xs text-gray-500 mb-5">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する38%を控除して算定します。</p>
+          <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 4</span>純資産価額の計算（含み益を入力）<span class="help-tip" tabindex="0">?<span class="help-text">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する38%を控除して算定します。</span></span></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtBookNet">帳簿価額による純資産（総資産-負債）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期末の貸借対照表上の純資産(帳簿価額の総資産-負債)を万円単位で入力します。</span></span></label>
@@ -417,8 +413,7 @@
 
         <!-- 詳細5: 配当還元(第3表) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep5">
-          <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 5</span>配当還元価額（参考）</h3>
-          <p class="text-xs text-gray-500 mb-5">第3表に対応。少数株主(同族株主等以外)が取得する場合に用いる特例的評価。原則的評価とは別枠の参考値です。</p>
+          <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 5</span>配当還元価額（参考）<span class="help-tip" tabindex="0">?<span class="help-text">第3表に対応。少数株主(同族株主等以外)が取得する場合に用いる特例的評価。原則的評価とは別枠の参考値です。</span></span></h3>
           <div class="notice-box text-sm rounded-lg p-4 flex items-center justify-between">
             <span class="flex items-center">1株当たり配当還元価額<span class="help-tip" tabindex="0">?<span class="help-text">（1株(50円)当たり年配当金額 ÷ 10%）×（1株当たり資本金等 ÷ 50円）で算定。年配当金額が2円50銭未満の場合は2円50銭とします。上の「自社の配当 b」「資本金等」「株式数」から自動計算します。</span></span></span>
             <span id="dtHaitoResult" class="font-bold text-[#0f2a4a]">-</span>
@@ -466,8 +461,7 @@
       <p class="text-xs text-gray-500 flex items-center">公開情報から入力（TD／TSR）について<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク・東京商工リサーチ等の公開情報だけを頼りに、大まかな評価額を仮説立てするための簡易ツールです。すべて額面50円で株式数を計算し、時価純資産は類似業種の1株当たり純資産価額を自社の株式数に掛けて概算します。実際の評価額とは差異が生じるため、あくまで仮説立ての参考値としてご利用ください。</span></span></p>
 
       <div class="calc-section bg-white p-6 sm:p-8" id="tbstep1">
-        <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 1</span>会社の基本情報</h3>
-        <p class="text-xs text-gray-500 mb-5">帝国データバンク等の企業概要ページに記載の業種・資本金・売上高・従業員数を入力します。会社規模の判定には総資産を使わず、売上高・従業員数のうち有利な方(会社規模が大きく判定される方)を採用します。</p>
+        <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 1</span>会社の基本情報<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク等の企業概要ページに記載の業種・資本金・売上高・従業員数を入力します。会社規模の判定には総資産を使わず、売上高・従業員数のうち有利な方(会社規模が大きく判定される方)を採用します。</span></span></h3>
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbBiz">業種<span class="help-tip" tabindex="0">?<span class="help-text">業種によって会社規模の判定基準(売上高のしきい値)が変わります。主たる事業の業種を選択してください。</span></span></label>
@@ -493,8 +487,7 @@
       </div>
 
       <div class="calc-section bg-white p-6 sm:p-8" id="tbstep2">
-        <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 2</span>収益・純資産</h3>
-        <p class="text-xs text-gray-500 mb-5">帝国データバンク等の決算情報欄に記載の税引前利益・配当・純資産を入力します。</p>
+        <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 2</span>収益・純資産<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク等の決算情報欄に記載の税引前利益・配当・純資産を入力します。</span></span></h3>
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbProfit">税引前利益（円）<span class="help-tip" tabindex="0">?<span class="help-text">直近期の税引前当期利益。類似業種比準価額の計算(自社の1株当たり利益金額)に使います。</span></span></label>
@@ -512,8 +505,7 @@
       </div>
 
       <div class="calc-section bg-white p-6 sm:p-8" id="tbstep3">
-        <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 3</span>類似業種比準の参考値</h3>
-        <p class="text-xs text-gray-500 mb-5">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」から、該当業種の数値を転記してください。時価純資産は、このDの値に自社の株式数(額面50円換算)を掛けて概算します。</p>
+        <h3 class="font-bold text-base mb-5 flex items-center"><span class="step-badge">STEP 3</span>類似業種比準の参考値<span class="help-tip" tabindex="0">?<span class="help-text">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」から、該当業種の数値を転記してください。時価純資産は、このDの値に自社の株式数(額面50円換算)を掛けて概算します。</span></span></h3>
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbA">類似業種の株価 A（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの該当業種の株価(A)。</span></span></label>

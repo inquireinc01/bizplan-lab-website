@@ -282,7 +282,7 @@
 
         <!-- 推移表 -->
         <div class="mt-8">
-          <h4 class="font-bold text-sm mb-2">評価額推移表(0〜30年・総額・万円)</h4>
+          <h4 class="font-bold text-sm mb-2 flex items-center">評価額推移表(0〜30年・総額・万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。</span></span></h4>
           <div class="overflow-auto border border-gray-200 rounded-lg" style="max-height:360px">
             <table class="w-full text-xs" id="trendTable">
               <colgroup>
@@ -310,9 +310,6 @@
               <tbody id="trendTableBody"></tbody>
             </table>
           </div>
-          <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-            ※ 相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。
-          </p>
         </div>
 
         <!-- 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト、年数を選択可能) -->
@@ -343,7 +340,7 @@
             </table>
           </div>
 
-          <h4 class="font-bold text-sm mb-2 mt-6">株主の状況</h4>
+          <h4 class="font-bold text-sm mb-2 mt-6 flex items-center">株主の状況<span class="help-tip" tabindex="0">?<span class="help-text">上で指定した年数後時点の試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</span></span></h4>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse min-w-[640px]">
               <thead>
@@ -367,7 +364,6 @@
               </tfoot>
             </table>
           </div>
-          <p class="text-xs text-gray-400 mt-2 leading-relaxed">※ 上で指定した年数後時点の試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</p>
         </div>
 
     </div>
