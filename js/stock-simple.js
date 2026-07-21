@@ -53,6 +53,41 @@ document.addEventListener('DOMContentLoaded', function () {
     if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
     return tr;
   }
+
+  // 株数⇔比率: 一方を入力すると発行済株式数を基準にもう一方へ自動反映
+  function syncRatioFromShares(row, baseShares) {
+    var shares = num(row.querySelector('.hs').value);
+    if (isNaN(shares) || isNaN(baseShares) || baseShares <= 0) return;
+    row.querySelector('.hr').value = ((shares / baseShares) * 100).toFixed(2);
+  }
+  function syncSharesFromRatio(row, baseShares) {
+    var ratio = num(row.querySelector('.hr').value);
+    if (isNaN(ratio) || isNaN(baseShares) || baseShares <= 0) return;
+    row.querySelector('.hs').value = String(Math.round((ratio / 100) * baseShares));
+  }
+  function resyncAllHolderRows() {
+    var baseShares = num(document.getElementById('ssShares').value);
+    holderBody.querySelectorAll('.ss-holder').forEach(function (row) {
+      if (!isNaN(num(row.querySelector('.hs').value))) {
+        syncRatioFromShares(row, baseShares);
+      } else if (!isNaN(num(row.querySelector('.hr').value))) {
+        syncSharesFromRatio(row, baseShares);
+      }
+    });
+    if (window.numReformatAll) window.numReformatAll();
+  }
+  holderBody.addEventListener('input', function (e) {
+    var row = e.target.closest('.ss-holder');
+    if (!row) return;
+    var baseShares = num(document.getElementById('ssShares').value);
+    if (e.target.classList.contains('hs')) {
+      syncRatioFromShares(row, baseShares);
+    } else if (e.target.classList.contains('hr')) {
+      syncSharesFromRatio(row, baseShares);
+    }
+  });
+  document.getElementById('ssShares').addEventListener('input', resyncAllHolderRows);
+
   // 株数・比率のどちらの入力でも計算できる(株数優先。株数が空なら比率×発行済株式数)
   function recalcHolders() {
     var rows = holderBody.querySelectorAll('.ss-holder');
@@ -178,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 初期化 =====
   var restored = restore();
   if (!restored) { seedEval(); seedHolders(); }
+  resyncAllHolderRows();
   recalcAll();
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');

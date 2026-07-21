@@ -10,8 +10,11 @@ document.addEventListener('DOMContentLoaded', function () {
   var num = function (id) {
     var el = document.getElementById(id);
     if (!el) return NaN;
-    return window.numClean ? window.numClean(el.value) : parseFloat(String(el.value).replace(/,/g, ''));
+    return numVal(el.value);
   };
+  function numVal(v) {
+    return window.numClean ? window.numClean(v) : parseFloat(String(v == null ? '' : v).replace(/,/g, ''));
+  }
   var fmt = function (n) { return window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'); };
 
   // ===== 会社規模の判定(総資産を使わず、売上高・従業員数のうち有利な方を採用) =====
@@ -57,6 +60,45 @@ document.addEventListener('DOMContentLoaded', function () {
     return tr;
   }
   document.getElementById('tbAddHolder').addEventListener('click', function () { holderRow({}); });
+
+  // 株数⇔比率: 一方を入力すると発行済株式数(資本金÷額面50円で概算)を基準にもう一方へ自動反映
+  function baseSharesFromCapital() {
+    var capital = num('tbCapital');
+    return (!isNaN(capital) && capital > 0) ? capital / 50 : NaN;
+  }
+  function syncRatioFromShares(row, baseShares) {
+    var shares = numVal(row.querySelector('.hs').value);
+    if (isNaN(shares) || isNaN(baseShares) || baseShares <= 0) return;
+    row.querySelector('.hr').value = ((shares / baseShares) * 100).toFixed(2);
+  }
+  function syncSharesFromRatio(row, baseShares) {
+    var ratio = numVal(row.querySelector('.hr').value);
+    if (isNaN(ratio) || isNaN(baseShares) || baseShares <= 0) return;
+    row.querySelector('.hs').value = String(Math.round((ratio / 100) * baseShares));
+  }
+  function resyncAllHolderRows() {
+    var baseShares = baseSharesFromCapital();
+    holderBody.querySelectorAll('.tb-holder').forEach(function (row) {
+      if (!isNaN(numVal(row.querySelector('.hs').value))) {
+        syncRatioFromShares(row, baseShares);
+      } else if (!isNaN(numVal(row.querySelector('.hr').value))) {
+        syncSharesFromRatio(row, baseShares);
+      }
+    });
+    if (window.numReformatAll) window.numReformatAll();
+  }
+  holderBody.addEventListener('input', function (e) {
+    var row = e.target.closest('.tb-holder');
+    if (!row) return;
+    var baseShares = baseSharesFromCapital();
+    if (e.target.classList.contains('hs')) {
+      syncRatioFromShares(row, baseShares);
+    } else if (e.target.classList.contains('hr')) {
+      syncSharesFromRatio(row, baseShares);
+    }
+  });
+  var tbCapitalEl = document.getElementById('tbCapital');
+  if (tbCapitalEl) tbCapitalEl.addEventListener('input', resyncAllHolderRows);
 
   function collectHolders() {
     var holders = [];
@@ -161,4 +203,5 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   restoreOwn();
+  resyncAllHolderRows();
 });

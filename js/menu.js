@@ -64,4 +64,16 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
+  // ===== 入力欄フォーカス時に全選択(そのまま入力すれば上書きできるように) =====
+  const SKIP_TYPES = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'range', 'color', 'date', 'month', 'week', 'time'];
+  document.addEventListener('focusin', function (e) {
+    const el = e.target;
+    const isTextInput = el instanceof HTMLInputElement && !SKIP_TYPES.includes(el.type);
+    const isTextarea = el instanceof HTMLTextAreaElement;
+    if (!isTextInput && !isTextarea) return;
+    setTimeout(function () {
+      el.select();
+    }, 0);
+  });
 });
