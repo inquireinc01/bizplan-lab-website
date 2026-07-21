@@ -24,6 +24,49 @@ document.addEventListener('DOMContentLoaded', function () {
     errorArea.textContent = '';
   };
 
+  // ===== 法人の現金(死亡保険金額)の自動計算 =====
+  // ②で法人が遺族から金庫株を買い取る(stockCorpValue)ために必要な最低額。
+  // s2_corpAfterInsurance = cash*(1-c)*(1 + g*(1-c)) がstockCorpValue以上である必要がある。
+  function computeCashMin() {
+    const c = num('corpTaxRate').value / 100;
+    const g = num('insuranceGainRate').value / 100;
+    const stockCorp = num('stockCorpValue').value;
+    if (isNaN(c) || isNaN(g) || isNaN(stockCorp)) return { min: NaN, auto: NaN };
+    const denom = (1 - c) * (1 + g * (1 - c));
+    if (!(denom > 0) || !(stockCorp > 0)) return { min: NaN, auto: NaN };
+    const min = stockCorp / denom;
+    return { min: min, auto: Math.ceil(min / 1000) * 1000 }; // 自動入力は1000万円単位で切上げ
+  }
+
+  let cashManual = false; // ガード状態(false=自動計算, true=手入力)
+  const cashInput = document.getElementById('cash');
+  const cashLockBtn = document.getElementById('cashLockBtn');
+  const cashHint = document.getElementById('cashHint');
+
+  function refreshAutoCash() {
+    if (cashManual) return;
+    const r = computeCashMin();
+    if (!isNaN(r.auto)) {
+      cashInput.value = r.auto;
+      if (window.numReformatAll) window.numReformatAll();
+    }
+  }
+  function setCashMode(manual) {
+    cashManual = manual;
+    cashInput.readOnly = !manual;
+    cashInput.classList.toggle('bg-gray-50', !manual);
+    if (cashLockBtn) cashLockBtn.textContent = manual ? '自動計算に戻す' : '手入力する';
+    if (cashHint) cashHint.textContent = manual
+      ? '手入力モード(金庫株の買取に必要な最低額を下回るとエラーになります)'
+      : '他の項目から自動計算(金庫株の買取に必要な最低額を1000万円単位で切上げ)';
+    if (!manual) refreshAutoCash();
+  }
+  if (cashLockBtn) cashLockBtn.addEventListener('click', function () { setCashMode(!cashManual); });
+  ['corpTaxRate', 'insuranceGainRate', 'stockCorpValue'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', refreshAutoCash);
+  });
+
   // ===== ウォーターフォール比較グラフ =====
   // 2パターン(①給与準備 / ②金庫株準備)を同一の項目列・同一スケールで上下2段に描画し、
   // 最終バーは「法人の残高＋個人の手残り」の積み上げにして合計を強調する
@@ -174,6 +217,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // 法人の現金が、②で遺族から金庫株を買い取れる最低額を下回っていないか(手入力時のガード)
+    const cashReq = computeCashMin();
+    if (!isNaN(cashReq.min) && cash.value < cashReq.min) {
+      showError(`法人の現金(死亡保険金額)が不足しています。②で金庫株を買い取る(遺族からの自社株買い)には、最低 ${man(Math.ceil(cashReq.min))} が必要です。`);
+      cash.el.focus();
+      return;
+    }
+
     // --- ① 給与を原資として自社株の相続税を負担する場合 ---
     const s1_salary = cash.value; // 給与として全額支給
     const s1_salaryTax = s1_salary * incomeTaxRate.value / 100; // 所得税・住民税・社保
@@ -298,6 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
       form.reset();
+      setCashMode(false); // 現金は自動計算モードに戻して再計算
       resultArea.classList.add('hidden');
       clearError();
     });
@@ -341,7 +393,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
-  // ===== 初期表示: ダミー値で自動試算(スクロールは抑制) =====
+  // ===== 初期化: 法人の現金を自動計算モードで初期化し、ダミー値で自動試算(スクロールは抑制) =====
+  setCashMode(false);
   suppressScroll = true;
   form.requestSubmit();
   suppressScroll = false;
