@@ -36,19 +36,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // 起点バー + 各フローバー + 最終積み上げバー(法人+個人) を構築する
     function buildBars(cfg) {
       let running = cfg.start;
-      const bars = [{ type: 'single', label: '現金', top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false }];
+      const bars = [{ type: 'single', label: '現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false }];
       cfg.flows.forEach(function (f) {
         const prev = running;
         running += f.delta;
         bars.push({
-          type: 'single', label: f.label,
+          type: 'single', label: f.label, tag: f.tag,
           top: Math.max(prev, running), bottom: Math.min(prev, running),
           color: f.delta >= 0 ? BLUE : RED,
           amount: f.delta === 0 ? '' : ((f.delta >= 0 ? '+' : '△') + fmtNum(Math.abs(f.delta))),
           runAfter: running, zero: f.delta === 0,
+          checkpoint: f.checkpoint || null,
         });
       });
-      bars.push({ type: 'stacked', label: cfg.finalLabel, corp: cfg.corp, indiv: cfg.indiv, total: cfg.corp + cfg.indiv, runAfter: cfg.corp + cfg.indiv });
+      bars.push({ type: 'stacked', label: cfg.finalLabel, tag: cfg.finalTag, corp: cfg.corp, indiv: cfg.indiv, total: cfg.corp + cfg.indiv, runAfter: cfg.corp + cfg.indiv });
       return bars;
     }
 
@@ -96,8 +97,21 @@ document.addEventListener('DOMContentLoaded', function () {
           const prevX = plotXStart + (i - 1) * slotW + (slotW - barW) / 2 + barW;
           out += `<line x1="${prevX.toFixed(1)}" y1="${connY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${connY.toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
         }
-        // 項目ラベル(基準線下)
+        // 項目ラベル(基準線下)＋A〜Hタグ(丸囲みレター)
         out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 16).toFixed(1)}" font-size="10" fill="#56626f" text-anchor="middle">${b.label}</text>`;
+        if (b.tag) {
+          out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 32).toFixed(1)}" r="7" fill="#0f2a4a"/>`;
+          out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 35).toFixed(1)}" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
+        }
+        // 保険加入チェックポイント(このバーと次バーの間に細いマーカー＋ラベル)
+        if (b.checkpoint && i < N - 1) {
+          const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
+          const mx = (x + barW + nextLeft) / 2;
+          const my = yOf(b.runAfter);
+          out += `<line x1="${mx.toFixed(1)}" y1="${(my - 6).toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(my + 6).toFixed(1)}" stroke="#3b6ea5" stroke-width="1.5"/>`;
+          out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
+          out += `<text x="${mx.toFixed(1)}" y="${(my - 10).toFixed(1)}" font-size="8" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${b.checkpoint}</text>`;
+        }
 
         if (b.type === 'stacked') {
           const yZero = yOf(0);
@@ -189,24 +203,38 @@ document.addEventListener('DOMContentLoaded', function () {
     const s2_total = s2_corpFinal + s2_individualFinal; // 法人+個人 合計残高
     const s1_total = s1_final; // 法人残高0のため個人のみ
 
-    // --- 結果表示 ---
-    document.getElementById('s1Salary').textContent = man(s1_salary);
-    document.getElementById('s1SalaryTax').textContent = man(s1_salaryTax);
-    document.getElementById('s1PresidentNet').textContent = man(s1_presidentNet);
-    document.getElementById('s1InsuranceGain').textContent = man(s1_insuranceGain);
-    document.getElementById('s1CashTax').textContent = man(s1_cashInheritanceTax);
-    document.getElementById('s1StockTax').textContent = man(s1_stockInheritanceTax);
-    document.getElementById('s1Final').textContent = man(s1_final);
+    // --- 結果表示(左右で同じ項目・同じものさしの統一表) ---
+    const RED = '#a83d3d', BLUE = '#2d5580', GRAY = '#8d97a3', NAVY = '#0f2a4a';
+    const fill = (id, text, color) => { const el = document.getElementById(id); if (el) { el.textContent = text; el.style.color = color || ''; } };
+    const ded = (n) => (n >= 0 ? '△' + man(n) : '＋' + man(-n)); // 減算(マイナスは還付として＋)
+    const add = (n) => (n >= 0 ? '＋' + man(n) : '△' + man(-n)); // 加算
+    const zeroC = (n) => (n === 0 ? GRAY : null);
 
-    document.getElementById('s2CorpTax').textContent = man(s2_corpTax);
-    document.getElementById('s2InsuranceGain').textContent = man(s2_insuranceGain);
-    document.getElementById('s2InsuranceTax').textContent = man(s2_insuranceTax);
-    document.getElementById('s2Buyback').textContent = man(s2_buyback);
-    document.getElementById('s2CorpFinal').textContent = man(s2_corpFinal);
-    document.getElementById('s2StockTax').textContent = man(s2_stockInheritanceTax);
-    document.getElementById('s2CapitalGainsTax').textContent = man(s2_capitalGainsTax);
-    document.getElementById('s2IndividualFinal').textContent = man(s2_individualFinal);
-    document.getElementById('s2Total').textContent = man(s2_total);
+    // ① 給与を原資に個人で負担
+    fill('s1Cash', man(s1_salary), NAVY);
+    fill('s1TaxSalary', s1_salaryTax === 0 ? man(0) : ded(s1_salaryTax), s1_salaryTax === 0 ? GRAY : RED);
+    fill('s1TaxCorp', man(0), GRAY);
+    fill('s1Insured', man(s1_presidentNet), NAVY);
+    fill('s1Gain', s1_insuranceGain === 0 ? man(0) : add(s1_insuranceGain), s1_insuranceGain === 0 ? GRAY : BLUE);
+    fill('s1TaxDiff', man(0), GRAY);
+    fill('s1TaxInherit', ded(s1_cashInheritanceTax + s1_stockInheritanceTax), RED);
+    fill('s1TaxCapGain', man(0), GRAY);
+    fill('s1BalCorp', man(0), GRAY);
+    fill('s1BalIndiv', man(s1_final), NAVY);
+    fill('s1BalTotal', man(s1_final), BLUE);
+
+    // ② 金庫株を原資に法人で負担
+    fill('s2Cash', man(cash.value), NAVY);
+    fill('s2TaxSalary', man(0), GRAY);
+    fill('s2TaxCorp', ded(s2_corpTax), RED);
+    fill('s2Insured', man(s2_afterCorpTax), NAVY);
+    fill('s2Gain', add(s2_insuranceGain), BLUE);
+    fill('s2TaxDiff', ded(s2_insuranceTax), RED);
+    fill('s2TaxInherit', ded(s2_stockInheritanceTax), RED);
+    fill('s2TaxCapGain', ded(s2_capitalGainsTax), s2_capitalGainsTax >= 0 ? RED : BLUE);
+    fill('s2BalCorp', man(s2_corpFinal), NAVY);
+    fill('s2BalIndiv', man(s2_individualFinal), NAVY);
+    fill('s2BalTotal', man(s2_total), BLUE);
 
     document.getElementById('sumS1Total').textContent = man(s1_total);
     document.getElementById('sumS2Total').textContent = man(s2_total);
@@ -220,37 +248,45 @@ document.addEventListener('DOMContentLoaded', function () {
     drawWaterfall(
       {
         title: '① 給与を原資に個人で負担',
-        start: cash.value,
+        start: cash.value, startTag: 'A',
         flows: [
-          { label: '給与課税', delta: -s1_salaryTax },
-          { label: '法人税', delta: 0 },
-          { label: '保険差益', delta: s1_insuranceGain },
-          { label: '差益課税', delta: 0 },
-          { label: '相続税', delta: -(s1_cashInheritanceTax + s1_stockInheritanceTax) },
-          { label: '譲渡所得税', delta: 0 },
+          { label: '給与課税', delta: -s1_salaryTax, tag: 'B' },
+          { label: '法人税', delta: 0, tag: 'C', checkpoint: '保険加入' },
+          { label: '保険差益', delta: s1_insuranceGain, tag: 'D' },
+          { label: '差益課税', delta: 0, tag: 'E' },
+          { label: '相続税', delta: -(s1_cashInheritanceTax + s1_stockInheritanceTax), tag: 'F' },
+          { label: '譲渡所得税', delta: 0, tag: 'G' },
         ],
-        finalLabel: '最終残高',
+        finalLabel: '最終残高', finalTag: 'H',
         corp: 0,
         indiv: s1_final,
       },
       {
         title: '② 金庫株を原資に法人で負担',
-        start: cash.value,
+        start: cash.value, startTag: 'A',
         flows: [
-          { label: '給与課税', delta: 0 },
-          { label: '法人税', delta: -s2_corpTax },
-          { label: '保険差益', delta: s2_insuranceGain },
-          { label: '差益課税', delta: -s2_insuranceTax },
-          { label: '相続税', delta: -s2_stockInheritanceTax },
-          { label: '譲渡所得税', delta: -s2_capitalGainsTax },
+          { label: '給与課税', delta: 0, tag: 'B' },
+          { label: '法人税', delta: -s2_corpTax, tag: 'C', checkpoint: '保険加入' },
+          { label: '保険差益', delta: s2_insuranceGain, tag: 'D' },
+          { label: '差益課税', delta: -s2_insuranceTax, tag: 'E' },
+          { label: '相続税', delta: -s2_stockInheritanceTax, tag: 'F' },
+          { label: '譲渡所得税', delta: -s2_capitalGainsTax, tag: 'G' },
         ],
-        finalLabel: '最終残高',
+        finalLabel: '最終残高', finalTag: 'H',
         corp: s2_corpFinal,
         indiv: s2_individualFinal,
       }
     );
 
-    lastResult = { diff };
+    lastResult = {
+      diff,
+      s1_salary: s1_salary, s1_salaryTax: s1_salaryTax, s1_presidentNet: s1_presidentNet,
+      s1_insuranceGain: s1_insuranceGain, s1_cashInheritanceTax: s1_cashInheritanceTax,
+      s1_stockInheritanceTax: s1_stockInheritanceTax, s1_final: s1_final, s1_total: s1_total,
+      s2_corpTax: s2_corpTax, s2_insuranceGain: s2_insuranceGain, s2_insuranceTax: s2_insuranceTax,
+      s2_buyback: s2_buyback, s2_corpFinal: s2_corpFinal, s2_stockInheritanceTax: s2_stockInheritanceTax,
+      s2_capitalGainsTax: s2_capitalGainsTax, s2_individualFinal: s2_individualFinal, s2_total: s2_total,
+    };
 
     resultArea.classList.remove('hidden');
     if (!suppressScroll) {
@@ -277,28 +313,29 @@ document.addEventListener('DOMContentLoaded', function () {
       const now = new Date();
       document.getElementById('pDate').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
 
-      const copy = (fromId, toId) => {
-        document.getElementById(toId).textContent = document.getElementById(fromId).textContent;
-      };
-      copy('s1Salary', 'pS1Salary');
-      copy('s1SalaryTax', 'pS1SalaryTax');
-      copy('s1PresidentNet', 'pS1PresidentNet');
-      copy('s1InsuranceGain', 'pS1InsuranceGain');
-      copy('s1CashTax', 'pS1CashTax');
-      copy('s1StockTax', 'pS1StockTax');
-      copy('s1Final', 'pS1Final');
-      copy('s2CorpTax', 'pS2CorpTax');
-      copy('s2InsuranceGain', 'pS2InsuranceGain');
-      copy('s2InsuranceTax', 'pS2InsuranceTax');
-      copy('s2Buyback', 'pS2Buyback');
-      copy('s2CorpFinal', 'pS2CorpFinal');
-      copy('s2StockTax', 'pS2StockTax');
-      copy('s2CapitalGainsTax', 'pS2CapitalGainsTax');
-      copy('s2IndividualFinal', 'pS2IndividualFinal');
-      copy('s2Total', 'pS2Total');
-      copy('sumS1Total', 'pSumS1');
-      copy('sumS2Total', 'pSumS2');
-      copy('sumDiff', 'pSumDiff');
+      // PDFは従来の明細構成のまま。値は保存済みのlastResultから直接セットする(画面表の再編と切り離す)
+      const r = lastResult;
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = man(val); };
+      set('pS1Salary', r.s1_salary);
+      set('pS1SalaryTax', r.s1_salaryTax);
+      set('pS1PresidentNet', r.s1_presidentNet);
+      set('pS1InsuranceGain', r.s1_insuranceGain);
+      set('pS1CashTax', r.s1_cashInheritanceTax);
+      set('pS1StockTax', r.s1_stockInheritanceTax);
+      set('pS1Final', r.s1_final);
+      set('pS2CorpTax', r.s2_corpTax);
+      set('pS2InsuranceGain', r.s2_insuranceGain);
+      set('pS2InsuranceTax', r.s2_insuranceTax);
+      set('pS2Buyback', r.s2_buyback);
+      set('pS2CorpFinal', r.s2_corpFinal);
+      set('pS2StockTax', r.s2_stockInheritanceTax);
+      set('pS2CapitalGainsTax', r.s2_capitalGainsTax);
+      set('pS2IndividualFinal', r.s2_individualFinal);
+      set('pS2Total', r.s2_total);
+      set('pSumS1', r.s1_total);
+      set('pSumS2', r.s2_total);
+      const pDiffEl = document.getElementById('pSumDiff');
+      if (pDiffEl) pDiffEl.textContent = (r.diff >= 0 ? '+' : '') + man(r.diff);
 
       window.print();
   }

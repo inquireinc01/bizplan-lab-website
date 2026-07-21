@@ -438,6 +438,23 @@ input[type="number"] {
   color: #fff;
 }
 
+/* ウォーターフォールと計算表を紐づけるA〜Hタグ(丸囲みレター) */
+.wf-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 9999px;
+  background-color: var(--color-navy);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-right: 0.4rem;
+  flex-shrink: 0;
+}
+
 /* ナビゲーションのピル型ボタン: すべて同じ幅で揃える。枠無し・薄いブルーグレー基調 */
 .nav-btn {
   position: relative;

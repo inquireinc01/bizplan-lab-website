@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607235" />
+<link rel="stylesheet" href="css/style.css?v=202607236" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -192,44 +192,12 @@
       <!-- 結果表示 -->
       <div id="tsResultArea" class="hidden mt-10 space-y-8">
 
-        <div class="grid sm:grid-cols-2 gap-6">
-          <!-- シナリオ1 -->
-          <div class="calc-section bg-white p-6">
-            <h4 class="font-bold text-sm mb-4">① 給与を原資に個人で負担</h4>
-            <dl class="space-y-2 text-sm">
-              <div class="flex justify-between"><dt class="text-gray-500">給与支給額</dt><dd id="s1Salary" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">所得税・住民税・社保</dt><dd id="s1SalaryTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">社長の手残り</dt><dd id="s1PresidentNet" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">保険差益</dt><dd id="s1InsuranceGain" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">現金の相続税</dt><dd id="s1CashTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">自社株の相続税</dt><dd id="s1StockTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">遺族の最終手残り</dt><dd id="s1Final" class="font-black text-[#2d5580]"></dd></div>
-            </dl>
-          </div>
-
-          <!-- シナリオ2 -->
-          <div class="calc-section bg-white p-6">
-            <h4 class="font-bold text-sm mb-4">② 金庫株を原資に法人で負担</h4>
-            <dl class="space-y-2 text-sm">
-              <div class="flex justify-between"><dt class="text-gray-500">法人税</dt><dd id="s2CorpTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">保険差益</dt><dd id="s2InsuranceGain" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">保険差益への法人税</dt><dd id="s2InsuranceTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">遺族から自社株買い</dt><dd id="s2Buyback" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="text-gray-500">法人の最終残高</dt><dd id="s2CorpFinal" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">自社株の相続税</dt><dd id="s2StockTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">譲渡所得税・住民税</dt><dd id="s2CapitalGainsTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">個人の最終手残り</dt><dd id="s2IndividualFinal" class="font-black text-[#2d5580]"></dd></div>
-              <div class="flex justify-between"><dt class="font-bold">法人+個人 合計残高</dt><dd id="s2Total" class="font-black text-[#2d5580]"></dd></div>
-            </dl>
-          </div>
-        </div>
-
-        <!-- ウォーターフォール比較 -->
+        <!-- ウォーターフォール比較(上) -->
         <div class="calc-section bg-white p-6 sm:p-8">
           <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
             <div>
               <h4 class="font-bold text-sm">資金の流れ比較(ウォーターフォール)</h4>
-              <p class="text-xs text-gray-500">同じ項目・同じ目盛りで2パターンを比較します。最終バーは「法人の残高＋個人の手残り」の積み上げで、合計残高を強調表示します。</p>
+              <p class="text-xs text-gray-500">同じ項目・同じ目盛りで2パターンを比較します。最終バーは「法人の残高＋個人の手残り」の積み上げで合計を強調。各バーの<span class="font-bold">A〜H</span>は下の計算表と対応しています。</p>
             </div>
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
               <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#0f2a4a"></span>現金・法人の残高</span>
@@ -238,7 +206,46 @@
               <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#a83d3d"></span>税負担(減少)</span>
             </div>
           </div>
-          <svg id="tsWaterfall" viewBox="0 0 720 560" class="w-full h-auto" role="img" aria-label="給与準備と金庫株準備の資金の流れ比較"></svg>
+          <svg id="tsWaterfall" viewBox="0 0 720 600" class="w-full h-auto" role="img" aria-label="給与準備と金庫株準備の資金の流れ比較"></svg>
+        </div>
+
+        <!-- 計算表(下・左右で同じ項目・同じものさし。A〜Hは上のウォーターフォールと対応) -->
+        <div class="grid sm:grid-cols-2 gap-6">
+          <!-- シナリオ1 -->
+          <div class="calc-section bg-white p-6">
+            <h4 class="font-bold text-sm mb-4">① 給与を原資に個人で負担</h4>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">A</span>現金</dt><dd id="s1Cash" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">B</span>給与課税</dt><dd id="s1TaxSalary" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">C</span>法人税</dt><dd id="s1TaxCorp" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center bg-[#eef1f4] rounded px-2 py-1"><dt class="text-gray-500">保険加入(保険の原資)</dt><dd id="s1Insured" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">D</span>保険差益</dt><dd id="s1Gain" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">E</span>差益課税</dt><dd id="s1TaxDiff" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">F</span>相続税</dt><dd id="s1TaxInherit" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">G</span>譲渡所得税</dt><dd id="s1TaxCapGain" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center pt-2 border-t border-gray-200"><dt class="flex items-center"><span class="wf-tag">H</span>法人の残高</dt><dd id="s1BalCorp" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">H</span>個人の合計残高</dt><dd id="s1BalIndiv" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center pt-2 border-t-2 border-[#0f2a4a]"><dt class="font-black flex items-center"><span class="wf-tag">H</span>法人＋個人 合計残高</dt><dd id="s1BalTotal" class="font-black text-[#2d5580]"></dd></div>
+            </dl>
+          </div>
+
+          <!-- シナリオ2 -->
+          <div class="calc-section bg-white p-6">
+            <h4 class="font-bold text-sm mb-4">② 金庫株を原資に法人で負担</h4>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">A</span>現金</dt><dd id="s2Cash" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">B</span>給与課税</dt><dd id="s2TaxSalary" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">C</span>法人税</dt><dd id="s2TaxCorp" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center bg-[#eef1f4] rounded px-2 py-1"><dt class="text-gray-500">保険加入(保険の原資)</dt><dd id="s2Insured" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">D</span>保険差益</dt><dd id="s2Gain" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">E</span>差益課税</dt><dd id="s2TaxDiff" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">F</span>相続税</dt><dd id="s2TaxInherit" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">G</span>譲渡所得税</dt><dd id="s2TaxCapGain" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center pt-2 border-t border-gray-200"><dt class="flex items-center"><span class="wf-tag">H</span>法人の残高</dt><dd id="s2BalCorp" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">H</span>個人の合計残高</dt><dd id="s2BalIndiv" class="font-bold"></dd></div>
+              <div class="flex justify-between items-center pt-2 border-t-2 border-[#0f2a4a]"><dt class="font-black flex items-center"><span class="wf-tag">H</span>法人＋個人 合計残高</dt><dd id="s2BalTotal" class="font-black text-[#2d5580]"></dd></div>
+            </dl>
+          </div>
         </div>
 
         <!-- 比較サマリー -->
@@ -357,6 +364,6 @@
 
 <script src="js/menu.js?v=20260722b"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/treasury-stock.js?v=20260721e"></script>
+<script src="js/treasury-stock.js?v=20260721f"></script>
 </body>
 </html>
