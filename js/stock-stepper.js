@@ -87,6 +87,13 @@ document.addEventListener('DOMContentLoaded', function () {
       li.classList.toggle('step-complete', ok);
       li.classList.toggle('step-incomplete', !ok);
     });
+    // 試算ボタン: 全STEPが要件を満たしていればブルー、そうでなければレッドで視認性を高める
+    var submitBtn = document.querySelector('#stockCalcForm button[type="submit"]');
+    if (submitBtn) {
+      var allOk = results.every(function (v) { return v; });
+      submitBtn.classList.toggle('btn-ready', allOk);
+      submitBtn.classList.toggle('btn-not-ready', !allOk);
+    }
   }
   updateValidity();
   var form = document.getElementById('stockCalcForm');

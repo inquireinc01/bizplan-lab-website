@@ -189,6 +189,20 @@ button:active,
   border-color: var(--color-navy);
 }
 
+/* 試算ボタン: 入力の充足状況に応じて色を切り替える(視認性重視) */
+#stockCalcForm button[type="submit"].btn-ready {
+  background-color: var(--color-blue);
+}
+#stockCalcForm button[type="submit"].btn-ready::before {
+  background-color: var(--color-blue-dark);
+}
+#stockCalcForm button[type="submit"].btn-not-ready {
+  background-color: var(--color-red);
+}
+#stockCalcForm button[type="submit"].btn-not-ready::before {
+  background-color: var(--color-red-dark);
+}
+
 /* ========== 数値の表示ルール ========== */
 /* 入力欄(金額・数値)は右寄せ */
 .num-input {
