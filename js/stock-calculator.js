@@ -660,14 +660,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 自社株評価・株主の状況テーブルの表示年数(リアルタイム反映) =====
+  // 0〜30の範囲外が入力された場合はエラーを表示し、強制的に30に戻す。
   const dsYearInput = document.getElementById('dsYearInput');
+  const dsYearError = document.getElementById('dsYearError');
   if (dsYearInput) {
     dsYearInput.addEventListener('input', function () {
       const parsed = parseFloat(dsYearInput.value);
-      if (!isNaN(parsed)) {
-        dsYear = Math.max(0, Math.min(30, parsed));
+      if (isNaN(parsed) || parsed < 0 || parsed > 30) {
+        if (dsYearError) dsYearError.classList.remove('hidden');
+        dsYear = 30;
+        dsYearInput.value = '30';
         renderDsTables();
+        return;
       }
+      if (dsYearError) dsYearError.classList.add('hidden');
+      dsYear = parsed;
+      renderDsTables();
     });
   }
 
