@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let showInsuranceNet = false; // 死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示するかどうか(ボタンでトグル)
   let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
+  let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -416,6 +417,86 @@ document.addEventListener('DOMContentLoaded', function () {
     body.innerHTML = rows;
   }
 
+  // ===== 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト) =====
+  // 30年後時点の試算値を、対策後ボタン(dsShowAfter)でシナリオA/Bに切り替えて表示する。
+  // (現時点=0年後はシナリオA・Bが同額のため、対策の効果を示すには最終年の値を用いる)
+  const DS_EVAL_ROWS = [
+    { key: 'saizoku', label: '相続税評価額' },
+    { key: 'ruiji', label: '類似業種比準価額' },
+    { key: 'junsisan', label: '純資産価額' },
+    { key: 'houjin', label: '法人税法上評価額' },
+  ];
+  function renderDsTables() {
+    const evalBody = document.getElementById('dsEvalBody');
+    const holderBody = document.getElementById('dsHolderBody');
+    if (!evalBody || !holderBody || !lastSeries || !currentValues) return;
+
+    const row = lastSeries[lastSeries.length - 1]; // 30年後
+    const scenario = dsShowAfter ? 'B' : 'A';
+    const shares = currentValues.sharesOutstanding;
+
+    let stored = {};
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      stored = raw ? JSON.parse(raw) : {};
+    } catch (e) {}
+    const par = window.numClean ? window.numClean(stored.ss_parValue) : parseFloat(stored.ss_parValue);
+
+    evalBody.innerHTML = DS_EVAL_ROWS.map((r) => {
+      const totalMan = row[`${r.key}T_${scenario}`];
+      const perShareYen = shares > 0 ? (totalMan * 10000) / shares : NaN;
+      const mult = (!isNaN(perShareYen) && par > 0) ? (perShareYen / par) : NaN;
+      return `<tr class="border-b border-gray-100">
+        <td class="px-3 py-2 text-left font-medium whitespace-nowrap">${r.label}</td>
+        <td class="px-3 py-2 text-right${totalMan < 0 ? ' neg-val' : ''}">${man(totalMan)}</td>
+        <td class="px-3 py-2 text-right">${isNaN(perShareYen) ? '-' : yen(perShareYen)}</td>
+        <td class="px-3 py-2 text-right">${isNaN(mult) ? '-' : mult.toFixed(2) + ' 倍'}</td>
+      </tr>`;
+    }).join('');
+
+    const perShareSaizoku = shares > 0 ? row[`saizokuT_${scenario}`] / shares : NaN; // 万円/株
+    const perShareHoujin = shares > 0 ? row[`houjinT_${scenario}`] / shares : NaN;
+
+    let holders = [];
+    try {
+      holders = stored.ss_holders ? JSON.parse(stored.ss_holders) : [];
+    } catch (e) {}
+
+    if (!holders.length) {
+      holderBody.innerHTML = '<tr><td colspan="5" class="px-2 py-3 text-center text-gray-400 text-xs">株主情報が未入力です。入力ページの「STEP3 株主の状況」で株主を登録すると表示されます。</td></tr>';
+      document.getElementById('dsTotShares').textContent = '-';
+      document.getElementById('dsTotRatio').textContent = '-';
+      document.getElementById('dsTotReka').textContent = '-';
+      document.getElementById('dsTotHojin').textContent = '-';
+      return;
+    }
+
+    let sumEff = 0, sumRatio = 0, totReka = 0, totHojin = 0;
+    holderBody.innerHTML = holders.map((h) => {
+      const hShares = window.numClean ? window.numClean(h.shares) : parseFloat(h.shares);
+      const hRatio = window.numClean ? window.numClean(h.ratio) : parseFloat(h.ratio);
+      const eff = !isNaN(hShares) ? hShares : ((!isNaN(hRatio) && shares > 0) ? (hRatio / 100) * shares : NaN);
+      const reka = (!isNaN(eff) && !isNaN(perShareSaizoku)) ? eff * perShareSaizoku : NaN;
+      const hojin = (!isNaN(eff) && !isNaN(perShareHoujin)) ? eff * perShareHoujin : NaN;
+      const ratioVal = !isNaN(hRatio) ? hRatio : ((!isNaN(hShares) && shares > 0) ? (hShares / shares) * 100 : NaN);
+      if (!isNaN(eff)) sumEff += eff;
+      if (!isNaN(reka)) totReka += reka;
+      if (!isNaN(hojin)) totHojin += hojin;
+      if (!isNaN(ratioVal)) sumRatio += ratioVal;
+      return `<tr class="border-b border-gray-100">
+        <td class="px-2 py-2 text-left">${h.name || '(未入力)'}</td>
+        <td class="px-2 py-2 text-right">${isNaN(eff) ? '-' : (window.numFmt ? window.numFmt(Math.round(eff)) : Math.round(eff).toLocaleString('ja-JP'))}</td>
+        <td class="px-2 py-2 text-right">${isNaN(ratioVal) ? '-' : ratioVal.toFixed(2) + '%'}</td>
+        <td class="px-2 py-2 text-right${reka < 0 ? ' neg-val' : ''}">${isNaN(reka) ? '-' : man(reka)}</td>
+        <td class="px-2 py-2 text-right${hojin < 0 ? ' neg-val' : ''}">${isNaN(hojin) ? '-' : man(hojin)}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('dsTotShares').textContent = sumEff ? (window.numFmt ? window.numFmt(Math.round(sumEff)) : Math.round(sumEff).toLocaleString('ja-JP')) : '-';
+    document.getElementById('dsTotRatio').textContent = sumRatio ? sumRatio.toFixed(2) + '%' : '-';
+    document.getElementById('dsTotReka').textContent = totReka ? man(totReka) : '-';
+    document.getElementById('dsTotHojin').textContent = totHojin ? man(totHojin) : '-';
+  }
+
   function updateCurrentValues(series) {
     const p0 = series[0];
     Object.keys(BASE_METRICS).forEach((base) => {
@@ -461,6 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
     drawChart(lastSeries, result.retirementYear);
     renderTileSelection();
     renderTable(lastSeries);
+    renderDsTables();
   }
 
   // ===== リアルタイム調整パネル: 変更すると即座にグラフ・表を再計算 =====
@@ -471,6 +553,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCurrentValues(lastSeries);
     drawChart(lastSeries, result.retirementYear);
     renderTable(lastSeries);
+    renderDsTables();
   }
 
   if (livePanel) {
@@ -532,6 +615,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const { v } = loadValues();
         drawChart(lastSeries, v.retirementYear);
       }
+    });
+  }
+
+  // ===== 自社株評価・株主の状況テーブルの対策後(シナリオB)表示トグル =====
+  const dsScenarioToggleBtn = document.getElementById('dsScenarioToggleBtn');
+  if (dsScenarioToggleBtn) {
+    dsScenarioToggleBtn.addEventListener('click', function () {
+      dsShowAfter = !dsShowAfter;
+      dsScenarioToggleBtn.classList.toggle('is-on', dsShowAfter);
+      renderDsTables();
     });
   }
 

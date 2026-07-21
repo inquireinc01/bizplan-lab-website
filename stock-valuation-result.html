@@ -247,10 +247,6 @@
                 <input type="number" id="insuranceAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1" for="insuranceGrowthRate">死亡保険金額上昇率(年%)</label>
-                <input type="number" id="insuranceGrowthRate" step="0.1" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
-              </div>
-              <div>
                 <label class="block text-xs font-medium mb-1" for="coveragePeriod">保障期間(年)</label>
                 <input type="number" id="coveragePeriod" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
@@ -261,6 +257,10 @@
               <div>
                 <label class="block text-xs font-medium mb-1" for="deductibleRatio">損金割合(%)</label>
                 <input type="number" id="deductibleRatio" min="0" max="100" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" for="insuranceGrowthRate">死亡保険金額上昇率(年%)</label>
+                <input type="number" id="insuranceGrowthRate" step="0.1" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
           </div>
@@ -299,6 +299,55 @@
           <p class="text-xs text-gray-400 mt-2 leading-relaxed">
             ※ 相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。
           </p>
+        </div>
+
+        <!-- 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト、30年後時点) -->
+        <div class="mt-8">
+          <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+            <h4 class="font-bold text-sm flex items-center">自社株評価<span class="help-tip" tabindex="0">?<span class="help-text">ディスカッションシートの自社株評価と同じレイアウトで、30年後時点の試算額を表示します。「対策後で表示」を押すと生命保険による対策後(シナリオB)の金額に切り替わります。</span></span></h4>
+            <button type="button" id="dsScenarioToggleBtn" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline">
+              <span class="dot"></span>対策後で表示
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[480px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">評価方式</th>
+                  <th class="text-right font-bold px-3 py-2">時価総額（万円）</th>
+                  <th class="text-right font-bold px-3 py-2">一株あたり（円）</th>
+                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">額面倍率</th>
+                </tr>
+              </thead>
+              <tbody id="dsEvalBody"></tbody>
+            </table>
+          </div>
+
+          <h4 class="font-bold text-sm mb-2 mt-6">株主の状況</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[640px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-2 py-2 rounded-tl-lg" style="min-width:11rem">株主名</th>
+                  <th class="text-right font-bold px-2 py-2">株数</th>
+                  <th class="text-right font-bold px-2 py-2">比率</th>
+                  <th class="text-right font-bold px-2 py-2">相続税評価額</th>
+                  <th class="text-right font-bold px-2 py-2 rounded-tr-lg">法人税法上評価額</th>
+                </tr>
+              </thead>
+              <tbody id="dsHolderBody"></tbody>
+              <tfoot>
+                <tr class="bg-[#eef1f4] font-bold">
+                  <td class="px-2 py-2 text-left">合計</td>
+                  <td class="px-2 py-2 text-right" id="dsTotShares">-</td>
+                  <td class="px-2 py-2 text-right" id="dsTotRatio">-</td>
+                  <td class="px-2 py-2 text-right" id="dsTotReka">-</td>
+                  <td class="px-2 py-2 text-right" id="dsTotHojin">-</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <p class="text-xs text-gray-400 mt-2 leading-relaxed">※ 30年後時点の試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</p>
         </div>
 
     </div>
@@ -397,6 +446,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721y"></script>
+<script src="js/stock-calculator.js?v=20260721z"></script>
 </body>
 </html>
