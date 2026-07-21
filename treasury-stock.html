@@ -191,13 +191,16 @@
 
         <!-- 資金の流れ比較(上下2図をきっちり分けて表示) -->
         <div class="calc-section bg-white p-6 sm:p-8">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <h4 class="font-bold text-xl flex items-center">資金の流れ比較<span class="help-tip" tabindex="0">?<span class="help-text">同じ項目・同じ目盛りで2パターンを比較します。最終バーは「法人の残高＋個人の手残り」の積み上げで合計を強調。各バーのA〜Hは下の計算表と対応しています。</span></span></h4>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#0f2a4a"></span>現金・法人の残高</span>
-              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#55677d"></span>個人の残高</span>
-              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#3b6ea5"></span>保険差益(増加)</span>
-              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#a83d3d"></span>税負担(減少)</span>
+            <div class="flex flex-col items-start sm:items-end gap-2">
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#0f2a4a"></span>現金・法人の残高</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#55677d"></span>個人の残高</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#3b6ea5"></span>保険差益(増加)</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#a83d3d"></span>税負担(減少)</span>
+              </div>
+              <button type="button" id="toggleInsuranceMark" aria-pressed="true" class="text-xs font-bold text-[#3b6ea5] border border-[#3b6ea5] rounded-full px-3 py-1 whitespace-nowrap hover:bg-[#eef2f7] transition-colors">保険加入マークを隠す</button>
             </div>
           </div>
           <!-- ① -->
@@ -371,6 +374,6 @@
 
 <script src="js/menu.js?v=20260722b"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/treasury-stock.js?v=20260722c"></script>
+<script src="js/treasury-stock.js?v=20260722d"></script>
 </body>
 </html>

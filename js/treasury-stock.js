@@ -87,6 +87,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) el.addEventListener('input', refreshAutoCash);
   });
 
+  // 「保険加入」マークの表示状態と、再描画用に最後の設定を保持する
+  let showInsuranceMark = true;
+  let lastWfCfg = null;
+  const toggleMarkBtn = document.getElementById('toggleInsuranceMark');
+  if (toggleMarkBtn) {
+    toggleMarkBtn.addEventListener('click', function () {
+      showInsuranceMark = !showInsuranceMark;
+      toggleMarkBtn.textContent = showInsuranceMark ? '保険加入マークを隠す' : '保険加入マークを表示';
+      toggleMarkBtn.setAttribute('aria-pressed', String(showInsuranceMark));
+      if (lastWfCfg) drawWaterfall(lastWfCfg.cfgA, lastWfCfg.cfgB);
+    });
+  }
+
   // ===== 資金の流れ比較グラフ =====
   // 2パターン(①給与準備 / ②金庫株準備)を同一の項目列・同一スケールで、上下2つの独立したSVGに描画する。
   // 最終バーは「法人の残高＋個人の手残り」の積み上げにして合計を強調する
@@ -94,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const svg1 = document.getElementById('tsWaterfall1');
     const svg2 = document.getElementById('tsWaterfall2');
     if (!svg1 || !svg2) return;
+    lastWfCfg = { cfgA: cfgA, cfgB: cfgB }; // トグルによる再描画用に保持
     const NAVY = '#0f2a4a', BLUE = '#3b6ea5', RED = '#a83d3d';
     const fmtNum = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
 
@@ -161,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
         // 保険加入チェックポイント: 隣接バーの頂点より上に出し、白背景ピル＋引き出し線で明示(重なり回避)
-        if (b.checkpoint && i < N - 1) {
+        if (b.checkpoint && showInsuranceMark && i < N - 1) {
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
