@@ -431,23 +431,39 @@ input[type="number"] {
   overflow: visible;
   z-index: 0;
 }
-/* 準備中バッジ: ボタン右上に小さく重ねる(番号は左上にあるため右上に配置) */
-.badge-soon {
+/* デスクトップナビだけ正円ボタン+頭文字1文字に縮小し、1列に収める。番号は従来通り左上に表示 */
+.site-desktop-nav .nav-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  font-size: 1.05rem;
+}
+.site-desktop-nav .nav-btn.font-brand-en {
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+}
+/* ホバー時にボタン下へ全体名称を表示するツールチップ */
+.nav-tooltip {
   position: absolute;
-  top: -0.55rem;
-  right: -0.35rem;
-  font-size: 0.44rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  padding: 0.12rem 0.32rem;
-  border-radius: 9999px;
-  background-color: #b0651b;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-navy-dark);
   color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.4rem;
   white-space: nowrap;
-  z-index: 3;
-  line-height: 1.2;
-  text-transform: uppercase;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  z-index: 20;
   pointer-events: none;
+}
+.nav-btn:hover .nav-tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 /* ホバー時に色だけがふわっとフェードするエフェクト(位置は動かさない) */
 .nav-btn::before {
