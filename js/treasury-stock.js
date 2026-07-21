@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (toggleMarkBtn) {
     toggleMarkBtn.addEventListener('click', function () {
       showInsuranceMark = !showInsuranceMark;
-      toggleMarkBtn.textContent = showInsuranceMark ? '保険加入マークを隠す' : '保険加入マークを表示';
+      toggleMarkBtn.classList.toggle('is-on', showInsuranceMark); // シグナルランプ(.dot)のON/OFF
       toggleMarkBtn.setAttribute('aria-pressed', String(showInsuranceMark));
       if (lastWfCfg) drawWaterfall(lastWfCfg.cfgA, lastWfCfg.cfgB);
     });
