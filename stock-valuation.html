@@ -101,19 +101,19 @@
         <div class="flex-1 min-w-0">
       <!-- ===== 版選択(簡易版/詳細版) ===== -->
       <div id="versionChooser" class="grid sm:grid-cols-2 gap-4 mb-10">
-        <div class="version-card p-5" data-version="simple">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-bold text-lg">簡易版（DSから転記）</h3>
-            <span class="text-xs font-bold text-[#3b6ea5]">SIMPLE</span>
+        <div class="version-card p-5 relative overflow-hidden" data-version="simple">
+          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">SIMPLE</span>
+          <div class="relative">
+            <h3 class="font-bold text-lg mb-2">簡易版（DSから転記）</h3>
+            <p class="text-sm text-gray-600 leading-relaxed pr-4">会社規模・純資産・類似業種の主要な数値だけを入力して、概算の評価額とグラフを試算します。まずはこちら。</p>
           </div>
-          <p class="text-sm text-gray-600 leading-relaxed">会社規模・純資産・類似業種の主要な数値だけを入力して、概算の評価額とグラフを試算します。まずはこちら。</p>
         </div>
-        <div class="version-card p-5" data-version="detail">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-bold text-lg">詳細版</h3>
-            <span class="text-xs font-bold text-[#3b6ea5]">DETAIL</span>
+        <div class="version-card p-5 relative overflow-hidden" data-version="detail">
+          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">DETAIL</span>
+          <div class="relative">
+            <h3 class="font-bold text-lg mb-2">詳細版</h3>
+            <p class="text-sm text-gray-600 leading-relaxed pr-4">国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。</p>
           </div>
-          <p class="text-sm text-gray-600 leading-relaxed">国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。</p>
         </div>
       </div>
 
