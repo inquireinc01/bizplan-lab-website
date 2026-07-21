@@ -238,7 +238,7 @@
             <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
               <p class="field-highlight-title flex items-center mb-0">生命保険の契約条件<span class="help-tip" tabindex="0">?<span class="help-text">変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</span></span></p>
               <button type="button" id="insuranceNetToggleBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
-                <span class="dot"></span>実効税率控除後で表示<span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金は受取時に法人税が課税されるため、実際に使える金額は保険金額より少なくなります。ONにするとグラフの死亡保険金額を「法人税率(%)」欄の実効税率控除後(手取り)の金額で表示します。</span></span>
+                <span class="dot"></span>法人税控除後で表示<span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金は受取時に法人税が課税されるため、実際に使える金額は保険金額より少なくなります。ONにするとグラフの死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示します。</span></span>
               </button>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -397,6 +397,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721x"></script>
+<script src="js/stock-calculator.js?v=20260721y"></script>
 </body>
 </html>
