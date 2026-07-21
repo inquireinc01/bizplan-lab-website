@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
     simA: 480, simB: 6.0, simC: 45, simD: 350, ownB: 4.0, ownC: 60, ownD: 420,
     sharesOutstanding: 2000, capitalAmount: 1000000,
     corpTaxRateProj: 34, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
-    retirementYear: 10, retirementAmount: 5000, mvNetAssets: 20000, realOpProfit: 2500,
+    retirementYear: 10, retirementAmount: 20000, mvNetAssets: 20000, realOpProfit: 2500,
     // その他特別損失(発生時期を指定して純資産の推移に反映。未入力なら影響なし)
-    specialLossYear: 15, specialLossAmount: 0,
+    specialLossYear: 15, specialLossAmount: 10000,
     // 生命保険の契約条件(死亡保険金額のグラフ表示・参考情報として保持)
-    insuranceAmount: 10000, insuranceGrowthRate: 3, coveragePeriod: 10, premiumAmount: 500, deductibleRatio: 100,
+    insuranceAmount: 30000, insuranceGrowthRate: 3, coveragePeriod: 25, premiumAmount: 500, deductibleRatio: 60,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30237, ss0_ruiji: 23557, ss0_junsisan: 50277, ss0_houjin: 36917,
   };
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   let selectedMetrics = ['saizoku_A'];
   let showInsurance = false; // 死亡保険金額をグラフ背景に表示するかどうか(ボタンでトグル)
-  let showInsuranceNet = false; // 死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示するかどうか(ボタンでトグル)
+  let showInsuranceNet = true; // 死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示するかどうか(ボタンでトグル)
   let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
   let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
@@ -639,6 +639,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 死亡保険金額の税引後(法人税控除後)表示トグル =====
   const insuranceNetToggleBtn = document.getElementById('insuranceNetToggleBtn');
   if (insuranceNetToggleBtn) {
+    insuranceNetToggleBtn.classList.toggle('is-on', showInsuranceNet);
     insuranceNetToggleBtn.addEventListener('click', function () {
       showInsuranceNet = !showInsuranceNet;
       insuranceNetToggleBtn.classList.toggle('is-on', showInsuranceNet);
