@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const xEnd = padL + period * slotWidth;
         d += `L ${xEnd.toFixed(1)} ${yBottom.toFixed(1)} Z`;
-        insuranceRect = `<path d="${d}" fill="rgba(168,61,61,0.14)" stroke="rgba(168,61,61,0.4)" stroke-width="1" stroke-dasharray="3 3"/>`;
+        insuranceRect = `<path d="${d}" fill="rgba(168,61,61,0.26)" stroke="rgba(131,47,47,0.7)" stroke-width="1.2" stroke-dasharray="3 3"/>`;
       }
     }
 
