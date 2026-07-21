@@ -221,6 +221,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     svg1.innerHTML = renderChart(barsA);
     svg2.innerHTML = renderChart(barsB);
+    // 再描画をなめらかに見せる(フェードアニメーションを再生し直す)
+    [svg1, svg2].forEach(function (s) {
+      s.classList.remove('wf-render');
+      void s.getBoundingClientRect(); // リフローを強制してアニメーションを確実に再生
+      s.classList.add('wf-render');
+    });
   }
 
   // 入力が変わるたびにリアルタイムで再計算・再描画する
@@ -389,9 +395,16 @@ document.addEventListener('DOMContentLoaded', function () {
     resultArea.classList.remove('hidden');
   }
 
-  // 送信ボタンは廃止。Enterキー等の送信はページ遷移を防ぎ、入力のたびにリアルタイム反映する
-  form.addEventListener('submit', function (e) { e.preventDefault(); recompute(); });
-  form.addEventListener('input', recompute);
+  // 送信ボタンは廃止。数字入力が一段落してから(=確定してから)なめらかに反映するためデバウンスする。
+  // 入力中は連続再描画せず、約400ms入力が止まったタイミングで反映。blur/Enter(change)は即時反映。
+  let recomputeTimer = null;
+  function scheduleRecompute() {
+    clearTimeout(recomputeTimer);
+    recomputeTimer = setTimeout(recompute, 400);
+  }
+  form.addEventListener('submit', function (e) { e.preventDefault(); clearTimeout(recomputeTimer); recompute(); });
+  form.addEventListener('input', scheduleRecompute);
+  form.addEventListener('change', function () { clearTimeout(recomputeTimer); recompute(); });
 
   const resetBtn = document.getElementById('tsResetBtn');
   if (resetBtn) {

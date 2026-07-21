@@ -455,6 +455,15 @@ input[type="number"] {
   flex-shrink: 0;
 }
 
+/* 資金の流れ比較グラフ: 入力確定後の再描画をなめらかに見せる淡いフェード */
+@keyframes wfFadeIn {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+.wf-render {
+  animation: wfFadeIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* 数値に付く単位(万円・％・年 など)は数字より一回り小さく・控えめに。全ページ共通ルール */
 .unit {
   font-size: 0.72em;
