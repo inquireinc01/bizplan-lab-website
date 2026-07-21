@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== モバイルメニューの開閉 =====
   if (menuButton && mobileMenu) {
     menuButton.addEventListener('click', function () {
-      const isOpen = mobileMenu.classList.contains('hidden');
-      if (isOpen) {
+      const isOpen = mobileMenu.classList.contains('open');
+      if (!isOpen) {
         mobileMenu.classList.remove('hidden');
         mobileMenu.classList.add('open');
         menuButton.setAttribute('aria-expanded', 'true');
@@ -27,44 +27,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== ナビが2段に収まらない(3段以上になる)場合はハンバーガーへ自動切替 =====
-  const headerRow = header ? header.querySelector('.header-row') : null;
-  const desktopNav = header ? header.querySelector('.site-desktop-nav') : null;
-  function updateNavCollapse() {
-    if (!header || !headerRow || !desktopNav) return;
-    // いったん全ナビ表示状態にして本来必要な高さを測る(同一フレーム内なので描画されない)
-    header.classList.remove('nav-collapsed');
-    const items = desktopNav.querySelectorAll('.nav-btn');
-    let overflow = false;
-    if (items.length) {
-      const rowGap = parseFloat(getComputedStyle(desktopNav).rowGap) || 0;
-      const btnHeight = items[0].getBoundingClientRect().height;
-      const maxHeight = btnHeight * 2 + rowGap + 1; // 2段まで許容
-      overflow = desktopNav.scrollHeight > maxHeight;
-    }
-    if (overflow) {
-      header.classList.add('nav-collapsed');
-    } else {
-      // 収まる場合は開いていたモバイルメニューを閉じる
-      if (mobileMenu) {
-        mobileMenu.classList.remove('open');
-        mobileMenu.classList.add('hidden');
-      }
-      if (menuButton) menuButton.setAttribute('aria-expanded', 'false');
-    }
-  }
-
-  let resizeTimer = null;
-  window.addEventListener('resize', function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(updateNavCollapse, 120);
+  // ===== PC: メガメニューの開閉 =====
+  const megaItems = document.querySelectorAll('.mega-item');
+  megaItems.forEach((item) => {
+    const trigger = item.querySelector('.mega-trigger');
+    if (!trigger) return;
+    trigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const willOpen = !item.classList.contains('open');
+      megaItems.forEach((i) => i.classList.remove('open'));
+      if (willOpen) item.classList.add('open');
+    });
   });
-  // フォント読み込み後のレイアウト変化にも追従
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(updateNavCollapse);
-  }
-  window.addEventListener('load', updateNavCollapse);
-  updateNavCollapse();
+  document.addEventListener('click', function () {
+    megaItems.forEach((i) => i.classList.remove('open'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') megaItems.forEach((i) => i.classList.remove('open'));
+  });
+
+  // ===== モバイル: アコーディオンの開閉 =====
+  document.querySelectorAll('.mobile-accordion-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', function () {
+      const group = trigger.closest('.mobile-accordion');
+      if (group) group.classList.toggle('open');
+    });
+  });
 
   // ===== スクロール時にヘッダー影 =====
   if (header) {

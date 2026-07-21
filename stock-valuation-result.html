@@ -21,28 +21,46 @@
   <div class="max-w-7xl mx-auto px-5 sm:px-8">
     <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
       <a href="index.html" class="flex items-center shrink-0">
-        <img src="images/logo-horizontal.png?v=20260722b" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
       </a>
 
-      <nav class="site-desktop-nav items-center gap-2.5">
+      <nav class="hidden lg:flex items-center gap-2.5">
         <a href="index.html" class="nav-btn font-brand-en">TOP MENU</a>
-        <a href="stock-valuation.html" class="nav-btn active"><span class="nav-num">1</span><span class="nav-tooltip">自社株</span></a>
-        <a href="future-liability.html" class="nav-btn"><span class="nav-num">2</span><span class="nav-tooltip">将来負債</span></a>
-        <a href="treasury-stock.html" class="nav-btn"><span class="nav-num">3</span><span class="nav-tooltip">金庫株</span></a>
-        <a href="retirement-benefit.html" class="nav-btn"><span class="nav-num">4</span><span class="nav-tooltip">退職金</span></a>
-        <a href="tax-exemption.html" class="nav-btn"><span class="nav-num">5</span><span class="nav-tooltip">非課税枠</span></a>
-        <a href="premium-funding.html" class="nav-btn"><span class="nav-num teal">6</span><span class="nav-tooltip">保険料原資</span></a>
-        <a href="reduced-new-contract.html" class="nav-btn"><span class="nav-num teal">7</span><span class="nav-tooltip">減額充当モデル</span></a>
-        <a href="medical-ds.html" class="nav-btn"><span class="nav-num ds">8</span><span class="nav-tooltip">医療法人</span></a>
-        <a href="religious-ds.html" class="nav-btn"><span class="nav-num ds">9</span><span class="nav-tooltip">宗教法人</span></a>
-        <a href="venture-ds.html" class="nav-btn"><span class="nav-num ds">10</span><span class="nav-tooltip">ベンチャー</span></a>
-        <a href="asset-management-ds.html" class="nav-btn"><span class="nav-num ds">11</span><span class="nav-tooltip">資産管理会社</span></a>
-        <a href="deficit-company-ds.html" class="nav-btn"><span class="nav-num ds">12</span><span class="nav-tooltip">赤字会社</span></a>
-        <a href="holdings-ds.html" class="nav-btn"><span class="nav-num ds">13</span><span class="nav-tooltip">ホールディングス</span></a>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger active" data-mega="sim">
+            シミュレーション
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="stock-valuation.html" class="mega-panel-item active"><span class="mega-num">1</span>自社株×生命保険</a>
+      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
+      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
+      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
+      <a href="tax-exemption.html" class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
+      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
+      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="ds">
+            ディスカッションシート
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
+      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
+      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
+      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+          </div>
+        </div>
       </nav>
 
       <div class="flex items-center gap-3 shrink-0">
-        <a href="basic-info.html" class="nav-square site-desktop-only">基本情報入力</a>
+        <a href="basic-info.html" class="nav-square hidden lg:inline-flex">基本情報入力</a>
         <button id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -56,19 +74,37 @@
     <nav class="flex flex-col gap-2 p-3">
       <a href="index.html" class="nav-btn font-brand-en block-btn justify-center">TOP MENU</a>
       <a href="basic-info.html" class="nav-btn nav-input block-btn justify-center">基本情報</a>
-      <a href="stock-valuation.html" class="nav-btn block-btn justify-center active"><span class="nav-num">1</span>自社株</a>
-      <a href="future-liability.html" class="nav-btn block-btn justify-center"><span class="nav-num">2</span>将来負債</a>
-      <a href="treasury-stock.html" class="nav-btn block-btn justify-center"><span class="nav-num">3</span>金庫株</a>
-      <a href="retirement-benefit.html" class="nav-btn block-btn justify-center"><span class="nav-num">4</span>退職金</a>
-      <a href="tax-exemption.html" class="nav-btn block-btn justify-center"><span class="nav-num">5</span>非課税枠</a>
-      <a href="premium-funding.html" class="nav-btn block-btn justify-center"><span class="nav-num teal">6</span>保険料原資</a>
-      <a href="reduced-new-contract.html" class="nav-btn block-btn justify-center"><span class="nav-num teal">7</span>減額充当モデル</a>
-      <a href="medical-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">8</span>医療法人</a>
-      <a href="religious-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">9</span>宗教法人</a>
-      <a href="venture-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">10</span>ベンチャー</a>
-      <a href="asset-management-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">11</span>資産管理会社</a>
-      <a href="deficit-company-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">12</span>赤字会社</a>
-      <a href="holdings-ds.html" class="nav-btn block-btn justify-center"><span class="nav-num ds">13</span>ホールディングス</a>
+
+      <div class="mobile-accordion open">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          シミュレーション(1〜7)
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="stock-valuation.html" class="mobile-accordion-link active"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a href="future-liability.html" class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a href="treasury-stock.html" class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a href="retirement-benefit.html" class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a href="tax-exemption.html" class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a href="premium-funding.html" class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a href="reduced-new-contract.html" class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          ディスカッションシート(8〜13)
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="medical-ds.html" class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a href="religious-ds.html" class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a href="venture-ds.html" class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a href="asset-management-ds.html" class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a href="deficit-company-ds.html" class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a href="holdings-ds.html" class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
     </nav>
   </div>
 </header>
@@ -393,7 +429,7 @@
         ご入力いただいた会社名・氏名等の情報は、お客様のブラウザ内にのみ保存され、弊社が取得することはありません。
       </p>
     </div>
-    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 TK&amp;Company Inc. All rights reserved.</p>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
   </div>
 </footer>
 
@@ -464,7 +500,7 @@
 
   <div class="print-foot">
     <p>本シートの各数値は概算把握を目的とした簡易試算値であり、株価・グラフ・各種数値等について保証するものではありません。実際の相続税・贈与税申告等に用いる評価額は、直近の国税庁公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。</p>
-    <p class="cr">&copy; 2026 TK&amp;Company Inc. All rights reserved.</p>
+    <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
   </div>
 </div>
 
