@@ -92,7 +92,7 @@
       </div>
 
       <div class="notice-box text-xs rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
-        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。別のPCで続きを入力する場合や、消えるのが心配な場合はファイルに保存してください。</span>
+        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。</span>
         <button type="button" class="js-backup-save btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
         <button type="button" class="js-backup-load btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
         <input type="file" class="js-backup-file hidden" accept="application/json" />
@@ -315,13 +315,18 @@
           </p>
         </div>
 
-        <!-- 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト、30年後時点) -->
+        <!-- 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト、年数を選択可能) -->
         <div class="mt-8">
           <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
-            <h4 class="font-bold text-sm flex items-center">自社株評価<span class="help-tip" tabindex="0">?<span class="help-text">ディスカッションシートの自社株評価と同じレイアウトで、30年後時点の試算額を表示します。「対策後で表示」を押すと生命保険による対策後(シナリオB)の金額に切り替わります。</span></span></h4>
-            <button type="button" id="dsScenarioToggleBtn" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline">
-              <span class="dot"></span>対策後で表示
-            </button>
+            <h4 class="font-bold text-sm flex items-center">自社株評価<span class="help-tip" tabindex="0">?<span class="help-text">ディスカッションシートの自社株評価と同じレイアウトで、指定した年数後の試算額を表示します。「対策後で表示」を押すと生命保険による対策後(シナリオB)の金額に切り替わります。</span></span></h4>
+            <div class="flex items-center gap-3 flex-wrap">
+              <label class="flex items-center gap-1.5 text-xs font-bold text-gray-600" for="dsYearInput">
+                <input type="number" id="dsYearInput" min="0" max="30" value="30" class="form-input rounded-lg px-2 py-1.5 text-sm text-right" style="width:4.5rem" />年後
+              </label>
+              <button type="button" id="dsScenarioToggleBtn" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline">
+                <span class="dot"></span>対策後で表示
+              </button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse min-w-[480px]">
@@ -361,7 +366,7 @@
               </tfoot>
             </table>
           </div>
-          <p class="text-xs text-gray-400 mt-2 leading-relaxed">※ 30年後時点の試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</p>
+          <p class="text-xs text-gray-400 mt-2 leading-relaxed">※ 上で指定した年数後時点の試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</p>
         </div>
 
     </div>
@@ -460,7 +465,7 @@
 
 <script src="js/menu.js?v=20260722a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260722a"></script>
+<script src="js/stock-calculator.js?v=20260722b"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

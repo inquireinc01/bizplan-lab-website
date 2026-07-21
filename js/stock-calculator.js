@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
   let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
+  let dsYear = 30; // 自社株評価・株主の状況テーブルの表示年数(入力欄でリアルタイムに変更可能)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -439,8 +440,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト) =====
-  // 30年後時点の試算値を、対策後ボタン(dsShowAfter)でシナリオA/Bに切り替えて表示する。
-  // (現時点=0年後はシナリオA・Bが同額のため、対策の効果を示すには最終年の値を用いる)
+  // 指定した年数後(dsYear、入力欄でリアルタイムに変更可能)の試算値を、対策後ボタン(dsShowAfter)で
+  // シナリオA/Bに切り替えて表示する。(現時点=0年後はシナリオA・Bが同額になる仕様のため注意)
   const DS_EVAL_ROWS = [
     { key: 'saizoku', label: '相続税評価額' },
     { key: 'ruiji', label: '類似業種比準価額' },
@@ -452,7 +453,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const holderBody = document.getElementById('dsHolderBody');
     if (!evalBody || !holderBody || !lastSeries || !currentValues) return;
 
-    const row = lastSeries[lastSeries.length - 1]; // 30年後
+    const yearIdx = Math.max(0, Math.min(lastSeries.length - 1, Math.round(dsYear)));
+    const row = lastSeries[yearIdx];
     const scenario = dsShowAfter ? 'B' : 'A';
     const shares = currentValues.sharesOutstanding;
 
@@ -654,6 +656,18 @@ document.addEventListener('DOMContentLoaded', function () {
       dsShowAfter = !dsShowAfter;
       dsScenarioToggleBtn.classList.toggle('is-on', dsShowAfter);
       renderDsTables();
+    });
+  }
+
+  // ===== 自社株評価・株主の状況テーブルの表示年数(リアルタイム反映) =====
+  const dsYearInput = document.getElementById('dsYearInput');
+  if (dsYearInput) {
+    dsYearInput.addEventListener('input', function () {
+      const parsed = parseFloat(dsYearInput.value);
+      if (!isNaN(parsed)) {
+        dsYear = Math.max(0, Math.min(30, parsed));
+        renderDsTables();
+      }
     });
   }
 
