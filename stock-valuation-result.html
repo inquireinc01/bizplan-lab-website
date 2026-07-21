@@ -203,32 +203,33 @@
             </div>
           </div>
 
-          <!-- 退職金の支給: 別枠で強調 -->
-          <div class="field-highlight field-highlight-navy mt-4">
-            <p class="field-highlight-title">退職金の支給</p>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-medium mb-1" for="retirementYear">支給時期(何年後)</label>
-                <input type="number" id="retirementYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
-              </div>
-              <div>
-                <label class="block text-xs font-medium mb-1" for="retirementAmount">支給額(万円)</label>
-                <input type="number" id="retirementAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+          <!-- 退職金の支給・その他特別損失: 同じ行に並べつつ、別枠で区別する -->
+          <div class="grid md:grid-cols-2 gap-4 mt-4">
+            <div class="field-highlight field-highlight-navy">
+              <p class="field-highlight-title">退職金の支給</p>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-medium mb-1" for="retirementYear">支給時期(何年後)</label>
+                  <input type="number" id="retirementYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium mb-1" for="retirementAmount">支給額(万円)</label>
+                  <input type="number" id="retirementAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- その他特別損失: 別枠で強調(退職金とは別のボックスにして区別する) -->
-          <div class="field-highlight field-highlight-amber mt-4">
-            <p class="field-highlight-title">その他特別損失</p>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-medium mb-1" for="specialLossYear">発生時期(何年後)</label>
-                <input type="number" id="specialLossYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
-              </div>
-              <div>
-                <label class="block text-xs font-medium mb-1" for="specialLossAmount">特別損失額(万円)</label>
-                <input type="number" id="specialLossAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+            <div class="field-highlight field-highlight-amber">
+              <p class="field-highlight-title">その他特別損失</p>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-medium mb-1" for="specialLossYear">発生時期(何年後)</label>
+                  <input type="number" id="specialLossYear" min="1" max="30" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium mb-1" for="specialLossAmount">特別損失額(万円)</label>
+                  <input type="number" id="specialLossAmount" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+                </div>
               </div>
             </div>
           </div>
@@ -296,39 +297,6 @@
           </p>
         </div>
 
-      <!-- 結果表示 -->
-      <div id="calcResultArea" class="mt-10 calc-result-card p-6 sm:p-10">
-        <p class="text-sm text-white/70 mb-1">会社規模区分: <span id="resSizeLabel" class="font-bold text-white"></span></p>
-        <h3 class="font-black text-xl mb-8">試算結果(シナリオA・現在時点)</h3>
-
-        <div class="grid sm:grid-cols-2 gap-6 mb-8">
-          <div class="bg-white/10 rounded-lg p-5">
-            <p class="text-xs text-white/70 mb-1">1株当たり純資産価額</p>
-            <p id="resNetAsset" class="text-lg font-bold"></p>
-          </div>
-          <div class="bg-white/10 rounded-lg p-5">
-            <p class="text-xs text-white/70 mb-1">1株当たり類似業種比準価額</p>
-            <p id="resSimilar" class="text-lg font-bold"></p>
-          </div>
-          <div class="bg-white/10 rounded-lg p-5">
-            <p class="text-xs text-white/70 mb-1">1株当たり法人税法上の評価額</p>
-            <p id="resHoujin" class="text-lg font-bold"></p>
-          </div>
-          <div class="bg-white/10 rounded-lg p-5">
-            <p class="text-xs text-white/70 mb-1">併用方式による評価額</p>
-            <p id="resCombined" class="text-lg font-bold"></p>
-          </div>
-          <div class="bg-white/10 rounded-lg p-5">
-            <p class="text-xs text-white/70 mb-1">採用評価額(1株当たり・低い方を採用)</p>
-            <p id="resFinalPerShare" class="text-lg font-bold text-[#7bb0dc]"></p>
-          </div>
-        </div>
-
-        <div class="border-t border-white/20 pt-6">
-          <p class="text-xs text-white/70 mb-1">自社株評価額(合計)</p>
-          <p id="resFinalTotal" class="text-2xl font-black text-[#7bb0dc]"></p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -425,6 +393,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721s"></script>
+<script src="js/stock-calculator.js?v=20260721t"></script>
 </body>
 </html>

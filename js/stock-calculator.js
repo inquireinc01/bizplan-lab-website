@@ -420,16 +420,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function updateResultCard(year0) {
-    document.getElementById('resSizeLabel').textContent = year0.sizeLabel;
-    document.getElementById('resNetAsset').textContent = yen(year0.netAssetPerShare);
-    document.getElementById('resSimilar').textContent = yen(year0.similarPerShareActual);
-    document.getElementById('resHoujin').textContent = yen(year0.houjinPerShare);
-    document.getElementById('resCombined').textContent = yen(year0.combined);
-    document.getElementById('resFinalPerShare').textContent = yen(year0.finalPerShare);
-    document.getElementById('resFinalTotal').textContent = yen(year0.finalTotal);
-  }
-
   function populateLivePanel(v) {
     PROJECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
@@ -465,7 +455,6 @@ document.addEventListener('DOMContentLoaded', function () {
     drawChart(lastSeries, result.retirementYear);
     renderTileSelection();
     renderTable(lastSeries);
-    updateResultCard(year0);
   }
 
   // ===== リアルタイム調整パネル: 変更すると即座にグラフ・表を再計算 =====

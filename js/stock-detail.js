@@ -206,6 +206,26 @@ document.addEventListener('DOMContentLoaded', function () {
           : '中会社のため、類似業種比準価額×L＋純資産価額×(1-L)と純資産価額のいずれか低い方で評価しています。'));
 
     persist();
+
+    // ===== 結果ページ(グラフ・タイル)と共有するデータも保存(簡易版と同じキー・同じ形式) =====
+    // これにより、詳細版で入力した場合も結果ページのグラフ・タイルに正しく反映される
+    try {
+      var SIZE_KEYS = ['large', 'mid-large', 'mid-mid', 'mid-small', 'small'];
+      var simPerShare = isNaN(sim) ? net : sim;
+      var houjinPerShareShared = simPerShare * 0.5 + net * 0.5;
+      var SKEY = 'bpl_stock_valuation_v1';
+      var sraw = null;
+      try { sraw = localStorage.getItem(SKEY); } catch (e2) {}
+      var shared = sraw ? JSON.parse(sraw) : {};
+      shared.companySize = SIZE_KEYS[size.level];
+      shared.sharesOutstanding = String(shares);
+      shared.ss0_saizoku = String(total / MAN);
+      shared.ss0_ruiji = String((simPerShare * shares) / MAN);
+      shared.ss0_junsisan = String((net * shares) / MAN);
+      shared.ss0_houjin = String((houjinPerShareShared * shares) / MAN);
+      localStorage.setItem(SKEY, JSON.stringify(shared));
+    } catch (e) {}
+
     document.getElementById('dtResultArea').classList.remove('hidden');
     document.getElementById('dtResultArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
