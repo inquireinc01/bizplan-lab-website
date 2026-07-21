@@ -640,7 +640,7 @@ img {
   animation: barGrow 0.5s cubic-bezier(0.22, 1.4, 0.4, 1) backwards;
 }
 
-/* 評価額タイル: 通常はネイビーの枠囲み+白背景+ネイビー文字で統一。選択時のみ枠がグラフの棒の色になる(JSがborder-colorを切り替え) */
+/* 評価額タイル: 通常はネイビーの枠囲み+白背景+ネイビー文字で統一。選択時のみランプ点灯+背景がグラフの棒の色になる(JSがbackground/border-colorを切り替え) */
 .metric-tile {
   position: relative;
   cursor: pointer;
@@ -673,9 +673,12 @@ img {
   color: var(--color-slate);
   transition: color 0.15s ease;
 }
+.metric-tile.tile-selected .tile-label {
+  color: #fff;
+}
 .metric-tile.tile-selected .tile-value .tile-num,
 .metric-tile.tile-selected .tile-value .tile-unit {
-  color: var(--color-navy);
+  color: #fff;
 }
 
 /* 選択状態は左上のランプ点灯のみで表現する(タイル自体の色は変えない)。点灯色は指標に関わらず鮮やかなブルーで統一 */

@@ -217,9 +217,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const color = btn.dataset.color;
       const selected = selectedMetrics.includes(key);
       const lamp = btn.querySelector('.tile-lamp');
-      // 通常時はネイビー枠+白背景+ネイビー文字で全タイル共通。選択時のみランプ点灯+枠がグラフの棒の色になる
+      // 通常時はネイビー枠+白背景+ネイビー文字で全タイル共通。選択時のみランプ点灯+背景がグラフの棒の色になる
       if (lamp) lamp.classList.toggle('is-lit', selected);
       btn.classList.toggle('tile-selected', selected);
+      btn.style.backgroundColor = selected ? color : '';
       btn.style.borderColor = selected ? color : '';
     });
   }

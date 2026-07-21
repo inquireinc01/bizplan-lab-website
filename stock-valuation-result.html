@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260722g" />
+<link rel="stylesheet" href="css/style.css?v=20260722h" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -168,8 +168,10 @@
           <svg id="trendChart" viewBox="0 0 830 320" class="w-full h-auto" role="img" aria-label="30年後までの評価額推移グラフ"></svg>
           <div id="chartTooltip" class="hidden absolute z-10 pointer-events-none bg-white border border-gray-300 rounded-lg shadow-lg p-3 text-xs" style="min-width:180px"></div>
         </div>
+      </div>
+      <!-- ▲ ここまでを枠で囲み、iPad一画面に収まるようにしている -->
 
-        <!-- 試算条件(グラフ下・変更で即時反映) -->
+      <!-- 試算条件(グラフ下・変更で即時反映) -->
         <div id="livePanel" class="bg-gray-50 rounded-lg p-4 mt-6">
           <p class="text-sm font-bold text-gray-700 mb-1">試算条件を変更する</p>
           <p class="text-xs text-gray-500 mb-3">数値を変更すると、上のグラフと下の表が即座に更新されます。シナリオA・Bは独立した2つの前提です(例: 生命保険の加入前後の比較)。金額は万円単位です。</p>
@@ -287,7 +289,6 @@
             ※ 相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。
           </p>
         </div>
-      </div>
 
       <!-- 結果表示 -->
       <div id="calcResultArea" class="mt-10 calc-result-card p-6 sm:p-10">
@@ -418,6 +419,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721q"></script>
+<script src="js/stock-calculator.js?v=20260721r"></script>
 </body>
 </html>
