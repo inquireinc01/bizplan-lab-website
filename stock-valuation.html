@@ -372,7 +372,7 @@
         <!-- 詳細4: 純資産価額(第5表・含み益のみ) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep4">
           <h3 class="font-bold text-base mb-1"><span class="step-badge">STEP 4</span>純資産価額の計算（含み益を入力）</h3>
-          <p class="text-xs text-gray-500 mb-5">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する37%を控除して算定します。</p>
+          <p class="text-xs text-gray-500 mb-5">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する38%を控除して算定します。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtBookNet">帳簿価額による純資産（総資産-負債）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期末の貸借対照表上の純資産(帳簿価額の総資産-負債)を万円単位で入力します。</span></span></label>
@@ -391,11 +391,11 @@
               <input type="number" id="dtCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1000000" />
             </div>
             <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="dtDeduction37">評価差額に対する37%控除（自動）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">含み益 × 37%。純資産価額の算定では、含み益に対する法人税等相当額として37%を控除します。</span></span></label>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="dtDeduction37">評価差額に対する38%控除（自動）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">含み益 × 38%。純資産価額の算定では、含み益に対する法人税等相当額として38%を控除します。</span></span></label>
               <input type="number" id="dtDeduction37" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="" />
             </div>
             <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="dtNetAssetPerShare">1株当たり純資産価額（自動）（円）<span class="help-tip" tabindex="0">?<span class="help-text">（帳簿純資産＋含み益－37%控除）÷ 発行済株式数 で算出した1株当たりの純資産価額。</span></span></label>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="dtNetAssetPerShare">1株当たり純資産価額（自動）（円）<span class="help-tip" tabindex="0">?<span class="help-text">（帳簿純資産＋含み益－38%控除）÷ 発行済株式数 で算出した1株当たりの純資産価額。</span></span></label>
               <input type="number" id="dtNetAssetPerShare" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="" />
             </div>
           </div>
@@ -573,7 +573,7 @@
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
 <script src="js/stock-simple.js?v=20260721d"></script>
-<script src="js/stock-detail.js?v=20260721c"></script>
+<script src="js/stock-detail.js?v=20260722a"></script>
 <script src="js/stock-tdb.js?v=20260722a"></script>
 <script src="js/stock-stepper.js?v=20260722a"></script>
 </body>

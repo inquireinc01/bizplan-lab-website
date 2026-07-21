@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var bookNet = num('dtBookNet') * MAN; // 万円→円
     var unreal = num('dtUnrealized') * MAN;
     var shares = num('dtSharesDetail');
-    var ded = isNaN(unreal) ? NaN : unreal * 0.37;
+    var ded = isNaN(unreal) ? NaN : unreal * 0.38;
     setNum('dtDeduction37', isNaN(ded) ? NaN : ded / MAN); // 万円表示
     if (isNaN(bookNet) || isNaN(unreal) || isNaN(shares) || shares <= 0) { setNum('dtNetAssetPerShare', NaN); return NaN; }
     var taxNet = bookNet + unreal - ded; // = bookNet + unreal*0.63
