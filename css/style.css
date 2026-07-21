@@ -14,6 +14,9 @@
   --color-green-gray: #5c8272;
   --color-green-gray-dark: #456155;
   --color-green-gray-soft: #e7efeb;
+  --color-teal: #2f8494;
+  --color-teal-dark: #206570;
+  --color-teal-soft: #e6f0f1;
   --color-gray-800: #2b323d;
   --color-gray-600: #56626f;
   --color-gray-400: #8d97a3;
@@ -464,6 +467,9 @@ input[type="number"] {
 .site-desktop-nav .nav-btn .nav-num.ds {
   color: var(--color-green-gray);
 }
+.site-desktop-nav .nav-btn .nav-num.teal {
+  color: var(--color-teal);
+}
 .site-desktop-nav .nav-btn:hover .nav-num,
 .site-desktop-nav .nav-btn.active .nav-num {
   color: #fff;
@@ -552,6 +558,10 @@ input[type="number"] {
 /* DS(ディスカッションシート)系ツール7〜9はグリーングレー */
 .nav-num.ds {
   color: var(--color-green-gray);
+}
+/* 5・6(保険料原資/減額)はブルーグリーン(青系と同トーン) */
+.nav-num.teal {
+  color: var(--color-teal);
 }
 
 /* 入力エリア(基本情報・決算書情報)だけグリーングレー基調にし、番号付きツールと区別する */
