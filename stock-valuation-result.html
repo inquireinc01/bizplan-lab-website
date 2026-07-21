@@ -85,6 +85,14 @@
         入力ページを経由していないため、サンプル値で試算結果を表示しています。ご自身の数値で試算する場合は「入力を編集する」から入力してください。
       </div>
 
+      <div class="notice-box text-xs rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
+        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。別のPCで続きを入力する場合や、消えるのが心配な場合はファイルに保存してください。</span>
+        <button type="button" class="js-backup-save btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
+        <button type="button" class="js-backup-load btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
+        <span class="js-backup-msg hidden w-full text-[#0f2a4a] font-bold"></span>
+      </div>
+
       <!-- 30年推移ダッシュボード -->
       <div id="chartArea" class="calc-section bg-white p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-3">
@@ -447,5 +455,6 @@
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
 <script src="js/stock-calculator.js?v=20260722a"></script>
+<script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

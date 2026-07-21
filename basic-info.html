@@ -78,6 +78,14 @@
         試算・ご提案の前に、ご担当者様と対象法人の基本情報をご入力ください。入力内容はブラウザ内に保存され、各ツールでの試算やPDF出力の際に共通してご利用いただけます。
       </p>
 
+      <div class="notice-box text-xs rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3" data-backup-keys="bpl_basic_info_v1,bpl_financial_statements_v1">
+        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。別のPCで続きを入力する場合や、消えるのが心配な場合はファイルに保存してください。</span>
+        <button type="button" class="js-backup-save btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
+        <button type="button" class="js-backup-load btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
+        <span class="js-backup-msg hidden w-full text-[#0f2a4a] font-bold"></span>
+      </div>
+
       <form id="basicInfoForm" class="space-y-8">
         <div class="calc-section bg-white p-6 sm:p-8">
           <h3 class="font-bold text-base mb-4">ご担当者情報</h3>
@@ -889,5 +897,6 @@
 <script src="js/number-format.js?v=20260721c"></script>
 <script src="js/basic-info.js?v=20260720a"></script>
 <script src="js/financial-statements.js?v=20260721b"></script>
+<script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>
