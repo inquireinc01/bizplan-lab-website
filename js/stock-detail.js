@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!chooser) return;
   var simpleArea = document.getElementById('simpleArea');
   var detailArea = document.getElementById('detailArea');
+  var tdbArea = document.getElementById('tdbArea');
 
   var num = function (id) {
     var el = document.getElementById(id);
@@ -23,8 +24,10 @@ document.addEventListener('DOMContentLoaded', function () {
     chooser.querySelectorAll('.version-card').forEach(function (c) {
       c.classList.toggle('selected', c.getAttribute('data-version') === v);
     });
-    if (v === 'simple') { simpleArea.classList.remove('hidden'); detailArea.classList.add('hidden'); }
-    else { detailArea.classList.remove('hidden'); simpleArea.classList.add('hidden'); recalcDetail(); }
+    simpleArea.classList.toggle('hidden', v !== 'simple');
+    detailArea.classList.toggle('hidden', v !== 'detail');
+    if (tdbArea) tdbArea.classList.toggle('hidden', v !== 'tdb');
+    if (v === 'detail') recalcDetail();
     try { localStorage.setItem('bpl_stock_version', v); } catch (e) {}
   }
   chooser.querySelectorAll('.version-card').forEach(function (c) {
@@ -267,6 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
   restore();
   var savedVer = null;
   try { savedVer = localStorage.getItem('bpl_stock_version'); } catch (e) {}
-  selectVersion(savedVer === 'detail' ? 'detail' : 'simple');
+  selectVersion(savedVer === 'detail' || savedVer === 'tdb' ? savedVer : 'simple');
   if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
 });

@@ -1,0 +1,164 @@
+document.addEventListener('DOMContentLoaded', function () {
+  var area = document.getElementById('tdbArea');
+  if (!area) return;
+
+  var STORAGE_KEY = 'bpl_stock_valuation_v1';
+  var OWN_STORAGE_KEY = 'bpl_stock_tdb_v1';
+  var MAN = 10000;
+  var FIELD_IDS = ['tbBiz', 'tbCapital', 'tbSales', 'tbEmp', 'tbProfit', 'tbDividend', 'tbNetAssets', 'tbA', 'tbB', 'tbC', 'tbD'];
+
+  var num = function (id) {
+    var el = document.getElementById(id);
+    if (!el) return NaN;
+    return window.numClean ? window.numClean(el.value) : parseFloat(String(el.value).replace(/,/g, ''));
+  };
+  var fmt = function (n) { return window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'); };
+
+  // ===== 会社規模の判定(総資産を使わず、売上高・従業員数のうち有利な方を採用) =====
+  var OKU = 100000000;
+  function empLevel(n) {
+    if (n > 35) return 0; if (n > 20) return 2; if (n > 5) return 3; return 4;
+  }
+  function salesLevel(yen, biz) {
+    var t;
+    if (biz === 'wholesale') t = [30 * OKU, 7 * OKU, 3.5 * OKU, 2 * OKU];
+    else if (biz === 'retail') t = [20 * OKU, 5 * OKU, 2.5 * OKU, 6000 * MAN];
+    else t = [15 * OKU, 4 * OKU, 2 * OKU, 8000 * MAN];
+    if (yen >= t[0]) return 0; if (yen >= t[1]) return 1; if (yen >= t[2]) return 2; if (yen >= t[3]) return 3; return 4;
+  }
+  var SIZE_KEYS = ['large', 'mid-large', 'mid-mid', 'mid-small', 'small'];
+  var SIZE_L = [1.0, 0.90, 0.75, 0.60, 0.50];
+  var SIZE_SHAKU = [0.7, 0.6, 0.6, 0.6, 0.5];
+
+  function judgeSizeLite() {
+    var biz = (document.getElementById('tbBiz') || {}).value || 'other';
+    var sales = num('tbSales') * 1000; // 千円→円
+    var emp = num('tbEmp');
+    var sLv = isNaN(sales) ? 4 : salesLevel(sales, biz);
+    var eLv = isNaN(emp) ? 4 : empLevel(emp);
+    var level = Math.min(sLv, eLv); // 売上・従業員数のうち会社規模が大きく判定される方を採用
+    return { level: level, key: SIZE_KEYS[level], L: SIZE_L[level], shaku: SIZE_SHAKU[level] };
+  }
+
+  // ===== 株主一覧(簡易版と同じ操作感) =====
+  var holderBody = document.getElementById('tbHolderBody');
+  function holderRow(d) {
+    d = d || {};
+    var tr = document.createElement('tr');
+    tr.className = 'border-b border-gray-100 tb-holder';
+    tr.innerHTML =
+      '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" value="' + (d.name || '') + '" placeholder="氏名・法人名" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.ratio || '') + '" placeholder="％" /></td>' +
+      '<td class="px-1 py-1 text-center"><button type="button" class="hdel text-gray-400 hover:text-red-500 font-bold" title="削除">×</button></td>';
+    tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); });
+    holderBody.appendChild(tr);
+    if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
+    return tr;
+  }
+  document.getElementById('tbAddHolder').addEventListener('click', function () { holderRow({}); });
+
+  function collectHolders() {
+    var holders = [];
+    holderBody.querySelectorAll('.tb-holder').forEach(function (r) {
+      holders.push({
+        name: r.querySelector('.hn').value,
+        shares: r.querySelector('.hs').value,
+        ratio: r.querySelector('.hr').value,
+      });
+    });
+    return holders;
+  }
+
+  // ===== 保存 / 復元(このフォーム自身の入力値) =====
+  function persistOwn() {
+    try {
+      var data = {};
+      FIELD_IDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      });
+      data.tb_holders = JSON.stringify(collectHolders());
+      localStorage.setItem(OWN_STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {}
+  }
+  function restoreOwn() {
+    var s = null;
+    try { var raw = localStorage.getItem(OWN_STORAGE_KEY); s = raw ? JSON.parse(raw) : null; } catch (e) {}
+    if (!s) { holderRow({}); return; }
+    FIELD_IDS.forEach(function (id) {
+      if (s[id] !== undefined && document.getElementById(id)) document.getElementById(id).value = s[id];
+    });
+    if (s.tb_holders) {
+      try {
+        var hs = JSON.parse(s.tb_holders);
+        if (hs.length) { holderBody.innerHTML = ''; hs.forEach(holderRow); return; }
+      } catch (e) {}
+    }
+    holderRow({});
+  }
+  area.addEventListener('input', persistOwn);
+  area.addEventListener('change', persistOwn);
+
+  document.getElementById('tbResetBtn').addEventListener('click', function () {
+    FIELD_IDS.forEach(function (id) { var el = document.getElementById(id); if (el && el.tagName !== 'SELECT') el.value = ''; });
+    document.getElementById('tbDividend').value = '0';
+    holderBody.innerHTML = '';
+    holderRow({});
+    try { localStorage.removeItem(OWN_STORAGE_KEY); } catch (e) {}
+  });
+
+  // ===== 試算(自社株×生命保険の結果ページへブリッジ) =====
+  document.getElementById('tbCalcBtn').addEventListener('click', function () {
+    var err = document.getElementById('tbErrorArea');
+    err.classList.add('hidden');
+
+    var capital = num('tbCapital');
+    var shares = (!isNaN(capital) && capital > 0) ? capital / 50 : NaN; // 額面50円で株式数を概算
+    var A = num('tbA'), B = num('tbB'), C = num('tbC'), D = num('tbD');
+    var profit = num('tbProfit'), dividend = num('tbDividend'), netAssets = num('tbNetAssets');
+
+    if (isNaN(shares) || shares <= 0) {
+      err.textContent = '資本金を入力してください(額面50円として発行済株式数を概算します)。';
+      err.classList.remove('hidden');
+      return;
+    }
+    if ([A, B, C, D].some(isNaN) || B <= 0 || C <= 0 || D <= 0) {
+      err.textContent = '類似業種比準の参考値(A・B・C・D)をすべて入力してください。';
+      err.classList.remove('hidden');
+      return;
+    }
+
+    var size = judgeSizeLite();
+    var b = (!isNaN(dividend) ? dividend : 0) / shares; // 自社の1株(50円)当たり配当金額
+    var c = (!isNaN(profit) ? profit : 0) / shares; // 自社の1株(50円)当たり利益金額(税引前利益をそのまま使用)
+    var d = (!isNaN(netAssets) ? netAssets : 0) / shares; // 自社の1株(50円)当たり純資産価額(簿価)
+
+    var ratio = (b / B + c / C + d / D) / 3;
+    var similarPerShare = Math.max(0, A * ratio * size.shaku); // 類似業種比準価額(1株)
+    var netAssetPerShareMarket = D; // 時価純資産(1株)=類似業種のD値をそのまま採用(詳細な資産評価の代用)
+    var combined = similarPerShare * size.L + netAssetPerShareMarket * (1 - size.L); // 併用方式(1株)
+    var saizokuPerShare = Math.min(combined, netAssetPerShareMarket); // 相続税評価額(1株)
+    var houjinPerShare = similarPerShare * 0.5 + netAssetPerShareMarket * 0.5; // 法人税法上評価額(1株)
+
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var shared = raw ? JSON.parse(raw) : {};
+      shared.companySize = size.key;
+      shared.sharesOutstanding = String(shares);
+      shared.ss_parValue = '50';
+      shared.ss0_saizoku = String((saizokuPerShare * shares) / MAN);
+      shared.ss0_ruiji = String((similarPerShare * shares) / MAN);
+      shared.ss0_junsisan = String((netAssetPerShareMarket * shares) / MAN);
+      shared.ss0_houjin = String((houjinPerShare * shares) / MAN);
+      shared.ss_holders = JSON.stringify(collectHolders());
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+      localStorage.setItem('bpl_stock_version', 'tdb');
+    } catch (e) {}
+
+    persistOwn();
+    window.location.href = 'stock-valuation-result.html';
+  });
+
+  restoreOwn();
+});

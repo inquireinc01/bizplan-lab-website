@@ -7,12 +7,17 @@ document.addEventListener('DOMContentLoaded', function () {
     var d = document.getElementById('detailArea');
     return d && !d.classList.contains('hidden');
   }
+  function tdbVisible() {
+    var t = document.getElementById('tdbArea');
+    return t && !t.classList.contains('hidden');
+  }
   function currentStepper() { return detailVisible() ? stepperDetail : stepperSimple; }
 
-  // ステッパーの表示を版に合わせる
+  // ステッパーの表示を版に合わせる(TD/TSR版は簡易ツールのためステッパーなし)
   function syncVisibility() {
     var det = detailVisible();
-    stepperSimple.classList.toggle('hidden', det);
+    var tdb = tdbVisible();
+    stepperSimple.classList.toggle('hidden', det || tdb);
     stepperDetail.classList.toggle('hidden', !det);
   }
 
@@ -79,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return [step1, step2, step3];
   }
   function updateValidity() {
-    if (detailVisible()) return; // 詳細版のSTEP1〜6は対象外(従来通りスクロール連動のみ)
+    if (detailVisible() || tdbVisible()) return; // 詳細版・TD/TSR版は対象外(従来通りスクロール連動のみ)
     var results = stepValidity();
     var items = stepperSimple.querySelectorAll('li');
     items.forEach(function (li, i) {
