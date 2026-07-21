@@ -3,7 +3,12 @@
   var form = document.getElementById('basicInfoForm');
   if (!form) return;
 
-  var fieldIds = ['biRepCompany', 'biBranch', 'biName', 'biNameKana', 'biCorpName', 'biFiscalMonth', 'biCorpNumber'];
+  var fieldIds = [
+    'biRepCompany', 'biBranch', 'biName', 'biNameKana',
+    'biPostalCode', 'biAddress1', 'biAddress2', 'biPhone1', 'biPhone2',
+    'biWebsite', 'biRegistrationNumber', 'biAdditionalText',
+    'biCorpName', 'biFiscalMonth', 'biCorpNumber',
+  ];
 
   function loadValues() {
     var raw = localStorage.getItem(STORAGE_KEY);
@@ -27,6 +32,19 @@
   }
 
   loadValues();
+
+  // ===== 追加文言の文字数カウンター =====
+  var additionalText = document.getElementById('biAdditionalText');
+  var additionalTextCount = document.getElementById('biAdditionalTextCount');
+  function updateAdditionalTextCount() {
+    if (additionalText && additionalTextCount) {
+      additionalTextCount.textContent = additionalText.value.length + ' / 1000';
+    }
+  }
+  if (additionalText) {
+    updateAdditionalTextCount();
+    additionalText.addEventListener('input', updateAdditionalTextCount);
+  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();

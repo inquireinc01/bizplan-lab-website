@@ -138,7 +138,7 @@
 
       <form id="basicInfoForm" class="space-y-8">
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-4">ご担当者情報</h3>
+          <h3 class="font-bold text-base mb-4">担当者情報</h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="block text-sm font-medium mb-1.5" for="biRepCompany">会社名</label>
@@ -155,6 +155,42 @@
             <div>
               <label class="block text-sm font-medium mb-1.5" for="biNameKana">フリガナ</label>
               <input type="text" id="biNameKana" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: ヤマダ タロウ" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biPostalCode">郵便番号</label>
+              <input type="text" id="biPostalCode" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 123-4567" />
+            </div>
+            <div></div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biAddress1">住所（一行目）</label>
+              <input type="text" id="biAddress1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 東京都千代田区丸の内1-1-1" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biAddress2">住所（二行目）</label>
+              <input type="text" id="biAddress2" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 丸の内ビル10階" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biPhone1">電話番号１</label>
+              <input type="tel" id="biPhone1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 03-1234-5678" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biPhone2">電話番号２</label>
+              <input type="tel" id="biPhone2" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 090-1234-5678" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biWebsite">ホームページアドレス</label>
+              <input type="url" id="biWebsite" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: https://www.example.com" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="biRegistrationNumber">登録番号（募集文書等）</label>
+              <input type="text" id="biRegistrationNumber" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 第12345号" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="flex items-center justify-between text-sm font-medium mb-1.5" for="biAdditionalText">
+                <span>追加文言（最大1000字）</span>
+                <span id="biAdditionalTextCount" class="text-xs text-gray-400 font-normal">0 / 1000</span>
+              </label>
+              <textarea id="biAdditionalText" maxlength="1000" rows="4" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="PDF出力時に記載したい文言があれば入力してください"></textarea>
             </div>
           </div>
         </div>
@@ -945,7 +981,7 @@
 
 <script src="js/menu.js?v=20260722b"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/basic-info.js?v=20260720a"></script>
+<script src="js/basic-info.js?v=20260720b"></script>
 <script src="js/financial-statements.js?v=20260721b"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
