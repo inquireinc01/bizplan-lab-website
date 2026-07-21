@@ -354,9 +354,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const growthFactor = 1 + (currentValues.insuranceGrowthRate || 0) / 100;
       const period = Math.max(0, Math.min(30, Math.round(currentValues.coveragePeriod || 0)));
       if (period > 0) {
+        // i<=period(年periodのバーの右端まで)にすることで、保障期間ぴったりまで塗りが届くようにする
+        // (以前はi<periodだったため、保障期間30年でも29年目のバーで塗りが止まって見えていた)
         let d = `M ${padL.toFixed(1)} ${yBottom.toFixed(1)} `;
         let prevY = null;
-        for (let i = 0; i < period; i++) {
+        for (let i = 0; i <= period; i++) {
           const amtT = amt0 * Math.pow(growthFactor, i);
           const yTop = Math.max(padT, y(amtT));
           const xLeft = padL + i * slotWidth;
@@ -367,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
           d += `L ${xRight.toFixed(1)} ${yTop.toFixed(1)} `;
           prevY = yTop;
         }
-        const xEnd = padL + period * slotWidth;
+        const xEnd = padL + (period + 1) * slotWidth;
         d += `L ${xEnd.toFixed(1)} ${yBottom.toFixed(1)} Z`;
         insuranceRect = `<path d="${d}" fill="rgba(168,61,61,0.26)" stroke="rgba(131,47,47,0.7)" stroke-width="1.2" stroke-dasharray="3 3"/>`;
       }
