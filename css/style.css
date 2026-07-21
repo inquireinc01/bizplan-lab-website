@@ -465,6 +465,20 @@ input[type="number"] {
   opacity: 1;
   visibility: visible;
 }
+
+/* 準備中ページのヒーロー帯: 黄色に光る「COMING SOON」装飾テキスト */
+.coming-soon-glow {
+  color: #ffd23f;
+  animation: comingSoonGlow 2.2s ease-in-out infinite alternate;
+}
+@keyframes comingSoonGlow {
+  from {
+    text-shadow: 0 0 8px rgba(255, 210, 63, 0.55), 0 0 18px rgba(255, 210, 63, 0.3), 0 0 32px rgba(255, 210, 63, 0.18);
+  }
+  to {
+    text-shadow: 0 0 14px rgba(255, 210, 63, 0.95), 0 0 32px rgba(255, 210, 63, 0.6), 0 0 56px rgba(255, 210, 63, 0.35);
+  }
+}
 /* ホバー時に色だけがふわっとフェードするエフェクト(位置は動かさない) */
 .nav-btn::before {
   content: "";
