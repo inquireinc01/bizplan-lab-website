@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     return window.numClean ? window.numClean(el.value) : parseFloat(String(el.value).replace(/,/g, ''));
   };
   var set = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
+  var numOf = function (el) { return window.numClean ? window.numClean(el.value) : parseFloat(String(el.value).replace(/,/g, '')); };
+  var MAX_DETAIL_VALUE = 999999999999; // 桁あふれ防止の汎用上限(詳細入力の全数値欄に適用)
   var setNum = function (id, n, unit) {
     var el = document.getElementById(id);
     if (!el) return;
@@ -177,6 +179,20 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('dtCalcBtn').addEventListener('click', function () {
     var err = document.getElementById('dtErrorArea');
     err.classList.add('hidden');
+
+    var overflowEl = null;
+    detailArea.querySelectorAll('input').forEach(function (el) {
+      if (overflowEl || el.type === 'checkbox') return;
+      var v = numOf(el);
+      if (!isNaN(v) && Math.abs(v) > MAX_DETAIL_VALUE) overflowEl = el;
+    });
+    if (overflowEl) {
+      err.textContent = '入力できる数値は ' + (window.numFmt ? window.numFmt(MAX_DETAIL_VALUE) : MAX_DETAIL_VALUE.toLocaleString('ja-JP')) + ' までです。数値をご確認ください。';
+      err.classList.remove('hidden');
+      overflowEl.focus();
+      return;
+    }
+
     var size = judgeSize();
     var tok = judgeTokutei(size.level);
     var net = calcNetPerShare();

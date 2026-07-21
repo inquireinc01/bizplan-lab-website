@@ -174,6 +174,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 送信 → 結果ページ =====
+  var MAX_SHARES = 999999999; // 発行済株式数の上限(桁あふれ防止)
+  var MAX_PAR = 9999999; // 額面(円)の上限
+  var MAX_EVAL = 999999999999; // 評価額(時価総額・円)の上限
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var err = document.getElementById('calcErrorArea');
@@ -181,6 +185,39 @@ document.addEventListener('DOMContentLoaded', function () {
     var shares = num(document.getElementById('ssShares').value);
     if (isNaN(shares) || shares <= 0) {
       err.textContent = '発行済株式数を入力してください。'; err.classList.remove('hidden'); return;
+    }
+    if (shares > MAX_SHARES) {
+      err.textContent = '発行済株式数は ' + fmt(MAX_SHARES) + ' 株までです。数値をご確認ください。';
+      err.classList.remove('hidden');
+      document.getElementById('ssShares').focus();
+      return;
+    }
+    var par = num(document.getElementById('ssParValue').value);
+    if (!isNaN(par) && par > MAX_PAR) {
+      err.textContent = '額面は ' + fmt(MAX_PAR) + ' 円までです。数値をご確認ください。';
+      err.classList.remove('hidden');
+      document.getElementById('ssParValue').focus();
+      return;
+    }
+    for (var i = 0; i < EVAL_KEYS.length; i++) {
+      var evKey = EVAL_KEYS[i];
+      var v = num((document.getElementById('ssV_' + evKey) || {}).value);
+      if (!isNaN(v) && Math.abs(v) > MAX_EVAL) {
+        err.textContent = '評価額(時価総額)は ' + fmt(MAX_EVAL) + ' 円までです。数値をご確認ください。';
+        err.classList.remove('hidden');
+        document.getElementById('ssV_' + evKey).focus();
+        return;
+      }
+    }
+    var ratioOver100 = false;
+    holderBody.querySelectorAll('.ss-holder').forEach(function (r) {
+      var ratio = num(r.querySelector('.hr').value);
+      if (!isNaN(ratio) && ratio > 100) ratioOver100 = true;
+    });
+    if (ratioOver100) {
+      err.textContent = '株主の比率が100%を超えています。株数・比率をご確認ください。';
+      err.classList.remove('hidden');
+      return;
     }
     if (isNaN(num((document.getElementById('ssV_junsisan') || {}).value))) {
       err.textContent = '純資産価額の時価総額を入力してください（グラフの起点に必要です）。'; err.classList.remove('hidden'); return;

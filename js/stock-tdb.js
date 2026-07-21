@@ -151,9 +151,34 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== 試算(自社株×生命保険の結果ページへブリッジ) =====
+  var MAX_TDB_VALUE = 999999999999; // 桁あふれ防止の汎用上限
+
   document.getElementById('tbCalcBtn').addEventListener('click', function () {
     var err = document.getElementById('tbErrorArea');
     err.classList.add('hidden');
+
+    var overflowEl = null;
+    area.querySelectorAll('input').forEach(function (el) {
+      if (overflowEl) return;
+      var v = numVal(el.value);
+      if (!isNaN(v) && Math.abs(v) > MAX_TDB_VALUE) overflowEl = el;
+    });
+    if (overflowEl) {
+      err.textContent = '入力できる数値は ' + fmt(MAX_TDB_VALUE) + ' までです。数値をご確認ください。';
+      err.classList.remove('hidden');
+      overflowEl.focus();
+      return;
+    }
+    var ratioOver100 = false;
+    holderBody.querySelectorAll('.tb-holder').forEach(function (r) {
+      var ratio = numVal(r.querySelector('.hr').value);
+      if (!isNaN(ratio) && ratio > 100) ratioOver100 = true;
+    });
+    if (ratioOver100) {
+      err.textContent = '株主の比率が100%を超えています。株数・比率をご確認ください。';
+      err.classList.remove('hidden');
+      return;
+    }
 
     var capital = num('tbCapital');
     var shares = (!isNaN(capital) && capital > 0) ? capital / 50 : NaN; // 額面50円で株式数を概算
