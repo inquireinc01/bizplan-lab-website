@@ -48,7 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const denom = (1 - c) * (1 + g * (1 - c));
     if (!(denom > 0) || !(stockCorp > 0)) return { min: NaN, auto: NaN };
     const min = stockCorp / denom;
-    return { min: min, auto: Math.ceil(min / 1000) * 1000 }; // 自動入力は1000万円単位で切上げ
+    // 自動入力は多めに設定する。まず億(10000万円)単位で切上げ、
+    // その余白が5千万円以下なら さらに+5千万円して「〇億5千万円」にする(必ず5千万円以上を上乗せ)。
+    const OKU = 10000; // 1億円 = 10000万円
+    const ceilOku = Math.ceil(min / OKU) * OKU;
+    const auto = (ceilOku - min <= 5000) ? ceilOku + 5000 : ceilOku;
+    return { min: min, auto: auto };
   }
 
   let cashManual = false; // ガード状態(false=自動計算, true=手入力)
@@ -71,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cashLockBtn) cashLockBtn.textContent = manual ? '自動計算に戻す' : '手入力する';
     if (cashHint) cashHint.textContent = manual
       ? '手入力モード(金庫株の買取に必要な最低額を下回るとエラーになります)'
-      : '他の項目から自動計算(金庫株の買取に必要な最低額を1000万円単位で切上げ)';
+      : '他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)';
     if (!manual) refreshAutoCash();
   }
   if (cashLockBtn) cashLockBtn.addEventListener('click', function () { setCashMode(!cashManual); });
@@ -122,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     if (gMax === gMin) gMax = gMin + 1;
 
-    const plotXStart = 60, plotXEnd = 706, plotW = plotXEnd - plotXStart;
+    const plotXStart = 34, plotXEnd = 712, plotW = plotXEnd - plotXStart;
     const bandH = 200;
     const pxPerMan = bandH / (gMax - gMin);
 
@@ -138,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const zeroY = yOf(0);
       const N = chart.bars.length;
       const slotW = plotW / N;
-      const barW = Math.min(58, slotW * 0.58);
+      const barW = Math.min(66, slotW * 0.64);
 
       out += `<text x="${plotXStart}" y="${(baseTop - 24).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a">${chart.title}</text>`;
       out += `<line x1="${plotXStart - 6}" y1="${zeroY.toFixed(1)}" x2="${plotXEnd}" y2="${zeroY.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
@@ -159,27 +164,33 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 34).toFixed(1)}" r="8" fill="#0f2a4a"/>`;
           out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
-        // 保険加入チェックポイント(このバーと次バーの間に細いマーカー＋ラベル)
+        // 保険加入チェックポイント(バー間の位置に、白背景ピル＋引き出し線で明示。バーと重なっても可読)
         if (b.checkpoint && i < N - 1) {
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
-          out += `<line x1="${mx.toFixed(1)}" y1="${(my - 7).toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(my + 7).toFixed(1)}" stroke="#3b6ea5" stroke-width="1.5"/>`;
-          out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="3" fill="#3b6ea5"/>`;
-          out += `<text x="${mx.toFixed(1)}" y="${(my - 11).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${b.checkpoint}</text>`;
+          const pillW = 52, pillH = 16;
+          const pillCY = Math.max(baseTop + 12, my - 18); // バンド上端にめり込まないようクランプ
+          out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
+          out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
+          out += `<rect x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
+          out += `<text x="${mx.toFixed(1)}" y="${(pillCY + 3.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${b.checkpoint}</text>`;
         }
 
         if (b.type === 'stacked') {
           const yZero = yOf(0);
           const yCorpTop = yOf(b.corp);
           const yTotalTop = yOf(b.total);
+          // 最終残高は薄い塗り＋濃い文字。文字がバー幅からはみ出しても白背景上で読めるようにする
+          const CORPFILL = '#c6d3e2', CORPTEXT = '#0f2a4a';   // 法人(ネイビー系の淡色)
+          const INDIVFILL = '#dfe4ea', INDIVTEXT = '#41505f'; // 個人(スレート系の淡色)
           if (b.corp > 0) {
-            out += `<rect x="${x.toFixed(1)}" y="${yCorpTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yZero - yCorpTop).toFixed(1)}" fill="${NAVY}"/>`;
-            if (yZero - yCorpTop > 17) out += `<text x="${cx.toFixed(1)}" y="${((yCorpTop + yZero) / 2 + 3.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle">法人 ${fmtNum(b.corp)}</text>`;
+            out += `<rect x="${x.toFixed(1)}" y="${yCorpTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yZero - yCorpTop).toFixed(1)}" fill="${CORPFILL}" stroke="#b3bfcd" stroke-width="0.75"/>`;
+            out += `<text x="${cx.toFixed(1)}" y="${((yCorpTop + yZero) / 2 + 4).toFixed(1)}" font-size="11" font-weight="bold" fill="${CORPTEXT}" text-anchor="middle">法人 ${fmtNum(b.corp)}</text>`;
           }
           if (b.indiv > 0) {
-            out += `<rect x="${x.toFixed(1)}" y="${yTotalTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yCorpTop - yTotalTop).toFixed(1)}" fill="${SLATE}"/>`;
-            if (yCorpTop - yTotalTop > 17) out += `<text x="${cx.toFixed(1)}" y="${((yTotalTop + yCorpTop) / 2 + 3.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle">個人 ${fmtNum(b.indiv)}</text>`;
+            out += `<rect x="${x.toFixed(1)}" y="${yTotalTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yCorpTop - yTotalTop).toFixed(1)}" fill="${INDIVFILL}" stroke="#b3bfcd" stroke-width="0.75"/>`;
+            out += `<text x="${cx.toFixed(1)}" y="${((yTotalTop + yCorpTop) / 2 + 4).toFixed(1)}" font-size="11" font-weight="bold" fill="${INDIVTEXT}" text-anchor="middle">個人 ${fmtNum(b.indiv)}</text>`;
           }
           // 合計を上に強調表示
           out += `<text x="${cx.toFixed(1)}" y="${(yTotalTop - 8).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a" text-anchor="middle">計 ${fmtNum(b.total)}</text>`;
