@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607234" />
+<link rel="stylesheet" href="css/style.css?v=202607235" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -140,6 +140,15 @@
         <aside class="hidden lg:block lg:w-44 shrink-0">
           <div class="sticky top-24">
             <p class="font-brand-en text-[11px] font-bold text-gray-400 tracking-[0.2em] mb-4">INPUT STEPS</p>
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-gray-500">入力の進捗</span>
+                <span id="stepProgressPct" class="text-[11px] font-black text-[#0f2a4a]">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="stepProgressBar" class="progress-fill" style="width:0%"></div>
+              </div>
+            </div>
             <ol id="stepperSimple" class="stepper">
               <li data-num="1" data-target="sstep1" tabindex="0" role="button"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
               <li data-num="2" data-target="sstep2" tabindex="0" role="button"><span class="step-en">STEP 2</span><span class="step-jp">自社株評価</span></li>
@@ -625,7 +634,7 @@
 <script src="js/stock-simple.js?v=20260721f"></script>
 <script src="js/stock-detail.js?v=20260722d"></script>
 <script src="js/stock-tdb.js?v=20260722c"></script>
-<script src="js/stock-stepper.js?v=20260722c"></script>
+<script src="js/stock-stepper.js?v=20260722d"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

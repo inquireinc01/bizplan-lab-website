@@ -151,6 +151,13 @@ document.addEventListener('DOMContentLoaded', function () {
       submitBtn.classList.toggle('btn-ready', allOk);
       submitBtn.classList.toggle('btn-not-ready', !allOk);
     }
+    // 入力の進捗ゲージ: 充足したSTEP数の割合を表示
+    var doneCount = results.filter(function (v) { return v; }).length;
+    var pct = results.length ? Math.round((doneCount / results.length) * 100) : 0;
+    var bar = document.getElementById('stepProgressBar');
+    var pctLabel = document.getElementById('stepProgressPct');
+    if (bar) bar.style.width = pct + '%';
+    if (pctLabel) pctLabel.textContent = pct + '%';
   }
   updateValidity();
 
