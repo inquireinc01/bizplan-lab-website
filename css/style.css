@@ -420,7 +420,7 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   width: 6.6rem;
-  padding: 0.5rem 0.3rem;
+  padding: 0.3rem 0.3rem;
   border-radius: 9999px;
   font-size: 0.8rem;
   font-weight: 700;
@@ -430,6 +430,24 @@ input[type="number"] {
   white-space: nowrap;
   overflow: visible;
   z-index: 0;
+}
+/* 準備中バッジ: ボタン右上に小さく重ねる(番号は左上にあるため右上に配置) */
+.badge-soon {
+  position: absolute;
+  top: -0.55rem;
+  right: -0.35rem;
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  padding: 0.12rem 0.32rem;
+  border-radius: 9999px;
+  background-color: #b0651b;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 3;
+  line-height: 1.2;
+  text-transform: uppercase;
+  pointer-events: none;
 }
 /* ホバー時に色だけがふわっとフェードするエフェクト(位置は動かさない) */
 .nav-btn::before {
@@ -496,9 +514,11 @@ input[type="number"] {
   width: 100%;
 }
 
-/* ヘッダー: 横幅不足でナビが収まらない場合はハンバーガーへ切替(JSが .nav-collapsed を付与) */
+/* ヘッダー: 項目数が多いため2段まで折り返し表示。3段目以降になる場合はハンバーガーへ切替(JSが .nav-collapsed を付与) */
 .site-desktop-nav {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.35rem;
 }
 .site-menu-btn {
   display: none;

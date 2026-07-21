@@ -27,13 +27,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== 横幅不足でナビが収まらない場合はハンバーガーへ自動切替 =====
+  // ===== ナビが2段に収まらない(3段以上になる)場合はハンバーガーへ自動切替 =====
   const headerRow = header ? header.querySelector('.header-row') : null;
+  const desktopNav = header ? header.querySelector('.site-desktop-nav') : null;
   function updateNavCollapse() {
-    if (!header || !headerRow) return;
-    // いったん全ナビ表示状態にして本来必要な幅を測る(同一フレーム内なので描画されない)
+    if (!header || !headerRow || !desktopNav) return;
+    // いったん全ナビ表示状態にして本来必要な高さを測る(同一フレーム内なので描画されない)
     header.classList.remove('nav-collapsed');
-    const overflow = headerRow.scrollWidth > headerRow.clientWidth + 1;
+    const items = desktopNav.querySelectorAll('.nav-btn');
+    let overflow = false;
+    if (items.length) {
+      const rowGap = parseFloat(getComputedStyle(desktopNav).rowGap) || 0;
+      const btnHeight = items[0].getBoundingClientRect().height;
+      const maxHeight = btnHeight * 2 + rowGap + 1; // 2段まで許容
+      overflow = desktopNav.scrollHeight > maxHeight;
+    }
     if (overflow) {
       header.classList.add('nav-collapsed');
     } else {
