@@ -86,18 +86,24 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) el.addEventListener('input', refreshAutoCash);
   });
 
-  // 「保険加入」マークの表示状態と、再描画用に最後の設定を保持する
+  // 各マーカーの表示状態と、再描画用に最後の設定を保持する
   let showInsuranceMark = true;
+  let showSalaryMark = true;
   let lastWfCfg = null;
-  const toggleMarkBtn = document.getElementById('toggleInsuranceMark');
-  if (toggleMarkBtn) {
-    toggleMarkBtn.addEventListener('click', function () {
-      showInsuranceMark = !showInsuranceMark;
-      toggleMarkBtn.classList.toggle('is-on', showInsuranceMark); // シグナルランプ(.dot)のON/OFF
-      toggleMarkBtn.setAttribute('aria-pressed', String(showInsuranceMark));
+  // トグルボタン(シグナルランプ付き)を状態変数に紐付ける共通処理
+  function bindMarkToggle(btnId, setState) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      const on = !btn.classList.contains('is-on');
+      btn.classList.toggle('is-on', on); // シグナルランプ(.dot)のON/OFF
+      btn.setAttribute('aria-pressed', String(on));
+      setState(on);
       if (lastWfCfg) drawWaterfall(lastWfCfg.cfgA, lastWfCfg.cfgB);
     });
   }
+  bindMarkToggle('toggleSalaryMark', function (on) { showSalaryMark = on; });
+  bindMarkToggle('toggleInsuranceMark', function (on) { showInsuranceMark = on; });
 
   // ===== 資金の流れ比較グラフ =====
   // 2パターン(①給与準備 / ②金庫株準備)を同一の項目列・同一スケールで、上下2つの独立したSVGに描画する。
@@ -174,12 +180,14 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
         // バー間マーカー(白背景ピル＋引き出し線)。最上部帯に固定し、金額ラベルとの重なりを避ける。
-        // 役員給与(plainMark)は常時表示、保険加入(checkpoint)はトグル連動。文字数に応じて幅可変。
-        if (i < N - 1 && (b.plainMark || (b.checkpoint && showInsuranceMark))) {
+        // 役員給与(plainMark)・保険加入(checkpoint)ともにそれぞれのトグルに連動。文字数に応じて幅可変。
+        const showPlain = b.plainMark && showSalaryMark;
+        const showIns = b.checkpoint && showInsuranceMark;
+        if (i < N - 1 && (showPlain || showIns)) {
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
-          const label = b.plainMark || b.checkpoint;
+          const label = showPlain ? b.plainMark : b.checkpoint;
           const pillH = 16, pillCY = 16;
           const pillW = Math.max(48, label.length * 10.5 + 16);
           out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
@@ -355,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
         start: cash.value, startTag: 'A', startMark: '役員給与',
         flows: [
           { label: '給与課税', delta: -s1_salaryTax, tag: 'B' },
-          { label: '法人税', delta: 0, tag: 'C', checkpoint: '個人で保険加入' },
+          { label: '法人税', delta: 0, tag: 'C', checkpoint: '保険加入' },
           { label: '保険差益', delta: s1_insuranceGain, tag: 'D' },
           { label: '差益課税', delta: 0, tag: 'E' },
           { label: '相続税', delta: -(s1_cashInheritanceTax + s1_stockInheritanceTax), tag: 'F' },
@@ -370,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
         start: cash.value, startTag: 'A',
         flows: [
           { label: '給与課税', delta: 0, tag: 'B' },
-          { label: '法人税', delta: -s2_corpTax, tag: 'C', checkpoint: '法人で保険加入' },
+          { label: '法人税', delta: -s2_corpTax, tag: 'C', checkpoint: '保険加入' },
           { label: '保険差益', delta: s2_insuranceGain, tag: 'D' },
           { label: '差益課税', delta: -s2_insuranceTax, tag: 'E' },
           { label: '相続税', delta: -s2_stockInheritanceTax, tag: 'F' },
