@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 起点バー + 各フローバー + 最終積み上げバー(法人+個人) を構築する
     function buildBars(cfg) {
       let running = cfg.start;
-      const bars = [{ type: 'single', label: '現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false, plainMark: cfg.startMark || null }];
+      const bars = [{ type: 'single', label: '税引前利益', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false, plainMark: cfg.startMark || null }];
       cfg.flows.forEach(function (f) {
         const prev = running;
         running += f.delta;
