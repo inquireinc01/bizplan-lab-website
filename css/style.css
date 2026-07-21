@@ -711,14 +711,19 @@ img {
 }
 
 /* 評価額推移表: 列ごとの色分け(タイル・ヘッダーと同系色を淡く) */
-#trendTable td.col-saizoku-a { background-color: rgba(109, 127, 146, 0.08); }
-#trendTable td.col-houjin-a { background-color: rgba(124, 143, 122, 0.08); }
-#trendTable td.col-ruiji-a { background-color: rgba(179, 184, 189, 0.12); }
-#trendTable td.col-junsisan-a { background-color: rgba(179, 184, 189, 0.12); }
-#trendTable td.col-saizoku-b { background-color: rgba(63, 76, 92, 0.1); }
-#trendTable td.col-houjin-b { background-color: rgba(79, 95, 77, 0.1); }
-#trendTable td.col-ruiji-b { background-color: rgba(107, 112, 117, 0.1); }
-#trendTable td.col-junsisan-b { background-color: rgba(107, 112, 117, 0.1); }
+/* 列ごとに違う色を付けるとパッチワーク状になるため、シナリオA/Bの2トーンのみに簡略化 */
+#trendTable td.col-saizoku-a,
+#trendTable td.col-houjin-a,
+#trendTable td.col-ruiji-a,
+#trendTable td.col-junsisan-a {
+  background-color: rgba(59, 110, 165, 0.05);
+}
+#trendTable td.col-saizoku-b,
+#trendTable td.col-houjin-b,
+#trendTable td.col-ruiji-b,
+#trendTable td.col-junsisan-b {
+  background-color: rgba(15, 42, 74, 0.05);
+}
 
 /* 別枠強調ボックス(退職金・生命保険の契約条件) */
 .field-highlight {
