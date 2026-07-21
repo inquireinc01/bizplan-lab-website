@@ -357,12 +357,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const netFactor = showInsuranceNet ? Math.max(0, 1 - (currentValues.corpTaxRateProj || 0) / 100) : 1;
       const amt0 = currentValues.insuranceAmount * netFactor;
       const growthFactor = 1 + (currentValues.insuranceGrowthRate || 0) / 100;
-      const period = Math.max(0, Math.min(30, Math.round(currentValues.coveragePeriod || 0)));
+      const periodRaw = Math.max(0, Math.round(currentValues.coveragePeriod || 0));
+      const period = Math.min(30, periodRaw);
+      // 31年以上が入力された場合、30年で保障が終わるわけではないことを示す(グラフは30年までしか描画できないため)
+      const continuesBeyond = periodRaw > 30;
       if (period > 0) {
         // i<=period(年periodのバーの右端まで)にすることで、保障期間ぴったりまで塗りが届くようにする
         // (以前はi<periodだったため、保障期間30年でも29年目のバーで塗りが止まって見えていた)
         let d = `M ${padL.toFixed(1)} ${yBottom.toFixed(1)} `;
         let prevY = null;
+        let lastYTop = yBottom;
         for (let i = 0; i <= period; i++) {
           const amtT = amt0 * Math.pow(growthFactor, i);
           const yTop = Math.max(padT, y(amtT));
@@ -373,10 +377,27 @@ document.addEventListener('DOMContentLoaded', function () {
           }
           d += `L ${xRight.toFixed(1)} ${yTop.toFixed(1)} `;
           prevY = yTop;
+          lastYTop = yTop;
         }
         const xEnd = padL + (period + 1) * slotWidth;
         d += `L ${xEnd.toFixed(1)} ${yBottom.toFixed(1)} Z`;
-        insuranceRect = `<path d="${d}" fill="rgba(168,61,61,0.26)" stroke="rgba(131,47,47,0.7)" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+        const fill = continuesBeyond ? 'url(#insuranceFadeGradient)' : 'rgba(168,61,61,0.26)';
+        insuranceRect = `<path d="${d}" fill="${fill}" stroke="rgba(131,47,47,0.7)" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+        if (continuesBeyond) {
+          // 30年目の右端に、保障がその先も続くことを示す矢印(">>")をSVG_Wの余白(800〜830)に描く
+          const cy = lastYTop;
+          const chevron = (cx) => `<path d="M ${cx - 5} ${(cy - 6).toFixed(1)} L ${cx + 3} ${cy.toFixed(1)} L ${cx - 5} ${(cy + 6).toFixed(1)}" fill="none" stroke="rgba(131,47,47,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+          insuranceRect += `
+            <defs>
+              <linearGradient id="insuranceFadeGradient" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="85%" stop-color="rgba(168,61,61,0.26)"/>
+                <stop offset="100%" stop-color="rgba(168,61,61,0.02)"/>
+              </linearGradient>
+            </defs>
+            ${chevron(795)}${chevron(806)}${chevron(817)}
+            <text x="801" y="${(cy - 12).toFixed(1)}" font-size="9" fill="rgba(131,47,47,0.85)" text-anchor="middle">継続</text>
+          `;
+        }
       }
     }
 
@@ -510,7 +531,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function populateLivePanel(v) {
     PROJECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.value = v[id];
+      if (!el) return;
+      // 死亡保険金額上昇率は0でも「0.00」と表示し、小数点2位まで揃える
+      el.value = id === 'insuranceGrowthRate' ? Number(v[id] || 0).toFixed(2) : v[id];
     });
   }
 
@@ -569,6 +592,12 @@ document.addEventListener('DOMContentLoaded', function () {
         recomputeSeriesOnly();
       }, 150);
     });
+    // 死亡保険金額上昇率は入力を終えたら小数点2位まで(0でも「0.00」)に整形し直す
+    livePanel.addEventListener('blur', function (e) {
+      if (e.target && e.target.id === 'insuranceGrowthRate') {
+        e.target.value = Number(currentValues.insuranceGrowthRate || 0).toFixed(2);
+      }
+    }, true);
   }
 
   // ===== 評価額タイルのクリックで表示指標を切り替え(最大2つ) =====
