@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return [step1, step2, step3];
   }
 
-  // 詳細版: STEP1〜6(STEP2は0も正当な値のため、分母となる総資産のみ必須とする)
+  // 詳細入力: STEP1〜6(STEP2は0も正当な値のため、分母となる総資産のみ必須とする)
   function detailValidity() {
     var step1 = numVal('dtTotalAssetsBook') > 0 && numVal('dtSales') > 0;
     var step2 = numVal('dtTotalAssetsTax') > 0;
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return [step1, step2, step3, step4, step5, step6];
   }
 
-  // 公開情報から推測(TD/TSR)版: STEP1〜4
+  // 公開情報から入力(TD/TSR)版: STEP1〜4
   function tdbValidity() {
     var step1 = numVal('tbCapital') > 0 && (numVal('tbSales') > 0 || numVal('tbEmp') > 0);
     var step2 = !isNaN(numVal('tbProfit')) && numVal('tbNetAssets') > 0;

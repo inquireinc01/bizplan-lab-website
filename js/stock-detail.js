@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
     persist();
 
     // ===== 結果ページ(グラフ・タイル)と共有するデータも保存(簡易版と同じキー・同じ形式) =====
-    // これにより、詳細版で入力した場合も結果ページのグラフ・タイルに正しく反映される
+    // これにより、詳細入力で入力した場合も結果ページのグラフ・タイルに正しく反映される
     try {
       var SIZE_KEYS = ['large', 'mid-large', 'mid-mid', 'mid-small', 'small'];
       var simPerShare = isNaN(sim) ? net : sim;
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('dtResetBtn').addEventListener('click', function () {
-    if (!window.confirm('詳細版の入力内容をクリアします。よろしいですか？')) return;
+    if (!window.confirm('詳細入力の入力内容をクリアします。よろしいですか？')) return;
     detailArea.querySelectorAll('input, select').forEach(function (el) {
       if (el.type === 'checkbox') el.checked = false; else el.value = '';
     });
