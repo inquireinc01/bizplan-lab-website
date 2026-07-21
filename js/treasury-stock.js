@@ -24,6 +24,19 @@ document.addEventListener('DOMContentLoaded', function () {
     errorArea.textContent = '';
   };
 
+  // ===== ？ツールチップ(税金の計算内訳。タップで開閉・モバイル対応) =====
+  document.querySelectorAll('.help-tip').forEach(function (tip) {
+    tip.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var wasOpen = tip.classList.contains('open');
+      document.querySelectorAll('.help-tip.open').forEach(function (t) { t.classList.remove('open'); });
+      if (!wasOpen) tip.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.help-tip.open').forEach(function (t) { t.classList.remove('open'); });
+  });
+
   // ===== 法人の現金(死亡保険金額)の自動計算 =====
   // ②で法人が遺族から金庫株を買い取る(stockCorpValue)ために必要な最低額。
   // s2_corpAfterInsurance = cash*(1-c)*(1 + g*(1-c)) がstockCorpValue以上である必要がある。
@@ -114,8 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const pxPerMan = bandH / (gMax - gMin);
 
     const charts = [
-      { title: cfgA.title, bars: barsA, top: 46 },
-      { title: cfgB.title, bars: barsB, top: 336 },
+      { title: cfgA.title, bars: barsA, top: 50 },
+      { title: cfgB.title, bars: barsB, top: 350 },
     ];
 
     let out = '';
@@ -127,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const slotW = plotW / N;
       const barW = Math.min(58, slotW * 0.58);
 
-      out += `<text x="${plotXStart}" y="${(baseTop - 20).toFixed(1)}" font-size="13" font-weight="bold" fill="#0f2a4a">${chart.title}</text>`;
+      out += `<text x="${plotXStart}" y="${(baseTop - 24).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a">${chart.title}</text>`;
       out += `<line x1="${plotXStart - 6}" y1="${zeroY.toFixed(1)}" x2="${plotXEnd}" y2="${zeroY.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
 
       chart.bars.forEach(function (b, i) {
@@ -141,19 +154,19 @@ document.addEventListener('DOMContentLoaded', function () {
           out += `<line x1="${prevX.toFixed(1)}" y1="${connY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${connY.toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
         }
         // 項目ラベル(基準線下)＋A〜Hタグ(丸囲みレター)
-        out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 16).toFixed(1)}" font-size="10" fill="#56626f" text-anchor="middle">${b.label}</text>`;
+        out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 17).toFixed(1)}" font-size="12" fill="#56626f" text-anchor="middle">${b.label}</text>`;
         if (b.tag) {
-          out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 32).toFixed(1)}" r="7" fill="#0f2a4a"/>`;
-          out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 35).toFixed(1)}" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
+          out += `<circle cx="${cx.toFixed(1)}" cy="${(baseBottom + 34).toFixed(1)}" r="8" fill="#0f2a4a"/>`;
+          out += `<text x="${cx.toFixed(1)}" y="${(baseBottom + 37.5).toFixed(1)}" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">${b.tag}</text>`;
         }
         // 保険加入チェックポイント(このバーと次バーの間に細いマーカー＋ラベル)
         if (b.checkpoint && i < N - 1) {
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
-          out += `<line x1="${mx.toFixed(1)}" y1="${(my - 6).toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(my + 6).toFixed(1)}" stroke="#3b6ea5" stroke-width="1.5"/>`;
-          out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
-          out += `<text x="${mx.toFixed(1)}" y="${(my - 10).toFixed(1)}" font-size="8" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${b.checkpoint}</text>`;
+          out += `<line x1="${mx.toFixed(1)}" y1="${(my - 7).toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(my + 7).toFixed(1)}" stroke="#3b6ea5" stroke-width="1.5"/>`;
+          out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="3" fill="#3b6ea5"/>`;
+          out += `<text x="${mx.toFixed(1)}" y="${(my - 11).toFixed(1)}" font-size="10" font-weight="bold" fill="#3b6ea5" text-anchor="middle">${b.checkpoint}</text>`;
         }
 
         if (b.type === 'stacked') {
@@ -162,14 +175,14 @@ document.addEventListener('DOMContentLoaded', function () {
           const yTotalTop = yOf(b.total);
           if (b.corp > 0) {
             out += `<rect x="${x.toFixed(1)}" y="${yCorpTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yZero - yCorpTop).toFixed(1)}" fill="${NAVY}"/>`;
-            if (yZero - yCorpTop > 16) out += `<text x="${cx.toFixed(1)}" y="${((yCorpTop + yZero) / 2 + 3).toFixed(1)}" font-size="9" fill="#fff" text-anchor="middle">法人 ${fmtNum(b.corp)}</text>`;
+            if (yZero - yCorpTop > 17) out += `<text x="${cx.toFixed(1)}" y="${((yCorpTop + yZero) / 2 + 3.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle">法人 ${fmtNum(b.corp)}</text>`;
           }
           if (b.indiv > 0) {
             out += `<rect x="${x.toFixed(1)}" y="${yTotalTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${(yCorpTop - yTotalTop).toFixed(1)}" fill="${SLATE}"/>`;
-            if (yCorpTop - yTotalTop > 16) out += `<text x="${cx.toFixed(1)}" y="${((yTotalTop + yCorpTop) / 2 + 3).toFixed(1)}" font-size="9" fill="#fff" text-anchor="middle">個人 ${fmtNum(b.indiv)}</text>`;
+            if (yCorpTop - yTotalTop > 17) out += `<text x="${cx.toFixed(1)}" y="${((yTotalTop + yCorpTop) / 2 + 3.5).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle">個人 ${fmtNum(b.indiv)}</text>`;
           }
           // 合計を上に強調表示
-          out += `<text x="${cx.toFixed(1)}" y="${(yTotalTop - 7).toFixed(1)}" font-size="12" font-weight="bold" fill="#0f2a4a" text-anchor="middle">計 ${fmtNum(b.total)}</text>`;
+          out += `<text x="${cx.toFixed(1)}" y="${(yTotalTop - 8).toFixed(1)}" font-size="14" font-weight="bold" fill="#0f2a4a" text-anchor="middle">計 ${fmtNum(b.total)}</text>`;
         } else if (b.zero) {
           // 発生しない項目: バーなし、基準線レベルの通過線のみ
           out += `<line x1="${x.toFixed(1)}" y1="${yOf(b.runAfter).toFixed(1)}" x2="${(x + barW).toFixed(1)}" y2="${yOf(b.runAfter).toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
@@ -178,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
           const h = Math.max(1, yBot - yTop);
           out += `<rect x="${x.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${b.color}"/>`;
           const amtColor = b.color === RED ? '#a83d3d' : (b.color === BLUE ? '#2d5580' : '#0f2a4a');
-          out += `<text x="${cx.toFixed(1)}" y="${(yTop - 5).toFixed(1)}" font-size="10" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amount}</text>`;
+          out += `<text x="${cx.toFixed(1)}" y="${(yTop - 6).toFixed(1)}" font-size="12" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amount}</text>`;
         }
       });
     });
@@ -287,12 +300,21 @@ document.addEventListener('DOMContentLoaded', function () {
     fill('s2BalIndiv', man(s2_individualFinal), NAVY);
     fill('s2BalTotal', man(s2_total), BLUE);
 
+    // 税金の計算内訳(?ツールチップ)を実際の数値で組み立てる
+    const setTip = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    setTip('tipS1TaxSalary', `給与支給額 ${man(s1_salary)} × 所得税・社保率 ${incomeTaxRate.value}% ＝ ${man(s1_salaryTax)}。役員給与として支給する際の所得税・住民税・社会保険料です。`);
+    setTip('tipS1TaxInherit', `現金分 ${man(s1_afterInsurance)} × ${inheritanceTaxRate.value}% ＝ ${man(s1_cashInheritanceTax)}、自社株分 ${man(stockInheritanceValue.value)} × ${inheritanceTaxRate.value}% ＝ ${man(s1_stockInheritanceTax)}。合計 ${man(s1_cashInheritanceTax + s1_stockInheritanceTax)}(手元現金と自社株の両方に相続税)。`);
+    setTip('tipS2TaxCorp', `現金(死亡保険金) ${man(cash.value)} × 法人税率 ${corpTaxRate.value}% ＝ ${man(s2_corpTax)}。受け取った死亡保険金は法人の益金となり法人税が課税されます。`);
+    setTip('tipS2TaxDiff', `保険差益 ${man(s2_insuranceGain)} × 法人税率 ${corpTaxRate.value}% ＝ ${man(s2_insuranceTax)}。保険金を原資に生じた差益にも法人税が課税されます。`);
+    setTip('tipS2TaxInherit', `自社株の相続税評価額 ${man(stockInheritanceValue.value)} × 相続税率 ${inheritanceTaxRate.value}% ＝ ${man(s2_stockInheritanceTax)}。金庫株化で現金化した部分の相続税は含みません。`);
+    setTip('tipS2TaxCapGain', `(法人税法上評価額 ${man(stockCorpValue.value)} − 資本金 ${man(capital.value)} − 相続税 ${man(s2_stockInheritanceTax)}) × 約20% ＝ ${man(s2_capitalGainsTax)}。取得費加算の特例を前提とした金庫株売却益への課税です。`);
+
     document.getElementById('sumS1Total').textContent = man(s1_total);
     document.getElementById('sumS2Total').textContent = man(s2_total);
     const diff = s2_total - s1_total;
     const diffEl = document.getElementById('sumDiff');
     diffEl.textContent = (diff >= 0 ? '+' : '') + man(diff);
-    diffEl.style.color = diff >= 0 ? '#7bb0dc' : '#d9807f';
+    diffEl.style.color = diff >= 0 ? '#2d5580' : '#a83d3d';
 
     // ウォーターフォール: 両パターンとも同一の項目列(発生しない項目は0)・同一スケールで描画
     // 最終バーは「法人の残高＋個人の手残り」の積み上げにして合計を強調する
