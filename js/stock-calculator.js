@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     taxAssets: 15000, taxLiabilities: 8000, bookAssets: 12000, bookLiabilities: 8000,
     simA: 480, simB: 6.0, simC: 45, simD: 350, ownB: 4.0, ownC: 60, ownD: 420,
     sharesOutstanding: 2000, capitalAmount: 1000000,
-    corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
+    corpTaxRateProj: 34, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
     retirementYear: 10, retirementAmount: 5000, mvNetAssets: 20000, realOpProfit: 2500,
     // その他特別損失(発生時期を指定して純資産の推移に反映。未入力なら影響なし)
     specialLossYear: 15, specialLossAmount: 0,

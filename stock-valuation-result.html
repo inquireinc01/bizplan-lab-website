@@ -109,7 +109,7 @@
         <div id="metricTiles" class="mb-6">
           <div class="flex items-center gap-2 mb-1.5">
             <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#3b6ea5">シナリオA</span>
-            <p class="text-xs font-bold text-gray-600">通常時（生命保険による対策なし）</p>
+            <span class="help-tip" tabindex="0">?<span class="help-text">通常時（生命保険による対策なし）</span></span>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="saizoku_A" data-color="#6d7f92"><span class="tile-lamp"></span>
@@ -136,7 +136,7 @@
           </div>
           <div class="flex items-center gap-2 mb-1.5">
             <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#0f2a4a">シナリオB</span>
-            <p class="text-xs font-bold text-gray-600">生命保険で損金をつくった場合（対策後）</p>
+            <span class="help-tip" tabindex="0">?<span class="help-text">生命保険で損金をつくった場合（対策後）</span></span>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-3 flex items-center" data-metric="saizoku_B" data-color="#3f4c5c"><span class="tile-lamp"></span>
@@ -173,24 +173,23 @@
 
       <!-- 試算条件(グラフ下・変更で即時反映) -->
         <div id="livePanel" class="bg-gray-50 rounded-lg p-4 mt-6">
-          <p class="text-sm font-bold text-gray-700 mb-1">試算条件を変更する</p>
-          <p class="text-xs text-gray-500 mb-3">数値を変更すると、上のグラフと下の表が即座に更新されます。シナリオA・Bは独立した2つの前提です(例: 生命保険の加入前後の比較)。金額は万円単位です。</p>
+          <p class="text-sm font-bold text-gray-700 mb-3 flex items-center">試算条件を変更する<span class="help-tip" tabindex="0">?<span class="help-text">数値を変更すると、上のグラフと下の表が即座に更新されます。シナリオA・Bは独立した2つの前提です(例: 生命保険の加入前後の比較)。金額は万円単位です。</span></span></p>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label class="block text-xs font-medium mb-1" for="corpTaxRateProj">法人税率(%)</label>
-              <input type="number" id="corpTaxRateProj" class="form-input w-full rounded-lg px-3 py-2 text-sm" step="0.1" />
-            </div>
-            <div>
-              <label class="block text-xs font-medium mb-1" for="annualProfit">年間税引前利益（現状・万円）</label>
+              <label class="block text-xs font-medium mb-1" for="annualProfit">【現状】税引前利益（万円）</label>
               <input type="number" id="annualProfit" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1" for="annualProfitB">年間保険加入後利益（万円）</label>
+              <label class="block text-xs font-medium mb-1" for="annualProfitB">【変更後】税引前利益（万円）</label>
               <input type="number" id="annualProfitB" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label class="block text-xs font-medium mb-1" for="annualDividend">年間配当金総額(万円)</label>
               <input type="number" id="annualDividend" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1" for="corpTaxRateProj">法人税率(%)</label>
+              <input type="number" id="corpTaxRateProj" class="form-input w-20 rounded-lg px-3 py-2 text-sm" step="0.1" />
             </div>
             <!-- M&A用の入力はM&A評価が非表示の間は隠す(次回バージョンで公開) -->
             <div class="hidden">
@@ -398,6 +397,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721w"></script>
+<script src="js/stock-calculator.js?v=20260721x"></script>
 </body>
 </html>
