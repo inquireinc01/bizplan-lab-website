@@ -148,9 +148,16 @@ document.addEventListener('DOMContentLoaded', function () {
       otherFuture: num('otherFuture'),
     };
 
+    const MAX_VALUE = 999999; // 万円(上限:約100億円) — 桁あふれ・グラフ表示崩れの防止
+
     for (const [key, field] of Object.entries(fields)) {
       if (isNaN(field.value)) {
         showError('すべての項目を入力してください(未入力の場合は0を入力してください)。');
+        field.el.focus();
+        return;
+      }
+      if (Math.abs(field.value) > MAX_VALUE) {
+        showError(`入力できる金額は ${man(MAX_VALUE)} までです。数値をご確認ください。`);
         field.el.focus();
         return;
       }
