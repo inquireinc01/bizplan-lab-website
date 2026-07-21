@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const resultArea = document.getElementById('tsResultArea');
   const errorArea = document.getElementById('tsErrorArea');
-  let suppressScroll = false;
 
   const num = (id) => {
     const el = document.getElementById(id);
@@ -223,8 +222,8 @@ document.addEventListener('DOMContentLoaded', function () {
     svg2.innerHTML = renderChart(barsB);
   }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+  // 入力が変わるたびにリアルタイムで再計算・再描画する
+  function recompute() {
     clearError();
 
     const cash = num('cash');
@@ -387,18 +386,19 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     resultArea.classList.remove('hidden');
-    if (!suppressScroll) {
-      resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
+  }
+
+  // 送信ボタンは廃止。Enterキー等の送信はページ遷移を防ぎ、入力のたびにリアルタイム反映する
+  form.addEventListener('submit', function (e) { e.preventDefault(); recompute(); });
+  form.addEventListener('input', recompute);
 
   const resetBtn = document.getElementById('tsResetBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
       form.reset();
-      setCashMode(false); // 現金は自動計算モードに戻して再計算
-      resultArea.classList.add('hidden');
+      setCashMode(false); // 現金は自動計算モードに戻す
       clearError();
+      recompute(); // 既定値で即再描画
     });
   }
 
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let lastResult = null;
   function doPrint() {
       if (!lastResult) {
-        showError('先に「比較する」を押して結果を表示してください。');
+        showError('前提条件をすべて入力してください。');
         return;
       }
       const now = new Date();
@@ -440,9 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
-  // ===== 初期化: 法人の現金を自動計算モードで初期化し、ダミー値で自動試算(スクロールは抑制) =====
+  // ===== 初期化: 法人の現金を自動計算モードで初期化し、既定値でリアルタイム試算を表示 =====
   setCashMode(false);
-  suppressScroll = true;
-  form.requestSubmit();
-  suppressScroll = false;
+  recompute();
 });
