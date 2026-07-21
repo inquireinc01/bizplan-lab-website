@@ -14,9 +14,10 @@
   --color-green-gray: #5c8272;
   --color-green-gray-dark: #456155;
   --color-green-gray-soft: #e7efeb;
-  --color-teal: #2f8494;
-  --color-teal-dark: #206570;
-  --color-teal-soft: #e6f0f1;
+  /* グリーングレーと同じ明度・彩度のオレンジ(色相のみ変更、ツール7〜9用) */
+  --color-orange: #826f5c;
+  --color-orange-dark: #615345;
+  --color-orange-soft: #f1ece7;
   --color-gray-800: #2b323d;
   --color-gray-600: #56626f;
   --color-gray-400: #8d97a3;
@@ -465,10 +466,10 @@ input[type="number"] {
   pointer-events: none;
 }
 .site-desktop-nav .nav-btn .nav-num.ds {
-  color: var(--color-green-gray);
+  color: var(--color-orange);
 }
 .site-desktop-nav .nav-btn .nav-num.teal {
-  color: var(--color-teal);
+  color: var(--color-green-gray);
 }
 .site-desktop-nav .nav-btn:hover .nav-num,
 .site-desktop-nav .nav-btn.active .nav-num {
@@ -555,13 +556,13 @@ input[type="number"] {
   pointer-events: none;
   text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(15, 42, 74, 0.15);
 }
-/* DS(ディスカッションシート)系ツール7〜9はグリーングレー */
+/* DS(ディスカッションシート)系ツール7〜9はオレンジ(グリーングレーと同トーン・色相のみ違う) */
 .nav-num.ds {
-  color: var(--color-green-gray);
+  color: var(--color-orange);
 }
-/* 5・6(保険料原資/減額)はブルーグリーン(青系と同トーン) */
+/* 5・6(保険料原資/減額)はグリーングレー(7〜9と同じ色) */
 .nav-num.teal {
-  color: var(--color-teal);
+  color: var(--color-green-gray);
 }
 
 /* 入力エリア(基本情報・決算書情報)だけグリーングレー基調にし、番号付きツールと区別する */
