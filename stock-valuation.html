@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607233" />
+<link rel="stylesheet" href="css/style.css?v=202607234" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -141,23 +141,23 @@
           <div class="sticky top-24">
             <p class="font-brand-en text-[11px] font-bold text-gray-400 tracking-[0.2em] mb-4">INPUT STEPS</p>
             <ol id="stepperSimple" class="stepper">
-              <li data-num="1" data-target="sstep1"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
-              <li data-num="2" data-target="sstep2"><span class="step-en">STEP 2</span><span class="step-jp">自社株評価</span></li>
-              <li data-num="3" data-target="sstep3"><span class="step-en">STEP 3</span><span class="step-jp">株主の状況</span></li>
+              <li data-num="1" data-target="sstep1" tabindex="0" role="button"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
+              <li data-num="2" data-target="sstep2" tabindex="0" role="button"><span class="step-en">STEP 2</span><span class="step-jp">自社株評価</span></li>
+              <li data-num="3" data-target="sstep3" tabindex="0" role="button"><span class="step-en">STEP 3</span><span class="step-jp">株主の状況</span></li>
             </ol>
             <ol id="stepperDetail" class="stepper hidden">
-              <li data-num="1" data-target="dstep1"><span class="step-en">STEP 1</span><span class="step-jp">会社規模の判定</span></li>
-              <li data-num="2" data-target="dstep2"><span class="step-en">STEP 2</span><span class="step-jp">特定評価会社の判定</span></li>
-              <li data-num="3" data-target="dstep3"><span class="step-en">STEP 3</span><span class="step-jp">類似業種比準</span></li>
-              <li data-num="4" data-target="dstep4"><span class="step-en">STEP 4</span><span class="step-jp">純資産価額</span></li>
-              <li data-num="5" data-target="dstep5"><span class="step-en">STEP 5</span><span class="step-jp">配当還元</span></li>
-              <li data-num="6" data-target="dstep6"><span class="step-en">STEP 6</span><span class="step-jp">原則的評価</span></li>
+              <li data-num="1" data-target="dstep1" tabindex="0" role="button"><span class="step-en">STEP 1</span><span class="step-jp">会社規模の判定</span></li>
+              <li data-num="2" data-target="dstep2" tabindex="0" role="button"><span class="step-en">STEP 2</span><span class="step-jp">特定評価会社の判定</span></li>
+              <li data-num="3" data-target="dstep3" tabindex="0" role="button"><span class="step-en">STEP 3</span><span class="step-jp">類似業種比準</span></li>
+              <li data-num="4" data-target="dstep4" tabindex="0" role="button"><span class="step-en">STEP 4</span><span class="step-jp">純資産価額</span></li>
+              <li data-num="5" data-target="dstep5" tabindex="0" role="button"><span class="step-en">STEP 5</span><span class="step-jp">配当還元</span></li>
+              <li data-num="6" data-target="dstep6" tabindex="0" role="button"><span class="step-en">STEP 6</span><span class="step-jp">原則的評価</span></li>
             </ol>
             <ol id="stepperTdb" class="stepper hidden">
-              <li data-num="1" data-target="tbstep1"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
-              <li data-num="2" data-target="tbstep2"><span class="step-en">STEP 2</span><span class="step-jp">収益・純資産</span></li>
-              <li data-num="3" data-target="tbstep3"><span class="step-en">STEP 3</span><span class="step-jp">類似業種比準の参考値</span></li>
-              <li data-num="4" data-target="tbstep4"><span class="step-en">STEP 4</span><span class="step-jp">株主の状況</span></li>
+              <li data-num="1" data-target="tbstep1" tabindex="0" role="button"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
+              <li data-num="2" data-target="tbstep2" tabindex="0" role="button"><span class="step-en">STEP 2</span><span class="step-jp">収益・純資産</span></li>
+              <li data-num="3" data-target="tbstep3" tabindex="0" role="button"><span class="step-en">STEP 3</span><span class="step-jp">類似業種比準の参考値</span></li>
+              <li data-num="4" data-target="tbstep4" tabindex="0" role="button"><span class="step-en">STEP 4</span><span class="step-jp">株主の状況</span></li>
             </ol>
           </div>
         </aside>
@@ -165,21 +165,21 @@
         <div class="flex-1 min-w-0">
       <!-- ===== 版選択(簡易入力/詳細入力/公開情報から入力) ===== -->
       <div id="versionChooser" class="grid sm:grid-cols-3 gap-4 mb-10">
-        <div class="version-card p-5 relative overflow-hidden" data-version="simple">
+        <div class="version-card p-5 relative overflow-hidden" data-version="simple" tabindex="0" role="button">
           <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">SIMPLE</span>
           <div class="relative">
             <h3 class="font-bold text-lg mb-2">簡易入力（評価明細から転記）</h3>
             <p class="text-sm text-gray-600 leading-relaxed pr-4">計算済みの評価明細書、ディスカッションシート等から転記します。</p>
           </div>
         </div>
-        <div class="version-card p-5 relative overflow-hidden" data-version="detail">
+        <div class="version-card p-5 relative overflow-hidden" data-version="detail" tabindex="0" role="button">
           <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">DETAIL</span>
           <div class="relative">
             <h3 class="font-bold text-lg mb-2">詳細入力</h3>
             <p class="text-sm text-gray-600 leading-relaxed pr-4">国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。</p>
           </div>
         </div>
-        <div class="version-card p-5 relative overflow-hidden" data-version="tdb">
+        <div class="version-card p-5 relative overflow-hidden" data-version="tdb" tabindex="0" role="button">
           <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">TD/TSR</span>
           <div class="relative">
             <h3 class="font-bold text-lg mb-2">公開情報から入力（TD／TSR）</h3>
@@ -623,9 +623,9 @@
 <script src="js/menu.js?v=20260722b"></script>
 <script src="js/number-format.js?v=20260721c"></script>
 <script src="js/stock-simple.js?v=20260721e"></script>
-<script src="js/stock-detail.js?v=20260722b"></script>
+<script src="js/stock-detail.js?v=20260722c"></script>
 <script src="js/stock-tdb.js?v=20260722b"></script>
-<script src="js/stock-stepper.js?v=20260722b"></script>
+<script src="js/stock-stepper.js?v=20260722c"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

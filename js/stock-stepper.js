@@ -50,9 +50,17 @@ document.addEventListener('DOMContentLoaded', function () {
     [stepperSimple, stepperDetail, stepperTdb].forEach(function (st) {
       if (!st) return;
       st.querySelectorAll('li').forEach(function (li) {
-        li.addEventListener('click', function () {
+        var jump = function () {
           var sec = document.getElementById(li.getAttribute('data-target'));
           if (sec) window.scrollTo({ top: sec.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+        };
+        li.addEventListener('click', jump);
+        // キーボード操作(Enter/Space)でも該当STEPへ移動できるようにする(tabindex="0"の項目に対応)
+        li.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            jump();
+          }
         });
       });
     });

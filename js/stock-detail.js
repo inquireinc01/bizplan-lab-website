@@ -32,6 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   chooser.querySelectorAll('.version-card').forEach(function (c) {
     c.addEventListener('click', function () { selectVersion(c.getAttribute('data-version')); });
+    // キーボード操作(Enter/Space)でも選択できるようにする(tabindex="0"のカードに対応)
+    c.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        selectVersion(c.getAttribute('data-version'));
+      }
+    });
   });
 
   // ===== ？ツールチップ(タップで開閉・モバイル対応) =====
