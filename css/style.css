@@ -741,6 +741,14 @@ input[type="number"] {
   cursor: pointer;
   border: none;
 }
+/* 現在地のページタイトルに差し替わった際、長い文言でも2行折返しせず省略表示にする */
+.mobile-accordion-trigger-label,
+.mega-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
 .mobile-accordion-trigger .chevron {
   width: 0.78rem;
   height: 0.78rem;
