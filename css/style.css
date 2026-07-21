@@ -439,8 +439,6 @@ input[type="number"] {
   height: 2.3rem;
   padding: 0;
   border-radius: 0.55rem;
-  font-size: 0.95rem;
-  font-weight: 800;
   background-color: #fff;
   border: 1.5px solid var(--color-gray-200);
   color: var(--color-navy);
@@ -451,6 +449,24 @@ input[type="number"] {
 .site-desktop-nav .nav-btn:hover,
 .site-desktop-nav .nav-btn.active {
   border-color: var(--color-navy);
+}
+/* 数字はカードのOpus.数字と同じ飾り文字(極太・ブランドカラー)を採用。DS系(7〜9)はグリーングレー */
+.site-desktop-nav .nav-btn .nav-num {
+  position: static;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-blue);
+  text-shadow: none;
+  pointer-events: none;
+}
+.site-desktop-nav .nav-btn .nav-num.ds {
+  color: var(--color-green-gray);
+}
+.site-desktop-nav .nav-btn:hover .nav-num,
+.site-desktop-nav .nav-btn.active .nav-num {
+  color: #fff;
 }
 /* TOP MENUだけは正式名称のまま、他より横長のスクワークルで表示 */
 .site-desktop-nav .nav-btn.font-brand-en {
