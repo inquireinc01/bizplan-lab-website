@@ -162,14 +162,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         // 保険加入チェックポイント: 隣接バーの頂点より上に出し、白背景ピル＋引き出し線で明示(重なり回避)
         if (b.checkpoint && i < N - 1) {
-          const nextBar = bars[i + 1];
           const nextLeft = plotXStart + (i + 1) * slotW + (slotW - barW) / 2;
           const mx = (x + barW + nextLeft) / 2;
           const my = yOf(b.runAfter);
           const pillW = 52, pillH = 16;
-          const nextTopY = yOf(nextBar.type === 'stacked' ? nextBar.total : nextBar.top);
-          // 自バー・次バーの頂点いずれよりも上へ(最上部の余白まで)。重なりを避ける
-          const pillCY = Math.max(20, Math.min(yOf(b.top), nextTopY, my) - 16);
+          // ピルは全バーの金額ラベルより上の最上部帯に固定配置し、引き出し線で接続点(保険加入時点)を示す(重なり回避)
+          const pillCY = 16;
           out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
           out += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
           out += `<rect x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;
