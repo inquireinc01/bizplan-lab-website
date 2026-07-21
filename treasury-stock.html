@@ -224,23 +224,25 @@
           </div>
         </div>
 
+        <!-- ウォーターフォール比較 -->
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
+            <div>
+              <h4 class="font-bold text-sm">資金の流れ比較(ウォーターフォール)</h4>
+              <p class="text-xs text-gray-500">同じ縦軸スケールで、法人の現金が課税・保険差益を経て最終手残りに着地するまでを2パターン比較します。</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#0f2a4a"></span>現金・最終残高</span>
+              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#3b6ea5"></span>保険差益(増加)</span>
+              <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#a83d3d"></span>税負担(減少)</span>
+            </div>
+          </div>
+          <svg id="tsWaterfall" viewBox="0 0 720 560" class="w-full h-auto" role="img" aria-label="給与準備と金庫株準備の資金の流れ比較"></svg>
+        </div>
+
         <!-- 比較サマリー -->
         <div class="calc-result-card p-6 sm:p-10">
           <h3 class="font-black text-xl mb-6">法人・個人トータルの比較</h3>
-          <div class="mb-8">
-            <div class="flex justify-between text-xs text-white/70 mb-1">
-              <span>① 給与で負担(合計残高)</span>
-              <span>② 金庫株で負担(合計残高)</span>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div id="barS1" class="h-full bg-white rounded-full" style="width:0%"></div>
-              </div>
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div id="barS2" class="h-full bg-[#7bb0dc] rounded-full" style="width:0%"></div>
-              </div>
-            </div>
-          </div>
           <div class="grid sm:grid-cols-3 gap-6">
             <div>
               <p class="text-xs text-white/70 mb-1">① 給与で負担</p>
@@ -354,6 +356,6 @@
 
 <script src="js/menu.js?v=20260722b"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/treasury-stock.js?v=20260721c"></script>
+<script src="js/treasury-stock.js?v=20260721d"></script>
 </body>
 </html>

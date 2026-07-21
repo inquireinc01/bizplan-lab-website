@@ -24,6 +24,86 @@ document.addEventListener('DOMContentLoaded', function () {
     errorArea.textContent = '';
   };
 
+  // ===== ウォーターフォール比較グラフ =====
+  // 2パターン(①給与準備 / ②金庫株準備)を同一の縦軸スケールで上下2段に描画する
+  function drawWaterfall(steps1, steps2) {
+    const svg = document.getElementById('tsWaterfall');
+    if (!svg) return;
+    const NAVY = '#0f2a4a', BLUE = '#3b6ea5', RED = '#a83d3d';
+    const fmtNum = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
+
+    // 各ステップから積み上げバー(top/bottom/色/金額)を計算する
+    function computeBars(steps) {
+      let running = 0;
+      const bars = [];
+      steps.forEach(function (s) {
+        if (s.kind === 'start') {
+          running = s.value;
+          bars.push({ label: s.label, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amountText: fmtNum(running), runAfter: running, kind: 'start' });
+        } else if (s.kind === 'flow') {
+          const prev = running;
+          running += s.delta;
+          bars.push({ label: s.label, top: Math.max(prev, running), bottom: Math.min(prev, running), color: s.delta >= 0 ? BLUE : RED, amountText: (s.delta >= 0 ? '+' : '△') + fmtNum(Math.abs(s.delta)), runAfter: running, kind: 'flow' });
+        } else {
+          bars.push({ label: s.label, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amountText: fmtNum(running), runAfter: running, kind: 'end' });
+        }
+      });
+      return bars;
+    }
+
+    const bars1 = computeBars(steps1);
+    const bars2 = computeBars(steps2);
+
+    // 両パターン共通の縦軸スケール
+    let gMax = 0, gMin = 0;
+    [bars1, bars2].forEach(function (bs) {
+      bs.forEach(function (b) {
+        gMax = Math.max(gMax, b.top, b.runAfter);
+        gMin = Math.min(gMin, b.bottom, b.runAfter);
+      });
+    });
+    if (gMax === gMin) gMax = gMin + 1;
+
+    const plotXStart = 60, plotXEnd = 706, plotW = plotXEnd - plotXStart;
+    const bandH = 200;
+    const pxPerMan = bandH / (gMax - gMin);
+
+    const charts = [
+      { title: '① 給与を原資に個人で負担', bars: bars1, top: 46 },
+      { title: '② 金庫株を原資に法人で負担', bars: bars2, top: 336 },
+    ];
+
+    let out = '';
+    charts.forEach(function (chart) {
+      const baseTop = chart.top, baseBottom = chart.top + bandH;
+      const yOf = (v) => baseBottom - (v - gMin) * pxPerMan;
+      const zeroY = yOf(0);
+      const N = chart.bars.length;
+      const slotW = plotW / N;
+      const barW = Math.min(64, slotW * 0.6);
+
+      out += `<text x="${plotXStart}" y="${baseTop - 20}" font-size="13" font-weight="bold" fill="#0f2a4a">${chart.title}</text>`;
+      out += `<line x1="${plotXStart - 6}" y1="${zeroY.toFixed(1)}" x2="${plotXEnd}" y2="${zeroY.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
+
+      chart.bars.forEach(function (b, i) {
+        const x = plotXStart + i * slotW + (slotW - barW) / 2;
+        const yTop = yOf(b.top), yBot = yOf(b.bottom);
+        const h = Math.max(1, yBot - yTop);
+        if (i > 0) {
+          const prevB = chart.bars[i - 1];
+          const connY = yOf(prevB.runAfter);
+          const prevX = plotXStart + (i - 1) * slotW + (slotW - barW) / 2 + barW;
+          out += `<line x1="${prevX.toFixed(1)}" y1="${connY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${connY.toFixed(1)}" stroke="#c7ccd3" stroke-width="1" stroke-dasharray="3,2"/>`;
+        }
+        out += `<rect x="${x.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${b.color}"/>`;
+        const amtColor = b.color === RED ? '#a83d3d' : (b.color === BLUE ? '#2d5580' : '#0f2a4a');
+        out += `<text x="${(x + barW / 2).toFixed(1)}" y="${(yTop - 5).toFixed(1)}" font-size="10" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amountText}</text>`;
+        out += `<text x="${(x + barW / 2).toFixed(1)}" y="${(baseBottom + 16).toFixed(1)}" font-size="10" fill="#56626f" text-anchor="middle">${b.label}</text>`;
+      });
+    });
+    svg.innerHTML = out;
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     clearError();
@@ -111,10 +191,26 @@ document.addEventListener('DOMContentLoaded', function () {
     diffEl.textContent = (diff >= 0 ? '+' : '') + man(diff);
     diffEl.style.color = diff >= 0 ? '#7bb0dc' : '#d9807f';
 
-    const maxVal = Math.max(s1_total, s2_total, 1);
-    document.getElementById('barS1').style.width = Math.max(0, (s1_total / maxVal) * 100) + '%';
-    document.getElementById('barS2').style.width = Math.max(0, (s2_total / maxVal) * 100) + '%';
-    document.getElementById('barS2').style.backgroundColor = s2_total >= s1_total ? '#7bb0dc' : '#d9807f';
+    // ウォーターフォール(①給与準備 / ②金庫株準備)を同一スケールで描画
+    drawWaterfall(
+      [
+        { kind: 'start', label: '現金', value: s1_salary },
+        { kind: 'flow', label: '給与課税', delta: -s1_salaryTax },
+        { kind: 'flow', label: '保険差益', delta: s1_insuranceGain },
+        { kind: 'flow', label: '現金相続税', delta: -s1_cashInheritanceTax },
+        { kind: 'flow', label: '自社株相続税', delta: -s1_stockInheritanceTax },
+        { kind: 'end', label: '最終手残り' },
+      ],
+      [
+        { kind: 'start', label: '現金', value: cash.value },
+        { kind: 'flow', label: '法人税', delta: -s2_corpTax },
+        { kind: 'flow', label: '保険差益', delta: s2_insuranceGain },
+        { kind: 'flow', label: '差益課税', delta: -s2_insuranceTax },
+        { kind: 'flow', label: '自社株相続税', delta: -s2_stockInheritanceTax },
+        { kind: 'flow', label: '譲渡所得税', delta: -s2_capitalGainsTax },
+        { kind: 'end', label: '合計残高' },
+      ]
+    );
 
     lastResult = { diff };
 
