@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=20260722k" />
+<link rel="stylesheet" href="css/style.css?v=20260722l" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -236,7 +236,12 @@
 
           <!-- 生命保険の契約条件: 別枠で強調 -->
           <div class="field-highlight field-highlight-red mt-4">
-            <p class="field-highlight-title flex items-center">生命保険の契約条件<span class="help-tip" tabindex="0">?<span class="help-text">変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</span></span></p>
+            <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+              <p class="field-highlight-title flex items-center mb-0">生命保険の契約条件<span class="help-tip" tabindex="0">?<span class="help-text">変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</span></span></p>
+              <button type="button" id="insuranceNetToggleBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
+                <span class="dot"></span>実効税率控除後で表示<span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金は受取時に法人税が課税されるため、実際に使える金額は保険金額より少なくなります。ONにするとグラフの死亡保険金額を「法人税率(%)」欄の実効税率控除後(手取り)の金額で表示します。</span></span>
+              </button>
+            </div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div>
                 <label class="block text-xs font-medium mb-1" for="insuranceAmount">保険金額(万円)</label>
@@ -393,6 +398,6 @@
 
 <script src="js/menu.js?v=20260720a"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-calculator.js?v=20260721v"></script>
+<script src="js/stock-calculator.js?v=20260721w"></script>
 </body>
 </html>

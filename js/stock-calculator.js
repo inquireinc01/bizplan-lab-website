@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   let selectedMetrics = ['saizoku_A'];
   let showInsurance = false; // 死亡保険金額をグラフ背景に表示するかどうか(ボタンでトグル)
+  let showInsuranceNet = false; // 死亡保険金額を「法人税率(%)」欄の実効税率控除後(手取り)の金額で表示するかどうか(ボタンでトグル)
   let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
 
@@ -350,7 +351,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // グラフの表示上限(y軸最大値)を超える場合はpadTでクランプし、上限に張り付いた見た目で問題ない仕様。
     let insuranceRect = '';
     if (showInsurance && currentValues && currentValues.insuranceAmount > 0) {
-      const amt0 = currentValues.insuranceAmount;
+      // 手取り表示ONの場合、死亡保険金は受取時に法人税が課税されるため「法人税率(%)」欄の実効税率で
+      // 控除した後の金額(手取り額)を起点として描画する(以降の年率成長も手取り額ベースで複利計算)。
+      const netFactor = showInsuranceNet ? Math.max(0, 1 - (currentValues.corpTaxRateProj || 0) / 100) : 1;
+      const amt0 = currentValues.insuranceAmount * netFactor;
       const growthFactor = 1 + (currentValues.insuranceGrowthRate || 0) / 100;
       const period = Math.max(0, Math.min(30, Math.round(currentValues.coveragePeriod || 0)));
       if (period > 0) {
@@ -511,6 +515,19 @@ document.addEventListener('DOMContentLoaded', function () {
     insuranceToggleBtn.addEventListener('click', function () {
       showInsurance = !showInsurance;
       insuranceToggleBtn.classList.toggle('is-on', showInsurance);
+      if (lastSeries) {
+        const { v } = loadValues();
+        drawChart(lastSeries, v.retirementYear);
+      }
+    });
+  }
+
+  // ===== 死亡保険金額の税引後(実効税率控除後)表示トグル =====
+  const insuranceNetToggleBtn = document.getElementById('insuranceNetToggleBtn');
+  if (insuranceNetToggleBtn) {
+    insuranceNetToggleBtn.addEventListener('click', function () {
+      showInsuranceNet = !showInsuranceNet;
+      insuranceNetToggleBtn.classList.toggle('is-on', showInsuranceNet);
       if (lastSeries) {
         const { v } = loadValues();
         drawChart(lastSeries, v.retirementYear);
