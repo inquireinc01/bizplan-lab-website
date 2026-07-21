@@ -70,10 +70,11 @@ p.text-gray-600,
   transition: box-shadow 0.3s ease;
 }
 
-/* モバイルメニュー: 文字幅に合わせた縦長ドロップダウン */
+/* モバイルメニュー: 画面下端まで使える固定パネルにし、アコーディオンを両方開いても
+   スクロール領域を広く確保する(小さい入れ子スクロールは実機のタッチで反応しづらいため) */
 #mobile-menu {
-  position: absolute;
-  top: 100%;
+  position: fixed;
+  top: 5.25rem;
   right: 1.25rem;
   width: 15rem;
   max-width: calc(100vw - 2rem);
@@ -86,9 +87,12 @@ p.text-gray-600,
   opacity: 0;
   overflow-x: hidden;
   overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  z-index: 50;
 }
 #mobile-menu.open {
-  max-height: min(40rem, calc(100vh - 6rem));
+  max-height: calc(100vh - 6.5rem);
+  max-height: calc(100dvh - 6.5rem);
   opacity: 1;
   overflow-y: auto;
 }
