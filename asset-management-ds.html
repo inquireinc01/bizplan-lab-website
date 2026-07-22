@@ -113,39 +113,36 @@
 
   <!-- ===== ページヒーロー ===== -->
   <section class="hero-pattern relative py-7 sm:py-9">
-    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
-      <div class="flex items-center gap-2 mb-1.5">
-        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider text-white" style="background-color:#826f5c">DS</span>
-        <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px]">ASSET MANAGEMENT CO. & DS</p>
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider text-white" style="background-color:#826f5c">DS</span>
+          <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px]">ASSET MANAGEMENT CO. & DS</p>
+        </div>
+        <h1 class="text-white font-black text-xl sm:text-2xl">資産管理会社×DS</h1>
+        <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-4xl sm:text-5xl mt-2">COMING SOON</p>
       </div>
-      <h1 class="text-white font-black text-xl sm:text-2xl">資産管理会社×DS</h1>
-      <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-4xl sm:text-5xl mt-2">COMING SOON</p>
+      <p class="text-white/80 text-sm leading-relaxed sm:max-w-md sm:text-right">
+        オーナー一族が保有する資産管理会社について、資本構成・保有資産の内訳・事業承継や生命保険の活用状況を整理し、オーナーとの対話に使うディスカッションシートを作成します。不動産・有価証券等の管理・承継方針が中心的な論点となります。
+      </p>
     </div>
   </section>
 
   <section class="py-14 sm:py-16">
     <div class="max-w-4xl mx-auto px-5">
-      <p class="text-gray-600 leading-relaxed mb-8">
-        オーナー一族が保有する資産管理会社について、資本構成・保有資産の内訳・事業承継や生命保険の活用状況を整理し、オーナーとの対話に使うディスカッションシートを作成します。不動産・有価証券等の管理・承継方針が中心的な論点となります。
-      </p>
-
-      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
-        ディスカッションシート(DS)は、経営者との対話の材料を整理するための入力シートです。入力内容はブラウザ内にのみ保存され、外部には送信されません。「基本情報」で登録した対象法人名は、PDF出力時に自動で反映されます。
-      </div>
-
-      <div class="flex justify-end mb-6">
+      <div class="flex flex-wrap items-center justify-end gap-3 mb-6" data-backup-keys="bpl_ds_assetmgmt_v1">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-[#0f2a4a] font-bold"></span>
+        <button type="button" class="js-backup-load btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-save btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
         <button type="button" class="js-pdf-btn btn-outline inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
           PDFに出力する
         </button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
 
-      <div class="notice-box text-xs rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3" data-backup-keys="bpl_ds_assetmgmt_v1">
-        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。</span>
-        <button type="button" class="js-backup-save btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
-        <button type="button" class="js-backup-load btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
-        <input type="file" class="js-backup-file hidden" accept="application/json" />
-        <span class="js-backup-msg hidden w-full text-[#0f2a4a] font-bold"></span>
+      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
+        ディスカッションシート(DS)は、経営者との対話の材料を整理するための入力シートです。入力内容はブラウザ内にのみ保存され、外部には送信されません。「基本情報」で登録した対象法人名は、PDF出力時に自動で反映されます。
       </div>
 
       <form id="dsForm" class="space-y-8">
