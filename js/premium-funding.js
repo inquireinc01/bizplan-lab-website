@@ -67,6 +67,27 @@ document.addEventListener('DOMContentLoaded', function () {
     errorArea.textContent = '';
   };
 
+  // ===== 入力内容のブラウザ内保存(サーバーには送信しない。ファイル保存/読込・入力データクリアの対象) =====
+  // 決算書情報とは別のキーで、当ページ固有の入力(役員報酬振替額・科目ごとの金額/率)のみを保存する
+  const STORAGE_KEY = 'bpl_premium_funding_v1';
+  function loadSavedValues() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      form.querySelectorAll('input[id]').forEach(function (el) {
+        if (data[el.id] !== undefined) el.value = data[el.id];
+      });
+    } catch (e) {}
+  }
+  function saveCurrentValues() {
+    const data = {};
+    form.querySelectorAll('input[id]').forEach(function (el) {
+      if (el.value !== '') data[el.id] = el.value;
+    });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     clearError();
@@ -147,12 +168,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!suppressScroll) {
       resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    saveCurrentValues();
   });
 
-  const resetBtn = document.getElementById('pfResetBtn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      form.reset();
+  // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====
+  const clearBtn = document.getElementById('pfClearBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+      form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
       resultArea.classList.add('hidden');
       clearError();
     });
@@ -173,7 +198,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
-  // ===== 初期表示: ダミー値で自動試算(スクロールは抑制) =====
+  // ===== 初期表示: 保存済みデータがあれば復元し、自動試算(スクロールは抑制) =====
+  loadSavedValues();
   suppressScroll = true;
   form.requestSubmit();
   suppressScroll = false;

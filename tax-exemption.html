@@ -120,11 +120,16 @@
         <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-2xl sm:text-3xl mt-1">COMING SOON</p>
         <p class="hero-info-text hidden">生命保険を活用できる「控除枠・非課税枠」の使い残しがないかをチェックするツールです。生命保険料控除(所得税・住民税)、相続税の非課税枠(生命保険金・死亡退職金・弔慰金)、一時所得の課税対象額を、それぞれ入力内容から試算します。</p>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2" data-backup-keys="bpl_tax_exemption_v1">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
+        <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
+        <button type="button" id="txClearBtn" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-[#e8b4b0] text-[#f6d9d7] hover:bg-white hover:text-[#a83d3d] transition-colors whitespace-nowrap">入力データクリア</button>
         <button type="button" class="js-pdf-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
           PDFに出力する
         </button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
     </div>
   </section>
@@ -213,7 +218,6 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
           <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">試算する</button>
-          <button type="button" id="txResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
         </div>
       </form>
 
@@ -397,6 +401,6 @@
 
 <script src="js/menu.js?v=20260722c"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/tax-exemption.js?v=20260722c"></script>
+<script src="js/tax-exemption.js?v=20260723a"></script>
 </body>
 </html>
