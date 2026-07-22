@@ -113,19 +113,19 @@
 
   <!-- ===== ページヒーロー ===== -->
   <section class="hero-pattern relative py-7 sm:py-9">
-    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
-      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">TREASURY STOCK &amp; INSURANCE</p>
-      <h1 class="text-white font-black text-xl sm:text-2xl">金庫株×生命保険</h1>
-      <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-4xl sm:text-5xl mt-2">COMING SOON</p>
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+      <div>
+        <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">TREASURY STOCK &amp; INSURANCE</p>
+        <h1 class="text-white font-black text-xl sm:text-2xl">金庫株×生命保険</h1>
+      </div>
+      <p class="text-white/80 text-sm leading-relaxed sm:max-w-md sm:text-right">
+        自社株にかかる相続税を「給与を原資に個人で負担する場合」と「生命保険を活用した金庫株の買い取り資金を原資とする場合」とで、法人・個人トータルの最終的な手残りがどう変わるかを比較します。
+      </p>
     </div>
   </section>
 
   <section class="py-16 sm:py-20">
     <div class="max-w-4xl mx-auto px-5">
-      <p class="text-gray-600 leading-relaxed mb-8">
-        自社株にかかる相続税を「給与を原資に個人で負担する場合」と「生命保険を活用した金庫株の買い取り資金を原資とする場合」とで、法人・個人トータルの最終的な手残りがどう変わるかを比較します。
-      </p>
-
       <div class="flex justify-end mb-6">
         <button type="button" class="js-pdf-btn btn-outline inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
@@ -136,11 +136,10 @@
       <form id="treasuryForm" class="space-y-10">
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <div class="flex items-start justify-between gap-3 mb-1">
-            <h3 class="font-bold text-base">前提条件</h3>
+          <div class="flex items-start justify-between gap-3 mb-5">
+            <h3 class="font-bold text-base flex items-center">前提条件<span class="help-tip" tabindex="0">?<span class="help-text">金額は万円単位、税率等は%で入力してください。入力するとグラフに即時反映されます。</span></span></h3>
             <button type="button" id="tsResetBtn" class="btn-outline py-1.5 px-5 rounded-full text-xs font-bold whitespace-nowrap">リセット</button>
           </div>
-          <p class="text-xs text-gray-500 mb-5">金額は万円単位、税率等は%で入力してください。入力するとグラフに即時反映されます。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center justify-between text-sm font-medium mb-1.5" for="cash">
