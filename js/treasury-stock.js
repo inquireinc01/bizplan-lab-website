@@ -133,22 +133,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const svg2 = document.getElementById('tsWaterfall2');
     if (!svg1 || !svg2) return;
     lastWfCfg = { cfgA: cfgA, cfgB: cfgB }; // トグルによる再描画用に保持
-    const NAVY = '#0f2a4a', BLUE = '#3b6ea5', RED = '#a83d3d';
+    const NAVY = '#0f2a4a', BLUE = '#3b6ea5';
+    // 税目カテゴリ別の色分け(サイト全体で使うブルーグレー系と同じトーン・彩度・明度に揃えた4色)
+    // 所得税=濃い赤, 相続税=赤紫, 法人税=オレンジ, 保険差益=緑
+    const CAT_COLOR = {
+      income: { fill: '#8a3a3a', text: '#6e2e2e' },  // 所得税(給与課税・譲渡所得税)
+      inherit: { fill: '#7a3a5c', text: '#61304a' },  // 相続税
+      corp: { fill: '#a5703a', text: '#8a5c2e' },  // 法人税(法人税・差益課税)
+      gain: { fill: '#3f7a5c', text: '#2f5f47' },  // 保険差益
+    };
     const fmtNum = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
 
     // 起点バー + 各フローバー + 最終積み上げバー(法人+個人) を構築する
     function buildBars(cfg) {
       let running = cfg.start;
-      const bars = [{ type: 'single', label: '法人の現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false, plainMark: cfg.startMark || null }];
+      const bars = [{ type: 'single', label: '法人の現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amtColor: NAVY, amount: fmtNum(running), runAfter: running, zero: false, isDecrease: false, plainMark: cfg.startMark || null }];
       cfg.flows.forEach(function (f) {
         const prev = running;
         running += f.delta;
+        const cat = CAT_COLOR[f.cat] || null;
         bars.push({
           type: 'single', label: f.label, tag: f.tag,
           top: Math.max(prev, running), bottom: Math.min(prev, running),
-          color: f.delta >= 0 ? BLUE : RED,
+          color: cat ? cat.fill : (f.delta >= 0 ? BLUE : '#a83d3d'),
+          amtColor: cat ? cat.text : (f.delta >= 0 ? '#2d5580' : '#a83d3d'),
           amount: f.delta === 0 ? '' : ((f.delta >= 0 ? '+' : '△') + fmtNum(Math.abs(f.delta))),
-          runAfter: running, zero: f.delta === 0,
+          runAfter: running, zero: f.delta === 0, isDecrease: f.delta < 0,
           checkpoint: f.checkpoint || null,
         });
       });
@@ -247,10 +257,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
           const yTop = yOf(b.top), yBot = yOf(b.bottom);
           const h = Math.max(1, yBot - yTop);
-          const originEdge = (b.color === RED) ? 'top' : 'bottom'; // 減少バーは上端から、増加/起点は下端から伸ばす
+          const originEdge = b.isDecrease ? 'top' : 'bottom'; // 減少バーは上端から、増加/起点は下端から伸ばす
           out += `<rect class="wf-bar" style="transform-origin:center ${originEdge};animation-delay:${barDelay}ms" x="${x.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${b.color}"/>`;
-          const amtColor = b.color === RED ? '#a83d3d' : (b.color === BLUE ? '#2d5580' : '#0f2a4a');
-          out += `<text class="wf-fade" style="animation-delay:${fadeDelay}ms" x="${cx.toFixed(1)}" y="${(yTop - 6).toFixed(1)}" font-size="12" font-weight="bold" fill="${amtColor}" text-anchor="middle">${b.amount}</text>`;
+          out += `<text class="wf-fade" style="animation-delay:${fadeDelay}ms" x="${cx.toFixed(1)}" y="${(yTop - 6).toFixed(1)}" font-size="12" font-weight="bold" fill="${b.amtColor}" text-anchor="middle">${b.amount}</text>`;
         }
       });
       return out;
@@ -389,12 +398,12 @@ document.addEventListener('DOMContentLoaded', function () {
         title: '① 給与を原資に個人で負担',
         start: cash.value, startTag: 'A', startMark: '役員給与',
         flows: [
-          { label: '給与課税', delta: -s1_salaryTax, tag: 'B' },
-          { label: '法人税', delta: 0, tag: 'C', checkpoint: '保険加入' },
-          { label: '保険差益', delta: s1_insuranceGain, tag: 'D' },
-          { label: '差益課税', delta: 0, tag: 'E' },
-          { label: '相続税', delta: -(s1_cashInheritanceTax + s1_stockInheritanceTax), tag: 'F' },
-          { label: '譲渡所得税', delta: 0, tag: 'G' },
+          { label: '給与課税', delta: -s1_salaryTax, tag: 'B', cat: 'income' },
+          { label: '法人税', delta: 0, tag: 'C', cat: 'corp', checkpoint: '保険加入' },
+          { label: '保険差益', delta: s1_insuranceGain, tag: 'D', cat: 'gain' },
+          { label: '差益課税', delta: 0, tag: 'E', cat: 'corp' },
+          { label: '相続税', delta: -(s1_cashInheritanceTax + s1_stockInheritanceTax), tag: 'F', cat: 'inherit' },
+          { label: '譲渡所得税', delta: 0, tag: 'G', cat: 'income' },
         ],
         finalLabel: '最終残高', finalTag: 'H',
         corp: 0,
@@ -404,12 +413,12 @@ document.addEventListener('DOMContentLoaded', function () {
         title: '② 金庫株を原資に法人で負担',
         start: cash.value, startTag: 'A',
         flows: [
-          { label: '給与課税', delta: 0, tag: 'B' },
-          { label: '法人税', delta: -s2_corpTax, tag: 'C', checkpoint: '保険加入' },
-          { label: '保険差益', delta: s2_insuranceGain, tag: 'D' },
-          { label: '差益課税', delta: -s2_insuranceTax, tag: 'E' },
-          { label: '相続税', delta: -s2_stockInheritanceTax, tag: 'F' },
-          { label: '譲渡所得税', delta: -s2_capitalGainsTax, tag: 'G' },
+          { label: '給与課税', delta: 0, tag: 'B', cat: 'income' },
+          { label: '法人税', delta: -s2_corpTax, tag: 'C', cat: 'corp', checkpoint: '保険加入' },
+          { label: '保険差益', delta: s2_insuranceGain, tag: 'D', cat: 'gain' },
+          { label: '差益課税', delta: -s2_insuranceTax, tag: 'E', cat: 'corp' },
+          { label: '相続税', delta: -s2_stockInheritanceTax, tag: 'F', cat: 'inherit' },
+          { label: '譲渡所得税', delta: -s2_capitalGainsTax, tag: 'G', cat: 'income' },
         ],
         finalLabel: '最終残高', finalTag: 'H',
         corp: s2_corpFinal,
