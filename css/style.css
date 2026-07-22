@@ -31,13 +31,19 @@ html {
 }
 
 body {
-  /* Windows/Macで見た目が揺れるOS依存フォント(Arial/BIZ UDPGothic等)ではなく、
-     Google Fontsで読み込み済みのNoto Sans JP(シャープな標準ゴシック)を全端末共通の
-     基準フォントとして最優先にする。読み込み失敗時のみOSの日本語フォントに委ねる */
-  font-family: "Noto Sans JP", "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
+  /* 日本語の字形はBIZ UDPGothicを優先(2026-07-23にNoto Sans JP優先へ変更したが、
+     和文の見た目はBIZ UDPGothicの方が良いとのフィードバックで差し戻し)。
+     ただしOS依存でぶれるArialは先頭に置かず、読み込み失敗時のみの保険として末尾に残す */
+  font-family: "BIZ UDPGothic", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
   font-weight: 700;
   color: var(--color-gray-800);
   background-color: #fff;
+}
+
+/* 太字の金額・数値だけはBIZ UDPGothic(丸みのあるUD書体)ではなく、
+   OS非依存でシャープなNoto Sans JPを使う。金庫株ページのサマリー数値等に適用 */
+.font-figure {
+  font-family: "Noto Sans JP", "BIZ UDPGothic", Arial, sans-serif;
 }
 
 /* 装飾用の英語表記(キッカー・カード英字ラベル・フッター表記)に使うブランドフォント */
@@ -519,7 +525,7 @@ input[type="number"] {
 .unit {
   /* 万円・％等の単位は日本語なので、数字側に装飾フォント(Bahnschrift等)を
      指定した親要素の中にあっても標準の和文フォントで表示されるようにする */
-  font-family: "Noto Sans JP", "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-family: "BIZ UDPGothic", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
   font-size: 0.72em;
   font-weight: 600;
   opacity: 0.72;
