@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 法人の現金が、②で遺族から金庫株を買い取れる最低額を下回っていないか(手入力時のガード)
     const cashReq = computeCashMin();
     if (!isNaN(cashReq.min) && cash.value < cashReq.min) {
-      showError(`法人の現金(死亡保険金額)が不足しています。②で金庫株を買い取る(遺族からの自社株買い)には、最低 ${man(Math.ceil(cashReq.min))} が必要です。`);
+      showError(`法人の利益が不足しています。②で金庫株を買い取る(遺族からの自社株買い)には、最低 ${man(Math.ceil(cashReq.min))} が必要です。`);
       cash.el.focus();
       return;
     }
