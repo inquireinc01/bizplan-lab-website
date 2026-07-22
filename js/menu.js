@@ -65,6 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ===== ヒーロー帯のタイトル横「?」: 説明文をタップで開閉(ヒーローはoverflow:hiddenのため
+  //       フロート型ツールチップだと吹き出しが見切れる。通常フローで下に開く方式にする) =====
+  document.querySelectorAll('.hero-info-btn').forEach(function (btn) {
+    const text = btn.closest('h1').parentElement.querySelector('.hero-info-text');
+    if (!text) return;
+    btn.addEventListener('click', function () {
+      const willOpen = text.classList.contains('hidden');
+      text.classList.toggle('hidden', !willOpen);
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+  });
+
   // ===== 入力欄フォーカス時に全選択(そのまま入力すれば上書きできるように) =====
   const SKIP_TYPES = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'range', 'color', 'date', 'month', 'week', 'time'];
   document.addEventListener('focusin', function (e) {

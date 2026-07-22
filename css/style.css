@@ -295,6 +295,40 @@ input[type="number"] {
   display: block;
 }
 
+/* ヒーロー帯(ページ最上部)のタイトル横「?」: 説明文の開閉ボタン。
+   ヒーローはoverflow:hiddenの背景演出があるためフロート型ツールチップは使わず、
+   タップで.hero-info-textを通常フロー内に開閉する方式にする(吹き出しの見切れを回避)。 */
+.hero-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-left: 0.4rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+.hero-info-btn:hover,
+.hero-info-btn[aria-expanded="true"] {
+  background-color: #fff;
+  color: var(--color-navy);
+}
+.hero-info-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-top: 0.35rem;
+  max-width: 32rem;
+}
+
 /* 版選択カード */
 .version-card {
   cursor: pointer;
