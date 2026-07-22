@@ -90,6 +90,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ===== セクション単位の「データクリア」: 見出し右の小さいリンクボタン。
+  //       押した見出しが属するセクション(.calc-section等)内のinput/select/textareaだけを
+  //       空欄にし、input/changeイベントを発火して各ページ既存の保存・再計算処理に任せる =====
+  document.querySelectorAll('.section-clear-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const scope = btn.closest('[data-clear-scope]') || btn.closest('.calc-section') || btn.closest('form');
+      if (!scope) return;
+      if (!window.confirm('このセクションの入力内容をクリアします。よろしいですか？')) return;
+      scope.querySelectorAll('input, select, textarea').forEach(function (el) {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          el.checked = false;
+        } else {
+          el.value = '';
+        }
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+  });
+
   // ===== 入力欄フォーカス時に全選択(そのまま入力すれば上書きできるように) =====
   const SKIP_TYPES = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'range', 'color', 'date', 'month', 'week', 'time'];
   document.addEventListener('focusin', function (e) {
