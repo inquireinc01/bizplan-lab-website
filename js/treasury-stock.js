@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 起点バー + 各フローバー + 最終積み上げバー(法人+個人) を構築する
     function buildBars(cfg) {
       let running = cfg.start;
-      const bars = [{ type: 'single', label: '税引前利益', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false, plainMark: cfg.startMark || null }];
+      const bars = [{ type: 'single', label: '法人の現金', tag: cfg.startTag, top: Math.max(0, running), bottom: Math.min(0, running), color: NAVY, amount: fmtNum(running), runAfter: running, zero: false, plainMark: cfg.startMark || null }];
       cfg.flows.forEach(function (f) {
         const prev = running;
         running += f.delta;
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const yOf = (v) => baseBottom - (v - gMin) * pxPerMan;
 
     // 1パターン(バー配列)を独立したSVGとして描画する。
-    // 各要素に列インデックス由来の animation-delay を付け、左(税引前利益)→右(最終残高)へ順に組み上がる演出にする。
+    // 各要素に列インデックス由来の animation-delay を付け、左(法人の現金)→右(最終残高)へ順に組み上がる演出にする。
     function renderChart(bars) {
       const zeroY = yOf(0);
       const N = bars.length;
