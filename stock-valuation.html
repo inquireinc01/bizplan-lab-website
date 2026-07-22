@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607244" />
+<link rel="stylesheet" href="css/style.css?v=202607247" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -120,9 +120,9 @@
       </div>
       <div class="flex flex-wrap items-center gap-2" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
-        <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読込む</button>
         <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
-        <button type="button" id="svAllClearBtn" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">全入力データクリア</button>
+        <button type="button" id="svAllClearBtn" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap ml-2 sm:ml-3">全データクリア</button>
         <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
     </div>
@@ -321,7 +321,6 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
           <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">この内容で試算する →</button>
-          <button type="button" id="calcResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
         </div>
       </form>
     </div>
@@ -478,7 +477,6 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
           <button type="button" id="dtCalcBtn" class="btn-primary flex-1 py-3.5 rounded-full font-bold">原則的評価額を計算する</button>
-          <button type="button" id="dtResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
         </div>
 
         <!-- 詳細6: 原則的評価の明細(結果) -->
@@ -602,7 +600,6 @@
 
       <div class="flex flex-col sm:flex-row gap-4">
         <button type="button" id="tbCalcBtn" class="btn-primary flex-1 py-3.5 rounded-full font-bold">この内容で試算する →</button>
-        <button type="button" id="tbResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
       </div>
     </div>
         </div><!-- /flex-1 -->
@@ -632,9 +629,9 @@
 
 <script src="js/menu.js?v=20260723c"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/stock-simple.js?v=20260723a"></script>
-<script src="js/stock-detail.js?v=20260722d"></script>
-<script src="js/stock-tdb.js?v=20260723a"></script>
+<script src="js/stock-simple.js?v=20260723b"></script>
+<script src="js/stock-detail.js?v=20260723a"></script>
+<script src="js/stock-tdb.js?v=20260723b"></script>
 <script src="js/stock-stepper.js?v=20260722d"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>

@@ -142,15 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
   area.addEventListener('input', persistOwn);
   area.addEventListener('change', persistOwn);
 
-  document.getElementById('tbResetBtn').addEventListener('click', function () {
-    if (!window.confirm('公開情報から入力の入力内容をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-    FIELD_IDS.forEach(function (id) { var el = document.getElementById(id); if (el && el.tagName !== 'SELECT') el.value = ''; });
-    document.getElementById('tbDividend').value = '0';
-    holderBody.innerHTML = '';
-    holderRow({});
-    try { localStorage.removeItem(OWN_STORAGE_KEY); } catch (e) {}
-  });
-
   // ===== 試算(自社株×生命保険の結果ページへブリッジ) =====
   var MAX_TDB_VALUE = 999999999999; // 桁あふれ防止の汎用上限
 

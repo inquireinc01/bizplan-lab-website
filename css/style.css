@@ -112,9 +112,9 @@ p.text-gray-600,
   margin-right: auto;
 }
 
-/* ボタン全般: ホバーで上品に浮き上がるエフェクト(ヘッダーの.nav-btnは対象外、色のフェードのみ) */
+/* ボタン全般: ホバーで上品に浮き上がるエフェクト(ヘッダーの.nav-btnは対象外、色のフェードのみ)。
+   .btn-primary(試算する/実行する/比較する等のトリガーボタン)だけは下で専用の演出を持つため対象外 */
 button,
-.btn-primary,
 .btn-accent,
 .btn-outline,
 .js-pdf-btn,
@@ -125,7 +125,6 @@ button,
     background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 button:hover,
-.btn-primary:hover,
 .btn-accent:hover,
 .btn-outline:hover,
 .js-pdf-btn:hover,
@@ -135,7 +134,6 @@ button:hover,
   box-shadow: 0 8px 18px rgba(15, 42, 74, 0.14);
 }
 button:active,
-.btn-primary:active,
 .btn-accent:active,
 .btn-outline:active,
 .js-pdf-btn:active,
@@ -150,14 +148,12 @@ button:active,
 }
 
 /* ホバー時に色が左から右へスライドインする塗り(共通) */
-.btn-primary,
 .btn-accent,
 .btn-outline {
   position: relative;
   overflow: hidden;
   z-index: 0;
 }
-.btn-primary::before,
 .btn-accent::before,
 .btn-outline::before {
   content: "";
@@ -168,19 +164,11 @@ button:active,
   transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: -1;
 }
-.btn-primary:hover::before,
 .btn-accent:hover::before,
 .btn-outline:hover::before {
   transform: scaleX(1);
 }
 
-.btn-primary {
-  background-color: var(--color-navy);
-  color: #fff;
-}
-.btn-primary::before {
-  background-color: var(--color-navy-light);
-}
 .btn-accent {
   background-color: var(--color-blue);
   color: #fff;
@@ -199,26 +187,43 @@ button:active,
   border-color: var(--color-navy);
 }
 
-/* 試算ボタン: 入力の充足状況に応じて色を切り替える(視認性重視) */
-#stockCalcForm button[type="submit"].btn-ready,
-#dtCalcBtn.btn-ready,
-#tbCalcBtn.btn-ready {
-  background-color: var(--color-blue);
+/* ========== トリガーボタン(試算する/実行する/比較する/保存する等)全体ルール ==========
+   ピル型の他ボタンと視覚的に区別するため角丸を控えめにし(□寄りの印象)、色は常にネイビー固定
+   (入力充足状況による色の出し分けは廃止)。ホバー時は光が斜めに走るシャインエフェクト＋
+   他ボタンよりわずかに強いリフトで、「押すべき主操作」であることを際立たせる */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 0.75rem;
+  background-color: var(--color-navy);
+  color: #fff;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
 }
-#stockCalcForm button[type="submit"].btn-ready::before,
-#dtCalcBtn.btn-ready::before,
-#tbCalcBtn.btn-ready::before {
-  background-color: var(--color-blue-dark);
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.65s ease;
+  pointer-events: none;
 }
-#stockCalcForm button[type="submit"].btn-not-ready,
-#dtCalcBtn.btn-not-ready,
-#tbCalcBtn.btn-not-ready {
-  background-color: var(--color-red);
+.btn-primary:hover {
+  background-color: var(--color-navy-light);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(15, 42, 74, 0.32);
 }
-#stockCalcForm button[type="submit"].btn-not-ready::before,
-#dtCalcBtn.btn-not-ready::before,
-#tbCalcBtn.btn-not-ready::before {
-  background-color: var(--color-red-dark);
+.btn-primary:hover::after {
+  left: 130%;
+}
+.btn-primary:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(15, 42, 74, 0.22);
 }
 
 /* ========== 数値の表示ルール ========== */

@@ -226,14 +226,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.location.href = 'stock-valuation-result.html';
   });
 
-  document.getElementById('calcResetBtn').addEventListener('click', function () {
-    if (!window.confirm('簡易版の入力内容をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-    form.querySelectorAll('input').forEach(function (el) { if (!el.readOnly) el.value = ''; });
-    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    seedHolders();
-    recalcAll();
-  });
-
   // ===== 初期データ(サンプル) =====
   function seedHolders() {
     holderBody.innerHTML = '';

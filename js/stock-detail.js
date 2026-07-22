@@ -256,16 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('dtResultArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  document.getElementById('dtResetBtn').addEventListener('click', function () {
-    if (!window.confirm('詳細入力の入力内容をクリアします。よろしいですか？')) return;
-    detailArea.querySelectorAll('input, select').forEach(function (el) {
-      if (el.type === 'checkbox') el.checked = false; else el.value = '';
-    });
-    try { localStorage.removeItem('bpl_stock_detail_v1'); } catch (e) {}
-    document.getElementById('dtResultArea').classList.add('hidden');
-    recalcDetail();
-  });
-
   // ===== 保存/復元 =====
   var DKEY = 'bpl_stock_detail_v1';
   function persist() {
