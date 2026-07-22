@@ -43,16 +43,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  const resetBtn = document.getElementById('dsResetBtn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。よろしいですか？')) return;
-      fields.forEach(function (el) { el.value = ''; });
-      localStorage.removeItem(storageKey);
-      const msg = document.getElementById('dsSavedMsg');
-      if (msg) msg.classList.add('hidden');
-    });
+  function clearAllFields() {
+    if (!window.confirm('入力内容をすべてクリアします。よろしいですか？')) return;
+    fields.forEach(function (el) { el.value = ''; });
+    localStorage.removeItem(storageKey);
+    const msg = document.getElementById('dsSavedMsg');
+    if (msg) msg.classList.add('hidden');
   }
+  const resetBtn = document.getElementById('dsResetBtn');
+  if (resetBtn) resetBtn.addEventListener('click', clearAllFields);
+  const fieldClearBtn = document.getElementById('dsFieldClearBtn');
+  if (fieldClearBtn) fieldClearBtn.addEventListener('click', clearAllFields);
 
   // ===== PDF出力: 入力内容から印刷シートを組み立てる =====
   function fieldDisplayValue(el) {

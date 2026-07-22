@@ -1103,13 +1103,10 @@ img {
   text-align: right;
   transition: color 0.15s ease;
 }
-/* 老眼対応: 数字だけ約2倍に拡大し、単位「万円」は従来サイズのまま。
-   数字を太字にする箇所は共通ルールによりArial Boldではなく
-   Bahnschrift SemiLight Condensedで統一する */
+/* 老眼対応: 数字だけ約2倍に拡大し、単位「万円」は従来サイズのまま */
 .metric-tile .tile-value .tile-num {
-  font-family: "Bahnschrift SemiLight Condensed", Bahnschrift, "Yu Gothic UI Semilight", "Segoe UI", Arial, sans-serif;
-  font-weight: 350;
-  font-stretch: condensed;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
   font-size: 1.7rem;
   line-height: 1;
   color: var(--color-slate-light);

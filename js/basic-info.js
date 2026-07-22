@@ -56,7 +56,7 @@
     }
   });
 
-  // ===== 入力データクリア(ヒーロー): 基本情報+決算書情報の保存データを一括削除。誤操作防止のため必ず確認する =====
+  // ===== 全入力データクリア(ヒーロー): 基本情報+決算書情報の保存データを一括削除。誤操作防止のため必ず確認する =====
   var allClearBtn = document.getElementById('biAllClearBtn');
   if (allClearBtn) {
     allClearBtn.addEventListener('click', function () {
@@ -66,6 +66,20 @@
         localStorage.removeItem('bpl_financial_statements_v1');
       } catch (e) {}
       location.reload();
+    });
+  }
+
+  // ===== 入力データクリア(基本情報欄のみ) =====
+  var fieldClearBtn = document.getElementById('biFieldClearBtn');
+  if (fieldClearBtn) {
+    fieldClearBtn.addEventListener('click', function () {
+      if (!window.confirm('基本情報の入力内容をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+      fieldIds.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      updateAdditionalTextCount();
     });
   }
 })();
