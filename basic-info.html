@@ -123,6 +123,7 @@
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
         <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読み込む</button>
         <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
+        <button type="button" id="biAllClearBtn" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-[#e8b4b0] text-[#f6d9d7] hover:bg-white hover:text-[#a83d3d] transition-colors whitespace-nowrap">入力データクリア</button>
         <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
     </div>
@@ -951,7 +952,7 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
           <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">保存する</button>
-          <button type="button" id="fsResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">リセット</button>
+          <button type="button" id="fsResetBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
         </div>
       </form>
     </div>
@@ -977,9 +978,9 @@
   </div>
 </footer>
 
-<script src="js/menu.js?v=20260722c"></script>
+<script src="js/menu.js?v=20260723b"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/basic-info.js?v=20260720b"></script>
+<script src="js/basic-info.js?v=20260723a"></script>
 <script src="js/financial-statements.js?v=20260721c"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>

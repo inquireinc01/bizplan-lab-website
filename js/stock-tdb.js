@@ -143,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
   area.addEventListener('change', persistOwn);
 
   document.getElementById('tbResetBtn').addEventListener('click', function () {
+    if (!window.confirm('公開情報から入力の入力内容をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
     FIELD_IDS.forEach(function (id) { var el = document.getElementById(id); if (el && el.tagName !== 'SELECT') el.value = ''; });
     document.getElementById('tbDividend').value = '0';
     holderBody.innerHTML = '';

@@ -77,6 +77,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // ===== 自社株×生命保険(入力): ヒーローの「入力データクリア」は簡易/詳細/TDTSRの
+  //       3版すべての保存データを一括削除する(各版内の個別クリアはそれぞれのJSが担当) =====
+  const svAllClearBtn = document.getElementById('svAllClearBtn');
+  if (svAllClearBtn) {
+    svAllClearBtn.addEventListener('click', function () {
+      if (!window.confirm('入力内容(簡易入力・詳細入力・公開情報から入力のすべて)をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+      ['bpl_stock_valuation_v1', 'bpl_stock_detail_v1', 'bpl_stock_tdb_v1', 'bpl_stock_version'].forEach(function (k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      location.reload();
+    });
+  }
+
   // ===== 入力欄フォーカス時に全選択(そのまま入力すれば上書きできるように) =====
   const SKIP_TYPES = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'range', 'color', 'date', 'month', 'week', 'time'];
   document.addEventListener('focusin', function (e) {

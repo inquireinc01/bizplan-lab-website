@@ -172,4 +172,14 @@ document.addEventListener('DOMContentLoaded', function () {
       applyBtn.classList.add('opacity-50');
     });
   }
+
+  // ===== 入力データクリア(ヒーロー): 決算書情報の保存データを削除。誤操作防止のため必ず確認する =====
+  const clearBtn = document.getElementById('eiClearBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      if (!window.confirm('決算書情報の入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      location.reload();
+    });
+  }
 });
