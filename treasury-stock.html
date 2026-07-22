@@ -144,11 +144,10 @@
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center justify-between text-sm font-medium mb-1.5" for="cash">
-                <span>法人の現金／死亡保険金額(万円)</span>
+                <span class="flex items-center">法人の現金／死亡保険金額(万円)<span class="help-tip" tabindex="0">?<span class="help-text" id="cashHint">他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)</span></span></span>
                 <button type="button" id="cashLockBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
               </label>
               <input type="number" id="cash" value="20000" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="自動計算" />
-              <p id="cashHint" class="text-[11px] text-gray-400 mt-1">他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)</p>
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="capital">資本金(万円)</label>
