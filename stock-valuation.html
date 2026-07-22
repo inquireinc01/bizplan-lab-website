@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607236" />
+<link rel="stylesheet" href="css/style.css?v=202607240" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -112,22 +112,23 @@
 <main>
 
   <!-- ===== ページヒーロー ===== -->
-  <section class="hero-pattern relative py-7 sm:py-9">
-    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
-      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">STOCK &amp; INSURANCE — INPUT</p>
-      <h1 class="text-white font-black text-xl sm:text-2xl">自社株×生命保険</h1>
+  <section class="hero-pattern relative py-4 sm:py-5">
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1">STOCK &amp; INSURANCE — INPUT</p>
+        <h1 class="text-white font-black text-xl sm:text-2xl">自社株×生命保険</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-2" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
+        <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
+      </div>
     </div>
   </section>
 
   <section class="py-16 sm:py-20">
     <div class="max-w-6xl mx-auto px-5">
-      <div class="flex flex-wrap items-center justify-end gap-3 mb-8" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
-        <span class="js-backup-msg hidden w-full text-right text-xs text-[#0f2a4a] font-bold"></span>
-        <button type="button" class="js-backup-load btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
-        <button type="button" class="js-backup-save btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
-        <input type="file" class="js-backup-file hidden" accept="application/json" />
-      </div>
-
       <p class="font-bold text-gray-700 mb-8 flex items-center">入力方法を選択してください<span class="help-tip" tabindex="0">?<span class="help-text">簡易入力は計算済みの評価明細書の数値だけで概算とグラフを試算します。詳細入力は国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。公開情報から入力は、帝国データバンク等の公開情報だけを頼りに大まかな評価額を仮説立てするための簡易ツールです(精度は劣ります)。</span></span></p>
 
       <div id="resumeLink" class="hidden mb-6 text-sm">
@@ -628,7 +629,7 @@
   </div>
 </footer>
 
-<script src="js/menu.js?v=20260722b"></script>
+<script src="js/menu.js?v=20260722c"></script>
 <script src="js/number-format.js?v=20260721c"></script>
 <script src="js/stock-simple.js?v=20260721f"></script>
 <script src="js/stock-detail.js?v=20260722d"></script>
