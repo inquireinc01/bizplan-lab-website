@@ -121,18 +121,17 @@
 
   <section class="py-16 sm:py-20">
     <div class="max-w-6xl mx-auto px-5">
+      <div class="flex flex-wrap items-center justify-end gap-3 mb-8" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-[#0f2a4a] font-bold"></span>
+        <button type="button" class="js-backup-load btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-save btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
+      </div>
+
       <p class="font-bold text-gray-700 mb-8 flex items-center">入力方法を選択してください<span class="help-tip" tabindex="0">?<span class="help-text">簡易入力は計算済みの評価明細書の数値だけで概算とグラフを試算します。詳細入力は国税庁「取引相場のない株式の明細書」の様式順に沿って入力し、原則的評価額を算定します(各項目に記載方法の注釈付き)。公開情報から入力は、帝国データバンク等の公開情報だけを頼りに大まかな評価額を仮説立てするための簡易ツールです(精度は劣ります)。</span></span></p>
 
       <div id="resumeLink" class="hidden mb-6 text-sm">
         <a href="stock-valuation-result.html" class="text-[#0f2a4a] underline font-bold">前回入力した内容の試算結果を見る →</a>
-      </div>
-
-      <div class="notice-box text-xs rounded-lg p-4 mb-8 flex flex-wrap items-center gap-3" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
-        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。</span>
-        <button type="button" class="js-backup-save btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
-        <button type="button" class="js-backup-load btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
-        <input type="file" class="js-backup-file hidden" accept="application/json" />
-        <span class="js-backup-msg hidden w-full text-[#0f2a4a] font-bold"></span>
       </div>
 
       <div class="lg:flex lg:gap-10">

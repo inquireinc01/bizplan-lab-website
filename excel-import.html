@@ -113,28 +113,28 @@
 
   <!-- ===== ページヒーロー ===== -->
   <section class="hero-pattern relative py-7 sm:py-9">
-    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
-      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">EXCEL IMPORT</p>
-      <h1 class="text-white font-black text-xl sm:text-2xl">Excelから取り込み</h1>
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+      <div>
+        <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">EXCEL IMPORT</p>
+        <h1 class="text-white font-black text-xl sm:text-2xl">Excelから取り込み</h1>
+      </div>
+      <p class="text-white/80 text-sm leading-relaxed sm:max-w-md sm:text-right">
+        決算書情報の300項目を手入力する代わりに、Excelファイルのアップロード、またはExcelからのコピー&amp;ペーストで一括入力できます。反映後は<a href="basic-info.html#fsSection" class="underline text-white font-bold">決算書情報ページ</a>で内容をご確認ください。
+      </p>
     </div>
   </section>
 
   <section class="py-16 sm:py-20">
     <div class="max-w-4xl mx-auto px-5">
-      <p class="text-gray-600 leading-relaxed mb-8">
-        決算書情報の300項目を手入力する代わりに、Excelファイルのアップロード、またはExcelからのコピー&amp;ペーストで一括入力できます。反映後は<a href="basic-info.html#fsSection" class="underline text-[#0f2a4a] font-bold">決算書情報ページ</a>で内容をご確認ください。
-      </p>
-
-      <div class="notice-box text-sm rounded-lg p-4 mb-6 leading-relaxed">
-        アップロード・貼り付けとも、内容はお使いのブラウザ内でのみ処理され、外部サーバーには送信されません。既存の入力内容がある項目は上書きされますのでご注意ください。
+      <div class="flex flex-wrap items-center justify-end gap-3 mb-6" data-backup-keys="bpl_financial_statements_v1">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-[#0f2a4a] font-bold"></span>
+        <button type="button" class="js-backup-load btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-save btn-outline px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
 
-      <div class="notice-box text-xs rounded-lg p-4 mb-10 flex flex-wrap items-center gap-3" data-backup-keys="bpl_financial_statements_v1">
-        <span class="text-gray-600">入力データはこのPCのブラウザ内にのみ保存されます。</span>
-        <button type="button" class="js-backup-save btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルに保存</button>
-        <button type="button" class="js-backup-load btn-outline px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ファイルから読み込む</button>
-        <input type="file" class="js-backup-file hidden" accept="application/json" />
-        <span class="js-backup-msg hidden w-full text-[#0f2a4a] font-bold"></span>
+      <div class="notice-box text-sm rounded-lg p-4 mb-10 leading-relaxed">
+        アップロード・貼り付けとも、内容はお使いのブラウザ内でのみ処理され、外部サーバーには送信されません。既存の入力内容がある項目は上書きされますのでご注意ください。
       </div>
 
       <!-- ファイルアップロード -->
