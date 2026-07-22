@@ -135,12 +135,12 @@ document.addEventListener('DOMContentLoaded', function () {
     lastWfCfg = { cfgA: cfgA, cfgB: cfgB }; // トグルによる再描画用に保持
     const NAVY = '#0f2a4a', BLUE = '#3b6ea5';
     // 税目カテゴリ別の色分け(サイト全体で使うブルーグレー系と同じトーン・彩度・明度に揃えた4色)
-    // 所得税=濃い赤, 相続税=赤紫, 法人税=オレンジ, 保険差益=緑
+    // 所得税=濃い赤, 相続税=赤紫, 法人税=オレンジ, 保険差益=グレーがかった青
     const CAT_COLOR = {
       income: { fill: '#8a3a3a', text: '#6e2e2e' },  // 所得税(給与課税・譲渡所得税)
       inherit: { fill: '#7a3a5c', text: '#61304a' },  // 相続税
       corp: { fill: '#a5703a', text: '#8a5c2e' },  // 法人税(法人税・差益課税)
-      gain: { fill: '#3f7a5c', text: '#2f5f47' },  // 保険差益
+      gain: { fill: '#4a6a80', text: '#374f61' },  // 保険差益
     };
     const fmtNum = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
 
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const N = bars.length;
       const slotW = plotW / N;
       const barW = Math.min(66, slotW * 0.64);
-      const STEP = 105; // 列ごとの遅延(ms)
+      const STEP = 315; // 列ごとの遅延(ms)。以前の約30%の速度(≒3.3倍の時間)でゆっくり見せる
       let out = '';
       // 基準線(ゼロ軸)は演出対象外で常時表示
       out += `<line x1="${plotXStart - 6}" y1="${zeroY.toFixed(1)}" x2="${plotXEnd}" y2="${zeroY.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const cx = x + barW / 2;
         const barDelay = i * STEP;                          // バーが伸びる
         const connDelay = Math.max(0, (i - 0.4) * STEP);    // 点線が現バーより少し先に右へ走る
-        const fadeDelay = i * STEP + 130;                   // ラベル・金額はバーが伸びた後にフェードイン
+        const fadeDelay = i * STEP + 390;                   // ラベル・金額はバーが伸びた後にフェードイン
         // コネクター(前バーのrunAfter → 現バー左端)。点線が左→右に走る
         if (i > 0) {
           const prevB = bars[i - 1];
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
           const label = showPlain ? b.plainMark : b.checkpoint;
           const pillH = 16, pillCY = 16;
           const pillW = Math.max(48, label.length * 10.5 + 16);
-          const st = `class="wf-fade" style="animation-delay:${fadeDelay + 70}ms"`;
+          const st = `class="wf-fade" style="animation-delay:${fadeDelay + 210}ms"`;
           out += `<line ${st} x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${(pillCY + pillH / 2).toFixed(1)}" stroke="#3b6ea5" stroke-width="1"/>`;
           out += `<circle ${st} cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="2.5" fill="#3b6ea5"/>`;
           out += `<rect ${st} x="${(mx - pillW / 2).toFixed(1)}" y="${(pillCY - pillH / 2).toFixed(1)}" width="${pillW.toFixed(1)}" height="${pillH}" rx="8" fill="#fff" stroke="#3b6ea5" stroke-width="1"/>`;

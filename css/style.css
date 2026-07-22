@@ -493,15 +493,15 @@ input[type="number"] {
    各要素の animation-delay はJS側で列インデックスから付与する。.wf-anim が付いた時だけ再生。 */
 .wf-anim .wf-bar {
   transform-box: fill-box; /* transform-origin をバー自身の外接矩形基準にする(下端/上端から伸ばす) */
-  animation: wfGrow 0.55s cubic-bezier(0.34, 1.12, 0.5, 1) both; /* びよーんと伸びる(軽い行き過ぎ) */
+  animation: wfGrow 1.8s cubic-bezier(0.34, 1.12, 0.5, 1) both; /* びよーんと伸びる(軽い行き過ぎ)。以前の約30%速度でゆっくり見せる */
 }
 .wf-anim .wf-conn {
   transform-box: fill-box;
   transform-origin: left center;
-  animation: wfDraw 0.34s ease-out both; /* 点線が左→右に走る */
+  animation: wfDraw 1.1s ease-out both; /* 点線が左→右に走る */
 }
 .wf-anim .wf-fade {
-  animation: wfFade 0.4s ease-out both; /* ラベル・金額・マーカーはフェードイン */
+  animation: wfFade 1.3s ease-out both; /* ラベル・金額・マーカーはフェードイン */
 }
 @keyframes wfGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes wfDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
