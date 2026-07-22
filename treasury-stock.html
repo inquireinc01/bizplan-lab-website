@@ -125,7 +125,7 @@
   </section>
 
   <section class="py-16 sm:py-20">
-    <div class="max-w-4xl mx-auto px-5">
+    <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
       <div class="flex justify-end mb-6">
         <button type="button" class="js-pdf-btn btn-outline inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
@@ -133,6 +133,10 @@
         </button>
       </div>
 
+      <!-- PC/iPad横向き(lg以上)では左に前提条件を固定、右に結果を並べて同時に見られるようにする -->
+      <div class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-10 lg:items-start">
+
+      <div class="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
       <form id="treasuryForm" class="space-y-10">
 
         <div class="calc-section bg-white p-6 sm:p-8">
@@ -140,7 +144,7 @@
             <h3 class="font-bold text-base flex items-center">前提条件<span class="help-tip" tabindex="0">?<span class="help-text">金額は万円単位、税率等は%で入力してください。入力するとグラフに即時反映されます。</span></span></h3>
             <button type="button" id="tsResetBtn" class="btn-outline py-1.5 px-5 rounded-full text-xs font-bold whitespace-nowrap">リセット</button>
           </div>
-          <div class="grid sm:grid-cols-2 gap-5">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-1 gap-5">
             <div>
               <label class="flex items-center justify-between text-sm font-medium mb-1.5" for="cash">
                 <span class="flex items-center">法人の現金／死亡保険金額(万円)<span class="help-tip" tabindex="0">?<span class="help-text" id="cashHint">他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)</span></span></span>
@@ -181,9 +185,10 @@
 
         <div id="tsErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
       </form>
+      </div>
 
       <!-- 結果表示 -->
-      <div id="tsResultArea" class="hidden mt-10 space-y-8">
+      <div id="tsResultArea" class="hidden mt-10 lg:mt-0 space-y-8">
 
         <!-- 資金の流れ比較(上下2図をきっちり分けて表示) -->
         <div class="calc-section bg-white p-6 sm:p-8">
@@ -281,6 +286,8 @@
             </button>
           </div>
         </div>
+      </div>
+
       </div>
     </div>
   </section>
