@@ -119,11 +119,16 @@
         <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">金庫株×生命保険<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
         <p class="hero-info-text hidden">自社株にかかる相続税を「給与を原資に個人で負担する場合」と「生命保険を活用した金庫株の買い取り資金を原資とする場合」とで、法人・個人トータルの最終的な手残りがどう変わるかを比較します。</p>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2" data-backup-keys="bpl_treasury_stock_v1">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
+        <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読み込む</button>
+        <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
+        <button type="button" id="tsClearBtn" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-[#e8b4b0] text-[#f6d9d7] hover:bg-white hover:text-[#a83d3d] transition-colors whitespace-nowrap">入力データクリア</button>
         <button type="button" class="js-pdf-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
           PDFに出力する
         </button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
     </div>
   </section>
@@ -138,10 +143,7 @@
 
         <div class="calc-section bg-white p-6 sm:p-8">
           <div class="mb-5">
-            <div class="flex items-start justify-between gap-3">
-              <h3 class="font-bold text-base flex items-center">前提条件<span class="help-tip" tabindex="0">?<span class="help-text">金額は万円単位、税率等は%で入力してください。入力するとグラフに即時反映されます。</span></span></h3>
-              <button type="button" id="tsResetBtn" class="btn-outline py-1.5 px-5 rounded-full text-xs font-bold whitespace-nowrap">リセット</button>
-            </div>
+            <h3 class="font-bold text-base flex items-center">前提条件<span class="help-tip" tabindex="0">?<span class="help-text">金額は万円単位、税率等は%で入力してください。入力するとグラフに即時反映されます。</span></span></h3>
             <p class="text-xs text-gray-400 mt-1">(金額は万円)</p>
           </div>
           <div class="grid sm:grid-cols-2 lg:grid-cols-1 gap-5">
@@ -380,6 +382,6 @@
 
 <script src="js/menu.js?v=20260722c"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/treasury-stock.js?v=20260722n"></script>
+<script src="js/treasury-stock.js?v=20260723a"></script>
 </body>
 </html>

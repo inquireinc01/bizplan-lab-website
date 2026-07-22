@@ -25,6 +25,26 @@ document.addEventListener('DOMContentLoaded', function () {
     errorArea.textContent = '';
   };
 
+  // ===== 入力内容のブラウザ内保存(サーバーには送信しない。ファイル保存/読込・入力データクリアの対象) =====
+  const STORAGE_KEY = 'bpl_treasury_stock_v1';
+  function loadSavedValues() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      form.querySelectorAll('input[id]').forEach(function (el) {
+        if (data[el.id] !== undefined) el.value = data[el.id];
+      });
+    } catch (e) {}
+  }
+  function saveCurrentValues() {
+    const data = {};
+    form.querySelectorAll('input[id]').forEach(function (el) {
+      if (el.value !== '') data[el.id] = el.value;
+    });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
   // ===== ？ツールチップ(税金の計算内訳。タップで開閉・モバイル対応) =====
   document.querySelectorAll('.help-tip').forEach(function (tip) {
     tip.addEventListener('click', function (e) {
@@ -408,6 +428,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     resultArea.classList.remove('hidden');
+    saveCurrentValues();
   }
 
   // 送信ボタンは廃止。数字入力が一段落してから(=確定してから)なめらかに反映するためデバウンスする。
@@ -421,13 +442,15 @@ document.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('input', scheduleRecompute);
   form.addEventListener('change', function () { clearTimeout(recomputeTimer); recompute(); });
 
-  const resetBtn = document.getElementById('tsResetBtn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      form.reset();
-      setCashMode(false); // 現金は自動計算モードに戻す
-      clearError();
-      recompute(); // 既定値で即再描画
+  // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====
+  const clearBtn = document.getElementById('tsClearBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+      form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      setCashMode(false);
+      recompute();
     });
   }
 
@@ -469,7 +492,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
-  // ===== 初期化: 法人の現金を自動計算モードで初期化し、既定値でリアルタイム試算を表示 =====
+  // ===== 初期化: 保存済みデータがあれば復元し、法人の現金を自動計算モードで初期化して試算を表示 =====
+  loadSavedValues();
   setCashMode(false);
   recompute();
 });
