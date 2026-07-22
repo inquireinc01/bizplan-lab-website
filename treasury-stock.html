@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607240" />
+<link rel="stylesheet" href="css/style.css?v=202607241" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -209,16 +209,22 @@
               </div>
             </div>
           </div>
-          <!-- ① -->
+          <!-- Ⅰ -->
           <div class="rounded-xl border border-gray-200 p-4 sm:p-5 mb-6">
-            <h5 class="font-bold text-base mb-2">① 給与を原資に個人で負担</h5>
+            <div class="mb-2">
+              <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.3em] text-xs mb-0.5">Ⅰ</p>
+              <h5 class="font-bold text-base">給与を原資に個人で負担</h5>
+            </div>
             <div class="overflow-x-auto -mx-2 px-2">
               <svg id="tsWaterfall1" viewBox="0 0 720 300" class="h-auto" style="width:100%;min-width:560px" role="img" aria-label="給与を原資に個人で負担する場合の資金の流れ"></svg>
             </div>
           </div>
-          <!-- ② -->
+          <!-- Ⅱ -->
           <div class="rounded-xl border border-gray-200 p-4 sm:p-5">
-            <h5 class="font-bold text-base mb-2">② 金庫株を原資に法人で負担</h5>
+            <div class="mb-2">
+              <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.3em] text-xs mb-0.5">Ⅱ</p>
+              <h5 class="font-bold text-base">金庫株を原資に法人で負担</h5>
+            </div>
             <div class="overflow-x-auto -mx-2 px-2">
               <svg id="tsWaterfall2" viewBox="0 0 720 300" class="h-auto" style="width:100%;min-width:560px" role="img" aria-label="金庫株を原資に法人で負担する場合の資金の流れ"></svg>
             </div>
@@ -229,7 +235,10 @@
         <div class="grid sm:grid-cols-2 gap-6">
           <!-- シナリオ1 -->
           <div class="calc-section bg-white p-6">
-            <h4 class="font-bold text-sm mb-4">① 給与を原資に個人で負担</h4>
+            <div class="mb-4">
+              <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.3em] text-xs mb-0.5">Ⅰ</p>
+              <h4 class="font-bold text-sm">給与を原資に個人で負担</h4>
+            </div>
             <dl class="space-y-2 text-sm">
               <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">A</span>法人の現金</dt><dd id="s1Cash" class="font-bold"></dd></div>
               <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">B</span>給与課税<span class="help-tip" tabindex="0">?<span class="help-text" id="tipS1TaxSalary"></span></span></dt><dd id="s1TaxSalary" class="font-bold"></dd></div>
@@ -247,7 +256,10 @@
 
           <!-- シナリオ2 -->
           <div class="calc-section bg-white p-6">
-            <h4 class="font-bold text-sm mb-4">② 金庫株を原資に法人で負担</h4>
+            <div class="mb-4">
+              <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.3em] text-xs mb-0.5">Ⅱ</p>
+              <h4 class="font-bold text-sm">金庫株を原資に法人で負担</h4>
+            </div>
             <dl class="space-y-2 text-sm">
               <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">A</span>法人の現金</dt><dd id="s2Cash" class="font-bold"></dd></div>
               <div class="flex justify-between items-center"><dt class="flex items-center"><span class="wf-tag">B</span>給与課税</dt><dd id="s2TaxSalary" class="font-bold"></dd></div>
@@ -269,15 +281,15 @@
           <h3 class="font-bold text-base mb-6">法人・個人トータルの比較</h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 items-stretch">
             <div class="rounded-xl border border-gray-200 px-4 py-4">
-              <p class="text-xs text-gray-500 mb-1">① 給与で負担</p>
+              <p class="text-xs text-gray-500 mb-1">Ⅰ 給与で負担</p>
               <p id="sumS1Total" class="text-2xl font-black text-[#0f2a4a] text-right"></p>
             </div>
             <div class="rounded-xl border border-gray-200 px-4 py-4">
-              <p class="text-xs text-gray-500 mb-1">② 金庫株で負担</p>
+              <p class="text-xs text-gray-500 mb-1">Ⅱ 金庫株で負担</p>
               <p id="sumS2Total" class="text-2xl font-black text-[#0f2a4a] text-right"></p>
             </div>
             <div class="rounded-xl bg-[#eef1f4] px-4 py-4">
-              <p class="text-xs text-gray-500 mb-1">差額(② − ①)</p>
+              <p class="text-xs text-gray-500 mb-1">差額(Ⅱ − Ⅰ)</p>
               <p id="sumDiff" class="text-2xl font-black text-right"></p>
             </div>
           </div>
@@ -329,7 +341,7 @@
 
   <div class="print-cols">
     <div>
-      <div class="print-sec">① 給与を原資に個人で負担</div>
+      <div class="print-sec">Ⅰ 給与を原資に個人で負担</div>
       <table class="print-table">
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
@@ -344,7 +356,7 @@
       </table>
     </div>
     <div>
-      <div class="print-sec">② 金庫株を原資に法人で負担</div>
+      <div class="print-sec">Ⅱ 金庫株を原資に法人で負担</div>
       <table class="print-table">
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
@@ -365,7 +377,7 @@
   <div class="print-sec">法人・個人トータルの比較</div>
   <table class="print-table">
     <thead>
-      <tr><th class="lbl">比較</th><th>① 給与で負担</th><th>② 金庫株で負担</th><th>差額(②-①)</th></tr>
+      <tr><th class="lbl">比較</th><th>Ⅰ 給与で負担</th><th>Ⅱ 金庫株で負担</th><th>差額(Ⅱ-Ⅰ)</th></tr>
     </thead>
     <tbody>
       <tr class="total"><td class="lbl">法人・個人 合計残高</td><td id="pSumS1"></td><td id="pSumS2"></td><td id="pSumDiff"></td></tr>
