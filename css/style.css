@@ -621,6 +621,15 @@ input[type="number"] {
   .wf-anim .wf-fade { animation: none; }
 }
 
+/* 将来負債ページのバランスシート比較グラフ: 数値変更のたびにrectのy/heightを
+   直接書き換える実装のため、CSSトランジションで「なめらかに余韻を持って」変化させる */
+#bsChart rect {
+  transition: y 0.6s cubic-bezier(0.22, 1, 0.36, 1), height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  #bsChart rect { transition: none; }
+}
+
 /* 数値に付く単位(万円・％・年 など)は数字より一回り小さく・控えめに。全ページ共通ルール */
 .unit {
   /* 万円・％等の単位は日本語なので、数字側に装飾フォント(Bahnschrift等)を

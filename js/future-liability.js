@@ -88,81 +88,92 @@ document.addEventListener('DOMContentLoaded', function () {
   updateBalanceCheck();
   updateFutureLiabTotal();
 
-  function drawBalanceSheetChart(assetsBase, liabNetBase, futureLiabTotal) {
+  // グラフは数字ラベルを付けず(凡例のみで判別)、値が変わった時になめらかに
+  // アニメーションするよう、rect要素を毎回作り直さず既存要素のy/heightだけを
+  // 更新する(CSSの transition で余韻を持たせる。style.cssの#bsChart rect参照)。
+  const W = 700, H = 420;
+  const yBottom = 340;
+  const yTop = 30;
+  const plotH = yBottom - yTop;
+  const barWidth = 92;
+  const groupGap = 70;
+  const pairGap = 22;
+  const xAsset1 = 45;
+  const xLiab1 = xAsset1 + barWidth + pairGap;
+  const xAsset2 = xLiab1 + barWidth + groupGap;
+  const xLiab2 = xAsset2 + barWidth + pairGap;
+
+  function segColor(label) {
+    const map = {
+      '流動資産': '#1c3f68', '固定資産': '#0f2a4a', 'その他資産': '#091a30',
+      '流動負債': '#c7ccd3', '固定負債': '#8d97a3', '純資産': '#3b6ea5',
+    };
+    return map[label] || '#5c636e';
+  }
+
+  let chartInitialized = false;
+  function initChartOnce() {
+    if (chartInitialized) return;
     const svg = document.getElementById('bsChart');
-    const W = 700, H = 420;
-    const yBottom = 340;
-    const yTop = 30;
-    const plotH = yBottom - yTop;
-    const barWidth = 92;
+    let svgOut = `<line x1="30" y1="${yBottom}" x2="${W - 20}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`;
+
+    function barRects(barKey, x, segKeys) {
+      let out = '';
+      segKeys.forEach((seg, i) => {
+        const attrs = seg.offBalance
+          ? `fill="#a83d3d" fill-opacity="0.3" stroke="#a83d3d" stroke-width="1.5" stroke-dasharray="4,3"`
+          : `fill="${segColor(seg.label)}"`;
+        out += `<rect id="bs-${barKey}-${i}" x="${x}" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
+      });
+      return out;
+    }
+
+    svgOut += barRects('a1', xAsset1, [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }]);
+    svgOut += barRects('l1', xLiab1, [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }]);
+    svgOut += barRects('a2', xAsset2, [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }, { offBalance: true }]);
+    svgOut += barRects('l2', xLiab2, [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }, { offBalance: true }]);
+
+    // 列ラベル・グループ見出し(値が変わっても位置は不変のため静的に1度だけ描画)
+    svgOut += `<text x="${xAsset1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
+    svgOut += `<text x="${xLiab1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
+    svgOut += `<text x="${xAsset2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
+    svgOut += `<text x="${xLiab2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
+    svgOut += `<text x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">① 会計上のバランスシート</text>`;
+    svgOut += `<text x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">② 将来負債(簿外)を計上した実質バランスシート</text>`;
+
+    svg.innerHTML = svgOut;
+    chartInitialized = true;
+  }
+
+  function drawBalanceSheetChart(assetsBase, liabNetBase, futureLiabTotal) {
+    initChartOnce();
 
     const totalBase = assetsBase.reduce((s, x) => s + x.value, 0); // = liabNetBase total
     const totalAdjusted = totalBase + futureLiabTotal;
     const maxTotal = Math.max(totalAdjusted, 1);
     const pxPerYen = plotH / maxTotal;
 
-    // 簿外セグメント(将来負債/準備資産)を追加した実質版セグメント
     const assetsAdjusted = assetsBase.concat([{ label: '簿外資産(準備必要額)', value: futureLiabTotal, offBalance: true }]);
     const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債(簿外)', value: futureLiabTotal, offBalance: true }]);
 
-    const groupGap = 70;
-    const pairGap = 22;
-    const xAsset1 = 45;
-    const xLiab1 = xAsset1 + barWidth + pairGap;
-    const xAsset2 = xLiab1 + barWidth + groupGap;
-    const xLiab2 = xAsset2 + barWidth + pairGap;
-
-    let svgOut = '';
-
-    function segColor(label, offBalance) {
-      if (offBalance) return null; // handled separately (striped)
-      const map = {
-        '流動資産': '#1c3f68', '固定資産': '#0f2a4a', 'その他資産': '#091a30',
-        '流動負債': '#c7ccd3', '固定負債': '#8d97a3', '純資産': '#3b6ea5',
-      };
-      return map[label] || '#5c636e';
-    }
-
-    function drawBar(x, segments) {
+    function updateBar(barKey, segments) {
       let y = yBottom;
-      let out = '';
-      segments.forEach((seg) => {
+      segments.forEach((seg, i) => {
         const h = Math.max(0, seg.value * pxPerYen);
         const segY = y - h;
-        if (seg.offBalance) {
-          out += `<rect x="${x}" y="${segY.toFixed(1)}" width="${barWidth}" height="${h.toFixed(1)}" fill="#a83d3d" fill-opacity="0.3" stroke="#a83d3d" stroke-width="1.5" stroke-dasharray="4,3"/>`;
-        } else {
-          out += `<rect x="${x}" y="${segY.toFixed(1)}" width="${barWidth}" height="${h.toFixed(1)}" fill="${segColor(seg.label)}"/>`;
-        }
-        if (h > 20) {
-          const textColor = seg.offBalance ? '#832f2f' : (['流動負債'].includes(seg.label) ? '#2b2f36' : '#fff');
-          out += `<text x="${x + barWidth / 2}" y="${(segY + h / 2 + 4).toFixed(1)}" font-size="11" fill="${textColor}" text-anchor="middle">${man(seg.value)}</text>`;
+        const rect = document.getElementById(`bs-${barKey}-${i}`);
+        if (rect) {
+          rect.setAttribute('y', segY.toFixed(1));
+          rect.setAttribute('height', h.toFixed(1));
         }
         y = segY;
       });
-      const total = segments.reduce((s, seg) => s + seg.value, 0);
-      out += `<text x="${x + barWidth / 2}" y="${(yBottom - total * pxPerYen - 8).toFixed(1)}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle">${man(total)}</text>`;
-      return out;
     }
 
-    svgOut += `<line x1="30" y1="${yBottom}" x2="${W - 20}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`;
-
-    svgOut += drawBar(xAsset1, assetsBase);
-    svgOut += drawBar(xLiab1, liabNetBase);
-    svgOut += drawBar(xAsset2, assetsAdjusted);
-    svgOut += drawBar(xLiab2, liabNetAdjusted);
-
-    // 列ラベル
-    svgOut += `<text x="${xAsset1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text x="${xLiab1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text x="${xAsset2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text x="${xLiab2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-
-    // グループ見出し
-    svgOut += `<text x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">① 会計上のバランスシート</text>`;
-    svgOut += `<text x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">② 将来負債(簿外)を計上した実質バランスシート</text>`;
-
-    svg.innerHTML = svgOut;
+    updateBar('a1', assetsBase);
+    updateBar('l1', liabNetBase);
+    updateBar('a2', assetsAdjusted);
+    updateBar('l2', liabNetAdjusted);
   }
 
   // 入力が変わるたびにリアルタイムで再計算・再描画する
