@@ -5,6 +5,25 @@
    他のスクリプトより先に読み込むこと(window.numClean 等を提供)
    ============================================================ */
 (function () {
+  // 全角数字を半角に変換する
+  function toHalfWidthDigits(s) {
+    return s.replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
+  }
+
+  // 入力中の値から、数値入力として無効な文字(全角数字を変換した上で半角数字以外)を取り除く
+  function sanitizeNumericInput(el) {
+    var v = el.value;
+    var converted = toHalfWidthDigits(v);
+    var cleaned = converted.replace(/[^0-9\-.,△]/g, '');
+    if (cleaned === v) return;
+    var pos = el.selectionStart;
+    el.value = cleaned;
+    if (pos != null) {
+      var newPos = Math.max(0, pos - (v.length - cleaned.length));
+      try { el.setSelectionRange(newPos, newPos); } catch (e) {}
+    }
+  }
+
   // カンマや△を除いた実数値を返す(計算・保存で使う)
   function clean(v) {
     if (v == null) return NaN;
@@ -58,6 +77,7 @@
     }
     el.classList.add('num-input');
     formatInput(el);
+    el.addEventListener('input', function () { sanitizeNumericInput(el); });
     el.addEventListener('focus', function () {
       // 編集中はカンマ・△を外して素の数値(マイナスは-)にする
       el.value = String(el.value).replace(/,/g, '').replace(/△/g, '-');

@@ -185,13 +185,12 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     return map[label] || '#5c636e';
   }
-  // 内訳を表示しない「ひとまとめ」表示専用の配色: パステルではなく実色を50%透過で使う
-  // 資産=ネイビー、負債=落ち着いたオレンジ、純資産=落ち着いた青
+  // 内訳を表示しない「ひとまとめ」表示専用の配色: 資産=ネイビー、負債=落ち着いたオレンジ、純資産=落ち着いた青(透過なし)
   const GROUP_ASSET_FILL = '#0f2a4a';
   const GROUP_LIAB_FILL = '#a5703a';
   const GROUP_NETASSETS_FILL = '#3d6b8a';
-  const GROUP_FILL_OPACITY = 0.5;
-  const GROUP_TEXT_FILL = '#2b2f36'; // 50%透過でも背景は白に近いため、文字は濃色で統一する
+  const GROUP_FILL_OPACITY = 1;
+  const GROUP_TEXT_FILL = '#fff'; // 濃色の実色背景のため、文字は白で統一する
   // 簿外セグメント: 資産側(準備必要額)は淡いグリーン、負債側(将来負債)は既存の赤系のまま
   function offBalanceStyle(assetSide) {
     return assetSide
@@ -234,7 +233,10 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   let chartInitialized = false;
-  let showPredictedNote = false; // 予測BS横の「?」で(簿外負債が発動した場合)の注記を開閉する
+  // 濃色文字(軸ラベル・見出し・合計)専用の白フチ。カード背景がグレーなので視認性を上げる
+  // (白抜き文字には使わない: 白フチ×白文字は輪郭が消えて潰れて見えるため)
+  const HALO = 'paint-order="stroke fill" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"';
+
   function initChartOnce() {
     if (chartInitialized) return;
     const svg = document.getElementById('bsChart');
@@ -251,38 +253,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff');
         svgOut += `<text id="bs-${barKey}-t${i}" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
       });
-      svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle"></text>`;
+      svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle" ${HALO}></text>`;
     });
 
     // 列ラベル・グループ見出し(x位置は不変。y位置は債務超過の有無でupdateLayoutが毎回調整する)
-    svgOut += `<text id="lbl-a1" x="${xAsset1 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text id="lbl-l1" x="${xLiab1 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text id="lbl-a2" x="${xAsset2 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text id="lbl-l2" x="${xLiab2 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text id="lbl-a3" x="${xAsset3 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text id="lbl-l3" x="${xLiab3 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
-    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
-    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">予測BS</text>`;
-    svgOut += `<text id="title-3-help" x="${(xAsset3 + xLiab3 + barWidth) / 2 + 28}" y="${yBottom}" font-size="11" font-weight="bold" fill="#0f2a4a" text-anchor="middle" tabindex="0" style="cursor:pointer">?</text>`;
-    svgOut += `<text id="subtitle-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="9" fill="#6b6b6f" text-anchor="middle"></text>`;
+    // これらは常に濃い色の文字なので、グレー背景でも読みやすいよう白フチを付ける
+    svgOut += `<text id="lbl-a1" x="${xAsset1 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>資産</text>`;
+    svgOut += `<text id="lbl-l1" x="${xLiab1 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>負債・純資産</text>`;
+    svgOut += `<text id="lbl-a2" x="${xAsset2 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>資産</text>`;
+    svgOut += `<text id="lbl-l2" x="${xLiab2 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>負債・純資産</text>`;
+    svgOut += `<text id="lbl-a3" x="${xAsset3 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>資産</text>`;
+    svgOut += `<text id="lbl-l3" x="${xLiab3 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>負債・純資産</text>`;
+    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>会計上のBS</text>`;
+    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>実質的なBS</text>`;
+    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>予測BS</text>`;
 
-    // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)
-    svgOut += `<text x="${arrowX}" y="${(yTop + yBottom) / 2}" font-size="22" fill="#0f2a4a" text-anchor="middle" dominant-baseline="middle">→</text>`;
+    // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)。
+    // 細い矢印記号ではなく塗りつぶした三角形にして、2つのエリアの区切りを分かりやすくする
+    const arrowCenterY = (yTop + yBottom) / 2;
+    svgOut += `<polygon points="${arrowX - 9},${arrowCenterY - 13} ${arrowX - 9},${arrowCenterY + 13} ${arrowX + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
-
-    // 予測BS横の「?」タップで注記「(簿外負債が発動した場合)」を開閉する(初期状態は非表示)
-    const helpBtn = document.getElementById('title-3-help');
-    if (helpBtn) {
-      helpBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        showPredictedNote = !showPredictedNote;
-        const sub = document.getElementById('subtitle-3');
-        if (sub) sub.textContent = showPredictedNote ? '(簿外負債が発動した場合)' : '';
-      });
-    }
   }
 
   // 列ラベル・見出し・SVG全体の高さを、債務超過(マイナス値)の有無に応じて動的に調整する。
@@ -291,12 +283,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
     const labelY = yBottom + negZone + 18;
     const titleY = labelY + 22;
-    const subtitleY = titleY + 14;
-    const svgH = subtitleY + 12;
+    const svgH = titleY + 12;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
     ['lbl-a1', 'lbl-l1', 'lbl-a2', 'lbl-l2', 'lbl-a3', 'lbl-l3'].forEach((id) => setY(id, labelY));
-    ['title-1', 'title-2', 'title-3', 'title-3-help'].forEach((id) => setY(id, titleY));
-    setY('subtitle-3', subtitleY);
+    ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
     const svg = document.getElementById('bsChart');
     if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
   }
@@ -326,6 +316,11 @@ document.addEventListener('DOMContentLoaded', function () {
           // seg.fill があれば「ひとまとめ」表示の専用色、なければ詳細表示の通常配色を使う
           rect.setAttribute('fill', seg.fill || (seg.offBalance ? offBalanceStyle(seg.assetSide).fill : segColor(seg.label)));
           rect.setAttribute('fill-opacity', seg.fillOpacity != null ? seg.fillOpacity : (seg.offBalance ? offBalanceStyle(seg.assetSide).opacity : 1));
+          // 背景がグレーのため、通常セグメントは白フチを付けて輪郭をくっきりさせる(簿外セグメントは点線の色付き枠のまま)
+          if (!seg.offBalance) {
+            rect.setAttribute('stroke', '#fff');
+            rect.setAttribute('stroke-width', '1.5');
+          }
         }
         const text = document.getElementById(`bs-${barKey}-t${i}`);
         if (text) {
@@ -343,20 +338,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           } else if (showValues && h > 34) {
             // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
+            // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
             text.setAttribute('y', midY.toFixed(1));
-            text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="9" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-weight="bold">${man(seg.value)}</tspan>`;
+            text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="8" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
           } else if (showValues && h > 16) {
-            text.setAttribute('y', (midY + 4).toFixed(1));
             if (forceLabel) {
-              text.innerHTML = `<tspan font-size="9">${seg.label} </tspan><tspan font-weight="bold">${man(seg.value)}</tspan>`;
+              // 白抜き文字が帯からはみ出て見えなくならないよう、小さめフォントの2行(要素名/金額)にして帯の中に収める
+              text.setAttribute('y', midY.toFixed(1));
+              text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.3em" font-size="6" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1em" font-size="7" font-weight="bold">${man(seg.value)}</tspan>`;
             } else {
               // 高さが足りない時は金額のみ
-              text.innerHTML = `<tspan font-weight="bold">${man(seg.value)}</tspan>`;
+              text.setAttribute('y', (midY + 4).toFixed(1));
+              text.innerHTML = `<tspan font-size="9" font-weight="bold">${man(seg.value)}</tspan>`;
             }
           } else if (showValues && (isNeg || forceLabel) && seg.value !== 0) {
             // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する
             text.setAttribute('y', (segY + h + 12).toFixed(1));
-            text.innerHTML = `<tspan x="${text.getAttribute('x')}" font-size="9" font-weight="bold">${seg.label} ${man(seg.value)}</tspan>`;
+            text.innerHTML = `<tspan x="${text.getAttribute('x')}" font-size="8" font-weight="bold">${seg.label} ${man(seg.value)}</tspan>`;
           } else {
             text.textContent = '';
           }
@@ -423,8 +421,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const assetsTriggered = detailMode ? assetsTriggeredDetail : toGroupedAsset(assetsTriggeredDetail);
     const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGroupedLiab(liabNetTriggeredDetail);
 
-    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true }]);
-    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true }]);
+    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true, assetSide: true }]);
+    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true, assetSide: false }]);
 
     updateChart({
       a1: assetsBase, l1: liabNetBase,
@@ -437,12 +435,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // すべて同じ高さのダミーBSとして表示する(数字ラベルなし)。予測BS(3組目)も同じ仮値で表示する。
   // 「内訳を表示」がOFFのときは、ひとまとめ表示と同じ見た目(1本の色ブロック)のダミーにする。
   function drawDummyChart() {
-    const dummySeg = (label, offBalance) => ({ label, value: DUMMY_VALUE, offBalance: !!offBalance });
+    const dummySeg = (label, offBalance, assetSide) => ({ label, value: DUMMY_VALUE, offBalance: !!offBalance, assetSide: !!assetSide });
     const dataByBar = detailMode ? {
       a1: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
-      a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'), dummySeg('簿外資産', true)],
-      l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'), dummySeg('簿外負債', true)],
+      a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'), dummySeg('簿外資産', true, true)],
+      l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'), dummySeg('簿外負債', true, false)],
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
     } : (() => {
@@ -453,8 +451,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return {
         a1: [blank, assetDummy, blank],
         l1: [netAssetsDummy, liabDummy, blank],
-        a2: [blank, assetDummy, blank, dummySeg('簿外資産', true)],
-        l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true)],
+        a2: [blank, assetDummy, blank, dummySeg('簿外資産', true, true)],
+        l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false)],
         a3: [blank, assetDummy, blank],
         l3: [netAssetsDummy, liabDummy, blank],
       };

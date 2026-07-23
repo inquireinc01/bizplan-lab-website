@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607254" />
+<link rel="stylesheet" href="css/style.css?v=202607255" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -149,7 +149,7 @@
         <div id="flResultArea" class="space-y-6">
           <p id="flBalanceNote" class="hidden warning-box text-xs rounded-lg p-3"></p>
 
-          <div class="calc-section bg-white p-6 sm:p-8">
+          <div class="calc-section bg-gray-50 p-6 sm:p-8">
             <div class="mb-4 flex justify-end">
               <button type="button" id="bsDetailToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline"><span class="dot"></span>内訳を表示</button>
             </div>
@@ -168,7 +168,7 @@
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- 資産 -->
             <div id="assetsCard" class="rounded-lg border border-gray-200 overflow-hidden">
-              <div class="text-white text-sm font-bold text-center py-2" style="background-color:var(--color-green-gray)">資産</div>
+              <div class="text-white text-sm font-bold text-center py-2" style="background-color:#0f2a4a">資産</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="curAssets" class="text-xs text-gray-600">流動資産</label>
@@ -191,7 +191,7 @@
 
             <!-- 負債・純資産 -->
             <div id="liabCard" class="rounded-lg border border-gray-200 overflow-hidden">
-              <div class="text-white text-sm font-bold text-center py-2" style="background-color:var(--color-navy)">負債・純資産</div>
+              <div class="text-white text-sm font-bold text-center py-2" style="background:linear-gradient(135deg, #a5703a 50%, #3d6b8a 50%)">負債・純資産</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="curLiab" class="text-xs text-gray-600">流動負債</label>
@@ -237,7 +237,7 @@
 
             <!-- 将来負債 -->
             <div class="rounded-lg border border-gray-200 overflow-hidden">
-              <div class="text-white text-sm font-bold text-center py-2" style="background-color:var(--color-orange)">将来負債</div>
+              <div class="text-white text-sm font-bold text-center py-2" style="background-color:#bf6b6b">将来負債</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="retirement" class="text-xs text-gray-600">退職金</label>
@@ -352,7 +352,7 @@
 </div>
 
 <script src="js/menu.js?v=20260723g"></script>
-<script src="js/number-format.js?v=20260721c"></script>
-<script src="js/future-liability.js?v=20260723q"></script>
+<script src="js/number-format.js?v=20260721d"></script>
+<script src="js/future-liability.js?v=20260723t"></script>
 </body>
 </html>
