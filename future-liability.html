@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607249" />
+<link rel="stylesheet" href="css/style.css?v=202607250" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -114,19 +114,27 @@
         <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">将来負債×生命保険<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
         <p class="hero-info-text hidden">現在のバランスシート上の純資産は、退職金や事業承継対策資金といった「将来必ず発生する負債」を考慮していない場合があります。今後発生が見込まれる負債を入力し、生命保険でどこまで備えられるかを踏まえた実質的な余力を確認します。</p>
       </div>
-      <div class="flex flex-wrap items-center gap-2" data-backup-keys="bpl_future_liability_v1">
+      <div class="hero-actions" data-backup-keys="bpl_future_liability_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
-        <a href="index.html" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">TOP MENU</a>
-        <a href="basic-info.html" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">基本情報入力</a>
-        <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読込む</button>
-        <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
-        <button type="button" class="js-pdf-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
-          PDFに出力する
+        <a href="index.html" class="hero-util-btn" title="トップページ">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
+          <span class="hero-util-label">トップ</span>
+        </a>
+        <button type="button" class="js-backup-load hero-util-btn" title="ファイルから読み込む">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15V4m0 0L8 8m4-4l4 4M5 16v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
+          <span class="hero-util-label">インポート</span>
         </button>
-        <button type="button" id="flClearBtn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap ml-2 sm:ml-3">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12M9 7V4h6v3m-8 0l1 13a2 2 0 002 2h4a2 2 0 002-2l1-13"/></svg>
-          全データクリア
+        <button type="button" class="js-backup-save hero-util-btn" title="ファイルに保存">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 4h11l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 4v5h7V4M8 20v-6h8v6"/></svg>
+          <span class="hero-util-label">保存</span>
+        </button>
+        <button type="button" class="js-pdf-btn hero-util-btn" title="PDFに出力する">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          <span class="hero-util-label">PDF</span>
+        </button>
+        <button type="button" id="flClearBtn" class="hero-util-btn hero-util-danger" title="全データクリア">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12M9 7V4h6v3m-8 0l1 13a2 2 0 002 2h4a2 2 0 002-2l1-13"/></svg>
+          <span class="hero-util-label">全データクリア</span>
         </button>
         <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
