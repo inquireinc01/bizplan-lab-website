@@ -6,6 +6,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const errorArea = document.getElementById('flErrorArea');
   let lastResult = null;
 
+  // ===== ?ツールチップ(タップで開閉、他をタップすると閉じる) =====
+  document.querySelectorAll('.help-tip').forEach(function (tip) {
+    tip.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      const wasOpen = tip.classList.contains('open');
+      document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
+      if (!wasOpen) tip.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
+  });
+
   const num = (id) => {
     const el = document.getElementById(id);
     const v = parseFloat((el.value || '').replace(/,/g, ''));
