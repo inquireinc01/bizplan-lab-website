@@ -626,8 +626,12 @@ input[type="number"] {
 #bsChart rect {
   transition: y 0.6s cubic-bezier(0.22, 1, 0.36, 1), height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
+#bsChart text {
+  transition: y 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
 @media (prefers-reduced-motion: reduce) {
-  #bsChart rect { transition: none; }
+  #bsChart rect,
+  #bsChart text { transition: none; }
 }
 
 /* 数値に付く単位(万円・％・年 など)は数字より一回り小さく・控えめに。全ページ共通ルール */
