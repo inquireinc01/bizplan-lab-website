@@ -624,10 +624,10 @@ input[type="number"] {
 /* 将来負債ページのバランスシート比較グラフ: 数値変更のたびにrectのy/heightを
    直接書き換える実装のため、CSSトランジションで「なめらかに余韻を持って」変化させる */
 #bsChart rect {
-  transition: y 0.6s cubic-bezier(0.22, 1, 0.36, 1), height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: x 0.6s cubic-bezier(0.22, 1, 0.36, 1), y 0.6s cubic-bezier(0.22, 1, 0.36, 1), height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 #bsChart text {
-  transition: y 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: x 0.6s cubic-bezier(0.22, 1, 0.36, 1), y 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   #bsChart rect,

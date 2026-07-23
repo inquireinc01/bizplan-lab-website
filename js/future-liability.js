@@ -201,6 +201,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const xAsset3 = xLiab2 + barWidth + groupGap;
   const xLiab3 = xAsset3 + barWidth + pairGap;
   const arrowX = xLiab2 + barWidth + groupGap / 2;
+  // 「予測BSを表示」がOFFのとき用: 会計上のBS・実質的なBSの2組だけをキャンバス(W)の中央に寄せた位置。
+  // グラフ全体のサイズ(viewBox幅)は変えず、バーの位置だけをずらすことで、表示切替時にバーの大きさが変わらないようにする
+  const totalBarsWidth2 = barWidth * 4 + pairGap * 2 + groupGap;
+  const xAsset1Alone = (W - totalBarsWidth2) / 2;
+  const xLiab1Alone = xAsset1Alone + barWidth + pairGap;
+  const xAsset2Alone = xLiab1Alone + barWidth + groupGap;
+  const xLiab2Alone = xAsset2Alone + barWidth + pairGap;
   const DUMMY_VALUE = 25; // ダミー表示用の共通仮値(万円換算は意味を持たない)
 
   function segColor(label) {
@@ -332,9 +339,26 @@ document.addEventListener('DOMContentLoaded', function () {
     'title-3', 'title-3-box', 'predicted-arrow',
   ];
 
-  // 見出し・SVG全体の高さ/幅を、債務超過の有無・予測BS表示ON/OFFに応じて動的に調整する。
+  // barKeyの全rect/textのx位置を一括で付け替える(予測BS表示ON/OFF切替用)
+  function repositionGroup(barKey, segCount, hasOffBorder, x) {
+    for (let i = 0; i < segCount; i++) {
+      const rect = document.getElementById(`bs-${barKey}-${i}`);
+      if (rect) rect.setAttribute('x', x);
+      const text = document.getElementById(`bs-${barKey}-t${i}`);
+      if (text) text.setAttribute('x', x + barWidth / 2);
+    }
+    const total = document.getElementById(`bs-${barKey}-total`);
+    if (total) total.setAttribute('x', x + barWidth / 2);
+    if (hasOffBorder) {
+      const border = document.getElementById(`bs-${barKey}-offborder`);
+      if (border) border.setAttribute('x', x);
+    }
+  }
+
+  // 見出し・SVG全体の高さを、債務超過の有無に応じて動的に調整する。
   // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
-  // 予測BSがOFFのときは3組目を非表示にし、viewBoxの幅も実質的なBSまでに縮めて余白を詰める。
+  // 予測BSがOFFのときは3組目を非表示にし、グラフの大きさ(viewBox)は変えずに
+  // 会計上のBS・実質的なBSの2組だけをキャンバス中央へ寄せる(バーの大きさが変わらないようにするため)。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
     const titleY = yBottom + negZone + 24;
@@ -346,9 +370,23 @@ document.addEventListener('DOMContentLoaded', function () {
       const el = document.getElementById(id);
       if (el) el.style.display = showPredicted ? '' : 'none';
     });
-    const svgW = showPredicted ? W : (xLiab2 + barWidth + xAsset1);
+
+    const xA1 = showPredicted ? xAsset1 : xAsset1Alone;
+    const xL1 = showPredicted ? xLiab1 : xLiab1Alone;
+    const xA2 = showPredicted ? xAsset2 : xAsset2Alone;
+    const xL2 = showPredicted ? xLiab2 : xLiab2Alone;
+    repositionGroup('a1', 3, false, xA1);
+    repositionGroup('l1', 3, false, xL1);
+    repositionGroup('a2', 5, true, xA2);
+    repositionGroup('l2', 6, true, xL2);
+    const setX = (id, x) => { const el = document.getElementById(id); if (el) el.setAttribute('x', x); };
+    setX('title-1-box', xA1);
+    setX('title-1', (xA1 + xL1 + barWidth) / 2);
+    setX('title-2-box', xA2);
+    setX('title-2', (xA2 + xL2 + barWidth) / 2);
+
     const svg = document.getElementById('bsChart');
-    if (svg) svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH.toFixed(1)}`);
+    if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
   }
 
   // showValues=false のときはダミー(仮)表示: 数字ラベルは出さない(labelOnly=trueなら要素名だけ表示)。
