@@ -31,6 +31,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ===== グラフの「予測BSを表示」トグル(初期値は表示ON) =====
+  let showPredicted = true;
+  const showPredictedToggle = document.getElementById('showPredictedToggle');
+  if (showPredictedToggle) {
+    showPredictedToggle.addEventListener('click', function () {
+      showPredicted = !showPredicted;
+      showPredictedToggle.classList.toggle('is-on', showPredicted);
+      showPredictedToggle.setAttribute('aria-pressed', String(showPredicted));
+      recompute();
+    });
+  }
+
+  // ===== 予測BSの「生命保険金あり/なし」トグル(初期値はなし=簿外負債全額がBSに影響する従来の見え方) =====
+  let withInsurance = false;
+  const insuranceToggle = document.getElementById('insuranceToggle');
+  if (insuranceToggle) {
+    insuranceToggle.addEventListener('click', function () {
+      withInsurance = !withInsurance;
+      insuranceToggle.classList.toggle('is-on', withInsurance);
+      insuranceToggle.setAttribute('aria-pressed', String(withInsurance));
+      insuranceToggle.querySelector('.toggle-label').textContent = withInsurance ? '生命保険金あり' : '生命保険金なし';
+      recompute();
+    });
+  }
+
   const num = (id) => {
     const el = document.getElementById(id);
     const v = parseFloat((el.value || '').replace(/,/g, ''));
@@ -288,20 +313,28 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
     svgOut += `<rect id="title-2-box" x="${xAsset2}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5"/>`;
     svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
-    svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#0f2a4a"/>`;
-    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">予測BS</text>`;
+    svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
+    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測BS</text>`;
 
     // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)。
     // 細い矢印記号ではなく塗りつぶした三角形にして、2つのエリアの区切りを分かりやすくする
     const arrowCenterY = (yTop + yBottom) / 2;
-    svgOut += `<polygon points="${arrowX - 9},${arrowCenterY - 13} ${arrowX - 9},${arrowCenterY + 13} ${arrowX + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
+    svgOut += `<polygon id="predicted-arrow" points="${arrowX - 9},${arrowCenterY - 13} ${arrowX - 9},${arrowCenterY + 13} ${arrowX + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
   }
 
-  // 見出し・SVG全体の高さを、債務超過(マイナス値)の有無に応じて動的に調整する。
+  // 「予測BSを表示」がOFFのときに非表示にする要素(3組目のバー・見出し・矢印)
+  const GROUP3_IDS = [
+    'bs-a3-0', 'bs-a3-1', 'bs-a3-2', 'bs-a3-t0', 'bs-a3-t1', 'bs-a3-t2', 'bs-a3-total',
+    'bs-l3-0', 'bs-l3-1', 'bs-l3-2', 'bs-l3-t0', 'bs-l3-t1', 'bs-l3-t2', 'bs-l3-total',
+    'title-3', 'title-3-box', 'predicted-arrow',
+  ];
+
+  // 見出し・SVG全体の高さ/幅を、債務超過の有無・予測BS表示ON/OFFに応じて動的に調整する。
   // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
+  // 予測BSがOFFのときは3組目を非表示にし、viewBoxの幅も実質的なBSまでに縮めて余白を詰める。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
     const titleY = yBottom + negZone + 24;
@@ -309,8 +342,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
     ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
     ['title-1-box', 'title-2-box', 'title-3-box'].forEach((id) => setY(id, titleY - 17));
+    GROUP3_IDS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = showPredicted ? '' : 'none';
+    });
+    const svgW = showPredicted ? W : (xLiab2 + barWidth + xAsset1);
     const svg = document.getElementById('bsChart');
-    if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
+    if (svg) svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH.toFixed(1)}`);
   }
 
   // showValues=false のときはダミー(仮)表示: 数字ラベルは出さない(labelOnly=trueなら要素名だけ表示)。
@@ -428,11 +466,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const maxTotal = Math.max(totalAdjusted, 1);
     const pxPerYen = plotH / maxTotal;
 
-    // 簿外負債が発動(実現)した場合の予測BS:
+    // 簿外資産(準備状況)は表示モードに関わらず常に集計する。
+    // 内訳表示のときは、簿外資産を「充当分(生命保険金+その他)」「不足分」に、
+    // 簿外負債を「退職金」「事業承継」「その他」に分けて表示する(色は簿外資産/簿外負債のまま。不足分だけ白背景にする)
+    const lifeInsRaw = num('lifeInsurance').value;
+    const otherCovRaw = num('otherCoverage').value;
+    const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
+    const coveredPortion = Math.min(coveredRaw, futureLiabTotal);
+    const shortfallPortion = Math.max(0, futureLiabTotal - coveredRaw);
+
+    // 予測BS(簿外負債が発動した場合)は「生命保険金あり/なし」トグルで、実際にBSへ影響する金額を切り替える。
+    // あり: 生命保険金等でカバーされる分は相殺されるため、不足分だけがBSに影響する。なし: 全額がそのまま影響する。
+    const impactAmount = withInsurance ? shortfallPortion : futureLiabTotal;
+
     // 純資産と流動資産から取り崩す。流動資産で足りなければその他資産、それでも足りなければ固定資産も取り崩す。
     // (純資産・固定資産は取り崩しきれない場合マイナス=債務超過になり得るが、上のupdateChartが基準線の上下で
     //  別々に積むためマイナス値でも表示は崩れない)
-    let remaining = futureLiabTotal;
+    let remaining = impactAmount;
     const take1 = Math.min(remaining, Math.max(fields.curAssets.value, 0));
     const curAssetsTriggered = fields.curAssets.value - take1;
     remaining -= take1;
@@ -440,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const otherAssetsTriggered = fields.otherAssets.value - take2;
     remaining -= take2;
     const fixedAssetsTriggered = fields.fixedAssets.value - remaining;
-    const netAssetsTriggered = netAssets - futureLiabTotal;
+    const netAssetsTriggered = netAssets - impactAmount;
 
     const assetsTriggeredDetail = [
       { label: 'その他資産', value: otherAssetsTriggered },
@@ -458,14 +508,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const liabNetBase = detailMode ? liabNetBaseDetail : toGroupedLiab(liabNetBaseDetail);
     const assetsTriggered = detailMode ? assetsTriggeredDetail : toGroupedAsset(assetsTriggeredDetail);
     const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGroupedLiab(liabNetTriggeredDetail);
-
-    // 内訳表示のときは、簿外資産を「充当分(生命保険金+その他)」「不足分」に、
-    // 簿外負債を「退職金」「事業承継」「その他」に分けて表示する(色は簿外資産/簿外負債のまま。不足分だけ白背景にする)
-    const lifeInsRaw = num('lifeInsurance').value;
-    const otherCovRaw = num('otherCoverage').value;
-    const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
-    const coveredPortion = Math.min(coveredRaw, futureLiabTotal);
-    const shortfallPortion = Math.max(0, futureLiabTotal - coveredRaw);
 
     const offBalanceAssetSegs = detailMode
       ? [
