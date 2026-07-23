@@ -226,6 +226,13 @@ button:active,
   box-shadow: 0 5px 12px rgba(15, 42, 74, 0.22);
 }
 
+/* セクション単位の「データクリア」リンク: 1回目クリックで警告色に切り替わり、
+   本当に消して良いか一目でわかるようにする(window.confirm()に頼らないため) */
+.section-clear-btn.is-confirming {
+  color: var(--color-red) !important;
+  font-weight: 700;
+}
+
 /* ========== 数値の表示ルール ========== */
 /* 入力欄(金額・数値)は右寄せ */
 .num-input {

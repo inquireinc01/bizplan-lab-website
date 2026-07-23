@@ -92,21 +92,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== セクション単位の「データクリア」: 見出し右の小さいリンクボタン。
   //       押した見出しが属するセクション(.calc-section等)内のinput/select/textareaだけを
-  //       空欄にし、input/changeイベントを発火して各ページ既存の保存・再計算処理に任せる =====
+  //       空欄にし、input/changeイベントを発火して各ページ既存の保存・再計算処理に任せる。
+  //       window.confirm()はLINE等アプリ内ブラウザで表示されない/反応しないことがあるため使わず、
+  //       1回目クリックで「本当にクリア？」表示に切り替わり、3秒以内の2回目クリックで実行する
+  //       ボタン自身によるトグル確認方式にする =====
   document.querySelectorAll('.section-clear-btn').forEach(function (btn) {
+    const originalText = btn.textContent;
+    let revertTimer = null;
     btn.addEventListener('click', function () {
-      const scope = btn.closest('[data-clear-scope]') || btn.closest('.calc-section') || btn.closest('form');
-      if (!scope) return;
-      if (!window.confirm('このセクションの入力内容をクリアします。よろしいですか？')) return;
-      scope.querySelectorAll('input, select, textarea').forEach(function (el) {
-        if (el.type === 'checkbox' || el.type === 'radio') {
-          el.checked = false;
-        } else {
-          el.value = '';
-        }
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-      });
+      if (btn.classList.contains('is-confirming')) {
+        clearTimeout(revertTimer);
+        btn.classList.remove('is-confirming');
+        btn.textContent = originalText;
+        const scope = btn.closest('[data-clear-scope]') || btn.closest('.calc-section') || btn.closest('form');
+        if (!scope) return;
+        scope.querySelectorAll('input, select, textarea').forEach(function (el) {
+          if (el.type === 'checkbox' || el.type === 'radio') {
+            el.checked = false;
+          } else {
+            el.value = '';
+          }
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        return;
+      }
+      btn.classList.add('is-confirming');
+      btn.textContent = '本当にクリア？';
+      revertTimer = setTimeout(function () {
+        btn.classList.remove('is-confirming');
+        btn.textContent = originalText;
+      }, 4000);
     });
   });
 
