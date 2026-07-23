@@ -19,6 +19,18 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
 
+  // ===== グラフの「内訳を表示」トグル(初期値はひとまとめ表示) =====
+  let detailMode = false;
+  const bsDetailToggle = document.getElementById('bsDetailToggle');
+  if (bsDetailToggle) {
+    bsDetailToggle.addEventListener('click', function () {
+      detailMode = !detailMode;
+      bsDetailToggle.classList.toggle('is-on', detailMode);
+      bsDetailToggle.setAttribute('aria-pressed', String(detailMode));
+      recompute();
+    });
+  }
+
   const num = (id) => {
     const el = document.getElementById(id);
     const v = parseFloat((el.value || '').replace(/,/g, ''));
@@ -144,6 +156,17 @@ document.addEventListener('DOMContentLoaded', function () {
       : { fill: '#a83d3d', opacity: 0.3, text: '#832f2f' };
   }
 
+  // 「ひとまとめ」表示用: 3要素配列を合算し、中央(index1)のセグメントだけに全額を持たせる。
+  // index1は元々「固定資産」「固定負債」の枠(白文字が焼き込み済み)なので、色・文字色を変えずに流用できる。
+  function toGrouped(segs, groupLabel) {
+    const total = segs.reduce((s, x) => s + x.value, 0);
+    return [
+      { label: '', value: 0 },
+      { label: groupLabel, value: total },
+      { label: '', value: 0 },
+    ];
+  }
+
   // 負債・純資産側は下から「純資産(恒常的な資本)→固定負債→流動負債(直近の返済義務)」の順に積む
   // 資産側は上から「流動資産→固定資産→その他資産」に見せたいため、下から積む配列では逆順にする
   const ASSET_SEGS_BASE = [{ label: 'その他資産' }, { label: '固定資産' }, { label: '流動資産' }];
@@ -254,12 +277,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function drawBalanceSheetChart(fields, netAssets, futureLiabTotal) {
-    const assetsBase = [
+    const assetsBaseDetail = [
       { label: 'その他資産', value: fields.otherAssets.value },
       { label: '固定資産', value: fields.fixedAssets.value },
       { label: '流動資産', value: fields.curAssets.value },
     ];
-    const liabNetBase = [
+    const liabNetBaseDetail = [
       { label: '純資産', value: netAssets },
       { label: '固定負債', value: fields.fixedLiab.value },
       { label: '流動負債', value: fields.curLiab.value },
@@ -268,9 +291,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalAdjusted = totalBase + futureLiabTotal;
     const maxTotal = Math.max(totalAdjusted, 1);
     const pxPerYen = plotH / maxTotal;
-
-    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true }]);
-    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true }]);
 
     // 簿外負債が発動(実現)した場合の予測BS:
     // 純資産と流動資産から取り崩す。流動資産で足りなければその他資産、それでも足りなければ固定資産も取り崩す。
@@ -286,16 +306,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const fixedAssetsTriggered = fields.fixedAssets.value - remaining;
     const netAssetsTriggered = netAssets - futureLiabTotal;
 
-    const assetsTriggered = [
+    const assetsTriggeredDetail = [
       { label: 'その他資産', value: otherAssetsTriggered },
       { label: '固定資産', value: fixedAssetsTriggered },
       { label: '流動資産', value: curAssetsTriggered },
     ];
-    const liabNetTriggered = [
+    const liabNetTriggeredDetail = [
       { label: '純資産', value: netAssetsTriggered },
       { label: '固定負債', value: fields.fixedLiab.value },
       { label: '流動負債', value: fields.curLiab.value },
     ];
+
+    // 「内訳を表示」がOFF(デフォルト)のときは資産・負債それぞれをひとまとめの1本にする
+    const assetsBase = detailMode ? assetsBaseDetail : toGrouped(assetsBaseDetail, '資産');
+    const liabNetBase = detailMode ? liabNetBaseDetail : toGrouped(liabNetBaseDetail, '負債・純資産');
+    const assetsTriggered = detailMode ? assetsTriggeredDetail : toGrouped(assetsTriggeredDetail, '資産');
+    const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGrouped(liabNetTriggeredDetail, '負債・純資産');
+
+    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true }]);
+    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true }]);
 
     updateChart({
       a1: assetsBase, l1: liabNetBase,
@@ -306,16 +335,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 未入力時: 流動資産/固定資産/その他資産/流動負債/固定負債/純資産/簿外資産/簿外負債を
   // すべて同じ高さのダミーBSとして表示する(数字ラベルなし)。予測BS(3組目)も同じ仮値で表示する。
+  // 「内訳を表示」がOFFのときは、ひとまとめ表示と同じ見た目(1本の色ブロック)のダミーにする。
   function drawDummyChart() {
     const dummySeg = (label, offBalance) => ({ label, value: DUMMY_VALUE, offBalance: !!offBalance });
-    const dataByBar = {
+    const dataByBar = detailMode ? {
       a1: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
       a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'), dummySeg('簿外資産', true)],
       l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'), dummySeg('簿外負債', true)],
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
-    };
+    } : (() => {
+      const blank = { label: '', value: 0 };
+      const groupDummy = (label) => ({ label, value: DUMMY_VALUE * 3 });
+      return {
+        a1: [blank, groupDummy(''), blank],
+        l1: [blank, groupDummy(''), blank],
+        a2: [blank, groupDummy(''), blank, dummySeg('簿外資産', true)],
+        l2: [blank, groupDummy(''), blank, dummySeg('簿外負債', true)],
+        a3: [blank, groupDummy(''), blank],
+        l3: [blank, groupDummy(''), blank],
+      };
+    })();
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
     updateChart(dataByBar, pxPerYen, false);
   }
