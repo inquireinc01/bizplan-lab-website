@@ -513,8 +513,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } : (() => {
       const blank = { label: '', value: 0 };
       const assetDummy = { label: '資産', value: DUMMY_VALUE * 3, fill: GROUP_ASSET_FILL, fillOpacity: GROUP_FILL_OPACITY };
-      const netAssetsDummy = { label: '純資産', value: DUMMY_VALUE * 1.5, fill: GROUP_NETASSETS_FILL, fillOpacity: GROUP_FILL_OPACITY };
-      const liabDummy = { label: '負債', value: DUMMY_VALUE * 1.5, fill: GROUP_LIAB_FILL, fillOpacity: GROUP_FILL_OPACITY };
+      // 内訳表示のダミー(純資産1:負債2 ※固定負債+流動負債の2要素分)と比率を揃え、表示切替時に純資産の大きさが変わらないようにする
+      const netAssetsDummy = { label: '純資産', value: DUMMY_VALUE, fill: GROUP_NETASSETS_FILL, fillOpacity: GROUP_FILL_OPACITY };
+      const liabDummy = { label: '負債', value: DUMMY_VALUE * 2, fill: GROUP_LIAB_FILL, fillOpacity: GROUP_FILL_OPACITY };
       return {
         a1: [blank, assetDummy, blank],
         l1: [netAssetsDummy, liabDummy, blank],
