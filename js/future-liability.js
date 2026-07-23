@@ -100,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const barWidth = 92;
   const groupGap = 70;
   const pairGap = 22;
-  const xAsset1 = 45;
+  // 4本のバー(barWidth×4 + pairGap×2 + groupGap)がW(700)の中央に来るよう左端を計算する
+  const totalBarsWidth = barWidth * 4 + pairGap * 2 + groupGap;
+  const xAsset1 = (W - totalBarsWidth) / 2;
   const xLiab1 = xAsset1 + barWidth + pairGap;
   const xAsset2 = xLiab1 + barWidth + groupGap;
   const xLiab2 = xAsset2 + barWidth + pairGap;
@@ -108,17 +110,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function segColor(label) {
     const map = {
-      '流動資産': '#1c3f68', '固定資産': '#0f2a4a', 'その他資産': '#091a30',
-      '流動負債': '#c7ccd3', '固定負債': '#8d97a3', '純資産': '#3b6ea5',
+      '流動資産': '#7ba7cc', '固定資産': '#3b6ea5', 'その他資産': '#5c7a94',
+      '流動負債': '#d3a878', '固定負債': '#a5703a', '純資産': '#9aa1ab',
     };
     return map[label] || '#5c636e';
+  }
+  // 簿外セグメント: 資産側(準備必要額)は淡いグリーン、負債側(将来負債)は既存の赤系のまま
+  function offBalanceStyle(assetSide) {
+    return assetSide
+      ? { fill: '#5c8272', opacity: 0.25, text: '#3f5a4d' }
+      : { fill: '#a83d3d', opacity: 0.3, text: '#832f2f' };
   }
 
   const BAR_DEFS = {
     a1: { x: xAsset1, segs: [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }] },
     l1: { x: xLiab1, segs: [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }] },
-    a2: { x: xAsset2, segs: [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }, { offBalance: true }] },
-    l2: { x: xLiab2, segs: [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }, { offBalance: true }] },
+    a2: { x: xAsset2, segs: [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }, { offBalance: true, assetSide: true }] },
+    l2: { x: xLiab2, segs: [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }, { offBalance: true, assetSide: false }] },
   };
 
   let chartInitialized = false;
@@ -130,12 +138,12 @@ document.addEventListener('DOMContentLoaded', function () {
     Object.entries(BAR_DEFS).forEach(([barKey, def]) => {
       def.segs.forEach((seg, i) => {
         const attrs = seg.offBalance
-          ? `fill="#a83d3d" fill-opacity="0.3" stroke="#a83d3d" stroke-width="1.5" stroke-dasharray="4,3"`
+          ? (() => { const s = offBalanceStyle(seg.assetSide); return `fill="${s.fill}" fill-opacity="${s.opacity}" stroke="${s.fill}" stroke-width="1.5" stroke-dasharray="4,3"`; })()
           : `fill="${segColor(seg.label)}"`;
         svgOut += `<rect id="bs-${barKey}-${i}" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
       def.segs.forEach((seg, i) => {
-        const textColor = seg.offBalance ? '#832f2f' : (seg.label === '流動負債' ? '#2b2f36' : '#fff');
+        const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (seg.label === '流動負債' || seg.label === '純資産' ? '#2b2f36' : '#fff');
         svgOut += `<text id="bs-${barKey}-t${i}" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
       });
       svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle"></text>`;
@@ -146,8 +154,8 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<text x="${xLiab1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
     svgOut += `<text x="${xAsset2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
     svgOut += `<text x="${xLiab2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">① 会計上のバランスシート</text>`;
-    svgOut += `<text x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">② 将来負債(簿外)を計上した実質バランスシート</text>`;
+    svgOut += `<text x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
+    svgOut += `<text x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
