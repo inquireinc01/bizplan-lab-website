@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ? { fill: '#5c8272', opacity: 0.25, text: '#3f5a4d' }
       : { fill: '#a83d3d', opacity: 0.3, text: '#832f2f' };
   }
-  const LIGHT_SEGS = ['流動資産', '流動負債']; // 明るい背景色のため濃色文字にするセグメント(詳細表示用)
+  const LIGHT_SEGS = []; // 通常セグメントは白抜き文字で統一する(簿外セグメントは専用の濃色文字のまま)
 
   // 「ひとまとめ」表示用: 資産側は3要素を合算し、中央(index1)のセグメントだけに全額を持たせる
   function toGroupedAsset(segs) {
