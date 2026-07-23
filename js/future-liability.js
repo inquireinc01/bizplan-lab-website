@@ -19,19 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
 
-  // ===== グラフの「内訳を表示」トグル(初期値はひとまとめ表示) =====
-  let detailMode = false;
-  const bsDetailToggle = document.getElementById('bsDetailToggle');
-  if (bsDetailToggle) {
-    bsDetailToggle.addEventListener('click', function () {
-      detailMode = !detailMode;
-      bsDetailToggle.classList.toggle('is-on', detailMode);
-      bsDetailToggle.setAttribute('aria-pressed', String(detailMode));
-      recompute();
-    });
-  }
-
-  // ===== グラフの「予測BSを表示」トグル(初期値は表示OFF) =====
+  // ===== グラフの「予測BSあり/なし」トグル(初期値はなし=非表示) =====
   let showPredicted = false;
   const showPredictedToggle = document.getElementById('showPredictedToggle');
   if (showPredictedToggle) {
@@ -39,23 +27,25 @@ document.addEventListener('DOMContentLoaded', function () {
       showPredicted = !showPredicted;
       showPredictedToggle.classList.toggle('is-on', showPredicted);
       showPredictedToggle.setAttribute('aria-pressed', String(showPredicted));
+      showPredictedToggle.querySelector('.toggle-label').textContent = showPredicted ? '予測BSあり' : '予測BSなし';
       recompute();
     });
   }
 
-  // ===== 各BSの「自己資本比率を表示」トグル(初期値は表示OFF) =====
-  let showEquityRatio = false;
-  const equityRatioToggle = document.getElementById('equityRatioToggle');
-  if (equityRatioToggle) {
-    equityRatioToggle.addEventListener('click', function () {
-      showEquityRatio = !showEquityRatio;
-      equityRatioToggle.classList.toggle('is-on', showEquityRatio);
-      equityRatioToggle.setAttribute('aria-pressed', String(showEquityRatio));
+  // ===== グラフの「BS内訳表示/非表示」トグル(初期値は非表示=ひとまとめ表示) =====
+  let detailMode = false;
+  const bsDetailToggle = document.getElementById('bsDetailToggle');
+  if (bsDetailToggle) {
+    bsDetailToggle.addEventListener('click', function () {
+      detailMode = !detailMode;
+      bsDetailToggle.classList.toggle('is-on', detailMode);
+      bsDetailToggle.setAttribute('aria-pressed', String(detailMode));
+      bsDetailToggle.querySelector('.toggle-label').textContent = detailMode ? 'BS内訳表示' : 'BS内訳非表示';
       recompute();
     });
   }
 
-  // ===== 予測BSの「生命保険金あり/なし」トグル(初期値はなし=簿外負債全額がBSに影響する従来の見え方) =====
+  // ===== 予測BSの「生命保険あり/なし」トグル(初期値はなし=簿外負債全額がBSに影響する従来の見え方) =====
   let withInsurance = false;
   const insuranceToggle = document.getElementById('insuranceToggle');
   if (insuranceToggle) {
@@ -63,7 +53,20 @@ document.addEventListener('DOMContentLoaded', function () {
       withInsurance = !withInsurance;
       insuranceToggle.classList.toggle('is-on', withInsurance);
       insuranceToggle.setAttribute('aria-pressed', String(withInsurance));
-      insuranceToggle.querySelector('.toggle-label').textContent = withInsurance ? '生命保険金あり' : '生命保険金なし';
+      insuranceToggle.querySelector('.toggle-label').textContent = withInsurance ? '生命保険あり' : '生命保険なし';
+      recompute();
+    });
+  }
+
+  // ===== 各BSの「自己資本表示/非表示」トグル(初期値は非表示) =====
+  let showEquityRatio = false;
+  const equityRatioToggle = document.getElementById('equityRatioToggle');
+  if (equityRatioToggle) {
+    equityRatioToggle.addEventListener('click', function () {
+      showEquityRatio = !showEquityRatio;
+      equityRatioToggle.classList.toggle('is-on', showEquityRatio);
+      equityRatioToggle.setAttribute('aria-pressed', String(showEquityRatio));
+      equityRatioToggle.querySelector('.toggle-label').textContent = showEquityRatio ? '自己資本表示' : '自己資本非表示';
       recompute();
     });
   }
@@ -342,9 +345,12 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
     svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測BS</text>`;
 
-    // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)。
+    // 会計上のBS → 実質的なBS、実質的なBS → 予測BS を結ぶ矢印。
     // 細い矢印記号ではなく塗りつぶした三角形にして、2つのエリアの区切りを分かりやすくする
+    // (会計上→実質的の矢印は「予測BSを表示」OFF時に会計上・実質的の2組が中央寄せされるため、x位置をupdateLayoutで毎回更新する)
     const arrowCenterY = (yTop + yBottom) / 2;
+    const arrowX12Init = xLiab1 + barWidth + groupGap / 2;
+    svgOut += `<polygon id="arrow-12" points="${arrowX12Init - 9},${arrowCenterY - 13} ${arrowX12Init - 9},${arrowCenterY + 13} ${arrowX12Init + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
     svgOut += `<polygon id="predicted-arrow" points="${arrowX - 9},${arrowCenterY - 13} ${arrowX - 9},${arrowCenterY + 13} ${arrowX + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
 
     svg.innerHTML = svgOut;
@@ -400,10 +406,11 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
     const zoneBottom = yBottom + negZone;
-    // 将来予測BSの上に自己資本比率ボックスを1段追加した分、見出し行全体を下にずらして確保する
+    // 自己資本比率ボックスを表示する時だけ、その分の1段を見出し行の上に確保する。
+    // 非表示の時は元の余白(zoneBottom+7)まで詰めて空白を残さない。
     const equityBoxH = 22;
     const equityBoxTop = zoneBottom + 10;
-    const titleBoxTop = equityBoxTop + equityBoxH + 8;
+    const titleBoxTop = showEquityRatio ? equityBoxTop + equityBoxH + 8 : zoneBottom + 7;
     const titleBoxH = 24;
     const titleY = titleBoxTop + 17;
     const svgH = titleBoxTop + titleBoxH + 8;
@@ -442,6 +449,12 @@ document.addEventListener('DOMContentLoaded', function () {
     setX('title-2', (xA2 + xL2 + barWidth) / 2);
     setX('equity-box-2', xA2);
     setX('equity-text-2', (xA2 + xL2 + barWidth) / 2);
+    const arrow12 = document.getElementById('arrow-12');
+    if (arrow12) {
+      const ax = xL1 + barWidth + groupGap / 2;
+      const acy = (yTop + yBottom) / 2;
+      arrow12.setAttribute('points', `${ax - 9},${acy - 13} ${ax - 9},${acy + 13} ${ax + 11},${acy}`);
+    }
 
     const svg = document.getElementById('bsChart');
     if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
