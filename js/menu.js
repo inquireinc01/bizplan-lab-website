@@ -1,3 +1,29 @@
+// ===== ヒーローの「全データクリア」用トグル確認ヘルパー(全ページ共通)。
+//       window.confirm()はLINE等アプリ内ブラウザで表示されない/反応しないことがあるため使わず、
+//       1回目クリックでボタン自身が「本当にクリア？」の警告色表示に切り替わり、
+//       4秒以内の2回目クリックでdoActionを実行するトグル確認方式にする =====
+window.armHeroClearBtn = function (btn, doAction) {
+  if (!btn) return;
+  const label = btn.querySelector('.hero-util-label');
+  const originalText = label ? label.textContent : '';
+  let revertTimer = null;
+  btn.addEventListener('click', function () {
+    if (btn.classList.contains('is-confirming')) {
+      clearTimeout(revertTimer);
+      btn.classList.remove('is-confirming');
+      if (label) label.textContent = originalText;
+      doAction();
+      return;
+    }
+    btn.classList.add('is-confirming');
+    if (label) label.textContent = '本当に？';
+    revertTimer = setTimeout(function () {
+      btn.classList.remove('is-confirming');
+      if (label) label.textContent = originalText;
+    }, 4000);
+  });
+};
+
 document.addEventListener('DOMContentLoaded', function () {
   const header = document.getElementById('site-header');
   const menuButton = document.getElementById('menu-button');
@@ -77,18 +103,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // ===== 自社株×生命保険(入力): ヒーローの「入力データクリア」は簡易/詳細/TDTSRの
-  //       3版すべての保存データを一括削除する(各版内の個別クリアはそれぞれのJSが担当) =====
+  // ===== 自社株×生命保険(入力): ヒーローの「全データクリア」は簡易/詳細/TDTSRの
+  //       3版すべての保存データを一括削除する(各版内の個別クリアはそれぞれのJSが担当)。
+  //       2回押しで確定するトグル確認方式(window.confirm()は使わない) =====
   const svAllClearBtn = document.getElementById('svAllClearBtn');
-  if (svAllClearBtn) {
-    svAllClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容(簡易入力・詳細入力・公開情報から入力のすべて)をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-      ['bpl_stock_valuation_v1', 'bpl_stock_detail_v1', 'bpl_stock_tdb_v1', 'bpl_stock_version'].forEach(function (k) {
-        try { localStorage.removeItem(k); } catch (e) {}
-      });
-      location.reload();
+  window.armHeroClearBtn(svAllClearBtn, function () {
+    ['bpl_stock_valuation_v1', 'bpl_stock_detail_v1', 'bpl_stock_tdb_v1', 'bpl_stock_version'].forEach(function (k) {
+      try { localStorage.removeItem(k); } catch (e) {}
     });
-  }
+    location.reload();
+  });
 
   // ===== セクション単位の「データクリア」: 見出し右の小さいリンクボタン。
   //       押した見出しが属するセクション(.calc-section等)内のinput/select/textareaだけを
@@ -125,6 +149,30 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 4000);
     });
   });
+
+  // ===== ヒーローのアイコンボタン: スマホ幅ではラベルが隠れるため、初回訪問時だけ
+  //       簡単なヒントを一度だけ表示する(title属性はモバイルでは実質見えないため) =====
+  setTimeout(function () {
+    var HINT_KEY = 'bpl_hero_hint_seen_v1';
+    var actions = document.querySelector('.hero-actions');
+    if (!actions || !window.matchMedia('(max-width: 639px)').matches) return;
+    try {
+      if (localStorage.getItem(HINT_KEY)) return;
+    } catch (e) {
+      return;
+    }
+    var hint = document.createElement('div');
+    hint.className = 'hero-hint';
+    hint.innerHTML = '<span>アイコンの意味: トップ・読込み・保存・PDF・全データクリア</span>' +
+      '<button type="button" class="hero-hint-close" aria-label="閉じる">&times;</button>';
+    actions.insertAdjacentElement('afterend', hint);
+    function dismiss() {
+      hint.remove();
+      try { localStorage.setItem(HINT_KEY, '1'); } catch (e) {}
+    }
+    hint.querySelector('.hero-hint-close').addEventListener('click', dismiss);
+    setTimeout(dismiss, 6000);
+  }, 150);
 
   // ===== 入力欄フォーカス時に全選択(そのまま入力すれば上書きできるように) =====
   const SKIP_TYPES = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'range', 'color', 'date', 'month', 'week', 'time'];

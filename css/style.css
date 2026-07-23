@@ -401,6 +401,42 @@ input[type="number"] {
     margin-left: 0.9rem;
   }
 }
+/* 1回目クリックで警告色に切り替え、本当にクリアしてよいか一目でわかるようにする
+   (ラベルが隠れるモバイルでも視認できるよう背景・枠にも警告色を入れる) */
+.hero-util-btn.hero-util-danger.is-confirming {
+  background-color: rgba(232, 122, 122, 0.28);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 16px rgba(232, 122, 122, 0.55);
+}
+
+/* スマホ幅ではヒーローのボタンがアイコンのみになるため、初回訪問時だけ
+   簡単な凡例を一度きり表示する(js/menu.jsが生成、localStorageで再表示を抑制) */
+.hero-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.5rem;
+  color: #fff;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+.hero-hint-close {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
+}
+@media (min-width: 640px) {
+  .hero-hint {
+    display: none;
+  }
+}
 
 /* 版選択カード */
 .version-card {

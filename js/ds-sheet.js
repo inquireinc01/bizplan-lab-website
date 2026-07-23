@@ -43,17 +43,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  function clearAllFields() {
-    if (!window.confirm('入力内容をすべてクリアします。よろしいですか？')) return;
+  function doClearFields() {
     fields.forEach(function (el) { el.value = ''; });
     localStorage.removeItem(storageKey);
     const msg = document.getElementById('dsSavedMsg');
     if (msg) msg.classList.add('hidden');
   }
   const resetBtn = document.getElementById('dsResetBtn');
-  if (resetBtn) resetBtn.addEventListener('click', clearAllFields);
+  if (window.armHeroClearBtn) window.armHeroClearBtn(resetBtn, doClearFields);
   const fieldClearBtn = document.getElementById('dsFieldClearBtn');
-  if (fieldClearBtn) fieldClearBtn.addEventListener('click', clearAllFields);
+  if (fieldClearBtn) {
+    fieldClearBtn.addEventListener('click', function () {
+      if (!window.confirm('入力内容をすべてクリアします。よろしいですか？')) return;
+      doClearFields();
+    });
+  }
 
   // ===== PDF出力: 入力内容から印刷シートを組み立てる =====
   function fieldDisplayValue(el) {

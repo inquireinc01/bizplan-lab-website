@@ -173,11 +173,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== 入力データクリア(ヒーロー): 決算書情報の保存データを削除。誤操作防止のため必ず確認する =====
+  // ===== 入力データクリア(ヒーロー): 決算書情報の保存データを削除。
+  //       2回押しで確定するトグル確認方式(window.confirm()は使わない) =====
   const clearBtn = document.getElementById('eiClearBtn');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', function () {
-      if (!window.confirm('決算書情報の入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+  if (window.armHeroClearBtn) {
+    window.armHeroClearBtn(clearBtn, function () {
       try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
       location.reload();
     });

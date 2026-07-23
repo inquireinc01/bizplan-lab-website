@@ -199,17 +199,21 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====
-  function clearAllFields() {
-    if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+  function doClearFields() {
     form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     resultArea.classList.add('hidden');
     clearError();
   }
   const clearBtn = document.getElementById('txClearBtn');
-  if (clearBtn) clearBtn.addEventListener('click', clearAllFields);
+  if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
   const fieldClearBtn = document.getElementById('txFieldClearBtn');
-  if (fieldClearBtn) fieldClearBtn.addEventListener('click', clearAllFields);
+  if (fieldClearBtn) {
+    fieldClearBtn.addEventListener('click', function () {
+      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+      doClearFields();
+    });
+  }
 
   // ===== PDF出力 =====
   function doPrint() {
