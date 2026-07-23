@@ -150,23 +150,11 @@
           <p id="flBalanceNote" class="hidden warning-box text-xs rounded-lg p-3"></p>
 
           <div class="calc-section bg-white p-6 sm:p-8">
-            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
-              <div>
-                <h4 class="font-bold text-sm">貸借対照表の比較(同一縮尺)</h4>
-                <p class="text-xs text-gray-500">左:会計上のバランスシート / 右:将来負債(簿外)を計上した実質バランスシート</p>
-              </div>
-              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#7ba7cc"></span>流動資産</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#3b6ea5"></span>固定資産</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#5c7a94"></span>その他資産</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#d3a878"></span>流動負債</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#a5703a"></span>固定負債</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#9aa1ab"></span>純資産</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm border border-dashed" style="background:rgba(92,130,114,0.25); border-color:#5c8272"></span>簿外資産(準備必要額)</span>
-                <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm border border-dashed" style="background:rgba(168,61,61,0.3); border-color:#a83d3d"></span>将来負債(簿外)</span>
-              </div>
+            <div class="mb-4">
+              <h4 class="font-bold text-sm">貸借対照表の比較(同一縮尺)</h4>
+              <p class="text-xs text-gray-500">会計上のBS → 将来負債(簿外)を計上した実質的なBS → 簿外負債が発動した場合の予測BS(要素名はグラフ内に直接表示)</p>
             </div>
-            <svg id="bsChart" viewBox="0 0 700 420" class="w-full h-auto" role="img" aria-label="会計上と実質のバランスシート比較"></svg>
+            <svg id="bsChart" viewBox="0 0 700 440" class="w-full h-auto" role="img" aria-label="会計上・実質的・簿外負債発動時のバランスシート比較"></svg>
           </div>
         </div>
       </div>
@@ -346,6 +334,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/future-liability.js?v=20260723h"></script>
+<script src="js/future-liability.js?v=20260723k"></script>
 </body>
 </html>

@@ -93,19 +93,28 @@ document.addEventListener('DOMContentLoaded', function () {
   // (CSSの transition で余韻を持たせる。style.cssの#bsChart rect参照)。
   // 未入力(NaN)の項目があるときは、エラーにせず全要素同じ高さのダミーBSを表示し、
   // 実数値が揃うとアニメーションしながら正確な比率に切り替わる。
-  const W = 700, H = 420;
-  const yBottom = 340;
+  const W = 700, H = 440;
+  const yBottom = 300;
   const yTop = 30;
   const plotH = yBottom - yTop;
-  const barWidth = 92;
-  const groupGap = 70;
-  const pairGap = 22;
-  // 4本のバー(barWidth×4 + pairGap×2 + groupGap)がW(700)の中央に来るよう左端を計算する
-  const totalBarsWidth = barWidth * 4 + pairGap * 2 + groupGap;
+  // 純資産等がマイナス(債務超過)になった場合、基準線(yBottom)から下向きに積む専用の帯。
+  // 高さを固定で確保し、どれだけ大きなマイナス値でもこの帯の中にクランプして表示を崩さない。
+  const NEG_ZONE_H = 90;
+  const labelY = yBottom + NEG_ZONE_H + 18;
+  const titleY = labelY + 22;
+  const subtitleY = titleY + 14;
+  const barWidth = 78;
+  const groupGap = 46;
+  const pairGap = 16;
+  // 6本のバー(barWidth×6 + pairGap×3 + groupGap×2)がW(700)の中央に来るよう左端を計算する
+  const totalBarsWidth = barWidth * 6 + pairGap * 3 + groupGap * 2;
   const xAsset1 = (W - totalBarsWidth) / 2;
   const xLiab1 = xAsset1 + barWidth + pairGap;
   const xAsset2 = xLiab1 + barWidth + groupGap;
   const xLiab2 = xAsset2 + barWidth + pairGap;
+  const xAsset3 = xLiab2 + barWidth + groupGap;
+  const xLiab3 = xAsset3 + barWidth + pairGap;
+  const arrowX = xLiab2 + barWidth + groupGap / 2;
   const DUMMY_VALUE = 25; // ダミー表示用の共通仮値(万円換算は意味を持たない)
 
   function segColor(label) {
@@ -122,11 +131,17 @@ document.addEventListener('DOMContentLoaded', function () {
       : { fill: '#a83d3d', opacity: 0.3, text: '#832f2f' };
   }
 
+  // 負債・純資産側は下から「純資産(恒常的な資本)→固定負債→流動負債(直近の返済義務)」の順に積む
+  // 資産側は上から「流動資産→固定資産→その他資産」に見せたいため、下から積む配列では逆順にする
+  const ASSET_SEGS_BASE = [{ label: 'その他資産' }, { label: '固定資産' }, { label: '流動資産' }];
+  const LIAB_SEGS_BASE = [{ label: '純資産' }, { label: '固定負債' }, { label: '流動負債' }];
   const BAR_DEFS = {
-    a1: { x: xAsset1, segs: [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }] },
-    l1: { x: xLiab1, segs: [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }] },
-    a2: { x: xAsset2, segs: [{ label: '流動資産' }, { label: '固定資産' }, { label: 'その他資産' }, { offBalance: true, assetSide: true }] },
-    l2: { x: xLiab2, segs: [{ label: '流動負債' }, { label: '固定負債' }, { label: '純資産' }, { offBalance: true, assetSide: false }] },
+    a1: { x: xAsset1, segs: ASSET_SEGS_BASE },
+    l1: { x: xLiab1, segs: LIAB_SEGS_BASE },
+    a2: { x: xAsset2, segs: ASSET_SEGS_BASE.concat([{ label: '簿外資産', offBalance: true, assetSide: true }]) },
+    l2: { x: xLiab2, segs: LIAB_SEGS_BASE.concat([{ label: '将来負債', offBalance: true, assetSide: false }]) },
+    a3: { x: xAsset3, segs: ASSET_SEGS_BASE },
+    l3: { x: xLiab3, segs: LIAB_SEGS_BASE },
   };
 
   let chartInitialized = false;
@@ -143,33 +158,49 @@ document.addEventListener('DOMContentLoaded', function () {
         svgOut += `<rect id="bs-${barKey}-${i}" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
       def.segs.forEach((seg, i) => {
-        const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (seg.label === '流動負債' || seg.label === '純資産' ? '#2b2f36' : '#fff');
+        const LIGHT_SEGS = ['流動資産', '流動負債', '純資産'];
+        const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff');
         svgOut += `<text id="bs-${barKey}-t${i}" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
       });
       svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle"></text>`;
     });
 
     // 列ラベル・グループ見出し(値が変わっても位置は不変のため静的に1度だけ描画)
-    svgOut += `<text x="${xAsset1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text x="${xLiab1 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text x="${xAsset2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
-    svgOut += `<text x="${xLiab2 + barWidth / 2}" y="${yBottom + 20}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
-    svgOut += `<text x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
-    svgOut += `<text x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom + 42}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
+    // labelY以下は債務超過時のマイナス表示帯(NEG_ZONE_H)の下に配置し、重ならないようにする
+    svgOut += `<text x="${xAsset1 + barWidth / 2}" y="${labelY}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
+    svgOut += `<text x="${xLiab1 + barWidth / 2}" y="${labelY}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
+    svgOut += `<text x="${xAsset2 + barWidth / 2}" y="${labelY}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
+    svgOut += `<text x="${xLiab2 + barWidth / 2}" y="${labelY}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
+    svgOut += `<text x="${xAsset3 + barWidth / 2}" y="${labelY}" font-size="11" fill="#6b6b6f" text-anchor="middle">資産</text>`;
+    svgOut += `<text x="${xLiab3 + barWidth / 2}" y="${labelY}" font-size="11" fill="#6b6b6f" text-anchor="middle">負債・純資産</text>`;
+    svgOut += `<text x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${titleY}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
+    svgOut += `<text x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${titleY}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
+    svgOut += `<text x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${titleY}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">予測BS</text>`;
+    svgOut += `<text x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${subtitleY}" font-size="9" fill="#6b6b6f" text-anchor="middle">(簿外負債が発動した場合)</text>`;
+
+    // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)
+    svgOut += `<text x="${arrowX}" y="${(yTop + yBottom) / 2}" font-size="22" fill="#0f2a4a" text-anchor="middle" dominant-baseline="middle">→</text>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
   }
 
-  // showValues=false のときはダミー(仮)表示: 数字ラベルは出さない
+  // showValues=false のときはダミー(仮)表示: 数字ラベルは出さない。
+  // 通常は0(基準線)から上に積むが、純資産が債務超過などで負値になる場合は
+  // その要素だけ基準線から下向きに積むことで、マイナス値でも高さがマイナスにならず表示が崩れない。
   function updateChart(dataByBar, pxPerYen, showValues) {
     initChartOnce();
     Object.entries(dataByBar).forEach(([barKey, segments]) => {
-      let y = yBottom;
+      let yPos = yBottom; // 0以上の要素: 基準線から上に積む
+      let yNeg = yBottom; // 0未満の要素: 基準線から下に積む
       let total = 0;
       segments.forEach((seg, i) => {
-        const h = Math.max(0, seg.value * pxPerYen);
-        const segY = y - h;
+        const isNeg = seg.value < 0;
+        // マイナス側はNEG_ZONE_H(帯の残り幅)を超えないようクランプし、どんなに大きな債務超過でも表示が崩れないようにする
+        const h = isNeg
+          ? Math.max(0, Math.min(Math.abs(seg.value) * pxPerYen, yBottom + NEG_ZONE_H - yNeg))
+          : Math.abs(seg.value) * pxPerYen;
+        const segY = isNeg ? yNeg : (yPos - h);
         const rect = document.getElementById(`bs-${barKey}-${i}`);
         if (rect) {
           rect.setAttribute('y', segY.toFixed(1));
@@ -177,20 +208,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const text = document.getElementById(`bs-${barKey}-t${i}`);
         if (text) {
-          if (showValues && h > 20) {
-            text.setAttribute('y', (segY + h / 2 + 4).toFixed(1));
-            text.textContent = man(seg.value);
+          const midY = segY + h / 2;
+          if (showValues && h > 34) {
+            // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
+            text.setAttribute('y', midY.toFixed(1));
+            text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="9" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-weight="bold">${man(seg.value)}</tspan>`;
+          } else if (showValues && h > 16) {
+            // 高さが足りない時は金額のみ
+            text.setAttribute('y', (midY + 4).toFixed(1));
+            text.innerHTML = `<tspan font-weight="bold">${man(seg.value)}</tspan>`;
+          } else if (showValues && isNeg && seg.value !== 0) {
+            // マイナス値がクランプされて帯が小さい場合でも、金額だけは帯のすぐ下に表示して見失わないようにする
+            text.setAttribute('y', (segY + h + 12).toFixed(1));
+            text.innerHTML = `<tspan x="${text.getAttribute('x')}" font-size="9" font-weight="bold">${seg.label} ${man(seg.value)}</tspan>`;
           } else {
             text.textContent = '';
           }
         }
         total += seg.value;
-        y = segY;
+        if (isNeg) { yNeg += h; } else { yPos -= h; }
       });
       const totalText = document.getElementById(`bs-${barKey}-total`);
       if (totalText) {
         if (showValues) {
-          totalText.setAttribute('y', (yBottom - total * pxPerYen - 8).toFixed(1));
+          totalText.setAttribute('y', (yPos - 8).toFixed(1));
           totalText.textContent = man(total);
         } else {
           totalText.textContent = '';
@@ -199,27 +240,68 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function drawBalanceSheetChart(assetsBase, liabNetBase, futureLiabTotal) {
-    const totalBase = assetsBase.reduce((s, x) => s + x.value, 0); // = liabNetBase total
+  function drawBalanceSheetChart(fields, netAssets, futureLiabTotal) {
+    const assetsBase = [
+      { label: 'その他資産', value: fields.otherAssets.value },
+      { label: '固定資産', value: fields.fixedAssets.value },
+      { label: '流動資産', value: fields.curAssets.value },
+    ];
+    const liabNetBase = [
+      { label: '純資産', value: netAssets },
+      { label: '固定負債', value: fields.fixedLiab.value },
+      { label: '流動負債', value: fields.curLiab.value },
+    ];
+    const totalBase = fields.curAssets.value + fields.fixedAssets.value + fields.otherAssets.value;
     const totalAdjusted = totalBase + futureLiabTotal;
     const maxTotal = Math.max(totalAdjusted, 1);
     const pxPerYen = plotH / maxTotal;
 
-    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産(準備必要額)', value: futureLiabTotal, offBalance: true }]);
-    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債(簿外)', value: futureLiabTotal, offBalance: true }]);
+    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true }]);
+    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true }]);
 
-    updateChart({ a1: assetsBase, l1: liabNetBase, a2: assetsAdjusted, l2: liabNetAdjusted }, pxPerYen, true);
+    // 簿外負債が発動(実現)した場合の予測BS:
+    // 純資産と流動資産から取り崩す。流動資産で足りなければその他資産、それでも足りなければ固定資産も取り崩す。
+    // (純資産・固定資産は取り崩しきれない場合マイナス=債務超過になり得るが、上のupdateChartが基準線の上下で
+    //  別々に積むためマイナス値でも表示は崩れない)
+    let remaining = futureLiabTotal;
+    const take1 = Math.min(remaining, Math.max(fields.curAssets.value, 0));
+    const curAssetsTriggered = fields.curAssets.value - take1;
+    remaining -= take1;
+    const take2 = Math.min(remaining, Math.max(fields.otherAssets.value, 0));
+    const otherAssetsTriggered = fields.otherAssets.value - take2;
+    remaining -= take2;
+    const fixedAssetsTriggered = fields.fixedAssets.value - remaining;
+    const netAssetsTriggered = netAssets - futureLiabTotal;
+
+    const assetsTriggered = [
+      { label: 'その他資産', value: otherAssetsTriggered },
+      { label: '固定資産', value: fixedAssetsTriggered },
+      { label: '流動資産', value: curAssetsTriggered },
+    ];
+    const liabNetTriggered = [
+      { label: '純資産', value: netAssetsTriggered },
+      { label: '固定負債', value: fields.fixedLiab.value },
+      { label: '流動負債', value: fields.curLiab.value },
+    ];
+
+    updateChart({
+      a1: assetsBase, l1: liabNetBase,
+      a2: assetsAdjusted, l2: liabNetAdjusted,
+      a3: assetsTriggered, l3: liabNetTriggered,
+    }, pxPerYen, true);
   }
 
-  // 未入力時: 8要素(流動資産/固定資産/その他資産/流動負債/固定負債/純資産/簿外資産/簿外負債)を
-  // すべて同じ高さのダミーBSとして表示する(数字ラベルなし)
+  // 未入力時: 流動資産/固定資産/その他資産/流動負債/固定負債/純資産/簿外資産/簿外負債を
+  // すべて同じ高さのダミーBSとして表示する(数字ラベルなし)。予測BS(3組目)も同じ仮値で表示する。
   function drawDummyChart() {
     const dummySeg = (label, offBalance) => ({ label, value: DUMMY_VALUE, offBalance: !!offBalance });
     const dataByBar = {
-      a1: [dummySeg('流動資産'), dummySeg('固定資産'), dummySeg('その他資産')],
-      l1: [dummySeg('流動負債'), dummySeg('固定負債'), dummySeg('純資産')],
-      a2: [dummySeg('流動資産'), dummySeg('固定資産'), dummySeg('その他資産'), dummySeg('簿外資産', true)],
-      l2: [dummySeg('流動負債'), dummySeg('固定負債'), dummySeg('純資産'), dummySeg('簿外負債', true)],
+      a1: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
+      l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
+      a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'), dummySeg('簿外資産', true)],
+      l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'), dummySeg('簿外負債', true)],
+      a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
+      l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
     };
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
     updateChart(dataByBar, pxPerYen, false);
@@ -277,17 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
       balanceNote.classList.add('hidden');
     }
 
-    const assetsBase = [
-      { label: '流動資産', value: fields.curAssets.value },
-      { label: '固定資産', value: fields.fixedAssets.value },
-      { label: 'その他資産', value: fields.otherAssets.value },
-    ];
-    const liabNetBase = [
-      { label: '流動負債', value: fields.curLiab.value },
-      { label: '固定負債', value: fields.fixedLiab.value },
-      { label: '純資産', value: netAssets },
-    ];
-    drawBalanceSheetChart(assetsBase, liabNetBase, futureLiabTotal);
+    drawBalanceSheetChart(fields, netAssets, futureLiabTotal);
 
     lastResult = { fields, totalAssets, totalLiabNet, futureLiabTotal, netAssets, ratio, remaining };
 
