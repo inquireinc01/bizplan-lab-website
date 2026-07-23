@@ -166,50 +166,73 @@
         <div class="calc-section bg-white p-6 sm:p-8">
           <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center">現在のバランスシート・将来負債<span class="help-tip" tabindex="0">?<span class="help-text">直前期末時点・現時点で見込まれる金額を、万円単位で入力してください。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
 
-          <div class="grid sm:grid-cols-3 gap-4">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- 資産 -->
-            <div class="rounded-lg border border-gray-200 overflow-hidden">
+            <div id="assetsCard" class="rounded-lg border border-gray-200 overflow-hidden">
               <div class="text-white text-sm font-bold text-center py-2" style="background-color:var(--color-green-gray)">資産</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="curAssets" class="text-xs text-gray-600">流動資産</label>
-                  <input type="number" id="curAssets" value="15000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="curAssets" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="fixedAssets" class="text-xs text-gray-600">固定資産</label>
-                  <input type="number" id="fixedAssets" value="40000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="fixedAssets" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="otherAssets" class="text-xs text-gray-600">その他資産</label>
-                  <input type="number" id="otherAssets" value="10000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="otherAssets" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
                 <span class="text-xs font-bold">総資産</span>
-                <span id="checkTotalAssets" class="text-sm font-bold">0万円</span>
+                <span id="checkTotalAssets" class="text-sm font-bold">-</span>
               </div>
             </div>
 
             <!-- 負債・純資産 -->
-            <div class="rounded-lg border border-gray-200 overflow-hidden">
+            <div id="liabCard" class="rounded-lg border border-gray-200 overflow-hidden">
               <div class="text-white text-sm font-bold text-center py-2" style="background-color:var(--color-navy)">負債・純資産</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="curLiab" class="text-xs text-gray-600">流動負債</label>
-                  <input type="number" id="curLiab" value="5000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="curLiab" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="fixedLiab" class="text-xs text-gray-600">固定負債</label>
-                  <input type="number" id="fixedLiab" value="25000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="fixedLiab" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="netAssets" class="text-xs text-gray-600">純資産</label>
-                  <input type="number" id="netAssets" value="35000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="netAssets" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
                 <span class="text-xs font-bold">負債・純資産合計</span>
-                <span id="checkTotalLiabNet" class="text-sm font-bold">0万円</span>
+                <span id="checkTotalLiabNet" class="text-sm font-bold">-</span>
+              </div>
+            </div>
+
+            <!-- 簿外資産(将来負債の備え) -->
+            <div class="rounded-lg border border-gray-200 overflow-hidden">
+              <div class="text-white text-sm font-bold text-center py-2" style="background-color:var(--color-green-gray)">簿外資産</div>
+              <div class="divide-y divide-gray-100 px-3">
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="lifeInsurance" class="text-xs text-gray-600">生命保険金</label>
+                  <input type="number" id="lifeInsurance" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="otherCoverage" class="text-xs text-gray-600">その他</label>
+                  <input type="number" id="otherCoverage" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="shortfall" class="text-xs text-gray-600">不足分(自動入力)</label>
+                  <input type="number" id="shortfall" readonly tabindex="-1" class="num-input form-input w-24 rounded px-2 py-1 text-sm bg-gray-100 text-gray-500 cursor-not-allowed" />
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
+                <span class="text-xs font-bold">簿外負債合計</span>
+                <span id="checkOffBalanceTotal" class="text-sm font-bold">-</span>
               </div>
             </div>
 
@@ -219,25 +242,23 @@
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="retirement" class="text-xs text-gray-600">退職金</label>
-                  <input type="number" id="retirement" value="10000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="retirement" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="succession" class="text-xs text-gray-600">事業承継対策資金</label>
-                  <input type="number" id="succession" value="15000" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="succession" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="otherFuture" class="text-xs text-gray-600">その他</label>
-                  <input type="number" id="otherFuture" value="0" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="otherFuture" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
                 <span class="text-xs font-bold">合計</span>
-                <span id="checkFutureLiabTotal" class="text-sm font-bold">0万円</span>
+                <span id="checkFutureLiabTotal" class="text-sm font-bold">-</span>
               </div>
             </div>
           </div>
-
-          <p class="text-xs text-gray-500 mt-4">左右バランス(資産 = 負債・純資産): <span id="checkBalanceStatus" class="font-bold">-</span></p>
         </div>
       </form>
     </div>
@@ -333,6 +354,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/future-liability.js?v=20260723o"></script>
+<script src="js/future-liability.js?v=20260723p"></script>
 </body>
 </html>

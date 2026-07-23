@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!raw) return;
       const data = JSON.parse(raw);
       form.querySelectorAll('input[id]').forEach(function (el) {
+        if (el.id === 'shortfall') return; // 不足分は自動計算値のため保存・復元の対象外
         if (data[el.id] !== undefined) el.value = data[el.id];
       });
     } catch (e) {}
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function saveCurrentValues() {
     const data = {};
     form.querySelectorAll('input[id]').forEach(function (el) {
+      if (el.id === 'shortfall') return; // 不足分は自動計算値のため保存・復元の対象外
       if (el.value !== '') data[el.id] = el.value;
     });
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
@@ -72,46 +74,83 @@ document.addEventListener('DOMContentLoaded', function () {
   const BS_CHECK_IDS = ['curAssets', 'fixedAssets', 'otherAssets', 'curLiab', 'fixedLiab', 'netAssets'];
   const FUTURE_LIAB_IDS = ['retirement', 'succession', 'otherFuture'];
 
+  const ASSET_IDS = ['curAssets', 'fixedAssets', 'otherAssets'];
+  const LIAB_IDS = ['curLiab', 'fixedLiab', 'netAssets'];
+
+  // カード(資産/負債・純資産)の枠を薄い赤にする/戻す共通処理
+  function setCardMismatch(id, mismatched) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('border-red-300', mismatched);
+    el.classList.toggle('bg-red-50', mismatched);
+    el.classList.toggle('border-gray-200', !mismatched);
+  }
+
   function updateBalanceCheck() {
     const v = {};
     for (const id of BS_CHECK_IDS) v[id] = num(id).value;
 
+    const assetsFilled = ASSET_IDS.some((id) => !isNaN(v[id]));
+    const liabFilled = LIAB_IDS.some((id) => !isNaN(v[id]));
     const totalAssets = (v.curAssets || 0) + (v.fixedAssets || 0) + (v.otherAssets || 0);
     const totalLiabNet = (v.curLiab || 0) + (v.fixedLiab || 0) + (v.netAssets || 0);
 
-    document.getElementById('checkTotalAssets').textContent = man(isNaN(totalAssets) ? 0 : totalAssets);
-    document.getElementById('checkTotalLiabNet').textContent = man(isNaN(totalLiabNet) ? 0 : totalLiabNet);
+    // 未入力(そのカードに何も入力されていない)のときは金額を表示せず「-」のままにする
+    document.getElementById('checkTotalAssets').textContent = assetsFilled ? man(totalAssets) : '-';
+    document.getElementById('checkTotalLiabNet').textContent = liabFilled ? man(totalLiabNet) : '-';
 
-    const statusEl = document.getElementById('checkBalanceStatus');
-    const anyEmpty = BS_CHECK_IDS.some((id) => isNaN(num(id).value));
-    if (anyEmpty) {
-      statusEl.textContent = '-';
-      statusEl.className = 'font-bold text-gray-400';
-    } else if (Math.abs(totalAssets - totalLiabNet) < 0.5) {
-      statusEl.textContent = '✓ 一致しています';
-      statusEl.className = 'font-bold text-[#3b6ea5]';
-    } else {
-      statusEl.textContent = `✗ 差額 ${man(Math.abs(totalAssets - totalLiabNet))}`;
-      statusEl.className = 'font-bold text-[#a83d3d]';
-    }
+    // 6項目すべて入力済みで、かつ左右が一致しないときだけ両カードを薄い赤で警告する
+    const allFilled = BS_CHECK_IDS.every((id) => !isNaN(v[id]));
+    const mismatched = allFilled && Math.abs(totalAssets - totalLiabNet) > 0.5;
+    setCardMismatch('assetsCard', mismatched);
+    setCardMismatch('liabCard', mismatched);
   }
 
-  function updateFutureLiabTotal() {
-    const total = FUTURE_LIAB_IDS.reduce((s, id) => {
+  function futureLiabTotalNow() {
+    return FUTURE_LIAB_IDS.reduce((s, id) => {
       const v = num(id).value;
       return s + (isNaN(v) ? 0 : v);
     }, 0);
-    document.getElementById('checkFutureLiabTotal').textContent = man(total);
+  }
+
+  function updateFutureLiabTotal() {
+    const anyFilled = FUTURE_LIAB_IDS.some((id) => !isNaN(num(id).value));
+    document.getElementById('checkFutureLiabTotal').textContent = anyFilled ? man(futureLiabTotalNow()) : '-';
+  }
+
+  // ===== 簿外資産(将来負債の備え): 生命保険金+その他で足りない分を「不足分」に自動で入れ、
+  // 3項目の合計(簿外負債合計)が将来負債合計と一致するようにする =====
+  const OFF_BALANCE_ASSET_IDS = ['lifeInsurance', 'otherCoverage'];
+  function updateOffBalanceAsset() {
+    const lifeIns = num('lifeInsurance').value;
+    const otherCov = num('otherCoverage').value;
+    const covered = (isNaN(lifeIns) ? 0 : lifeIns) + (isNaN(otherCov) ? 0 : otherCov);
+    const futureLiabTotal = futureLiabTotalNow();
+    const shortfall = Math.max(0, futureLiabTotal - covered);
+
+    const anyFutureFilled = FUTURE_LIAB_IDS.some((id) => !isNaN(num(id).value));
+    const anyCoverageFilled = !isNaN(lifeIns) || !isNaN(otherCov);
+    const anyFilled = anyFutureFilled || anyCoverageFilled;
+
+    document.getElementById('shortfall').value = anyFilled ? shortfall : '';
+    document.getElementById('checkOffBalanceTotal').textContent = anyFilled ? man(covered + shortfall) : '-';
   }
 
   BS_CHECK_IDS.forEach((id) => {
     document.getElementById(id).addEventListener('input', updateBalanceCheck);
   });
   FUTURE_LIAB_IDS.forEach((id) => {
-    document.getElementById(id).addEventListener('input', updateFutureLiabTotal);
+    document.getElementById(id).addEventListener('input', function () {
+      updateFutureLiabTotal();
+      updateOffBalanceAsset(); // 将来負債合計が変わると不足分も連動して変わる
+    });
+  });
+  OFF_BALANCE_ASSET_IDS.forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateOffBalanceAsset);
   });
   updateBalanceCheck();
   updateFutureLiabTotal();
+  updateOffBalanceAsset();
 
   // グラフは値が変わった時になめらかにアニメーションするよう、rect/text要素を
   // 毎回作り直さず既存要素のy/height/textContentだけを更新する
@@ -456,18 +495,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const remaining = netAssets - futureLiabTotal;
 
     const balanceNote = document.getElementById('flBalanceNote');
+    resultArea.classList.remove('hidden');
     if (Math.abs(totalAssets - totalLiabNet) > 0.5) {
-      balanceNote.textContent = '※ 総資産と負債・純資産合計が一致していません。入力内容をご確認ください。';
+      // 左右が一致しない間はグラフを更新せず直前の状態のまま保持する(入力エリアの赤枠はupdateBalanceCheckが担当)
+      balanceNote.textContent = '※ 総資産と負債・純資産合計が一致していません。一致するとグラフに反映されます。';
       balanceNote.classList.remove('hidden');
-    } else {
-      balanceNote.classList.add('hidden');
+      saveCurrentValues();
+      return;
     }
+    balanceNote.classList.add('hidden');
 
     drawBalanceSheetChart(fields, netAssets, futureLiabTotal);
 
     lastResult = { fields, totalAssets, totalLiabNet, futureLiabTotal, netAssets, ratio, remaining };
 
-    resultArea.classList.remove('hidden');
     saveCurrentValues();
   }
 
@@ -486,6 +527,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function doClearFields() {
     form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    updateBalanceCheck();
+    updateFutureLiabTotal();
+    updateOffBalanceAsset();
     recompute();
   }
   const clearBtn = document.getElementById('flClearBtn');
@@ -533,5 +577,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 初期表示: 保存済みデータがあれば復元し、自動試算 =====
   loadSavedValues();
+  updateBalanceCheck();
+  updateFutureLiabTotal();
+  updateOffBalanceAsset(); // 読み込んだ将来負債・生命保険金額をもとに不足分を計算し直す
   recompute();
 });
