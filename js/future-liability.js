@@ -389,6 +389,23 @@ document.addEventListener('DOMContentLoaded', function () {
     if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
   }
 
+  // 1行に収まらない要素名+金額は、判読できる最小サイズ(6px)まで自動的に縮小して収める。
+  // それでも収まらない場合は空白にする(はみ出し・重なりを防ぐため)
+  const MIN_FONT_SIZE = 6;
+  const TEXT_MAX_WIDTH = barWidth - 8;
+  function fitSingleLine(text, content, maxWidth, startSize) {
+    text.textContent = content;
+    let size = startSize;
+    text.setAttribute('font-size', size);
+    while (size > MIN_FONT_SIZE && text.getComputedTextLength() > maxWidth) {
+      size -= 1;
+      text.setAttribute('font-size', size);
+    }
+    if (text.getComputedTextLength() > maxWidth) {
+      text.textContent = '';
+    }
+  }
+
   // showValues=false のときはダミー(仮)表示: 数字ラベルは出さない(labelOnly=trueなら要素名だけ表示)。
   // 通常は0(基準線)から上に積むが、純資産が債務超過などで負値になる場合は
   // その要素だけ基準線から下向きに積むことで、マイナス値でも高さがマイナスにならず表示が崩れない。
@@ -442,19 +459,16 @@ document.addEventListener('DOMContentLoaded', function () {
             text.setAttribute('y', midY.toFixed(1));
             text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="8" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
           } else if (showValues && h > 16) {
-            if (forceLabel) {
-              // 白抜き文字が帯からはみ出て見えなくならないよう、小さめフォントの2行(要素名/金額)にして帯の中に収める
-              text.setAttribute('y', midY.toFixed(1));
-              text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.3em" font-size="6" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1em" font-size="7" font-weight="bold">${man(seg.value)}</tspan>`;
-            } else {
-              // 高さが足りない時は金額のみ
-              text.setAttribute('y', (midY + 4).toFixed(1));
-              text.innerHTML = `<tspan font-size="9" font-weight="bold">${man(seg.value)}</tspan>`;
-            }
+            // 1行に「要素名+金額」(またはforceLabelでなければ金額のみ)を収める。
+            // 幅に収まらなければ6pxまで自動縮小し、それでも収まらなければ空白にする
+            text.setAttribute('y', (midY + 4).toFixed(1));
+            text.setAttribute('font-weight', 'bold');
+            fitSingleLine(text, forceLabel ? `${seg.label} ${man(seg.value)}` : man(seg.value), TEXT_MAX_WIDTH, 9);
           } else if (showValues && (isNeg || forceLabel) && seg.value !== 0) {
             // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する
             text.setAttribute('y', (segY + h + 12).toFixed(1));
-            text.innerHTML = `<tspan x="${text.getAttribute('x')}" font-size="8" font-weight="bold">${seg.label} ${man(seg.value)}</tspan>`;
+            text.setAttribute('font-weight', 'bold');
+            fitSingleLine(text, `${seg.label} ${man(seg.value)}`, TEXT_MAX_WIDTH, 8);
           } else {
             text.textContent = '';
           }
