@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const resultArea = document.getElementById('flResultArea');
   const errorArea = document.getElementById('flErrorArea');
-  let suppressScroll = false;
+  let lastResult = null;
 
   const num = (id) => {
     const el = document.getElementById(id);
@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const BS_CHECK_IDS = ['curAssets', 'fixedAssets', 'otherAssets', 'curLiab', 'fixedLiab', 'netAssets'];
+  const FUTURE_LIAB_IDS = ['retirement', 'succession', 'otherFuture'];
 
   function updateBalanceCheck() {
     const v = {};
@@ -70,10 +71,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updateFutureLiabTotal() {
+    const total = FUTURE_LIAB_IDS.reduce((s, id) => {
+      const v = num(id).value;
+      return s + (isNaN(v) ? 0 : v);
+    }, 0);
+    document.getElementById('checkFutureLiabTotal').textContent = man(total);
+  }
+
   BS_CHECK_IDS.forEach((id) => {
     document.getElementById(id).addEventListener('input', updateBalanceCheck);
   });
+  FUTURE_LIAB_IDS.forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateFutureLiabTotal);
+  });
   updateBalanceCheck();
+  updateFutureLiabTotal();
 
   function drawBalanceSheetChart(assetsBase, liabNetBase, futureLiabTotal) {
     const svg = document.getElementById('bsChart');
@@ -152,8 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
     svg.innerHTML = svgOut;
   }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+  // 入力が変わるたびにリアルタイムで再計算・再描画する
+  function recompute() {
     clearError();
 
     const fields = {
@@ -210,40 +223,36 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
     drawBalanceSheetChart(assetsBase, liabNetBase, futureLiabTotal);
 
-    document.getElementById('flRemainingBig').textContent = man(remaining);
-    document.getElementById('flRatio').textContent = ratio === null ? '算出不可' : ratio.toFixed(1) + ' %';
-
     lastResult = { fields, totalAssets, totalLiabNet, futureLiabTotal, netAssets, ratio, remaining };
 
     resultArea.classList.remove('hidden');
-    if (!suppressScroll) {
-      resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
     saveCurrentValues();
-  });
+  }
+
+  // 送信ボタンは廃止。数字入力が一段落してから(=確定してから)なめらかに反映するためデバウンスする。
+  // 入力中は連続再描画せず、約400ms入力が止まったタイミングで反映。blur/Enter(change)は即時反映。
+  let recomputeTimer = null;
+  function scheduleRecompute() {
+    clearTimeout(recomputeTimer);
+    recomputeTimer = setTimeout(recompute, 400);
+  }
+  form.addEventListener('submit', function (e) { e.preventDefault(); clearTimeout(recomputeTimer); recompute(); });
+  form.addEventListener('input', scheduleRecompute);
+  form.addEventListener('change', function () { clearTimeout(recomputeTimer); recompute(); });
 
   // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====
   function doClearFields() {
     form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    resultArea.classList.add('hidden');
-    clearError();
+    recompute();
   }
   const clearBtn = document.getElementById('flClearBtn');
   if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
-  const fieldClearBtn = document.getElementById('flFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-      doClearFields();
-    });
-  }
 
   // ===== PDF出力 =====
-  let lastResult = null;
   function doPrint() {
       if (!lastResult) {
-        showError('先に「確認する」を押して結果を表示してください。');
+        showError('前提条件をすべて入力してください。');
         return;
       }
       const r = lastResult;
@@ -280,9 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
-  // ===== 初期表示: 保存済みデータがあれば復元し、自動試算(スクロールは抑制) =====
+  // ===== 初期表示: 保存済みデータがあれば復元し、自動試算 =====
   loadSavedValues();
-  suppressScroll = true;
-  form.requestSubmit();
-  suppressScroll = false;
+  recompute();
 });
