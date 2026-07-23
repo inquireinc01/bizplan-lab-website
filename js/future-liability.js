@@ -180,10 +180,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function segColor(label) {
     const map = {
-      '流動資産': '#7ba7cc', '固定資産': '#3b6ea5', 'その他資産': '#5c7a94',
-      '流動負債': '#d3a878', '固定負債': '#a5703a', '純資産': '#9aa1ab',
+      // 資産3項目はネイビー1色を透過率違いで表現する(その他資産0%/固定資産25%/流動資産50%)
+      '流動資産': '#0f2a4a', '固定資産': '#0f2a4a', 'その他資産': '#0f2a4a',
+      // 負債2項目もひとまとめ表示と同じオレンジ1色を透過率違いで表現する(固定負債0%/流動負債50%)
+      '流動負債': '#a5703a', '固定負債': '#a5703a',
+      '純資産': '#3d6b8a', // ひとまとめ表示と同じ色
     };
     return map[label] || '#5c636e';
+  }
+  function segOpacity(label) {
+    const map = { '流動資産': 0.5, '固定資産': 0.75, 'その他資産': 1, '流動負債': 0.5, '固定負債': 1 };
+    return map[label] != null ? map[label] : 1;
   }
   // 内訳を表示しない「ひとまとめ」表示専用の配色: 資産=ネイビー、負債=落ち着いたオレンジ、純資産=落ち着いた青(透過なし)
   const GROUP_ASSET_FILL = '#0f2a4a';
@@ -197,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ? { fill: '#5c8272', opacity: 0.25, text: '#3f5a4d' }
       : { fill: '#a83d3d', opacity: 0.3, text: '#832f2f' };
   }
-  const LIGHT_SEGS = ['流動資産', '流動負債', '純資産']; // 明るい背景色のため濃色文字にするセグメント(詳細表示用)
+  const LIGHT_SEGS = ['流動資産', '流動負債']; // 明るい背景色のため濃色文字にするセグメント(詳細表示用)
 
   // 「ひとまとめ」表示用: 資産側は3要素を合算し、中央(index1)のセグメントだけに全額を持たせる
   function toGroupedAsset(segs) {
@@ -223,11 +230,22 @@ document.addEventListener('DOMContentLoaded', function () {
   // 資産側は上から「流動資産→固定資産→その他資産」に見せたいため、下から積む配列では逆順にする
   const ASSET_SEGS_BASE = [{ label: 'その他資産' }, { label: '固定資産' }, { label: '流動資産' }];
   const LIAB_SEGS_BASE = [{ label: '純資産' }, { label: '固定負債' }, { label: '流動負債' }];
+  // a2/l2の簿外部分は、ひとまとめ表示では1本、内訳表示では複数本(充当分+不足分/退職金+事業承継+その他)に分かれるため、
+  // 要素数が最大になる内訳表示の枠数で確保しておく(未使用の枠はvalue=0で非表示になる)
+  const OFF_BALANCE_ASSET_SEGS = [
+    { label: '充当分', offBalance: true, assetSide: true },
+    { label: '不足分', offBalance: true, assetSide: true },
+  ];
+  const OFF_BALANCE_LIAB_SEGS = [
+    { label: '退職金', offBalance: true, assetSide: false },
+    { label: '事業承継', offBalance: true, assetSide: false },
+    { label: 'その他', offBalance: true, assetSide: false },
+  ];
   const BAR_DEFS = {
     a1: { x: xAsset1, segs: ASSET_SEGS_BASE },
     l1: { x: xLiab1, segs: LIAB_SEGS_BASE },
-    a2: { x: xAsset2, segs: ASSET_SEGS_BASE.concat([{ label: '簿外資産', offBalance: true, assetSide: true }]) },
-    l2: { x: xLiab2, segs: LIAB_SEGS_BASE.concat([{ label: '将来負債', offBalance: true, assetSide: false }]) },
+    a2: { x: xAsset2, segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS) },
+    l2: { x: xLiab2, segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS) },
     a3: { x: xAsset3, segs: ASSET_SEGS_BASE },
     l3: { x: xLiab3, segs: LIAB_SEGS_BASE },
   };
@@ -244,8 +262,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     Object.entries(BAR_DEFS).forEach(([barKey, def]) => {
       def.segs.forEach((seg, i) => {
+        // 簿外セグメントは個々のrectに点線を付けない(複数積んだ時に境界の点線が重なって崩れて見えるため)。
+        // 点線の外枠はこの後まとめて1本のborder用rectで描画する。内側の区切りは白の細い実線にする。
         const attrs = seg.offBalance
-          ? (() => { const s = offBalanceStyle(seg.assetSide); return `fill="${s.fill}" fill-opacity="${s.opacity}" stroke="${s.fill}" stroke-width="1.5" stroke-dasharray="4,3"`; })()
+          ? (() => { const s = offBalanceStyle(seg.assetSide); return `fill="${s.fill}" fill-opacity="${s.opacity}" stroke="#fff" stroke-width="1"`; })()
           : `fill="${segColor(seg.label)}"`;
         svgOut += `<rect id="bs-${barKey}-${i}" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
@@ -253,17 +273,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff');
         svgOut += `<text id="bs-${barKey}-t${i}" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
       });
+      // 簿外ゾーン全体を囲む1本のダッシュ枠(積んだセグメント数に関わらず、ゾーン全体の外周だけに点線を描く)
+      if (def.segs.some((s) => s.offBalance)) {
+        const assetSide = def.segs.find((s) => s.offBalance).assetSide;
+        svgOut += `<rect id="bs-${barKey}-offborder" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" fill="none" stroke="${offBalanceStyle(assetSide).fill}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+      }
       svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle" ${HALO}></text>`;
     });
 
-    // 列ラベル・グループ見出し(x位置は不変。y位置は債務超過の有無でupdateLayoutが毎回調整する)
-    // これらは常に濃い色の文字なので、グレー背景でも読みやすいよう白フチを付ける
-    svgOut += `<text id="lbl-a1" x="${xAsset1 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>資産</text>`;
-    svgOut += `<text id="lbl-l1" x="${xLiab1 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>負債・純資産</text>`;
-    svgOut += `<text id="lbl-a2" x="${xAsset2 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>資産</text>`;
-    svgOut += `<text id="lbl-l2" x="${xLiab2 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>負債・純資産</text>`;
-    svgOut += `<text id="lbl-a3" x="${xAsset3 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>資産</text>`;
-    svgOut += `<text id="lbl-l3" x="${xLiab3 + barWidth / 2}" y="${yBottom}" font-size="11" fill="#6b6b6f" text-anchor="middle" ${HALO}>負債・純資産</text>`;
+    // グループ見出し(x位置は不変。y位置は債務超過の有無でupdateLayoutが毎回調整する)
+    // 濃い色の文字なので、グレー背景でも読みやすいよう白フチを付ける
     svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>会計上のBS</text>`;
     svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>実質的なBS</text>`;
     svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>予測BS</text>`;
@@ -277,15 +296,13 @@ document.addEventListener('DOMContentLoaded', function () {
     chartInitialized = true;
   }
 
-  // 列ラベル・見出し・SVG全体の高さを、債務超過(マイナス値)の有無に応じて動的に調整する。
+  // 見出し・SVG全体の高さを、債務超過(マイナス値)の有無に応じて動的に調整する。
   // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
-    const labelY = yBottom + negZone + 18;
-    const titleY = labelY + 22;
+    const titleY = yBottom + negZone + 24;
     const svgH = titleY + 12;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
-    ['lbl-a1', 'lbl-l1', 'lbl-a2', 'lbl-l2', 'lbl-a3', 'lbl-l3'].forEach((id) => setY(id, labelY));
     ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
     const svg = document.getElementById('bsChart');
     if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
@@ -302,6 +319,8 @@ document.addEventListener('DOMContentLoaded', function () {
       let yPos = yBottom; // 0以上の要素: 基準線から上に積む
       let yNeg = yBottom; // 0未満の要素: 基準線から下に積む
       let total = 0;
+      let offBalTop = null;
+      let offBalBottom = null;
       segments.forEach((seg, i) => {
         const isNeg = seg.value < 0;
         // マイナス側はNEG_ZONE_H(帯の残り幅)を超えないようクランプし、どんなに大きな債務超過でも表示が崩れないようにする
@@ -315,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
           rect.setAttribute('height', h.toFixed(1));
           // seg.fill があれば「ひとまとめ」表示の専用色、なければ詳細表示の通常配色を使う
           rect.setAttribute('fill', seg.fill || (seg.offBalance ? offBalanceStyle(seg.assetSide).fill : segColor(seg.label)));
-          rect.setAttribute('fill-opacity', seg.fillOpacity != null ? seg.fillOpacity : (seg.offBalance ? offBalanceStyle(seg.assetSide).opacity : 1));
+          rect.setAttribute('fill-opacity', seg.fillOpacity != null ? seg.fillOpacity : (seg.offBalance ? offBalanceStyle(seg.assetSide).opacity : segOpacity(seg.label)));
           // 背景がグレーのため、通常セグメントは白フチを付けて輪郭をくっきりさせる(簿外セグメントは点線の色付き枠のまま)
           if (!seg.offBalance) {
             rect.setAttribute('stroke', '#fff');
@@ -361,6 +380,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         total += seg.value;
         if (isNeg) { yNeg += h; } else { yPos -= h; }
+        if (seg.offBalance && seg.value !== 0) {
+          if (offBalTop === null || segY < offBalTop) offBalTop = segY;
+          if (offBalBottom === null || segY + h > offBalBottom) offBalBottom = segY + h;
+        }
       });
       const totalText = document.getElementById(`bs-${barKey}-total`);
       if (totalText) {
@@ -369,6 +392,16 @@ document.addEventListener('DOMContentLoaded', function () {
           totalText.textContent = man(total);
         } else {
           totalText.textContent = '';
+        }
+      }
+      // 簿外ゾーン全体を囲むダッシュ枠を、積んだ簿外セグメントの合計範囲に合わせて更新する
+      const borderRect = document.getElementById(`bs-${barKey}-offborder`);
+      if (borderRect) {
+        if (offBalTop !== null) {
+          borderRect.setAttribute('y', offBalTop.toFixed(1));
+          borderRect.setAttribute('height', (offBalBottom - offBalTop).toFixed(1));
+        } else {
+          borderRect.setAttribute('height', '0');
         }
       }
     });
@@ -421,8 +454,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const assetsTriggered = detailMode ? assetsTriggeredDetail : toGroupedAsset(assetsTriggeredDetail);
     const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGroupedLiab(liabNetTriggeredDetail);
 
-    const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true, assetSide: true }]);
-    const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true, assetSide: false }]);
+    // 内訳表示のときは、簿外資産を「充当分(生命保険金+その他)」「不足分」に、
+    // 簿外負債を「退職金」「事業承継」「その他」に分けて表示する(色は簿外資産/簿外負債のまま。不足分だけ白背景にする)
+    const lifeInsRaw = num('lifeInsurance').value;
+    const otherCovRaw = num('otherCoverage').value;
+    const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
+    const coveredPortion = Math.min(coveredRaw, futureLiabTotal);
+    const shortfallPortion = Math.max(0, futureLiabTotal - coveredRaw);
+
+    const offBalanceAssetSegs = detailMode
+      ? [
+          { label: '充当分', value: coveredPortion, offBalance: true, assetSide: true },
+          { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d' },
+        ]
+      : [
+          { label: '簿外資産', value: futureLiabTotal, offBalance: true, assetSide: true },
+          { label: '', value: 0, offBalance: true, assetSide: true },
+        ];
+    const offBalanceLiabSegs = detailMode
+      ? [
+          { label: '退職金', value: fields.retirement.value, offBalance: true, assetSide: false },
+          { label: '事業承継', value: fields.succession.value, offBalance: true, assetSide: false },
+          { label: 'その他', value: fields.otherFuture.value, offBalance: true, assetSide: false },
+        ]
+      : [
+          { label: '将来負債', value: futureLiabTotal, offBalance: true, assetSide: false },
+          { label: '', value: 0, offBalance: true, assetSide: false },
+          { label: '', value: 0, offBalance: true, assetSide: false },
+        ];
+
+    const assetsAdjusted = assetsBase.concat(offBalanceAssetSegs);
+    const liabNetAdjusted = liabNetBase.concat(offBalanceLiabSegs);
 
     updateChart({
       a1: assetsBase, l1: liabNetBase,
@@ -439,8 +501,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const dataByBar = detailMode ? {
       a1: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
-      a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'), dummySeg('簿外資産', true, true)],
-      l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'), dummySeg('簿外負債', true, false)],
+      a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
+        { label: '充当分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
+        { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
+      l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
+        { label: '退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: '事業承継', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: 'その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
     } : (() => {
@@ -451,8 +518,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return {
         a1: [blank, assetDummy, blank],
         l1: [netAssetsDummy, liabDummy, blank],
-        a2: [blank, assetDummy, blank, dummySeg('簿外資産', true, true)],
-        l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false)],
+        a2: [blank, assetDummy, blank, dummySeg('簿外資産', true, true), blank],
+        l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
         a3: [blank, assetDummy, blank],
         l3: [netAssetsDummy, liabDummy, blank],
       };
