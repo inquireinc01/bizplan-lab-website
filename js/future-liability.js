@@ -281,11 +281,15 @@ document.addEventListener('DOMContentLoaded', function () {
       svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle" ${HALO}></text>`;
     });
 
-    // グループ見出し(x位置は不変。y位置は債務超過の有無でupdateLayoutが毎回調整する)
-    // 濃い色の文字なので、グレー背景でも読みやすいよう白フチを付ける
-    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>会計上のBS</text>`;
-    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>実質的なBS</text>`;
-    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle" ${HALO}>予測BS</text>`;
+    // グループ見出し: 各BSのバー幅(資産+負債・純資産+間隔)と同じ幅の枠で囲む。
+    // 予測BSだけは塗りつぶし+白抜き文字にして強調する(x/width位置は不変。y位置はupdateLayoutが毎回調整する)
+    const groupSpanWidth = barWidth * 2 + pairGap;
+    svgOut += `<rect id="title-1-box" x="${xAsset1}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5"/>`;
+    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
+    svgOut += `<rect id="title-2-box" x="${xAsset2}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5"/>`;
+    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
+    svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#0f2a4a"/>`;
+    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">予測BS</text>`;
 
     // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)。
     // 細い矢印記号ではなく塗りつぶした三角形にして、2つのエリアの区切りを分かりやすくする
@@ -304,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const svgH = titleY + 12;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
     ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
+    ['title-1-box', 'title-2-box', 'title-3-box'].forEach((id) => setY(id, titleY - 17));
     const svg = document.getElementById('bsChart');
     if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
   }
