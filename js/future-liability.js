@@ -186,10 +186,10 @@ document.addEventListener('DOMContentLoaded', function () {
     return map[label] || '#5c636e';
   }
   // 内訳を表示しない「ひとまとめ」表示専用の配色: パステルではなく実色を50%透過で使う
-  // 資産=ネイビー、負債=バーガンディレッド、純資産=ブルーグレー
+  // 資産=ネイビー、負債=落ち着いたオレンジ、純資産=落ち着いた青
   const GROUP_ASSET_FILL = '#0f2a4a';
-  const GROUP_LIAB_FILL = '#7a1f38';
-  const GROUP_NETASSETS_FILL = '#4a6a80';
+  const GROUP_LIAB_FILL = '#a5703a';
+  const GROUP_NETASSETS_FILL = '#3d6b8a';
   const GROUP_FILL_OPACITY = 0.5;
   const GROUP_TEXT_FILL = '#2b2f36'; // 50%透過でも背景は白に近いため、文字は濃色で統一する
   // 簿外セグメント: 資産側(準備必要額)は淡いグリーン、負債側(将来負債)は既存の赤系のまま
@@ -234,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   let chartInitialized = false;
+  let showPredictedNote = false; // 予測BS横の「?」で(簿外負債が発動した場合)の注記を開閉する
   function initChartOnce() {
     if (chartInitialized) return;
     const svg = document.getElementById('bsChart');
@@ -263,13 +264,25 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
     svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
     svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">予測BS</text>`;
-    svgOut += `<text id="subtitle-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="9" fill="#6b6b6f" text-anchor="middle">(簿外負債が発動した場合)</text>`;
+    svgOut += `<text id="title-3-help" x="${(xAsset3 + xLiab3 + barWidth) / 2 + 28}" y="${yBottom}" font-size="11" font-weight="bold" fill="#0f2a4a" text-anchor="middle" tabindex="0" style="cursor:pointer">?</text>`;
+    svgOut += `<text id="subtitle-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="9" fill="#6b6b6f" text-anchor="middle"></text>`;
 
     // 実質的なBS → 予測BS を結ぶ矢印(位置は不変のため静的に1度だけ描画)
     svgOut += `<text x="${arrowX}" y="${(yTop + yBottom) / 2}" font-size="22" fill="#0f2a4a" text-anchor="middle" dominant-baseline="middle">→</text>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
+
+    // 予測BS横の「?」タップで注記「(簿外負債が発動した場合)」を開閉する(初期状態は非表示)
+    const helpBtn = document.getElementById('title-3-help');
+    if (helpBtn) {
+      helpBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        showPredictedNote = !showPredictedNote;
+        const sub = document.getElementById('subtitle-3');
+        if (sub) sub.textContent = showPredictedNote ? '(簿外負債が発動した場合)' : '';
+      });
+    }
   }
 
   // 列ラベル・見出し・SVG全体の高さを、債務超過(マイナス値)の有無に応じて動的に調整する。
@@ -282,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const svgH = subtitleY + 12;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
     ['lbl-a1', 'lbl-l1', 'lbl-a2', 'lbl-l2', 'lbl-a3', 'lbl-l3'].forEach((id) => setY(id, labelY));
-    ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
+    ['title-1', 'title-2', 'title-3', 'title-3-help'].forEach((id) => setY(id, titleY));
     setY('subtitle-3', subtitleY);
     const svg = document.getElementById('bsChart');
     if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);

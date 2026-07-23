@@ -150,8 +150,7 @@
           <p id="flBalanceNote" class="hidden warning-box text-xs rounded-lg p-3"></p>
 
           <div class="calc-section bg-white p-6 sm:p-8">
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-              <h4 class="font-bold text-sm flex items-center">貸借対照表の比較(同一縮尺)</h4>
+            <div class="mb-4 flex justify-end">
               <button type="button" id="bsDetailToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline"><span class="dot"></span>内訳を表示</button>
             </div>
             <svg id="bsChart" viewBox="0 0 700 456" class="w-full h-auto" role="img" aria-label="会計上・実質的・簿外負債発動時のバランスシート比較"></svg>
@@ -164,7 +163,7 @@
       <form id="futureLiabForm" class="space-y-10 mt-6">
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span>現在のバランスシート・将来負債</span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <div class="mb-5 flex justify-end"><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></div>
 
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- 資産 -->
@@ -354,6 +353,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721c"></script>
-<script src="js/future-liability.js?v=20260723p"></script>
+<script src="js/future-liability.js?v=20260723q"></script>
 </body>
 </html>
