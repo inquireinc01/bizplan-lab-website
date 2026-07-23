@@ -20,14 +20,17 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== グラフの「予測BSあり/なし」トグル(初期値はなし=非表示) =====
+  // 予測BSがONの時だけ、その計算に関わる「生命保険あり/なし」ボタンを表示する
   let showPredicted = false;
   const showPredictedToggle = document.getElementById('showPredictedToggle');
+  const insuranceToggleEl = document.getElementById('insuranceToggle');
   if (showPredictedToggle) {
     showPredictedToggle.addEventListener('click', function () {
       showPredicted = !showPredicted;
       showPredictedToggle.classList.toggle('is-on', showPredicted);
       showPredictedToggle.setAttribute('aria-pressed', String(showPredicted));
       showPredictedToggle.querySelector('.toggle-label').textContent = showPredicted ? '予測BSあり' : '予測BSなし';
+      if (insuranceToggleEl) insuranceToggleEl.classList.toggle('hidden', !showPredicted);
       recompute();
     });
   }

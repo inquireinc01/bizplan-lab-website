@@ -1393,6 +1393,17 @@ img {
   width: auto;
   padding: 0.4rem 0.75rem;
 }
+/* 将来負債グラフのトグル群専用: 上下の存在感を抑えた低めのボタン(横幅は通常のoverlay-toggleと同じ) */
+.overlay-toggle-compact {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+@media (min-width: 640px) {
+  .overlay-toggle-compact {
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+  }
+}
 
 /* ========== 印刷用シート(PDF出力・A4横) ========== */
 .print-sheet {
