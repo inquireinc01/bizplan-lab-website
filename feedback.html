@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607248" />
+<link rel="stylesheet" href="css/style.css?v=202607249" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -24,9 +24,7 @@
         <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
       </a>
 
-      <nav class="hidden lg:flex items-center gap-2.5">
-        <a href="index.html" class="nav-btn font-brand-en">TOP MENU</a>
-
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
         <div class="mega-item">
           <button type="button" class="mega-trigger" data-mega="sim">
             <span class="mega-trigger-label">生命保険ツール</span>
@@ -60,7 +58,6 @@
       </nav>
 
       <div class="flex items-center gap-3 shrink-0">
-        <a href="basic-info.html" class="nav-square hidden lg:inline-flex">基本情報入力</a>
         <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -72,8 +69,6 @@
 
   <div id="mobile-menu" class="hidden">
     <nav class="flex flex-col gap-2 p-3">
-      <a href="index.html" class="nav-btn font-brand-en block-btn justify-center">TOP MENU</a>
-      <a href="basic-info.html" class="nav-btn nav-input block-btn justify-center">基本情報入力</a>
 
       <div class="mobile-accordion">
         <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
@@ -113,9 +108,15 @@
 
   <!-- ===== ページヒーロー ===== -->
   <section class="hero-pattern relative py-7 sm:py-9">
-    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8">
-      <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">FEEDBACK</p>
-      <h1 class="text-white font-black text-xl sm:text-2xl">不具合報告・改善提案</h1>
+    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">FEEDBACK</p>
+        <h1 class="text-white font-black text-xl sm:text-2xl">不具合報告・改善提案</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="index.html" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">TOP MENU</a>
+        <a href="basic-info.html" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">基本情報入力</a>
+      </div>
     </div>
   </section>
 

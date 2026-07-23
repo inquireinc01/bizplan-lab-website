@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607248" />
+<link rel="stylesheet" href="css/style.css?v=202607249" />
 </head>
 <body class="bg-white text-[#2b2f36]" data-ds-key="bpl_ds_assetmgmt_v1">
 
@@ -24,9 +24,7 @@
         <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
       </a>
 
-      <nav class="hidden lg:flex items-center gap-2.5">
-        <a href="index.html" class="nav-btn font-brand-en">TOP MENU</a>
-
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
         <div class="mega-item">
           <button type="button" class="mega-trigger" data-mega="sim">
             <span class="mega-trigger-label">生命保険ツール</span>
@@ -45,7 +43,7 @@
 
         <div class="mega-item">
           <button type="button" class="mega-trigger active" data-mega="ds">
-            <span class="mega-trigger-label">資産管理会社×DS</span>
+            <span class="mega-trigger-label">ディスカッションシート</span>
             <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <div class="mega-panel">
@@ -60,7 +58,6 @@
       </nav>
 
       <div class="flex items-center gap-3 shrink-0">
-        <a href="basic-info.html" class="nav-square hidden lg:inline-flex">基本情報入力</a>
         <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -72,8 +69,6 @@
 
   <div id="mobile-menu" class="hidden">
     <nav class="flex flex-col gap-2 p-3">
-      <a href="index.html" class="nav-btn font-brand-en block-btn justify-center">TOP MENU</a>
-      <a href="basic-info.html" class="nav-btn nav-input block-btn justify-center">基本情報入力</a>
 
       <div class="mobile-accordion">
         <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
@@ -93,7 +88,7 @@
 
       <div class="mobile-accordion open">
         <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
-          <span class="mobile-accordion-trigger-label">資産管理会社×DS</span>
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
           <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="mobile-accordion-panel">
@@ -125,12 +120,17 @@
       </div>
       <div class="flex flex-wrap items-center gap-2" data-backup-keys="bpl_ds_assetmgmt_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
+        <a href="index.html" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">TOP MENU</a>
+        <a href="basic-info.html" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">基本情報入力</a>
         <button type="button" class="js-backup-load px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルから読込む</button>
         <button type="button" class="js-backup-save px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">ファイルに保存</button>
-        <button type="button" id="dsResetBtn" class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap ml-2 sm:ml-3">全データクリア</button>
         <button type="button" class="js-pdf-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
           PDFに出力する
+        </button>
+        <button type="button" id="dsResetBtn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-bold border border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors whitespace-nowrap ml-2 sm:ml-3">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12M9 7V4h6v3m-8 0l1 13a2 2 0 002 2h4a2 2 0 002-2l1-13"/></svg>
+          全データクリア
         </button>
         <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
