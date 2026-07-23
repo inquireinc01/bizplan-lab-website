@@ -1404,6 +1404,27 @@ img {
     padding-bottom: 0.3rem;
   }
 }
+/* 将来負債グラフの「生命保険あり/なし」ボタン: 予測BSのON/OFFに連動してふわっと(ゆっくり)表示/非表示を切り替える。
+   display:noneは瞬時に消えてしまうため使わず、幅・余白・不透明度をまとめてトランジションさせて滑らかに出し入れする */
+.overlay-toggle-collapsible {
+  max-width: 10rem;
+  opacity: 1;
+  transform: scale(1);
+  overflow: hidden;
+  transition: max-width 0.6s ease, opacity 0.5s ease, transform 0.5s ease, padding 0.6s ease, border-width 0.6s ease, margin 0.6s ease;
+}
+.overlay-toggle-collapsible.is-collapsed {
+  max-width: 0;
+  opacity: 0;
+  transform: scale(0.85);
+  padding-left: 0;
+  padding-right: 0;
+  border-left-width: 0;
+  border-right-width: 0;
+  margin-left: 0;
+  margin-right: 0;
+  pointer-events: none;
+}
 
 /* ========== 印刷用シート(PDF出力・A4横) ========== */
 .print-sheet {

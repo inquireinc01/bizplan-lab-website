@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
       showPredictedToggle.classList.toggle('is-on', showPredicted);
       showPredictedToggle.setAttribute('aria-pressed', String(showPredicted));
       showPredictedToggle.querySelector('.toggle-label').textContent = showPredicted ? '予測BSあり' : '予測BSなし';
-      if (insuranceToggleEl) insuranceToggleEl.classList.toggle('hidden', !showPredicted);
+      if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !showPredicted);
       recompute();
     });
   }
