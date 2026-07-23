@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== グラフの「予測BSを表示」トグル(初期値は表示ON) =====
-  let showPredicted = true;
+  // ===== グラフの「予測BSを表示」トグル(初期値は表示OFF) =====
+  let showPredicted = false;
   const showPredictedToggle = document.getElementById('showPredictedToggle');
   if (showPredictedToggle) {
     showPredictedToggle.addEventListener('click', function () {
