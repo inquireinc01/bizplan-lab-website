@@ -826,16 +826,11 @@ document.addEventListener('DOMContentLoaded', function () {
     saveCurrentValues();
   }
 
-  // 送信ボタンは廃止。数字入力が一段落してから(=確定してから)なめらかに反映するためデバウンスする。
-  // 入力中は連続再描画せず、約400ms入力が止まったタイミングで反映。blur/Enter(change)は即時反映。
-  let recomputeTimer = null;
-  function scheduleRecompute() {
-    clearTimeout(recomputeTimer);
-    recomputeTimer = setTimeout(recompute, 400);
-  }
-  form.addEventListener('submit', function (e) { e.preventDefault(); clearTimeout(recomputeTimer); recompute(); });
-  form.addEventListener('input', scheduleRecompute);
-  form.addEventListener('change', function () { clearTimeout(recomputeTimer); recompute(); });
+  // 送信ボタンは廃止。入力中(1文字ごと)にグラフが再描画されると、12000を打つ途中で
+  // 1→12→120→1200→12000と値が何度も変わって見えてしまうため、グラフの再計算は
+  // 入力が確定したタイミング(blur/Enterによるchange)でのみ行う。
+  form.addEventListener('submit', function (e) { e.preventDefault(); recompute(); });
+  form.addEventListener('change', function () { recompute(); });
 
   // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====
   function doClearFields() {
