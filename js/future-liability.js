@@ -149,20 +149,35 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     return map[label] || '#5c636e';
   }
+  // 内訳を表示しない「ひとまとめ」表示専用の配色: 資産=薄いネイビー、負債=薄いバーガンディレッド、純資産=薄いブルー
+  const GROUP_ASSET_FILL = '#8ea3c4';
+  const GROUP_LIAB_FILL = '#c08a8d';
+  const GROUP_NETASSETS_FILL = '#9fcbe0';
+  const GROUP_TEXT_FILL = '#2b2f36'; // いずれも淡色のため、文字は濃色で統一する
   // 簿外セグメント: 資産側(準備必要額)は淡いグリーン、負債側(将来負債)は既存の赤系のまま
   function offBalanceStyle(assetSide) {
     return assetSide
       ? { fill: '#5c8272', opacity: 0.25, text: '#3f5a4d' }
       : { fill: '#a83d3d', opacity: 0.3, text: '#832f2f' };
   }
+  const LIGHT_SEGS = ['流動資産', '流動負債', '純資産']; // 明るい背景色のため濃色文字にするセグメント(詳細表示用)
 
-  // 「ひとまとめ」表示用: 3要素配列を合算し、中央(index1)のセグメントだけに全額を持たせる。
-  // index1は元々「固定資産」「固定負債」の枠(白文字が焼き込み済み)なので、色・文字色を変えずに流用できる。
-  function toGrouped(segs, groupLabel) {
+  // 「ひとまとめ」表示用: 資産側は3要素を合算し、中央(index1)のセグメントだけに全額を持たせる
+  function toGroupedAsset(segs) {
     const total = segs.reduce((s, x) => s + x.value, 0);
     return [
       { label: '', value: 0 },
-      { label: groupLabel, value: total },
+      { label: '資産', value: total, fill: GROUP_ASSET_FILL, textFill: GROUP_TEXT_FILL, alwaysShowLabel: true },
+      { label: '', value: 0 },
+    ];
+  }
+  // 負債・純資産側は「純資産」は分けたまま、「固定負債+流動負債」だけを1つにまとめる(下から純資産→負債の順)
+  function toGroupedLiab(segs) {
+    const netAssetsVal = segs[0].value;
+    const liabTotal = segs[1].value + segs[2].value;
+    return [
+      { label: '純資産', value: netAssetsVal, fill: GROUP_NETASSETS_FILL, textFill: GROUP_TEXT_FILL, alwaysShowLabel: true },
+      { label: '負債', value: liabTotal, fill: GROUP_LIAB_FILL, textFill: GROUP_TEXT_FILL, alwaysShowLabel: true },
       { label: '', value: 0 },
     ];
   }
@@ -194,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function () {
         svgOut += `<rect id="bs-${barKey}-${i}" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
       def.segs.forEach((seg, i) => {
-        const LIGHT_SEGS = ['流動資産', '流動負債', '純資産'];
         const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff');
         svgOut += `<text id="bs-${barKey}-t${i}" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
       });
@@ -241,20 +255,29 @@ document.addEventListener('DOMContentLoaded', function () {
         if (rect) {
           rect.setAttribute('y', segY.toFixed(1));
           rect.setAttribute('height', h.toFixed(1));
+          // seg.fill があれば「ひとまとめ」表示の専用色、なければ詳細表示の通常配色を使う
+          rect.setAttribute('fill', seg.fill || (seg.offBalance ? offBalanceStyle(seg.assetSide).fill : segColor(seg.label)));
         }
         const text = document.getElementById(`bs-${barKey}-t${i}`);
         if (text) {
           const midY = segY + h / 2;
+          text.setAttribute('fill', seg.textFill || (seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff')));
+          // 「ひとまとめ」表示のセグメントは高さが小さくても要素名・金額を必ず表示する
+          const forceLabel = showValues && seg.alwaysShowLabel && seg.value !== 0;
           if (showValues && h > 34) {
             // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
             text.setAttribute('y', midY.toFixed(1));
             text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="9" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-weight="bold">${man(seg.value)}</tspan>`;
           } else if (showValues && h > 16) {
-            // 高さが足りない時は金額のみ
             text.setAttribute('y', (midY + 4).toFixed(1));
-            text.innerHTML = `<tspan font-weight="bold">${man(seg.value)}</tspan>`;
-          } else if (showValues && isNeg && seg.value !== 0) {
-            // マイナス値がクランプされて帯が小さい場合でも、金額だけは帯のすぐ下に表示して見失わないようにする
+            if (forceLabel) {
+              text.innerHTML = `<tspan font-size="9">${seg.label} </tspan><tspan font-weight="bold">${man(seg.value)}</tspan>`;
+            } else {
+              // 高さが足りない時は金額のみ
+              text.innerHTML = `<tspan font-weight="bold">${man(seg.value)}</tspan>`;
+            }
+          } else if (showValues && (isNeg || forceLabel) && seg.value !== 0) {
+            // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する
             text.setAttribute('y', (segY + h + 12).toFixed(1));
             text.innerHTML = `<tspan x="${text.getAttribute('x')}" font-size="9" font-weight="bold">${seg.label} ${man(seg.value)}</tspan>`;
           } else {
@@ -317,11 +340,11 @@ document.addEventListener('DOMContentLoaded', function () {
       { label: '流動負債', value: fields.curLiab.value },
     ];
 
-    // 「内訳を表示」がOFF(デフォルト)のときは資産・負債それぞれをひとまとめの1本にする
-    const assetsBase = detailMode ? assetsBaseDetail : toGrouped(assetsBaseDetail, '資産');
-    const liabNetBase = detailMode ? liabNetBaseDetail : toGrouped(liabNetBaseDetail, '負債・純資産');
-    const assetsTriggered = detailMode ? assetsTriggeredDetail : toGrouped(assetsTriggeredDetail, '資産');
-    const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGrouped(liabNetTriggeredDetail, '負債・純資産');
+    // 「内訳を表示」がOFF(デフォルト)のときは資産をひとまとめの1本に、負債・純資産は「純資産」と「負債」の2本に分ける
+    const assetsBase = detailMode ? assetsBaseDetail : toGroupedAsset(assetsBaseDetail);
+    const liabNetBase = detailMode ? liabNetBaseDetail : toGroupedLiab(liabNetBaseDetail);
+    const assetsTriggered = detailMode ? assetsTriggeredDetail : toGroupedAsset(assetsTriggeredDetail);
+    const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGroupedLiab(liabNetTriggeredDetail);
 
     const assetsAdjusted = assetsBase.concat([{ label: '簿外資産', value: futureLiabTotal, offBalance: true }]);
     const liabNetAdjusted = liabNetBase.concat([{ label: '将来負債', value: futureLiabTotal, offBalance: true }]);
@@ -347,14 +370,16 @@ document.addEventListener('DOMContentLoaded', function () {
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
     } : (() => {
       const blank = { label: '', value: 0 };
-      const groupDummy = (label) => ({ label, value: DUMMY_VALUE * 3 });
+      const assetDummy = { label: '', value: DUMMY_VALUE * 3, fill: GROUP_ASSET_FILL };
+      const netAssetsDummy = { label: '', value: DUMMY_VALUE * 1.5, fill: GROUP_NETASSETS_FILL };
+      const liabDummy = { label: '', value: DUMMY_VALUE * 1.5, fill: GROUP_LIAB_FILL };
       return {
-        a1: [blank, groupDummy(''), blank],
-        l1: [blank, groupDummy(''), blank],
-        a2: [blank, groupDummy(''), blank, dummySeg('簿外資産', true)],
-        l2: [blank, groupDummy(''), blank, dummySeg('簿外負債', true)],
-        a3: [blank, groupDummy(''), blank],
-        l3: [blank, groupDummy(''), blank],
+        a1: [blank, assetDummy, blank],
+        l1: [netAssetsDummy, liabDummy, blank],
+        a2: [blank, assetDummy, blank, dummySeg('簿外資産', true)],
+        l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true)],
+        a3: [blank, assetDummy, blank],
+        l3: [netAssetsDummy, liabDummy, blank],
       };
     })();
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
