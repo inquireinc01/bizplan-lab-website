@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const xAsset2Alone = xLiab1Alone + barWidth + groupGap;
   const xLiab2Alone = xAsset2Alone + barWidth + pairGap;
   const DUMMY_VALUE = 25; // ダミー表示用の共通仮値(万円換算は意味を持たない)
+  const groupSpanWidth = barWidth * 2 + pairGap; // 各BSの見出し・自己資本比率ボックスの幅(資産+負債・純資産+間隔)
 
   function segColor(label) {
     const map = {
@@ -315,11 +316,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // グループ見出し: 各BSのバー幅(資産+負債・純資産+間隔)と同じ幅の枠で囲む。
     // 予測BSだけは塗りつぶし+白抜き文字にして強調する(x/width位置は不変。y位置はupdateLayoutが毎回調整する)
-    const groupSpanWidth = barWidth * 2 + pairGap;
-    svgOut += `<rect id="title-1-box" x="${xAsset1}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5"/>`;
-    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">会計上のBS</text>`;
-    svgOut += `<rect id="title-2-box" x="${xAsset2}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5"/>`;
-    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="middle">実質的なBS</text>`;
+    svgOut += `<rect id="title-1-box" x="${xAsset1}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
+    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">会計上（決算書上）のBS</text>`;
+    svgOut += `<rect id="title-2-box" x="${xAsset2}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
+    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">実質的なBS</text>`;
+    // 将来予測BSの上に、自己資本比率(純資産÷資産)を表示する専用ボックス。債務超過時は表記・配色が切り替わる(updateEquityRatioBoxで更新)
+    svgOut += `<rect id="equity-ratio-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
+    svgOut += `<text id="equity-ratio-text" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
     svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
     svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測BS</text>`;
 
@@ -330,13 +333,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
+    fitTitleFonts();
+  }
+
+  // 見出し文字数(特に「会計上（決算書上）のBS」)が枠に収まるよう縮小し、3つの見出し+自己資本比率ボックスの
+  // フォントサイズを揃える(会計上のBSの見出しに必要なサイズに全体を合わせることで統一感を出す)
+  let equityFontSize = 13;
+  function fitTitleFonts() {
+    const maxW = groupSpanWidth - 10;
+    const t1 = document.getElementById('title-1');
+    let size = 13;
+    t1.setAttribute('font-size', size);
+    while (size > 9 && t1.getComputedTextLength() > maxW) {
+      size -= 1;
+      t1.setAttribute('font-size', size);
+    }
+    ['title-1', 'title-2', 'title-3'].forEach((id) => {
+      document.getElementById(id).setAttribute('font-size', size);
+    });
+    equityFontSize = size;
   }
 
   // 「予測BSを表示」がOFFのときに非表示にする要素(3組目のバー・見出し・矢印)
   const GROUP3_IDS = [
     'bs-a3-0', 'bs-a3-1', 'bs-a3-2', 'bs-a3-t0', 'bs-a3-t1', 'bs-a3-t2', 'bs-a3-total',
     'bs-l3-0', 'bs-l3-1', 'bs-l3-2', 'bs-l3-t0', 'bs-l3-t1', 'bs-l3-t2', 'bs-l3-total',
-    'title-3', 'title-3-box', 'predicted-arrow',
+    'title-3', 'title-3-box', 'predicted-arrow', 'equity-ratio-box', 'equity-ratio-text',
   ];
 
   // barKeyの全rect/textのx位置を一括で付け替える(予測BS表示ON/OFF切替用)
@@ -361,11 +383,19 @@ document.addEventListener('DOMContentLoaded', function () {
   // 会計上のBS・実質的なBSの2組だけをキャンバス中央へ寄せる(バーの大きさが変わらないようにするため)。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
-    const titleY = yBottom + negZone + 24;
-    const svgH = titleY + 12;
+    const zoneBottom = yBottom + negZone;
+    // 将来予測BSの上に自己資本比率ボックスを1段追加した分、見出し行全体を下にずらして確保する
+    const equityBoxH = 22;
+    const equityBoxTop = zoneBottom + 10;
+    const titleBoxTop = equityBoxTop + equityBoxH + 8;
+    const titleBoxH = 24;
+    const titleY = titleBoxTop + 17;
+    const svgH = titleBoxTop + titleBoxH + 8;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
     ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
-    ['title-1-box', 'title-2-box', 'title-3-box'].forEach((id) => setY(id, titleY - 17));
+    ['title-1-box', 'title-2-box', 'title-3-box'].forEach((id) => setY(id, titleBoxTop));
+    setY('equity-ratio-box', equityBoxTop);
+    setY('equity-ratio-text', equityBoxTop + 16);
     GROUP3_IDS.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.style.display = showPredicted ? '' : 'none';
@@ -403,6 +433,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (text.getComputedTextLength() > maxWidth) {
       text.textContent = '';
+    }
+  }
+
+  // 将来予測BSの上の自己資本比率ボックスを更新する。
+  // 純資産(予測後)がマイナス、または資産合計(予測後)が0以下になる場合は「債務超過」表記に切り替え、
+  // 薄い赤背景+濃い赤文字にして視認性を高める(通常時は薄いブルーグレー背景+濃いブルーグレー文字)。
+  // active=falseのとき(未入力時のダミー表示)は数値を出さず項目名だけを表示する。
+  function updateEquityRatioBox(netAssetsVal, totalAssetsVal, active) {
+    const box = document.getElementById('equity-ratio-box');
+    const text = document.getElementById('equity-ratio-text');
+    if (!box || !text) return;
+    const maxW = groupSpanWidth - 10;
+    if (!active) {
+      box.setAttribute('fill', '#e4ebf0');
+      box.setAttribute('stroke', '#c3d0d9');
+      text.setAttribute('fill', '#3d4f5c');
+      fitSingleLine(text, '自己資本比率', maxW, equityFontSize);
+      return;
+    }
+    const isDebtExcess = netAssetsVal < 0 || totalAssetsVal <= 0;
+    if (isDebtExcess) {
+      box.setAttribute('fill', '#fbe4e4');
+      box.setAttribute('stroke', '#e3b3b3');
+      text.setAttribute('fill', '#a02020');
+      fitSingleLine(text, '債務超過', maxW, equityFontSize);
+    } else {
+      const ratio = (netAssetsVal / totalAssetsVal) * 100;
+      box.setAttribute('fill', '#e4ebf0');
+      box.setAttribute('stroke', '#c3d0d9');
+      text.setAttribute('fill', '#3d4f5c');
+      fitSingleLine(text, `自己資本比率 ${ratio.toFixed(1)}%`, maxW, equityFontSize);
     }
   }
 
@@ -590,6 +651,10 @@ document.addEventListener('DOMContentLoaded', function () {
       a2: assetsAdjusted, l2: liabNetAdjusted,
       a3: assetsTriggered, l3: liabNetTriggered,
     }, pxPerYen, true);
+
+    // 将来予測BS(取り崩し後)の自己資本比率 = 予測後の純資産 ÷ 予測後の資産合計
+    const predictedTotalAssets = otherAssetsTriggered + fixedAssetsTriggered + curAssetsTriggered;
+    updateEquityRatioBox(netAssetsTriggered, predictedTotalAssets, true);
   }
 
   // 未入力時: 流動資産/固定資産/その他資産/流動負債/固定負債/純資産/簿外資産/簿外負債を
@@ -626,6 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })();
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
     updateChart(dataByBar, pxPerYen, false, true);
+    updateEquityRatioBox(null, null, false);
   }
 
   // 入力が変わるたびにリアルタイムで再計算・再描画する
