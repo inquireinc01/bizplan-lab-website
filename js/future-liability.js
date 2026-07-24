@@ -20,10 +20,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== グラフの「予測BSあり/なし」トグル(初期値はなし=非表示) =====
-  // 予測BSがONの時だけ、その計算に関わる「生命保険あり/なし」ボタンを表示する
+  // 予測BSがONの時だけ、その計算に関わる「生命保険あり/なし」「次世代BSあり/なし」ボタンを表示する
   let showPredicted = false;
   const showPredictedToggle = document.getElementById('showPredictedToggle');
   const insuranceToggleEl = document.getElementById('insuranceToggle');
+  const showPredicted2ToggleEl = document.getElementById('showPredicted2Toggle');
   if (showPredictedToggle) {
     showPredictedToggle.addEventListener('click', function () {
       showPredicted = !showPredicted;
@@ -31,6 +32,21 @@ document.addEventListener('DOMContentLoaded', function () {
       showPredictedToggle.setAttribute('aria-pressed', String(showPredicted));
       showPredictedToggle.querySelector('.toggle-label').textContent = showPredicted ? '予測BSあり' : '予測BSなし';
       if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !showPredicted);
+      if (showPredicted2ToggleEl) showPredicted2ToggleEl.classList.toggle('is-collapsed', !showPredicted);
+      recompute();
+    });
+  }
+
+  // ===== 将来予測BSの右にさらに「次世代将来負債」を加味した将来予測実質BSを表示する「次世代BSあり/なし」トグル =====
+  // (将来予測BSの数値を土台に、さらに次世代将来負債を取り崩すため、予測BSがONの時だけボタンを表示する)
+  let showPredicted2 = false;
+  const showPredicted2Toggle = document.getElementById('showPredicted2Toggle');
+  if (showPredicted2Toggle) {
+    showPredicted2Toggle.addEventListener('click', function () {
+      showPredicted2 = !showPredicted2;
+      showPredicted2Toggle.classList.toggle('is-on', showPredicted2);
+      showPredicted2Toggle.setAttribute('aria-pressed', String(showPredicted2));
+      showPredicted2Toggle.querySelector('.toggle-label').textContent = showPredicted2 ? '次世代BSあり' : '次世代BSなし';
       recompute();
     });
   }
@@ -161,6 +177,19 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('checkFutureLiabTotal').textContent = anyFilled ? man(futureLiabTotalNow()) : '-';
   }
 
+  // 次世代将来負債(将来予測実質BSで使う、将来負債とは別枠の追加入力。未入力の項目は0として扱う任意入力)
+  const NEXT_FUTURE_LIAB_IDS = ['nextRetirement', 'nextSuccession', 'nextOtherFuture'];
+  function nextFutureLiabTotalNow() {
+    return NEXT_FUTURE_LIAB_IDS.reduce((s, id) => {
+      const v = num(id).value;
+      return s + (isNaN(v) ? 0 : v);
+    }, 0);
+  }
+  function updateNextFutureLiabTotal() {
+    const anyFilled = NEXT_FUTURE_LIAB_IDS.some((id) => !isNaN(num(id).value));
+    document.getElementById('checkNextFutureLiabTotal').textContent = anyFilled ? man(nextFutureLiabTotalNow()) : '-';
+  }
+
   // ===== 簿外資産(将来負債の備え): 生命保険金+その他で足りない分を「不足分」に自動で入れ、
   // 3項目の合計(簿外負債合計)が将来負債合計と一致するようにする =====
   const OFF_BALANCE_ASSET_IDS = ['lifeInsurance', 'otherCoverage'];
@@ -191,9 +220,13 @@ document.addEventListener('DOMContentLoaded', function () {
   OFF_BALANCE_ASSET_IDS.forEach((id) => {
     document.getElementById(id).addEventListener('input', updateOffBalanceAsset);
   });
+  NEXT_FUTURE_LIAB_IDS.forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateNextFutureLiabTotal);
+  });
   updateBalanceCheck();
   updateFutureLiabTotal();
   updateOffBalanceAsset();
+  updateNextFutureLiabTotal();
 
   // グラフは値が変わった時になめらかにアニメーションするよう、rect/text要素を
   // 毎回作り直さず既存要素のy/height/textContentだけを更新する
@@ -219,6 +252,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const xAsset3 = xLiab2 + barWidth + groupGap;
   const xLiab3 = xAsset3 + barWidth + pairGap;
   const arrowX = xLiab2 + barWidth + groupGap / 2;
+  // 将来予測実質BS(次世代将来負債を加味したさらに先のBS)は「次世代BSあり」の時だけ、将来予測BSの右側に追加で表示する。
+  // 会計上・実質的・将来予測の3組(W=700)の大きさ・位置は変えず、キャンバス幅だけを必要な分右に広げる
+  const xAsset4 = xLiab3 + barWidth + groupGap;
+  const xLiab4 = xAsset4 + barWidth + pairGap;
+  const arrowX34 = xLiab3 + barWidth + groupGap / 2;
+  const W4 = xLiab4 + barWidth + xAsset1; // 4組目まで表示する時のキャンバス幅(右側にxAsset1と同じ余白を確保)
   // 「予測BSを表示」がOFFのとき用: 会計上のBS・実質的なBSの2組だけをキャンバス(W)の中央に寄せた位置。
   // グラフ全体のサイズ(viewBox幅)は変えず、バーの位置だけをずらすことで、表示切替時にバーの大きさが変わらないようにする
   const totalBarsWidth2 = barWidth * 4 + pairGap * 2 + groupGap;
@@ -299,6 +338,8 @@ document.addEventListener('DOMContentLoaded', function () {
     l2: { x: xLiab2, segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS) },
     a3: { x: xAsset3, segs: ASSET_SEGS_BASE },
     l3: { x: xLiab3, segs: LIAB_SEGS_BASE },
+    a4: { x: xAsset4, segs: ASSET_SEGS_BASE },
+    l4: { x: xLiab4, segs: LIAB_SEGS_BASE },
   };
 
   let chartInitialized = false;
@@ -347,14 +388,19 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<text id="equity-text-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
     svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
     svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測BS</text>`;
+    svgOut += `<rect id="equity-box-4" x="${xAsset4}" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
+    svgOut += `<text id="equity-text-4" x="${(xAsset4 + xLiab4 + barWidth) / 2}" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
+    svgOut += `<rect id="title-4-box" x="${xAsset4}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
+    svgOut += `<text id="title-4" x="${(xAsset4 + xLiab4 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測実質BS</text>`;
 
-    // 会計上のBS → 実質的なBS、実質的なBS → 予測BS を結ぶ矢印。
+    // 会計上のBS → 実質的なBS、実質的なBS → 予測BS、予測BS → 予測実質BS を結ぶ矢印。
     // 細い矢印記号ではなく塗りつぶした三角形にして、2つのエリアの区切りを分かりやすくする
     // (会計上→実質的の矢印は「予測BSを表示」OFF時に会計上・実質的の2組が中央寄せされるため、x位置をupdateLayoutで毎回更新する)
     const arrowCenterY = (yTop + yBottom) / 2;
     const arrowX12Init = xLiab1 + barWidth + groupGap / 2;
     svgOut += `<polygon id="arrow-12" points="${arrowX12Init - 9},${arrowCenterY - 13} ${arrowX12Init - 9},${arrowCenterY + 13} ${arrowX12Init + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
     svgOut += `<polygon id="predicted-arrow" points="${arrowX - 9},${arrowCenterY - 13} ${arrowX - 9},${arrowCenterY + 13} ${arrowX + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
+    svgOut += `<polygon id="arrow-34" points="${arrowX34 - 9},${arrowCenterY - 13} ${arrowX34 - 9},${arrowCenterY + 13} ${arrowX34 + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
@@ -373,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function () {
       size -= 1;
       t1.setAttribute('font-size', size);
     }
-    ['title-1', 'title-2', 'title-3'].forEach((id) => {
+    ['title-1', 'title-2', 'title-3', 'title-4'].forEach((id) => {
       document.getElementById(id).setAttribute('font-size', size);
     });
     equityFontSize = size;
@@ -384,6 +430,12 @@ document.addEventListener('DOMContentLoaded', function () {
     'bs-a3-0', 'bs-a3-1', 'bs-a3-2', 'bs-a3-t0', 'bs-a3-t1', 'bs-a3-t2', 'bs-a3-total',
     'bs-l3-0', 'bs-l3-1', 'bs-l3-2', 'bs-l3-t0', 'bs-l3-t1', 'bs-l3-t2', 'bs-l3-total',
     'title-3', 'title-3-box', 'predicted-arrow',
+  ];
+  // 「次世代BSを表示」がONかつ「予測BSを表示」がONの時だけ表示する要素(4組目のバー・見出し・矢印)
+  const GROUP4_IDS = [
+    'bs-a4-0', 'bs-a4-1', 'bs-a4-2', 'bs-a4-t0', 'bs-a4-t1', 'bs-a4-t2', 'bs-a4-total',
+    'bs-l4-0', 'bs-l4-1', 'bs-l4-2', 'bs-l4-t0', 'bs-l4-t1', 'bs-l4-t2', 'bs-l4-total',
+    'title-4', 'title-4-box', 'arrow-34',
   ];
 
   // barKeyの全rect/textのx位置を一括で付け替える(予測BS表示ON/OFF切替用)
@@ -418,15 +470,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const titleY = titleBoxTop + 17;
     const svgH = titleBoxTop + titleBoxH + 8;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
-    ['title-1', 'title-2', 'title-3'].forEach((id) => setY(id, titleY));
-    ['title-1-box', 'title-2-box', 'title-3-box'].forEach((id) => setY(id, titleBoxTop));
-    ['equity-box-1', 'equity-box-2', 'equity-box-3'].forEach((id) => setY(id, equityBoxTop));
-    ['equity-text-1', 'equity-text-2', 'equity-text-3'].forEach((id) => setY(id, equityBoxTop + 16));
+    ['title-1', 'title-2', 'title-3', 'title-4'].forEach((id) => setY(id, titleY));
+    ['title-1-box', 'title-2-box', 'title-3-box', 'title-4-box'].forEach((id) => setY(id, titleBoxTop));
+    ['equity-box-1', 'equity-box-2', 'equity-box-3', 'equity-box-4'].forEach((id) => setY(id, equityBoxTop));
+    ['equity-text-1', 'equity-text-2', 'equity-text-3', 'equity-text-4'].forEach((id) => setY(id, equityBoxTop + 16));
     GROUP3_IDS.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.style.display = showPredicted ? '' : 'none';
     });
-    // 自己資本比率ボックスの表示ON/OFFはトグルで切替(3組目は予測BS自体が非表示なら連動して隠す)
+    // 次世代BS(4組目)は「次世代BSあり」かつ「予測BSあり」の時だけ表示する(将来予測BSの数値が土台のため)
+    const showGroup4 = showPredicted2 && showPredicted;
+    GROUP4_IDS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = showGroup4 ? '' : 'none';
+    });
+    // 自己資本比率ボックスの表示ON/OFFはトグルで切替(3組目・4組目はそれぞれの元のBSが非表示なら連動して隠す)
     const setDisplay = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; };
     setDisplay('equity-box-1', showEquityRatio);
     setDisplay('equity-text-1', showEquityRatio);
@@ -434,6 +492,8 @@ document.addEventListener('DOMContentLoaded', function () {
     setDisplay('equity-text-2', showEquityRatio);
     setDisplay('equity-box-3', showEquityRatio && showPredicted);
     setDisplay('equity-text-3', showEquityRatio && showPredicted);
+    setDisplay('equity-box-4', showEquityRatio && showGroup4);
+    setDisplay('equity-text-4', showEquityRatio && showGroup4);
 
     const xA1 = showPredicted ? xAsset1 : xAsset1Alone;
     const xL1 = showPredicted ? xLiab1 : xLiab1Alone;
@@ -460,7 +520,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const svg = document.getElementById('bsChart');
-    if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
+    // 次世代BS(4組目)を表示する時だけ、会計上・実質的・将来予測の3組の大きさ・位置は変えずキャンバス幅を右へ広げる
+    const svgW = showGroup4 ? W4 : W;
+    if (svg) svg.setAttribute('viewBox', `0 0 ${svgW.toFixed(1)} ${svgH.toFixed(1)}`);
   }
 
   // 1行に収まらない要素名+金額は、判読できる最小サイズ(6px)まで自動的に縮小して収める。
@@ -711,18 +773,47 @@ document.addEventListener('DOMContentLoaded', function () {
     const assetsAdjusted = assetsBase.concat(offBalanceAssetSegs);
     const liabNetAdjusted = liabNetBase.concat(offBalanceLiabSegs);
 
+    // 将来予測実質BS(4組目): 将来予測BSの取り崩し後の数値を土台に、次世代将来負債でさらに取り崩す2段目のシミュレーション。
+    // 次世代将来負債の各項目は任意入力のため、未入力は0として扱う(このBS単体を空欄にしても他のBSはブロックしない)
+    const nextFutureLiabTotal = nextFutureLiabTotalNow();
+    let remaining2 = nextFutureLiabTotal;
+    const take1b = Math.min(remaining2, Math.max(curAssetsTriggered, 0));
+    const curAssetsFinal = curAssetsTriggered - take1b;
+    remaining2 -= take1b;
+    const take2b = Math.min(remaining2, Math.max(otherAssetsTriggered, 0));
+    const otherAssetsFinal = otherAssetsTriggered - take2b;
+    remaining2 -= take2b;
+    const fixedAssetsFinal = fixedAssetsTriggered - remaining2;
+    const netAssetsFinal = netAssetsTriggered - nextFutureLiabTotal;
+
+    const assetsFinalDetail = [
+      { label: 'その他資産', value: otherAssetsFinal },
+      { label: '固定資産', value: fixedAssetsFinal },
+      { label: '流動資産', value: curAssetsFinal },
+    ];
+    const liabNetFinalDetail = [
+      { label: '純資産', value: netAssetsFinal },
+      { label: '固定負債', value: fields.fixedLiab.value },
+      { label: '流動負債', value: fields.curLiab.value },
+    ];
+    const assetsFinal = detailMode ? assetsFinalDetail : toGroupedAsset(assetsFinalDetail);
+    const liabNetFinal = detailMode ? liabNetFinalDetail : toGroupedLiab(liabNetFinalDetail);
+
     updateChart({
       a1: assetsBase, l1: liabNetBase,
       a2: assetsAdjusted, l2: liabNetAdjusted,
       a3: assetsTriggered, l3: liabNetTriggered,
+      a4: assetsFinal, l4: liabNetFinal,
     }, pxPerYen, true);
 
     // 将来予測BS(取り崩し後)の自己資本比率 = 予測後の純資産 ÷ 予測後の資産合計
     const predictedTotalAssets = otherAssetsTriggered + fixedAssetsTriggered + curAssetsTriggered;
+    const finalTotalAssets = otherAssetsFinal + fixedAssetsFinal + curAssetsFinal;
     // 会計上のBS: 自己資本比率 = 純資産 ÷ 資産。実質的なBS: 純資産 ÷ (簿外資産+資産)(将来負債への備えを資産に含めた実質ベース)
     updateEquityRatioBox('equity-box-1', 'equity-text-1', netAssets, totalBase, true);
     updateEquityRatioBox('equity-box-2', 'equity-text-2', netAssets, totalAdjusted, true);
     updateEquityRatioBox('equity-box-3', 'equity-text-3', netAssetsTriggered, predictedTotalAssets, true);
+    updateEquityRatioBox('equity-box-4', 'equity-text-4', netAssetsFinal, finalTotalAssets, true);
   }
 
   // 未入力時: 流動資産/固定資産/その他資産/流動負債/固定負債/純資産/簿外資産/簿外負債を
@@ -742,6 +833,8 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: 'その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
+      a4: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
+      l4: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
     } : (() => {
       const blank = { label: '', value: 0 };
       const assetDummy = { label: '資産', value: DUMMY_VALUE * 3, fill: GROUP_ASSET_FILL, fillOpacity: GROUP_FILL_OPACITY };
@@ -755,6 +848,8 @@ document.addEventListener('DOMContentLoaded', function () {
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
         a3: [blank, assetDummy, blank],
         l3: [netAssetsDummy, liabDummy, blank],
+        a4: [blank, assetDummy, blank],
+        l4: [netAssetsDummy, liabDummy, blank],
       };
     })();
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
@@ -762,6 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateEquityRatioBox('equity-box-1', 'equity-text-1', null, null, false);
     updateEquityRatioBox('equity-box-2', 'equity-text-2', null, null, false);
     updateEquityRatioBox('equity-box-3', 'equity-text-3', null, null, false);
+    updateEquityRatioBox('equity-box-4', 'equity-text-4', null, null, false);
   }
 
   // 入力が変わるたびにリアルタイムで再計算・再描画する
@@ -784,7 +880,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 明らかな異常値(桁あふれ)だけはエラー表示で入力を促す。未入力(NaN)はエラーにせず、
     // 下記でダミーBSを表示して「入力すれば正確な形に変わる」ことを伝える。
-    for (const [key, field] of Object.entries(fields)) {
+    // 次世代将来負債(任意入力)もanyEmptyの対象にはしないが、桁あふれチェックだけは同様に行う。
+    const overflowFields = Object.entries(fields).concat(NEXT_FUTURE_LIAB_IDS.map((id) => [id, num(id)]));
+    for (const [key, field] of overflowFields) {
       if (!isNaN(field.value) && Math.abs(field.value) > MAX_VALUE) {
         showError(`入力できる金額は ${man(MAX_VALUE)} までです。数値をご確認ください。`);
         field.el.focus();

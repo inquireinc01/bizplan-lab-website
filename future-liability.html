@@ -152,6 +152,7 @@
           <div class="calc-section bg-gray-50 p-6 sm:p-8">
             <div class="mb-4 flex flex-wrap justify-end gap-2">
               <button type="button" id="showPredictedToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">予測BSなし</span></button>
+              <button type="button" id="showPredicted2Toggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact overlay-toggle-collapsible is-collapsed"><span class="dot"></span><span class="toggle-label">次世代BSなし</span></button>
               <button type="button" id="bsDetailToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">BS内訳非表示</span></button>
               <button type="button" id="equityRatioToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">自己資本非表示</span></button>
               <button type="button" id="insuranceToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact overlay-toggle-collapsible is-collapsed"><span class="dot"></span><span class="toggle-label">生命保険なし</span></button>
@@ -258,6 +259,29 @@
                 <span id="checkFutureLiabTotal" class="text-sm font-bold">-</span>
               </div>
             </div>
+
+            <!-- 次世代将来負債(将来予測実質BSで使う追加の将来負債。任意入力) -->
+            <div class="rounded-lg border border-gray-200 overflow-hidden">
+              <div class="text-white text-sm font-bold text-center py-2" style="background-color:#bf6b6b">次世代将来負債</div>
+              <div class="divide-y divide-gray-100 px-3">
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="nextRetirement" class="text-xs text-gray-600">退職金</label>
+                  <input type="number" id="nextRetirement" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="nextSuccession" class="text-xs text-gray-600">事業承継対策資金</label>
+                  <input type="number" id="nextSuccession" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="nextOtherFuture" class="text-xs text-gray-600">その他</label>
+                  <input type="number" id="nextOtherFuture" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
+                <span class="text-xs font-bold">合計</span>
+                <span id="checkNextFutureLiabTotal" class="text-sm font-bold">-</span>
+              </div>
+            </div>
           </div>
           <div class="mt-3 flex justify-end"><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></div>
         </div>
@@ -355,6 +379,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/future-liability.js?v=20260724k"></script>
+<script src="js/future-liability.js?v=20260724l"></script>
 </body>
 </html>
