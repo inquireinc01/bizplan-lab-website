@@ -331,6 +331,16 @@ document.addEventListener('DOMContentLoaded', function () {
     { label: '事業承継', offBalance: true, assetSide: false },
     { label: 'その他', offBalance: true, assetSide: false },
   ];
+  // a4/l4の簿外部分(次世代将来負債)。資産側は生命保険等の充当区分が無いため常に1本、
+  // 負債側はa2/l2と同様、ひとまとめ表示では1本・内訳表示では3本(次世代退職金/次世代事業承継/次世代その他)に分かれる
+  const OFF_BALANCE_ASSET_SEGS_4 = [
+    { label: '次世代簿外資産', offBalance: true, assetSide: true },
+  ];
+  const OFF_BALANCE_LIAB_SEGS_4 = [
+    { label: '次世代退職金', offBalance: true, assetSide: false },
+    { label: '次世代事業承継', offBalance: true, assetSide: false },
+    { label: '次世代その他', offBalance: true, assetSide: false },
+  ];
   const BAR_DEFS = {
     a1: { x: xAsset1, segs: ASSET_SEGS_BASE },
     l1: { x: xLiab1, segs: LIAB_SEGS_BASE },
@@ -338,8 +348,8 @@ document.addEventListener('DOMContentLoaded', function () {
     l2: { x: xLiab2, segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS) },
     a3: { x: xAsset3, segs: ASSET_SEGS_BASE },
     l3: { x: xLiab3, segs: LIAB_SEGS_BASE },
-    a4: { x: xAsset4, segs: ASSET_SEGS_BASE },
-    l4: { x: xLiab4, segs: LIAB_SEGS_BASE },
+    a4: { x: xAsset4, segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS_4) },
+    l4: { x: xLiab4, segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS_4) },
   };
 
   let chartInitialized = false;
@@ -433,8 +443,9 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
   // 「次世代BSを表示」がONかつ「予測BSを表示」がONの時だけ表示する要素(4組目のバー・見出し・矢印)
   const GROUP4_IDS = [
-    'bs-a4-0', 'bs-a4-1', 'bs-a4-2', 'bs-a4-t0', 'bs-a4-t1', 'bs-a4-t2', 'bs-a4-total',
-    'bs-l4-0', 'bs-l4-1', 'bs-l4-2', 'bs-l4-t0', 'bs-l4-t1', 'bs-l4-t2', 'bs-l4-total',
+    'bs-a4-0', 'bs-a4-1', 'bs-a4-2', 'bs-a4-3', 'bs-a4-t0', 'bs-a4-t1', 'bs-a4-t2', 'bs-a4-t3', 'bs-a4-total', 'bs-a4-offborder',
+    'bs-l4-0', 'bs-l4-1', 'bs-l4-2', 'bs-l4-3', 'bs-l4-4', 'bs-l4-5',
+    'bs-l4-t0', 'bs-l4-t1', 'bs-l4-t2', 'bs-l4-t3', 'bs-l4-t4', 'bs-l4-t5', 'bs-l4-total', 'bs-l4-offborder',
     'title-4', 'title-4-box', 'arrow-34',
   ];
 
@@ -703,8 +714,6 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
     const totalBase = fields.curAssets.value + fields.fixedAssets.value + fields.otherAssets.value;
     const totalAdjusted = totalBase + futureLiabTotal;
-    const maxTotal = Math.max(totalAdjusted, 1);
-    const pxPerYen = plotH / maxTotal;
 
     // 簿外資産(準備状況)は表示モードに関わらず常に集計する。
     // 内訳表示のときは、簿外資産を「充当分(生命保険金+その他)」「不足分」に、
@@ -731,6 +740,22 @@ document.addEventListener('DOMContentLoaded', function () {
     remaining -= take2;
     const fixedAssetsTriggered = fields.fixedAssets.value - remaining;
     const netAssetsTriggered = netAssets - impactAmount;
+
+    // 次世代将来負債(任意入力、未入力は0として扱う)。将来予測実質BSは将来予測BSの数値をそのまま土台にし、
+    // その上に簿外資産(=次世代将来負債と自動的に同額)/次世代将来負債を乗せるだけで、2段目の取り崩しは行わない
+    // (会計上のBS→実質的なBSの関係と同じ: 実質的なBSも数値は据え置きで、上に簿外資産/将来負債を乗せるだけ)
+    const nextFutureLiabTotal = nextFutureLiabTotalNow();
+
+    // 将来予測実質BSの上にも次世代将来負債を積むため、そのゾーンの高さ分もスケールに含めて
+    // どんなに次世代将来負債が大きくてもグラフ上端をはみ出さないようにする。
+    // 純資産・固定資産等が取り崩され尽くしてマイナスになった項目は下向きの帯に積まれ上向きの高さに寄与しないため、
+    // 上向きに積まれる高さの見積もりには正の成分だけを合算する(そうしないと簿外ゾーンの高さを過小評価してしまう)。
+    // 資産側・負債側で別々に見積もって大きい方を基準にする(取り崩し後は資産合計と負債合計が一致しなくなるため)
+    const positiveTriggeredAssets = Math.max(otherAssetsTriggered, 0) + Math.max(fixedAssetsTriggered, 0) + Math.max(curAssetsTriggered, 0);
+    const positiveTriggeredLiab = Math.max(netAssetsTriggered, 0) + fields.fixedLiab.value + fields.curLiab.value;
+    const triggeredStackMax = Math.max(positiveTriggeredAssets, positiveTriggeredLiab) + nextFutureLiabTotal;
+    const maxTotal = Math.max(totalAdjusted, triggeredStackMax, 1);
+    const pxPerYen = plotH / maxTotal;
 
     const assetsTriggeredDetail = [
       { label: 'その他資産', value: otherAssetsTriggered },
@@ -770,50 +795,48 @@ document.addEventListener('DOMContentLoaded', function () {
           { label: '', value: 0, offBalance: true, assetSide: false },
         ];
 
+    // 次世代簿外資産/次世代将来負債(将来予測BSの数値の上に載せるゾーン)。
+    // 簿外資産側の値は自動的に次世代将来負債の合計と同額にする(生命保険等の充当区分は無いため常に1本)
+    const nextOffBalanceAssetSegs = [
+      { label: '次世代簿外資産', value: nextFutureLiabTotal, offBalance: true, assetSide: true },
+    ];
+    const nextOffBalanceLiabSegs = detailMode
+      ? [
+          { label: '次世代退職金', value: num('nextRetirement').value, offBalance: true, assetSide: false },
+          { label: '次世代事業承継', value: num('nextSuccession').value, offBalance: true, assetSide: false },
+          { label: '次世代その他', value: num('nextOtherFuture').value, offBalance: true, assetSide: false },
+        ]
+      : [
+          { label: '次世代将来負債', value: nextFutureLiabTotal, offBalance: true, assetSide: false },
+          { label: '', value: 0, offBalance: true, assetSide: false },
+          { label: '', value: 0, offBalance: true, assetSide: false },
+        ];
+    // detailMode時、次世代将来負債の各項目が未入力(NaN)だと積み上げが崩れるため0に補正する
+    nextOffBalanceLiabSegs.forEach((seg) => { if (isNaN(seg.value)) seg.value = 0; });
+
     const assetsAdjusted = assetsBase.concat(offBalanceAssetSegs);
     const liabNetAdjusted = liabNetBase.concat(offBalanceLiabSegs);
-
-    // 将来予測実質BS(4組目): 将来予測BSの取り崩し後の数値を土台に、次世代将来負債でさらに取り崩す2段目のシミュレーション。
-    // 次世代将来負債の各項目は任意入力のため、未入力は0として扱う(このBS単体を空欄にしても他のBSはブロックしない)
-    const nextFutureLiabTotal = nextFutureLiabTotalNow();
-    let remaining2 = nextFutureLiabTotal;
-    const take1b = Math.min(remaining2, Math.max(curAssetsTriggered, 0));
-    const curAssetsFinal = curAssetsTriggered - take1b;
-    remaining2 -= take1b;
-    const take2b = Math.min(remaining2, Math.max(otherAssetsTriggered, 0));
-    const otherAssetsFinal = otherAssetsTriggered - take2b;
-    remaining2 -= take2b;
-    const fixedAssetsFinal = fixedAssetsTriggered - remaining2;
-    const netAssetsFinal = netAssetsTriggered - nextFutureLiabTotal;
-
-    const assetsFinalDetail = [
-      { label: 'その他資産', value: otherAssetsFinal },
-      { label: '固定資産', value: fixedAssetsFinal },
-      { label: '流動資産', value: curAssetsFinal },
-    ];
-    const liabNetFinalDetail = [
-      { label: '純資産', value: netAssetsFinal },
-      { label: '固定負債', value: fields.fixedLiab.value },
-      { label: '流動負債', value: fields.curLiab.value },
-    ];
-    const assetsFinal = detailMode ? assetsFinalDetail : toGroupedAsset(assetsFinalDetail);
-    const liabNetFinal = detailMode ? liabNetFinalDetail : toGroupedLiab(liabNetFinalDetail);
+    // 将来予測実質BS = 将来予測BSの数値(assetsTriggered/liabNetTriggered)をそのまま土台にし、次世代将来負債を上に乗せるだけ
+    const assetsFinalAdjusted = assetsTriggered.concat(nextOffBalanceAssetSegs);
+    const liabNetFinalAdjusted = liabNetTriggered.concat(nextOffBalanceLiabSegs);
 
     updateChart({
       a1: assetsBase, l1: liabNetBase,
       a2: assetsAdjusted, l2: liabNetAdjusted,
       a3: assetsTriggered, l3: liabNetTriggered,
-      a4: assetsFinal, l4: liabNetFinal,
+      a4: assetsFinalAdjusted, l4: liabNetFinalAdjusted,
     }, pxPerYen, true);
 
     // 将来予測BS(取り崩し後)の自己資本比率 = 予測後の純資産 ÷ 予測後の資産合計
     const predictedTotalAssets = otherAssetsTriggered + fixedAssetsTriggered + curAssetsTriggered;
-    const finalTotalAssets = otherAssetsFinal + fixedAssetsFinal + curAssetsFinal;
+    // 将来予測実質BSの自己資本比率 = 将来予測BSの純資産 ÷ (次世代簿外資産+将来予測BSの資産合計)
+    // (実質的なBSが会計上のBSの数値+簿外資産で計算するのと同じ考え方)
+    const predictedTotalAdjusted = predictedTotalAssets + nextFutureLiabTotal;
     // 会計上のBS: 自己資本比率 = 純資産 ÷ 資産。実質的なBS: 純資産 ÷ (簿外資産+資産)(将来負債への備えを資産に含めた実質ベース)
     updateEquityRatioBox('equity-box-1', 'equity-text-1', netAssets, totalBase, true);
     updateEquityRatioBox('equity-box-2', 'equity-text-2', netAssets, totalAdjusted, true);
     updateEquityRatioBox('equity-box-3', 'equity-text-3', netAssetsTriggered, predictedTotalAssets, true);
-    updateEquityRatioBox('equity-box-4', 'equity-text-4', netAssetsFinal, finalTotalAssets, true);
+    updateEquityRatioBox('equity-box-4', 'equity-text-4', netAssetsTriggered, predictedTotalAdjusted, true);
   }
 
   // 未入力時: 流動資産/固定資産/その他資産/流動負債/固定負債/純資産/簿外資産/簿外負債を
@@ -833,8 +856,12 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: 'その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
-      a4: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
-      l4: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
+      a4: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
+        { label: '次世代簿外資産', value: DUMMY_VALUE, offBalance: true, assetSide: true }],
+      l4: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
+        { label: '次世代退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: '次世代事業承継', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: '次世代その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
     } : (() => {
       const blank = { label: '', value: 0 };
       const assetDummy = { label: '資産', value: DUMMY_VALUE * 3, fill: GROUP_ASSET_FILL, fillOpacity: GROUP_FILL_OPACITY };
@@ -848,8 +875,8 @@ document.addEventListener('DOMContentLoaded', function () {
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
         a3: [blank, assetDummy, blank],
         l3: [netAssetsDummy, liabDummy, blank],
-        a4: [blank, assetDummy, blank],
-        l4: [netAssetsDummy, liabDummy, blank],
+        a4: [blank, assetDummy, blank, dummySeg('次世代簿外資産', true, true)],
+        l4: [netAssetsDummy, liabDummy, blank, dummySeg('次世代将来負債', true, false), blank, blank],
       };
     })();
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
