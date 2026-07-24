@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 資産側は上から「流動資産→固定資産→その他資産」に見せたいため、下から積む配列では逆順にする
   const ASSET_SEGS_BASE = [{ label: 'その他資産' }, { label: '固定資産' }, { label: '流動資産' }];
   const LIAB_SEGS_BASE = [{ label: '純資産' }, { label: '固定負債' }, { label: '流動負債' }];
-  // a2/l2の簿外部分は、ひとまとめ表示では1本、内訳表示では複数本(充当分+不足分/退職金+事業承継+その他)に分かれるため、
+  // a2/l2の簿外部分は、ひとまとめ表示では1本、内訳表示では複数本(充当分+不足分/退職金+自社株買取+その他)に分かれるため、
   // 要素数が最大になる内訳表示の枠数で確保しておく(未使用の枠はvalue=0で非表示になる)
   const OFF_BALANCE_ASSET_SEGS = [
     { label: '充当分', offBalance: true, assetSide: true },
@@ -340,17 +340,17 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
   const OFF_BALANCE_LIAB_SEGS = [
     { label: '退職金', offBalance: true, assetSide: false },
-    { label: '事業承継', offBalance: true, assetSide: false },
+    { label: '自社株買取', offBalance: true, assetSide: false },
     { label: 'その他', offBalance: true, assetSide: false },
   ];
   // a4/l4の簿外部分(次世代将来負債)。資産側は生命保険等の充当区分が無いため常に1本、
-  // 負債側はa2/l2と同様、ひとまとめ表示では1本・内訳表示では3本(次世代退職金/次世代事業承継/次世代その他)に分かれる
+  // 負債側はa2/l2と同様、ひとまとめ表示では1本・内訳表示では3本(次世代退職金/次世代自社株買取/次世代その他)に分かれる
   const OFF_BALANCE_ASSET_SEGS_4 = [
     { label: '次世代簿外資産', offBalance: true, assetSide: true },
   ];
   const OFF_BALANCE_LIAB_SEGS_4 = [
     { label: '次世代退職金', offBalance: true, assetSide: false },
-    { label: '次世代事業承継', offBalance: true, assetSide: false },
+    { label: '次世代自社株買取', offBalance: true, assetSide: false },
     { label: '次世代その他', offBalance: true, assetSide: false },
   ];
   // x位置は持たず、常に0で初期化する(表示ON/OFFの組み合わせに応じてupdateLayoutが毎回設定するため)
@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 簿外資産(準備状況)は表示モードに関わらず常に集計する。
     // 内訳表示のときは、簿外資産を「充当分(生命保険金+その他)」「不足分」に、
-    // 簿外負債を「退職金」「事業承継」「その他」に分けて表示する(色は簿外資産/簿外負債のまま。不足分だけ白背景にする)
+    // 簿外負債を「退職金」「自社株買取」「その他」に分けて表示する(色は簿外資産/簿外負債のまま。不足分だけ白背景にする)
     const lifeInsRaw = num('lifeInsurance').value;
     const otherCovRaw = num('otherCoverage').value;
     const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
@@ -809,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const offBalanceLiabSegs = detailMode
       ? [
           { label: '退職金', value: fields.retirement.value, offBalance: true, assetSide: false },
-          { label: '事業承継', value: fields.succession.value, offBalance: true, assetSide: false },
+          { label: '自社株買取', value: fields.succession.value, offBalance: true, assetSide: false },
           { label: 'その他', value: fields.otherFuture.value, offBalance: true, assetSide: false },
         ]
       : [
@@ -826,7 +826,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const nextOffBalanceLiabSegs = detailMode
       ? [
           { label: '次世代退職金', value: num('nextRetirement').value, offBalance: true, assetSide: false },
-          { label: '次世代事業承継', value: num('nextSuccession').value, offBalance: true, assetSide: false },
+          { label: '次世代自社株買取', value: num('nextSuccession').value, offBalance: true, assetSide: false },
           { label: '次世代その他', value: num('nextOtherFuture').value, offBalance: true, assetSide: false },
         ]
       : [
@@ -875,7 +875,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
       l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
         { label: '退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
-        { label: '事業承継', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: '自社株買取', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
         { label: 'その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
@@ -883,7 +883,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: '次世代簿外資産', value: DUMMY_VALUE, offBalance: true, assetSide: true }],
       l4: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
         { label: '次世代退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
-        { label: '次世代事業承継', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: '次世代自社株買取', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
         { label: '次世代その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
     } : (() => {
       const blank = { label: '', value: 0 };

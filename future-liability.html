@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <title>将来負債×生命保険 | BizPlan Laboratory</title>
-<meta name="description" content="退職金や事業承継対策資金など、今後発生する将来負債に生命保険でどう備えられるかを現在のバランスシートと照らし合わせて見える化します。" />
+<meta name="description" content="退職金や自社株買取など、今後発生する将来負債に生命保険でどう備えられるかを現在のバランスシートと照らし合わせて見える化します。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
@@ -112,7 +112,7 @@
       <div>
         <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1">LIABILITY &amp; INSURANCE</p>
         <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">将来負債×生命保険<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
-        <p class="hero-info-text hidden">現在のバランスシート上の純資産は、退職金や事業承継対策資金といった「将来必ず発生する負債」を考慮していない場合があります。今後発生が見込まれる負債を入力し、生命保険でどこまで備えられるかを踏まえた実質的な余力を確認します。</p>
+        <p class="hero-info-text hidden">現在のバランスシート上の純資産は、退職金や自社株買取といった「将来必ず発生する負債」を考慮していない場合があります。今後発生が見込まれる負債を入力し、生命保険でどこまで備えられるかを踏まえた実質的な余力を確認します。</p>
       </div>
       <div class="hero-actions" data-backup-keys="bpl_future_liability_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
@@ -188,7 +188,7 @@
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
-                <span class="text-xs font-bold">総資産</span>
+                <span class="text-xs font-bold">合計</span>
                 <span id="checkTotalAssets" class="text-sm font-bold">-</span>
               </div>
             </div>
@@ -211,7 +211,7 @@
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
-                <span class="text-xs font-bold">負債・純資産合計</span>
+                <span class="text-xs font-bold">合計</span>
                 <span id="checkTotalLiabNet" class="text-sm font-bold">-</span>
               </div>
             </div>
@@ -229,12 +229,12 @@
                   <input type="number" id="otherCoverage" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
-                  <label for="shortfall" class="text-xs text-gray-600">不足分(自動入力)</label>
+                  <label for="shortfall" class="text-xs text-gray-600">不足分</label>
                   <input type="number" id="shortfall" readonly tabindex="-1" class="num-input form-input w-24 rounded px-2 py-1 text-sm bg-gray-100 text-gray-500 cursor-not-allowed" />
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
-                <span class="text-xs font-bold">簿外負債合計</span>
+                <span class="text-xs font-bold">合計</span>
                 <span id="checkOffBalanceTotal" class="text-sm font-bold">-</span>
               </div>
             </div>
@@ -248,7 +248,7 @@
                   <input type="number" id="retirement" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
-                  <label for="succession" class="text-xs text-gray-600">事業承継対策資金</label>
+                  <label for="succession" class="text-xs text-gray-600">自社株買取</label>
                   <input type="number" id="succession" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
@@ -271,7 +271,7 @@
                   <input type="number" id="nextRetirement" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
-                  <label for="nextSuccession" class="text-xs text-gray-600">事業承継対策資金</label>
+                  <label for="nextSuccession" class="text-xs text-gray-600">自社株買取</label>
                   <input type="number" id="nextSuccession" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
@@ -347,7 +347,7 @@
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
           <tr><td class="lbl">退職金</td><td id="pRetirement"></td></tr>
-          <tr><td class="lbl">事業承継対策資金</td><td id="pSuccession"></td></tr>
+          <tr><td class="lbl">自社株買取</td><td id="pSuccession"></td></tr>
           <tr><td class="lbl">その他</td><td id="pOtherFuture"></td></tr>
           <tr class="highlight"><td class="lbl">将来負債合計(必要準備資金)</td><td id="pFutureLiab"></td></tr>
         </tbody>
@@ -381,6 +381,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/future-liability.js?v=20260724t"></script>
+<script src="js/future-liability.js?v=20260724u"></script>
 </body>
 </html>
