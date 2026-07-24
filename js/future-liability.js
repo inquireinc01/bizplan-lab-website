@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== 会計上/実質的/将来予測/将来予測実質の4つのBSを個別に表示ON/OFFできるトグル群。
-  //       常に2つ以上は表示する(下限のみ制約)。4つ全部選んだ時だけ、1本1本が細くなりすぎないよう
-  //       updateLayoutでバー幅・間隔を縮小して適正化する(2〜3つの時は従来通りのサイズのまま)。
+  //       最低1つは表示する(下限のみ制約、上限なし)。4つ全部選んだ時だけ、1本1本が細くなりすぎないよう
+  //       updateLayoutでバー幅・間隔を縮小して適正化する(1〜3つの時は従来通りのサイズのまま)。
   //       デフォルトは会計上のBS・実質的なBSの2つ =====
   const showGroup = { 1: true, 2: true, 3: false, 4: false };
   const groupToggleEls = {
@@ -41,14 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function activeGroupCount() {
     return [1, 2, 3, 4].filter((n) => showGroup[n]).length;
   }
-  // 下限(2つ)に達しているボタンは押せないようにする(押しても変化しないだけでなく、見た目でも分かるようにする)。
-  // 上限は無く、4つ全部を選ぶこともできる(4つの時はupdateLayoutが自動でサイズを縮小する)
+  // 最低1つは表示が必要なため、残り1つの状態でそれをOFFにしようとするボタンだけ押せないようにする。
+  // 上限は無く、1〜4つの好きな数を選べる(4つの時はupdateLayoutが自動でサイズを縮小する)
   function updateGroupToggleAvailability() {
     const count = activeGroupCount();
     [1, 2, 3, 4].forEach((n) => {
       const btn = groupToggleEls[n];
       if (!btn) return;
-      btn.disabled = showGroup[n] && count <= 2;
+      btn.disabled = showGroup[n] && count <= 1;
     });
   }
   function setGroupToggleVisual(n, on) {
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!btn) return;
     btn.addEventListener('click', function () {
       const count = activeGroupCount();
-      if (showGroup[n] && count <= 2) return; // これ以上減らせない
+      if (showGroup[n] && count <= 1) return; // 最低1つは表示する
       showGroup[n] = !showGroup[n];
       setGroupToggleVisual(n, showGroup[n]);
       updateGroupToggleAvailability();
@@ -483,8 +483,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 見出し・SVG全体の高さを、債務超過の有無に応じて動的に調整する。
   // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
-  // 会計上/実質的/将来予測/将来予測実質の4つのBSは常に2組以上を選んで表示する仕様。
-  // 2〜3組の時はバーの大きさ・間隔を変えずに中央寄せで並べ直すだけだが、4組全部を選んだ時だけ
+  // 会計上/実質的/将来予測/将来予測実質の4つのBSは最低1組から自由に選んで表示できる仕様。
+  // 1〜3組の時はバーの大きさ・間隔を変えずに中央寄せで並べ直すだけだが、4組全部を選んだ時だけ
   // 1本1本が細くなりすぎないよう、FOUR_GROUP_SCALE分だけバー幅・間隔を縮小して収める。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
