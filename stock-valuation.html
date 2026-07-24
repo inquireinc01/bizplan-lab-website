@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607269" />
+<link rel="stylesheet" href="css/style.css?v=202607270" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -213,21 +213,7 @@
         <!-- 詳細0: 同族株主等の判定(第1表の1) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstepFamily">
           <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 3</span>同族株主等の判定<span class="help-tip" tabindex="0">?<span class="help-text">第1表の1に対応。STEP2「株主の状況」で入力した「グループ」ごとに株数割合(議決権割合の近似)を合計し、筆頭株主グループの割合から会社区分・各株主が同族株主等に該当するかを自動判定します。グループが空欄の株主は、株主名ごとに単独のグループとして扱います。</span></span></span></h3>
-          <div class="overflow-x-auto mb-4">
-            <table class="w-full text-xs border-collapse min-w-[420px]">
-              <thead>
-                <tr class="bg-[#0f2a4a] text-white">
-                  <th class="text-left font-bold px-2 py-1.5 rounded-tl-lg">判定項目</th>
-                  <th class="text-right font-bold px-2 py-1.5 rounded-tr-lg">内容</th>
-                </tr>
-              </thead>
-              <tbody id="famJudgeBody"></tbody>
-            </table>
-          </div>
-          <div class="notice-box text-sm rounded-lg p-4 flex items-center justify-between">
-            <span>会社区分</span>
-            <span id="famCompanyType" class="judge-badge">-</span>
-          </div>
+          <div id="famFlow" class="fam-flow mb-4"></div>
           <div class="overflow-x-auto mt-4">
             <table class="w-full text-xs border-collapse min-w-[420px]">
               <thead>
@@ -799,7 +785,7 @@
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/stock-simple.js?v=20260724d"></script>
-<script src="js/stock-detail.js?v=20260724l"></script>
+<script src="js/stock-detail.js?v=20260724m"></script>
 <script src="js/stock-tdb.js?v=20260724b"></script>
 <script src="js/stock-stepper.js?v=20260724c"></script>
 <script src="js/data-backup.js?v=20260722a"></script>

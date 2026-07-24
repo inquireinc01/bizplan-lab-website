@@ -341,10 +341,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== STEP3: 同族株主等の判定(第1表の1)。STEP2の株主データからグループごとの
   //       議決権割合(株数割合で近似)を集計し、会社区分・各株主の該当を自動判定する =====
   function judgeFamily() {
-    var famJudgeBody = document.getElementById('famJudgeBody');
-    var famCompanyType = document.getElementById('famCompanyType');
+    var famFlow = document.getElementById('famFlow');
     var famHolderBody = document.getElementById('famHolderBody');
-    if (!famJudgeBody || !famCompanyType || !famHolderBody) return;
+    if (!famFlow || !famHolderBody) return;
     var holderBody = document.getElementById('ssHolderBody');
     var baseShares = num('ssShares');
     var rows = holderBody ? Array.prototype.slice.call(holderBody.querySelectorAll('.ss-holder')) : [];
@@ -372,32 +371,37 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     var topRatio = topGroup ? groups[topGroup].ratio : 0;
 
-    var companyType, badgeColor;
+    var pct = function (n) { return n.toFixed(2) + '%'; };
+    var companyType;
     if (!entries.length) {
       companyType = 'STEP2で株主を入力してください';
-      badgeColor = '#9ca3af';
     } else if (topRatio > 50) {
       companyType = '同族株主のいる会社(50%超基準)';
-      badgeColor = 'var(--color-navy)';
     } else if (topRatio >= 30) {
       companyType = '同族株主のいる会社(30%以上50%以下基準)';
-      badgeColor = 'var(--color-navy)';
     } else {
       companyType = '同族株主のいない会社';
-      badgeColor = 'var(--color-red)';
     }
-    famCompanyType.textContent = companyType;
-    famCompanyType.style.backgroundColor = badgeColor;
 
-    var pct = function (n) { return n.toFixed(2) + '%'; };
-    var judgeRows = [
-      ['筆頭株主グループ', topGroup ? topGroup + '(' + groups[topGroup].count + '名)' : '-'],
-      ['筆頭株主グループの議決権割合(株数割合で近似)', topGroup ? pct(topRatio) : '-'],
-      ['判定基準', !entries.length ? '-' : topRatio > 50 ? '50%超' : topRatio >= 30 ? '30%以上50%以下' : '30%未満'],
-    ];
-    famJudgeBody.innerHTML = judgeRows.map(function (r) {
-      return '<tr><td class="px-2 py-1.5 border-b border-gray-100">' + r[0] + '</td><td class="px-2 py-1.5 border-b border-gray-100 text-right">' + r[1] + '</td></tr>';
-    }).join('');
+    // ===== YES/NOフローチャートを描画 =====
+    if (!entries.length) {
+      famFlow.innerHTML = '<div class="fam-flow-box"><p class="fam-a" style="color:#9ca3af">STEP2で株主を入力すると、ここに同族株主等の判定フローが表示されます。</p></div>';
+    } else {
+      var q1Yes = topRatio > 50;
+      var q2Yes = topRatio >= 30;
+      var flowHtml = '';
+      flowHtml += '<div class="fam-flow-box"><p class="fam-q">筆頭株主グループ「' + topGroup + '」の議決権割合(株数割合で近似)は<br>50%を超えるか？</p>' +
+        '<p class="fam-a">' + pct(topRatio) + '<span class="fam-flow-badge ' + (q1Yes ? 'yes' : 'no') + '">' + (q1Yes ? 'YES' : 'NO') + '</span></p></div>';
+      flowHtml += '<div class="fam-flow-arrow">↓</div>';
+      if (!q1Yes) {
+        flowHtml += '<div class="fam-flow-box"><p class="fam-q">筆頭株主グループの議決権割合は<br>30%以上か？</p>' +
+          '<p class="fam-a">' + pct(topRatio) + '<span class="fam-flow-badge ' + (q2Yes ? 'yes' : 'no') + '">' + (q2Yes ? 'YES' : 'NO') + '</span></p></div>';
+        flowHtml += '<div class="fam-flow-arrow">↓</div>';
+      }
+      flowHtml += '<div class="fam-flow-result"><div>' + companyType + '</div>' +
+        '<div class="fam-note">筆頭株主グループ: ' + topGroup + '(' + groups[topGroup].count + '名) / ' + pct(topRatio) + '</div></div>';
+      famFlow.innerHTML = flowHtml;
+    }
 
     famHolderBody.innerHTML = entries.length ? entries.map(function (e) {
       var isFamily = topGroup && e.group === topGroup && topRatio >= 30;
