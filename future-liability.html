@@ -239,45 +239,49 @@
               </div>
             </div>
 
-            <!-- 将来負債(現行+次世代を横並びでひとまとめ。他の3枚より幅を広く取る) -->
-            <div class="rounded-lg border border-gray-200 overflow-hidden sm:col-span-2 lg:col-span-2">
+            <!-- 将来負債 -->
+            <div class="rounded-lg border border-gray-200 overflow-hidden">
               <div class="text-white text-sm font-bold text-center py-2" style="background-color:#bf6b6b">将来負債</div>
-              <div class="grid grid-cols-2 gap-2 px-3 pt-2 text-center text-[10px] font-bold text-gray-400">
-                <div>現行</div>
-                <div>次世代(任意)</div>
-              </div>
               <div class="divide-y divide-gray-100 px-3">
-                <div class="py-2">
-                  <div class="text-xs text-gray-600 mb-1">退職金</div>
-                  <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="retirement" class="num-input form-input w-full rounded px-2 py-1 text-sm" />
-                    <input type="number" id="nextRetirement" class="num-input form-input w-full rounded px-2 py-1 text-sm" />
-                  </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="retirement" class="text-xs text-gray-600">退職金</label>
+                  <input type="number" id="retirement" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
-                <div class="py-2">
-                  <div class="text-xs text-gray-600 mb-1">事業承継対策資金</div>
-                  <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="succession" class="num-input form-input w-full rounded px-2 py-1 text-sm" />
-                    <input type="number" id="nextSuccession" class="num-input form-input w-full rounded px-2 py-1 text-sm" />
-                  </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="succession" class="text-xs text-gray-600">事業承継対策資金</label>
+                  <input type="number" id="succession" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
-                <div class="py-2">
-                  <div class="text-xs text-gray-600 mb-1">その他</div>
-                  <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="otherFuture" class="num-input form-input w-full rounded px-2 py-1 text-sm" />
-                    <input type="number" id="nextOtherFuture" class="num-input form-input w-full rounded px-2 py-1 text-sm" />
-                  </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="otherFuture" class="text-xs text-gray-600">その他</label>
+                  <input type="number" id="otherFuture" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200 text-center">
-                <div>
-                  <div class="text-[10px] text-gray-500">合計</div>
-                  <div id="checkFutureLiabTotal" class="text-sm font-bold">-</div>
+              <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
+                <span class="text-xs font-bold">合計</span>
+                <span id="checkFutureLiabTotal" class="text-sm font-bold">-</span>
+              </div>
+            </div>
+
+            <!-- 次世代将来負債(将来予測実質BSで使う追加の将来負債。任意入力) -->
+            <div class="rounded-lg border border-gray-200 overflow-hidden">
+              <div class="text-white text-sm font-bold text-center py-2" style="background-color:#bf6b6b">次世代将来負債</div>
+              <div class="divide-y divide-gray-100 px-3">
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="nextRetirement" class="text-xs text-gray-600">退職金</label>
+                  <input type="number" id="nextRetirement" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
-                <div>
-                  <div class="text-[10px] text-gray-500">合計</div>
-                  <div id="checkNextFutureLiabTotal" class="text-sm font-bold">-</div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="nextSuccession" class="text-xs text-gray-600">事業承継対策資金</label>
+                  <input type="number" id="nextSuccession" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
+                <div class="flex items-center justify-between gap-2 py-2">
+                  <label for="nextOtherFuture" class="text-xs text-gray-600">その他</label>
+                  <input type="number" id="nextOtherFuture" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
+                <span class="text-xs font-bold">合計</span>
+                <span id="checkNextFutureLiabTotal" class="text-sm font-bold">-</span>
               </div>
             </div>
           </div>
