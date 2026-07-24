@@ -1037,5 +1037,6 @@ document.addEventListener('DOMContentLoaded', function () {
   updateBalanceCheck();
   updateFutureLiabTotal();
   updateOffBalanceAsset(); // 読み込んだ将来負債・生命保険金額をもとに不足分を計算し直す
+  updateNextFutureLiabTotal(); // 読み込んだ次世代将来負債の合計表示も復元後の値で計算し直す
   recompute();
 });

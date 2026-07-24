@@ -239,9 +239,10 @@
               </div>
             </div>
 
-            <!-- 将来負債 -->
+            <!-- 将来負債(現行+次世代をひとまとめ) -->
             <div class="rounded-lg border border-gray-200 overflow-hidden">
               <div class="text-white text-sm font-bold text-center py-2" style="background-color:#bf6b6b">将来負債</div>
+              <div class="px-3 pt-2 text-[11px] font-bold text-gray-400">現行</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="retirement" class="text-xs text-gray-600">退職金</label>
@@ -260,11 +261,7 @@
                 <span class="text-xs font-bold">合計</span>
                 <span id="checkFutureLiabTotal" class="text-sm font-bold">-</span>
               </div>
-            </div>
-
-            <!-- 次世代将来負債(将来予測実質BSで使う追加の将来負債。任意入力) -->
-            <div class="rounded-lg border border-gray-200 overflow-hidden">
-              <div class="text-white text-sm font-bold text-center py-2" style="background-color:#bf6b6b">次世代将来負債</div>
+              <div class="px-3 pt-2 text-[11px] font-bold text-gray-400 border-t border-gray-200">次世代(任意入力)</div>
               <div class="divide-y divide-gray-100 px-3">
                 <div class="flex items-center justify-between gap-2 py-2">
                   <label for="nextRetirement" class="text-xs text-gray-600">退職金</label>
@@ -381,6 +378,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/future-liability.js?v=20260724s"></script>
+<script src="js/future-liability.js?v=20260724t"></script>
 </body>
 </html>
