@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607264" />
+<link rel="stylesheet" href="css/style.css?v=202607265" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -206,133 +206,6 @@
         </div>
       </div>
 
-      <!-- ===== 簡易版 ===== -->
-      <div id="simpleArea" class="hidden">
-      <form id="stockCalcForm" class="space-y-10">
-
-        <!-- 会社の基本情報 -->
-        <div class="calc-section bg-white p-6 sm:p-8" id="sstep1">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 1</span>会社の基本情報</span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
-          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ssShares">発行済株式数（株）</label>
-              <input type="number" id="ssShares" value="400" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ssParValue">額面（1株・円）</label>
-              <input type="number" id="ssParValue" value="50000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ssSize">会社規模</label>
-              <select id="ssSize" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
-                <option value="large">大会社</option>
-                <option value="mid-large">中会社（大）</option>
-                <option value="mid-mid" selected>中会社（中）</option>
-                <option value="mid-small">中会社（小）</option>
-                <option value="small">小会社</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="ssL">Lの割合</label>
-              <input type="text" id="ssL" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" />
-            </div>
-          </div>
-        </div>
-
-        <!-- ■自社株評価(DSレイアウト) -->
-        <div class="calc-section bg-white p-6 sm:p-8" id="sstep2">
-          <h3 class="font-bold text-base mb-4 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 2</span>自社株評価<span class="help-tip" tabindex="0">?<span class="help-text">ディスカッションシートの自社株評価を、時価総額（円）でそのまま転記してください。一株あたり・額面倍率は自動計算されます。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm border-collapse min-w-[480px]">
-              <thead>
-                <tr class="bg-[#0f2a4a] text-white">
-                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">評価方式</th>
-                  <th class="text-right font-bold px-3 py-2">時価総額（円）</th>
-                  <th class="text-right font-bold px-3 py-2">一株あたり（円）</th>
-                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">額面倍率</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="border-b border-gray-100">
-                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">相続税評価額</td>
-                  <td class="px-1 py-1"><input type="text" id="ssV_saizoku" data-eval="saizoku" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
-                  <td class="px-3 py-2 text-right ss-per" id="ssPer_saizoku">-</td>
-                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_saizoku">-</td>
-                </tr>
-                <tr class="border-b border-gray-100">
-                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">類似業種比準価額</td>
-                  <td class="px-1 py-1"><input type="text" id="ssV_ruiji" data-eval="ruiji" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
-                  <td class="px-3 py-2 text-right ss-per" id="ssPer_ruiji">-</td>
-                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_ruiji">-</td>
-                </tr>
-                <tr class="border-b border-gray-100">
-                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">純資産価額</td>
-                  <td class="px-1 py-1"><input type="text" id="ssV_junsisan" data-eval="junsisan" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
-                  <td class="px-3 py-2 text-right ss-per" id="ssPer_junsisan">-</td>
-                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_junsisan">-</td>
-                </tr>
-                <tr class="border-b border-gray-100">
-                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">併用方式</td>
-                  <td class="px-1 py-1"><input type="text" id="ssV_heiyo" data-eval="heiyo" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
-                  <td class="px-3 py-2 text-right ss-per" id="ssPer_heiyo">-</td>
-                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_heiyo">-</td>
-                </tr>
-                <tr class="border-b border-gray-100">
-                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">法人税法上評価額</td>
-                  <td class="px-1 py-1"><input type="text" id="ssV_houjin" data-eval="houjin" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
-                  <td class="px-3 py-2 text-right ss-per" id="ssPer_houjin">-</td>
-                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_houjin">-</td>
-                </tr>
-                <tr class="border-b border-gray-100">
-                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">配当還元評価額</td>
-                  <td class="px-1 py-1"><input type="text" id="ssV_haito" data-eval="haito" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
-                  <td class="px-3 py-2 text-right ss-per" id="ssPer_haito">-</td>
-                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_haito">-</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 株主の状況(DSレイアウト) -->
-        <div class="calc-section bg-white p-6 sm:p-8" id="sstep3">
-          <h3 class="font-bold text-base mb-4 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 3</span>株主の状況<span class="help-tip" tabindex="0">?<span class="help-text">株主名・株数(または比率)を入力してください。比率・相続税評価額・法人税法上評価額は自動計算されます。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm border-collapse min-w-[640px]">
-              <thead>
-                <tr class="bg-[#0f2a4a] text-white">
-                  <th class="text-left font-bold px-2 py-2 rounded-tl-lg" style="min-width:9rem">株主名</th>
-                  <th class="text-right font-bold px-2 py-2" style="width:4.5rem">株数</th>
-                  <th class="text-right font-bold px-2 py-2" style="width:3.5rem">比率</th>
-                  <th class="text-right font-bold px-2 py-2" style="min-width:7.5rem">相続税評価額</th>
-                  <th class="text-right font-bold px-2 py-2" style="min-width:8rem">法人税法上評価額</th>
-                  <th class="px-2 py-2 rounded-tr-lg w-8"></th>
-                </tr>
-              </thead>
-              <tbody id="ssHolderBody"></tbody>
-              <tfoot>
-                <tr class="bg-[#eef1f4] font-bold">
-                  <td class="px-2 py-2 text-left">合計</td>
-                  <td class="px-2 py-2 text-right" id="ssTotShares">-</td>
-                  <td class="px-2 py-2 text-right" id="ssTotRatio">-</td>
-                  <td class="px-2 py-2 text-right" id="ssTotReka">-</td>
-                  <td class="px-2 py-2 text-right" id="ssTotHojin">-</td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-          <button type="button" id="ssAddHolder" class="btn-outline mt-4 px-5 py-2 rounded-full text-sm font-bold">＋ 株主を追加</button>
-        </div>
-
-        <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
-
-        <div class="flex flex-col sm:flex-row gap-4">
-          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">この内容で試算する →</button>
-        </div>
-      </form>
-    </div>
-
     <!-- ===== 詳細入力 ===== -->
     <div id="detailArea" class="hidden space-y-10">
         <!-- 詳細1: 会社規模の判定(第1表の2) -->
@@ -484,7 +357,7 @@
         <div id="dtErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
 
         <div class="flex flex-col sm:flex-row gap-4">
-          <button type="button" id="dtCalcBtn" class="btn-primary flex-1 py-3.5 rounded-full font-bold">原則的評価額を計算する</button>
+          <button type="button" id="dtCalcBtn" class="btn-primary flex-1 py-3.5 rounded-full font-bold">株価を計算する</button>
         </div>
 
         <!-- 詳細6: 原則的評価の明細(結果) -->
@@ -610,6 +483,134 @@
         <button type="button" id="tbCalcBtn" class="btn-primary flex-1 py-3.5 rounded-full font-bold">この内容で試算する →</button>
       </div>
     </div>
+
+      <!-- ===== 簡易版 ===== -->
+      <div id="simpleArea" class="hidden">
+      <form id="stockCalcForm" class="space-y-10">
+
+        <!-- 会社の基本情報 -->
+        <div class="calc-section bg-white p-6 sm:p-8" id="sstep1">
+          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 1</span>会社の基本情報</span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ssShares">発行済株式数（株）</label>
+              <input type="number" id="ssShares" value="400" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ssParValue">額面（1株・円）</label>
+              <input type="number" id="ssParValue" value="50000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ssSize">会社規模</label>
+              <select id="ssSize" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+                <option value="large">大会社</option>
+                <option value="mid-large">中会社（大）</option>
+                <option value="mid-mid" selected>中会社（中）</option>
+                <option value="mid-small">中会社（小）</option>
+                <option value="small">小会社</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5" for="ssL">Lの割合</label>
+              <input type="text" id="ssL" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ■自社株評価(DSレイアウト) -->
+        <div class="calc-section bg-white p-6 sm:p-8" id="sstep2">
+          <h3 class="font-bold text-base mb-4 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 2</span>自社株評価<span class="help-tip" tabindex="0">?<span class="help-text">ディスカッションシートの自社株評価を、時価総額（円）でそのまま転記してください。一株あたり・額面倍率は自動計算されます。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[480px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">評価方式</th>
+                  <th class="text-right font-bold px-3 py-2">時価総額（円）</th>
+                  <th class="text-right font-bold px-3 py-2">一株あたり（円）</th>
+                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">額面倍率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">相続税評価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_saizoku" data-eval="saizoku" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_saizoku">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_saizoku">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">類似業種比準価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_ruiji" data-eval="ruiji" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_ruiji">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_ruiji">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">純資産価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_junsisan" data-eval="junsisan" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_junsisan">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_junsisan">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">併用方式</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_heiyo" data-eval="heiyo" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_heiyo">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_heiyo">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">法人税法上評価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_houjin" data-eval="houjin" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_houjin">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_houjin">-</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="px-3 py-2 text-left font-medium whitespace-nowrap">配当還元評価額</td>
+                  <td class="px-1 py-1"><input type="text" id="ssV_haito" data-eval="haito" class="ss-eval js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="0" /></td>
+                  <td class="px-3 py-2 text-right ss-per" id="ssPer_haito">-</td>
+                  <td class="px-3 py-2 text-right ss-mult" id="ssMult_haito">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 株主の状況(DSレイアウト) -->
+        <div class="calc-section bg-white p-6 sm:p-8" id="sstep3">
+          <h3 class="font-bold text-base mb-4 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 3</span>株主の状況<span class="help-tip" tabindex="0">?<span class="help-text">株主名・株数(または比率)を入力してください。比率・相続税評価額・法人税法上評価額は自動計算されます。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[640px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-2 py-2 rounded-tl-lg" style="min-width:9rem">株主名</th>
+                  <th class="text-right font-bold px-2 py-2" style="width:4.5rem">株数</th>
+                  <th class="text-right font-bold px-2 py-2" style="width:3.5rem">比率</th>
+                  <th class="text-right font-bold px-2 py-2" style="min-width:7.5rem">相続税評価額</th>
+                  <th class="text-right font-bold px-2 py-2" style="min-width:8rem">法人税法上評価額</th>
+                  <th class="px-2 py-2 rounded-tr-lg w-8"></th>
+                </tr>
+              </thead>
+              <tbody id="ssHolderBody"></tbody>
+              <tfoot>
+                <tr class="bg-[#eef1f4] font-bold">
+                  <td class="px-2 py-2 text-left">合計</td>
+                  <td class="px-2 py-2 text-right" id="ssTotShares">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTotRatio">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTotReka">-</td>
+                  <td class="px-2 py-2 text-right" id="ssTotHojin">-</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <button type="button" id="ssAddHolder" class="btn-outline mt-4 px-5 py-2 rounded-full text-sm font-bold">＋ 株主を追加</button>
+        </div>
+
+        <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">自社株シミュレーションに進む</button>
+        </div>
+      </form>
+    </div>
+
         </div><!-- /flex-1 -->
       </div><!-- /lg:flex -->
     </div><!-- /max-w-6xl -->
@@ -637,9 +638,9 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-simple.js?v=20260723b"></script>
-<script src="js/stock-detail.js?v=20260723a"></script>
-<script src="js/stock-tdb.js?v=20260723b"></script>
+<script src="js/stock-simple.js?v=20260724b"></script>
+<script src="js/stock-detail.js?v=20260724b"></script>
+<script src="js/stock-tdb.js?v=20260724b"></script>
 <script src="js/stock-stepper.js?v=20260722d"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>

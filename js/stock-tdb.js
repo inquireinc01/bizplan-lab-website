@@ -210,13 +210,26 @@ document.addEventListener('DOMContentLoaded', function () {
       shared.ss0_ruiji = String((similarPerShare * shares) / MAN);
       shared.ss0_junsisan = String((netAssetPerShareMarket * shares) / MAN);
       shared.ss0_houjin = String((houjinPerShare * shares) / MAN);
+      // 簡易入力側の入力欄(時価総額・円)にもそのまま転記し、下に続けて表示する画面に反映する
+      shared.ssV_saizoku = String(Math.round(saizokuPerShare * shares));
+      shared.ssV_ruiji = String(Math.round(similarPerShare * shares));
+      shared.ssV_junsisan = String(Math.round(netAssetPerShareMarket * shares));
+      shared.ssV_heiyo = String(Math.round(combined * shares));
+      shared.ssV_houjin = String(Math.round(houjinPerShare * shares));
       shared.ss_holders = JSON.stringify(collectHolders());
       localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
       localStorage.setItem('bpl_stock_version', 'tdb');
     } catch (e) {}
 
     persistOwn();
-    window.location.href = 'stock-valuation-result.html';
+
+    // ===== 試算後は、続けて簡易入力(自社株評価テーブル・株主の状況)を下に表示する =====
+    var simpleArea = document.getElementById('simpleArea');
+    if (simpleArea) {
+      simpleArea.classList.remove('hidden');
+      if (window.bplRefreshSimpleFromShared) window.bplRefreshSimpleFromShared();
+      simpleArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 
   restoreOwn();

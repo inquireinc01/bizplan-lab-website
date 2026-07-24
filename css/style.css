@@ -225,6 +225,23 @@ button:active,
   transform: translateY(-1px);
   box-shadow: 0 5px 12px rgba(15, 42, 74, 0.22);
 }
+/* 必須項目が未入力の間、押しても進めないことを事前に示すグレーアウト状態
+   (色分けはready/not-readyの2色配色ではなく、無効化の標準表現として適用) */
+.btn-primary:disabled {
+  background-color: #b7bfc9;
+  color: #f0f2f5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.btn-primary:disabled:hover {
+  background-color: #b7bfc9;
+  transform: none;
+  box-shadow: none;
+}
+.btn-primary:disabled::after {
+  display: none;
+}
 
 /* セクション単位の「データクリア」リンク: 1回目クリックで警告色に切り替わり、
    本当に消して良いか一目でわかるようにする(window.confirm()に頼らないため) */

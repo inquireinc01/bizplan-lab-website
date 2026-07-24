@@ -248,4 +248,12 @@ document.addEventListener('DOMContentLoaded', function () {
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');
   if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
+
+  // ===== 詳細入力・TD/TSR側から計算後に呼び出し、共有データを画面に反映する =====
+  window.bplRefreshSimpleFromShared = function () {
+    restore();
+    resyncAllHolderRows();
+    recalcAll();
+    if (window.numReformatAll) window.numReformatAll();
+  };
 });

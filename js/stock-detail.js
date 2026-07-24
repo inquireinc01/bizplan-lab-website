@@ -169,6 +169,16 @@ document.addEventListener('DOMContentLoaded', function () {
     judgeTokutei(size.level);
     calcNetPerShare();
     calcHaito();
+    updateCalcBtnReady();
+  }
+
+  // ===== 計算に必須の項目(帳簿純資産・含み益・発行済株式数)が揃うまでボタンを無効化 =====
+  function updateCalcBtnReady() {
+    var btn = document.getElementById('dtCalcBtn');
+    if (!btn) return;
+    var bookNet = num('dtBookNet'), unreal = num('dtUnrealized'), shares = num('dtSharesDetail');
+    var ready = !isNaN(bookNet) && !isNaN(unreal) && !isNaN(shares) && shares > 0;
+    btn.disabled = !ready;
   }
 
   // ライブ更新
@@ -196,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var size = judgeSize();
     var tok = judgeTokutei(size.level);
     var net = calcNetPerShare();
-    calcHaito();
+    var haito = calcHaito();
     var sim = calcSimilarPerShare(size.shaku);
     var shares = num('dtSharesDetail');
     if (isNaN(net) || isNaN(shares) || shares <= 0) {
@@ -249,11 +259,25 @@ document.addEventListener('DOMContentLoaded', function () {
       shared.ss0_ruiji = String((simPerShare * shares) / MAN);
       shared.ss0_junsisan = String((net * shares) / MAN);
       shared.ss0_houjin = String((houjinPerShareShared * shares) / MAN);
+      // 簡易入力側の入力欄(時価総額・円)にもそのまま転記し、下に続けて表示する画面に反映する
+      shared.ssV_saizoku = String(Math.round(total));
+      shared.ssV_ruiji = String(Math.round(simPerShare * shares));
+      shared.ssV_junsisan = String(Math.round(net * shares));
+      shared.ssV_heiyo = String(Math.round(combined * shares));
+      shared.ssV_houjin = String(Math.round(houjinPerShareShared * shares));
+      if (!isNaN(haito)) shared.ssV_haito = String(Math.round(haito * shares));
       localStorage.setItem(SKEY, JSON.stringify(shared));
     } catch (e) {}
 
     document.getElementById('dtResultArea').classList.remove('hidden');
     document.getElementById('dtResultArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // ===== 株価計算後は、続けて簡易入力(自社株評価テーブル・株主の状況)を下に表示する =====
+    var simpleArea = document.getElementById('simpleArea');
+    if (simpleArea) {
+      simpleArea.classList.remove('hidden');
+      if (window.bplRefreshSimpleFromShared) window.bplRefreshSimpleFromShared();
+    }
   });
 
   // ===== 保存/復元 =====
