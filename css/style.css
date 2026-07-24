@@ -1393,6 +1393,14 @@ img {
   --accent: #b0651b;
   --lamp-rgb: 230, 57, 62;
 }
+.overlay-toggle-burgundy {
+  --accent: #7a2436;
+  --lamp-rgb: 251, 146, 60;
+}
+.overlay-toggle-green {
+  --accent: #1f6b3f;
+  --lamp-rgb: 74, 222, 128;
+}
 /* 生命保険の契約条件内で使う、幅が可変のインライン版トグル(死亡保険金額の税引後表示切替など) */
 .overlay-toggle-inline {
   width: auto;

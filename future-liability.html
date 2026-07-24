@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607259" />
+<link rel="stylesheet" href="css/style.css?v=202607260" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -150,14 +150,19 @@
           <p id="flBalanceNote" class="hidden warning-box text-xs rounded-lg p-3"></p>
 
           <div class="calc-section bg-gray-50 p-6 sm:p-8">
-            <div class="mb-4 flex flex-wrap justify-end gap-2">
-              <button type="button" id="showGroup1Toggle" aria-pressed="true" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact is-on"><span class="dot"></span><span class="toggle-label">会計上表示</span></button>
-              <button type="button" id="showGroup2Toggle" aria-pressed="true" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact is-on"><span class="dot"></span><span class="toggle-label">実質的表示</span></button>
-              <button type="button" id="showGroup3Toggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">将来予測非表示</span></button>
-              <button type="button" id="showGroup4Toggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">予測実質非表示</span></button>
-              <button type="button" id="bsDetailToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">BS内訳非表示</span></button>
-              <button type="button" id="equityRatioToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">自己資本非表示</span></button>
-              <button type="button" id="insuranceToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact overlay-toggle-collapsible is-collapsed"><span class="dot"></span><span class="toggle-label">生命保険なし</span></button>
+            <div class="mb-4 flex flex-wrap items-center justify-end gap-3">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[10px] font-bold text-gray-400 mr-0.5">貸借対照表</span>
+                <button type="button" id="showGroup1Toggle" aria-pressed="true" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact is-on"><span class="dot"></span><span class="toggle-label">会計上</span></button>
+                <button type="button" id="showGroup2Toggle" aria-pressed="true" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact is-on"><span class="dot"></span><span class="toggle-label">実質的</span></button>
+                <button type="button" id="showGroup3Toggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">将来</span></button>
+                <button type="button" id="showGroup4Toggle" aria-pressed="false" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">次世代</span></button>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" id="bsDetailToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-green overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">BS内訳</span></button>
+                <button type="button" id="equityRatioToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-green overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">自己資本％</span></button>
+                <button type="button" id="insuranceToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-burgundy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">生命保険なし</span></button>
+              </div>
             </div>
             <svg id="bsChart" viewBox="0 0 700 456" class="w-full h-auto" role="img" aria-label="会計上・実質的・簿外負債発動時のバランスシート比較"></svg>
           </div>
@@ -381,6 +386,6 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/future-liability.js?v=20260724u"></script>
+<script src="js/future-liability.js?v=20260724v"></script>
 </body>
 </html>

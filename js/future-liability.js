@@ -30,13 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
     3: document.getElementById('showGroup3Toggle'),
     4: document.getElementById('showGroup4Toggle'),
   };
-  const groupToggleLabels = {
-    1: ['会計上表示', '会計上非表示'],
-    2: ['実質的表示', '実質的非表示'],
-    3: ['将来予測表示', '将来予測非表示'],
-    4: ['予測実質表示', '予測実質非表示'],
-  };
-  const insuranceToggleEl = document.getElementById('insuranceToggle');
 
   function activeGroupCount() {
     return [1, 2, 3, 4].filter((n) => showGroup[n]).length;
@@ -51,12 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.disabled = showGroup[n] && count <= 1;
     });
   }
+  // ラベルは「会計上」「実質的」「将来」「次世代」に固定し、ON/OFFは点灯(is-on)だけで表す
   function setGroupToggleVisual(n, on) {
     const btn = groupToggleEls[n];
     if (!btn) return;
     btn.classList.toggle('is-on', on);
     btn.setAttribute('aria-pressed', String(on));
-    btn.querySelector('.toggle-label').textContent = groupToggleLabels[n][on ? 0 : 1];
   }
   [1, 2, 3, 4].forEach((n) => {
     const btn = groupToggleEls[n];
@@ -67,16 +60,13 @@ document.addEventListener('DOMContentLoaded', function () {
       showGroup[n] = !showGroup[n];
       setGroupToggleVisual(n, showGroup[n]);
       updateGroupToggleAvailability();
-      // 生命保険トグルは将来予測BS・将来予測実質BSのどちらかが表示されている時だけ意味を持つ
-      if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !(showGroup[3] || showGroup[4]));
       recompute();
     });
     setGroupToggleVisual(n, showGroup[n]);
   });
   updateGroupToggleAvailability();
-  if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !(showGroup[3] || showGroup[4]));
 
-  // ===== グラフの「BS内訳表示/非表示」トグル(初期値は非表示=ひとまとめ表示) =====
+  // ===== グラフの「BS内訳」トグル(初期値はOFF=ひとまとめ表示、ラベルは固定で点灯だけで状態を表す) =====
   let detailMode = false;
   const bsDetailToggle = document.getElementById('bsDetailToggle');
   if (bsDetailToggle) {
@@ -84,12 +74,11 @@ document.addEventListener('DOMContentLoaded', function () {
       detailMode = !detailMode;
       bsDetailToggle.classList.toggle('is-on', detailMode);
       bsDetailToggle.setAttribute('aria-pressed', String(detailMode));
-      bsDetailToggle.querySelector('.toggle-label').textContent = detailMode ? 'BS内訳表示' : 'BS内訳非表示';
       recompute();
     });
   }
 
-  // ===== 予測BSの「生命保険あり/なし」トグル(初期値はなし=簿外負債全額がBSに影響する従来の見え方) =====
+  // ===== 予測BSの「生命保険あり/なし」トグル(初期値はなし=簿外負債全額がBSに影響する従来の見え方)。常時表示 =====
   let withInsurance = false;
   const insuranceToggle = document.getElementById('insuranceToggle');
   if (insuranceToggle) {
@@ -102,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== 各BSの「自己資本表示/非表示」トグル(初期値は非表示) =====
+  // ===== 各BSの「自己資本％」トグル(初期値はOFF、ラベルは固定で点灯だけで状態を表す) =====
   let showEquityRatio = false;
   const equityRatioToggle = document.getElementById('equityRatioToggle');
   if (equityRatioToggle) {
@@ -110,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
       showEquityRatio = !showEquityRatio;
       equityRatioToggle.classList.toggle('is-on', showEquityRatio);
       equityRatioToggle.setAttribute('aria-pressed', String(showEquityRatio));
-      equityRatioToggle.querySelector('.toggle-label').textContent = showEquityRatio ? '自己資本表示' : '自己資本非表示';
       recompute();
     });
   }
