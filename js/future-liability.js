@@ -650,6 +650,12 @@ document.addEventListener('DOMContentLoaded', function () {
             rect.setAttribute('stroke', '#fff');
             rect.setAttribute('stroke-width', '1.5');
           }
+          // 帯が小さく文字が入りきらない場合でも、ポインタを乗せれば要素名・金額を確認できるようにする
+          if (showValues && seg.label && seg.value !== 0) {
+            rect.setAttribute('data-tip', `${seg.label} ${man(seg.value)}`);
+          } else {
+            rect.removeAttribute('data-tip');
+          }
         }
         const text = document.getElementById(`bs-${barKey}-t${i}`);
         if (text) {
@@ -1021,6 +1027,33 @@ document.addEventListener('DOMContentLoaded', function () {
       window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
+
+  // ===== グラフの帯が小さく文字が入りきらない要素でも、ポインタを乗せれば要素名・金額が分かるツールチップ。
+  //       rect要素はinitChartOnce()で1度だけ作られ以後は使い回されるため、個々にリスナーを付け直す必要がなく、
+  //       #bsChart自体に1つだけイベント委任すれば済む(hover対象はupdateChart側でdata-tip属性を都度更新する) =====
+  const chartTooltip = document.getElementById('chartTooltip');
+  const bsChartEl = document.getElementById('bsChart');
+  if (chartTooltip && bsChartEl) {
+    const positionTooltip = (evt) => {
+      chartTooltip.style.left = `${evt.clientX + 14}px`;
+      chartTooltip.style.top = `${evt.clientY + 14}px`;
+    };
+    bsChartEl.addEventListener('mouseover', (evt) => {
+      const tip = evt.target.getAttribute && evt.target.getAttribute('data-tip');
+      if (!tip) return;
+      chartTooltip.textContent = tip;
+      chartTooltip.classList.add('is-visible');
+      positionTooltip(evt);
+    });
+    bsChartEl.addEventListener('mousemove', (evt) => {
+      if (chartTooltip.classList.contains('is-visible')) positionTooltip(evt);
+    });
+    bsChartEl.addEventListener('mouseout', (evt) => {
+      if (evt.target.getAttribute && evt.target.getAttribute('data-tip')) {
+        chartTooltip.classList.remove('is-visible');
+      }
+    });
+  }
 
   // ===== 初期表示: 保存済みデータがあれば復元し、自動試算 =====
   loadSavedValues();

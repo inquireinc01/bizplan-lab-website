@@ -633,6 +633,28 @@ input[type="number"] {
   #bsChart rect,
   #bsChart text { transition: none; }
 }
+/* 帯が小さく文字が入りきらない要素でも、ポインタを乗せると詳細(要素名・金額)を確認できるツールチップ */
+#bsChart rect[data-tip] { cursor: pointer; }
+.chart-tooltip {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  background-color: #1f2937;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.chart-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* 数値に付く単位(万円・％・年 など)は数字より一回り小さく・控えめに。全ページ共通ルール */
 .unit {
@@ -1406,11 +1428,11 @@ img {
   width: auto;
   padding: 0.4rem 0.75rem;
 }
-/* 将来負債グラフのトグル群専用: 上下の存在感を抑え、横幅も文字に合わせて縮めることで
-   画面が狭くなっても7つのボタンが常に横一列に収まるようにする小型ボタン */
+/* 将来負債グラフのトグル群専用: 上下の存在感を抑えた小型ボタン。幅は最も長い「生命保険あり/なし」の
+   表示に合わせた固定幅にし、全ボタンのサイズを揃える(狭い画面では横スクロールで対応する) */
 .overlay-toggle-compact {
-  width: auto;
-  padding: 0.3rem 0.5rem;
+  width: 6rem;
+  padding: 0.3rem 0.4rem;
   font-size: 0.64rem;
   gap: 0.3rem;
 }
@@ -1420,8 +1442,8 @@ img {
 }
 @media (min-width: 640px) {
   .overlay-toggle-compact {
-    width: auto;
-    padding: 0.3rem 0.55rem;
+    width: 6rem;
+    padding: 0.3rem 0.45rem;
     font-size: 0.68rem;
   }
 }
