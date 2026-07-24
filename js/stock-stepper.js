@@ -105,17 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
     return [step1, step2, step3];
   }
 
-  // 詳細入力: STEP1〜6(STEP2は0も正当な値のため、分母となる総資産のみ必須とする)
+  // 詳細入力: STEP1(会社の基本情報)〜STEP6(配当還元。STEP3は0も正当な値のため、分母となる総資産のみ必須とする)
   function detailValidity() {
-    var step1 = numVal('dtTotalAssetsBook') > 0 && numVal('dtSales') > 0;
-    var step2 = numVal('dtTotalAssetsTax') > 0;
-    var step3 = numVal('dtA') > 0 && numVal('dtB') > 0 && numVal('dtC') > 0 && numVal('dtD') > 0 &&
+    var step1 = numVal('ssShares') > 0 && numVal('ssParValue') > 0;
+    var step2 = numVal('dtTotalAssetsBook') > 0 && numVal('dtSales') > 0;
+    var step3 = numVal('dtTotalAssetsTax') > 0;
+    var step4 = numVal('dtA') > 0 && numVal('dtB') > 0 && numVal('dtC') > 0 && numVal('dtD') > 0 &&
       !isNaN(numVal('dtOwnB')) && !isNaN(numVal('dtOwnC')) && !isNaN(numVal('dtOwnD'));
-    var step4 = !isNaN(numVal('dtBookNet')) && !isNaN(numVal('dtUnrealized')) &&
+    var step5 = !isNaN(numVal('dtBookNet')) && !isNaN(numVal('dtUnrealized')) &&
       numVal('dtSharesDetail') > 0 && numVal('dtCapital') > 0;
-    var step5 = step3 && step4; // 配当還元は自社の配当b・資本金・株式数から自動算定(別入力なし)
-    var resultArea = document.getElementById('dtResultArea');
-    var step6 = !!(resultArea && !resultArea.classList.contains('hidden'));
+    var step6 = step4 && step5; // 配当還元は自社の配当b・資本金・株式数から自動算定(別入力なし)
     return [step1, step2, step3, step4, step5, step6];
   }
 

@@ -21,11 +21,37 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el.tagName === 'INPUT') el.value = s; else el.textContent = s;
   };
 
+  // ===== 詳細入力を選ぶ間だけ「STEP1 会社の基本情報」を詳細入力の先頭に移動し、
+  //       続く自社株評価(STEP2)・株主の状況(STEP3)は詳細入力のSTEP1〜6の結果を
+  //       もって自動入力される続き扱いとするため、バッジをSTEP7に差し替える(簡易入力単独/
+  //       TD・TSR経由では元のSTEP1〜3表示に戻す) =====
+  var sstep1 = document.getElementById('sstep1');
+  var sstep2Badge = document.getElementById('sstep2Badge');
+  var sstep3Badge = document.getElementById('sstep3Badge');
+  function applyStepLayout(v) {
+    if (v === 'detail') {
+      var dstep1 = document.getElementById('dstep1');
+      if (sstep1 && dstep1 && sstep1.nextElementSibling !== dstep1) {
+        detailArea.insertBefore(sstep1, dstep1);
+      }
+      if (sstep2Badge) sstep2Badge.classList.add('hidden');
+      if (sstep3Badge) sstep3Badge.textContent = 'STEP 7';
+    } else {
+      var sstep2 = document.getElementById('sstep2');
+      if (sstep1 && sstep2 && sstep1.nextElementSibling !== sstep2) {
+        sstep2.parentElement.insertBefore(sstep1, sstep2);
+      }
+      if (sstep2Badge) sstep2Badge.classList.remove('hidden');
+      if (sstep3Badge) sstep3Badge.textContent = 'STEP 3';
+    }
+  }
+
   // ===== 版選択トグル =====
   function selectVersion(v) {
     chooser.querySelectorAll('.version-card').forEach(function (c) {
       c.classList.toggle('selected', c.getAttribute('data-version') === v);
     });
+    applyStepLayout(v);
     simpleArea.classList.toggle('hidden', v !== 'simple');
     detailArea.classList.toggle('hidden', v !== 'detail');
     if (tdbArea) tdbArea.classList.toggle('hidden', v !== 'tdb');
@@ -228,19 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var finalPer = combined;
     var total = finalPer * shares;
 
-    set('dtResSimilar', isNaN(sim) ? '(未入力)' : (window.numFmt ? window.numFmt(Math.round(sim)) : Math.round(sim).toLocaleString('ja-JP')) + ' 円');
-    setNum('dtResNet', net, ' 円');
-    set('dtResSize', SIZE_LABEL[size.level] + ' / L=' + size.L.toFixed(2));
-    setNum('dtResCombined', combined, ' 円');
-    setNum('dtResFinalPerShare', finalPer, ' 円');
-    set('dtResShares', (window.numFmt ? window.numFmt(Math.round(shares)) : Math.round(shares).toLocaleString('ja-JP')) + ' 株');
-    setNum('dtResFinalTotal', total / MAN, ' 万円');
-    set('dtResNote', tok.hit
-      ? '特定の評価会社（' + tok.reasons.join('・') + '）に該当するため、純資産価額方式で評価しています。'
-      : (size.level === 0 ? '大会社のため、類似業種比準価額(純資産価額とのいずれか低い方)で評価しています。'
-        : size.level === 4 ? '小会社のため、純資産価額と併用方式(L=0.50)のいずれか低い方で評価しています。'
-          : '中会社のため、類似業種比準価額×L＋純資産価額×(1-L)と純資産価額のいずれか低い方で評価しています。'));
-
     persist();
 
     // ===== 結果ページ(グラフ・タイル)と共有するデータも保存(簡易版と同じキー・同じ形式) =====
@@ -270,13 +283,13 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (e) {}
 
     document.getElementById('dtResultArea').classList.remove('hidden');
-    document.getElementById('dtResultArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     // ===== 株価計算後は、続けて簡易入力(自社株評価テーブル・株主の状況)を下に表示する =====
-    var simpleArea = document.getElementById('simpleArea');
     if (simpleArea) {
       simpleArea.classList.remove('hidden');
       if (window.bplRefreshSimpleFromShared) window.bplRefreshSimpleFromShared();
+      var sstep2El = document.getElementById('sstep2');
+      if (sstep2El) sstep2El.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 
