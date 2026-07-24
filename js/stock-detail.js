@@ -21,11 +21,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el.tagName === 'INPUT') el.value = s; else el.textContent = s;
   };
 
-  // ===== 詳細入力を選ぶ間だけ「STEP1 会社の基本情報」を詳細入力の先頭に移動し、
-  //       続く自社株評価(STEP2)・株主の状況(STEP3)は詳細入力のSTEP1〜6の結果を
-  //       もって自動入力される続き扱いとするため、バッジをSTEP7に差し替える(簡易入力単独/
+  // ===== 詳細入力を選ぶ間だけ「STEP1 会社の基本情報」「STEP2 株主の状況」を詳細入力の
+  //       先頭に移動し、続くSTEP3〜7(会社規模の判定〜配当還元)の結果をもって自社株評価が
+  //       自動入力される続き扱いとするため、自社株評価のバッジは非表示にする(簡易入力単独/
   //       TD・TSR経由では元のSTEP1〜3表示に戻す) =====
   var sstep1 = document.getElementById('sstep1');
+  var sstep3 = document.getElementById('sstep3');
   var sstep2Badge = document.getElementById('sstep2Badge');
   var sstep3Badge = document.getElementById('sstep3Badge');
   function applyStepLayout(v) {
@@ -34,12 +35,19 @@ document.addEventListener('DOMContentLoaded', function () {
       if (sstep1 && dstep1 && sstep1.nextElementSibling !== dstep1) {
         detailArea.insertBefore(sstep1, dstep1);
       }
+      if (sstep3 && dstep1 && sstep3.nextElementSibling !== dstep1) {
+        detailArea.insertBefore(sstep3, dstep1);
+      }
       if (sstep2Badge) sstep2Badge.classList.add('hidden');
-      if (sstep3Badge) sstep3Badge.textContent = 'STEP 7';
+      if (sstep3Badge) sstep3Badge.textContent = 'STEP 2';
     } else {
       var sstep2 = document.getElementById('sstep2');
+      var calcErrorArea = document.getElementById('calcErrorArea');
       if (sstep1 && sstep2 && sstep1.nextElementSibling !== sstep2) {
         sstep2.parentElement.insertBefore(sstep1, sstep2);
+      }
+      if (sstep3 && calcErrorArea && sstep3.nextElementSibling !== calcErrorArea) {
+        calcErrorArea.parentElement.insertBefore(sstep3, calcErrorArea);
       }
       if (sstep2Badge) sstep2Badge.classList.remove('hidden');
       if (sstep3Badge) sstep3Badge.textContent = 'STEP 3';
@@ -229,14 +237,51 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sizeBody) sizeBody.innerHTML = sizeRows;
     set('cpSizeResult', SIZE_LABEL[ctx.size.level] + '(L=' + ctx.size.L.toFixed(2) + '、斟酌率=' + ctx.size.shaku.toFixed(1) + ')');
 
-    var methodRows = '<tr class="' + (ctx.tok.hit ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">特定の評価会社(比準要素数1・株式等保有・土地保有・開業後3年未満等)</td><td class="px-2 py-1.5 border-b border-gray-100">純資産価額(100%)</td></tr>';
+    // ===== 第2表: 特定の評価会社の判定 =====
+    var totalTax = num('dtTotalAssetsTax') * 1000, stockV = num('dtStockValue') * 1000, landV = num('dtLandValue') * 1000;
+    var stockRatio = totalTax > 0 ? stockV / totalTax : NaN;
+    var landRatio = totalTax > 0 ? landV / totalTax : NaN;
+    var landTh = ctx.size.level === 0 ? 0.70 : 0.90;
+    var zeros = ['dtOwnB', 'dtOwnC', 'dtOwnD'].filter(function (id) { return num(id) === 0; }).length;
+    var tokRows = [
+      ['比準要素数1の会社(配当・利益・純資産のうち2つ以上が0)', zeros >= 2 ? '該当(' + zeros + '/3が0)' : '非該当', zeros >= 2],
+      ['株式等保有特定会社(株式等の価額 ÷ 総資産 ≧ 50%)', isNaN(stockRatio) ? '-' : (stockRatio * 100).toFixed(1) + '%', stockRatio >= 0.5],
+      ['土地保有特定会社(土地等の価額 ÷ 総資産 ≧ ' + (landTh * 100) + '%)', isNaN(landRatio) ? '-' : (landRatio * 100).toFixed(1) + '%', landRatio >= landTh],
+      ['開業後3年未満・開業前・休業中・清算中', ((document.getElementById('dtNewCompany') || {}).checked || (document.getElementById('dtDormant') || {}).checked) ? '該当' : '非該当', (document.getElementById('dtNewCompany') || {}).checked || (document.getElementById('dtDormant') || {}).checked],
+    ];
+    var tokBody = document.getElementById('cpTokuteiTableBody');
+    if (tokBody) {
+      tokBody.innerHTML = tokRows.map(function (r) {
+        return '<tr class="' + (r[2] ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">' + r[0] + '</td><td class="px-2 py-1.5 border-b border-gray-100 text-right">' + r[1] + '</td></tr>';
+      }).join('');
+    }
+    set('cpTokuteiResult', ctx.tok.hit ? '該当(' + ctx.tok.reasons.join('・') + ')' : '非該当');
+
+    // ===== 第3表: 特定会社・会社規模による評価方式の選択(取引相場のない株式の明細書と同じ並び) =====
+    var hit1 = ctx.tok.reasons.indexOf('比準要素数1の会社') !== -1;
+    var hitStock = ctx.tok.reasons.indexOf('株式等保有特定会社') !== -1;
+    var hitLand = ctx.tok.reasons.indexOf('土地保有特定会社') !== -1;
+    var hitNew = ctx.tok.reasons.indexOf('開業後3年未満') !== -1 || ctx.tok.reasons.indexOf('開業前・休業中・清算中') !== -1;
+    var row = function (label, desc, hi, rowspan) {
+      var labelTd = label === null ? '' : ('<td class="px-2 py-1.5 border-b border-gray-100"' + (rowspan ? ' rowspan="' + rowspan + '"' : '') + '>' + label + '</td>');
+      return '<tr class="' + (hi ? 'bg-[#eef1f4] font-bold' : '') + '">' + labelTd + '<td class="px-2 py-1.5 border-b border-gray-100">' + desc + '</td></tr>';
+    };
+    var methodRows = '';
+    methodRows += row('比準要素1の会社', '純資産価額(100%)', hit1, 2);
+    methodRows += row(null, '類似業種比準価額×0.25＋純資産価額(100%)×0.75', hit1);
+    methodRows += row('株式等保有特定会社', '純資産価額(100%)', hitStock);
+    methodRows += row('土地保有特定会社', '純資産価額(100%)', hitLand);
+    methodRows += row('開業後3年未満の会社等', '純資産価額(100%)', hitNew);
     SIZE_LABEL.forEach(function (label, i) {
-      var desc = i === 0 ? '類似業種比準価額 と 純資産価額 のいずれか低い方'
-        : i === 4 ? '類似業種比準価額×0.5＋純資産価額×0.5 と 純資産価額 のいずれか低い方'
-          : '類似業種比準価額×' + SIZE_L[i].toFixed(2) + '＋純資産価額×' + (1 - SIZE_L[i]).toFixed(2) + ' と 純資産価額 のいずれか低い方';
       var isRow = !ctx.tok.hit && i === ctx.size.level;
-      methodRows += '<tr class="' + (isRow ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">' + label + '</td><td class="px-2 py-1.5 border-b border-gray-100">' + desc + '</td></tr>';
+      var top = i === 0 ? '類似業種比準価額' : i === 4 ? '純資産価額(100%)' : '類似業種比準価額×' + SIZE_L[i].toFixed(2) + '＋純資産価額(100%)×' + (1 - SIZE_L[i]).toFixed(2);
+      var bottom = i === 0 ? '純資産価額(100%)' : i === 4 ? '類似業種比準価額×0.5＋純資産価額(100%)×0.5' : '純資産価額(100%)×' + SIZE_L[i].toFixed(2) + '＋純資産価額(100%)×' + (1 - SIZE_L[i]).toFixed(2);
+      methodRows += row(label, top, isRow, 2);
+      methodRows += row(null, bottom, isRow);
     });
+    methodRows += row('特例的評価方式(配当還元方式)', '配当還元価額', false);
+    methodRows += row('法人税評価額', '純資産価額(100%)', false, 2);
+    methodRows += row(null, '類似業種比準価額×0.5＋純資産価額(100%)×0.5', false);
     var methodBody = document.getElementById('cpMethodTableBody');
     if (methodBody) methodBody.innerHTML = methodRows;
 

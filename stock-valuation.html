@@ -165,11 +165,12 @@
             </ol>
             <ol id="stepperDetail" class="stepper hidden">
               <li data-num="1" data-target="sstep1" tabindex="0" role="button"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
-              <li data-num="2" data-target="dstep1" tabindex="0" role="button"><span class="step-en">STEP 2</span><span class="step-jp">会社規模の判定</span></li>
-              <li data-num="3" data-target="dstep2" tabindex="0" role="button"><span class="step-en">STEP 3</span><span class="step-jp">特定評価会社の判定</span></li>
-              <li data-num="4" data-target="dstep3" tabindex="0" role="button"><span class="step-en">STEP 4</span><span class="step-jp">類似業種比準</span></li>
-              <li data-num="5" data-target="dstep4" tabindex="0" role="button"><span class="step-en">STEP 5</span><span class="step-jp">純資産価額</span></li>
-              <li data-num="6" data-target="dstep5" tabindex="0" role="button"><span class="step-en">STEP 6</span><span class="step-jp">配当還元</span></li>
+              <li data-num="2" data-target="sstep3" tabindex="0" role="button"><span class="step-en">STEP 2</span><span class="step-jp">株主の状況</span></li>
+              <li data-num="3" data-target="dstep1" tabindex="0" role="button"><span class="step-en">STEP 3</span><span class="step-jp">会社規模の判定</span></li>
+              <li data-num="4" data-target="dstep2" tabindex="0" role="button"><span class="step-en">STEP 4</span><span class="step-jp">特定評価会社の判定</span></li>
+              <li data-num="5" data-target="dstep3" tabindex="0" role="button"><span class="step-en">STEP 5</span><span class="step-jp">類似業種比準</span></li>
+              <li data-num="6" data-target="dstep4" tabindex="0" role="button"><span class="step-en">STEP 6</span><span class="step-jp">純資産価額</span></li>
+              <li data-num="7" data-target="dstep5" tabindex="0" role="button"><span class="step-en">STEP 7</span><span class="step-jp">配当還元</span></li>
             </ol>
             <ol id="stepperTdb" class="stepper hidden">
               <li data-num="1" data-target="tbstep1" tabindex="0" role="button"><span class="step-en">STEP 1</span><span class="step-jp">会社の基本情報</span></li>
@@ -210,7 +211,7 @@
     <div id="detailArea" class="hidden space-y-10">
         <!-- 詳細1: 会社規模の判定(第1表の2) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep1">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 2</span>会社規模（Lの割合）の判定<span class="help-tip" tabindex="0">?<span class="help-text">第1表の2「3. 会社の規模（Lの割合）の判定」に対応。総資産価額・従業員数・取引金額から会社規模区分と併用方式のLの割合を自動判定します。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 3</span>会社規模（Lの割合）の判定<span class="help-tip" tabindex="0">?<span class="help-text">第1表の2「3. 会社の規模（Lの割合）の判定」に対応。総資産価額・従業員数・取引金額から会社規模区分と併用方式のLの割合を自動判定します。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtBiz">業種<span class="help-tip" tabindex="0">?<span class="help-text">業種によって会社規模の判定基準(総資産・取引金額のしきい値)が変わります。主たる事業の業種を選択してください。</span></span></label>
@@ -249,7 +250,7 @@
 
         <!-- 詳細2: 特定の評価会社の判定(第2表) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep2">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 3</span>特定の評価会社の判定<span class="help-tip" tabindex="0">?<span class="help-text">第2表に対応。株式等保有特定会社・土地保有特定会社・開業後3年未満等に該当すると、原則として純資産価額方式で評価します(類似業種比準は使えません)。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 4</span>特定の評価会社の判定<span class="help-tip" tabindex="0">?<span class="help-text">第2表に対応。株式等保有特定会社・土地保有特定会社・開業後3年未満等に該当すると、原則として純資産価額方式で評価します(類似業種比準は使えません)。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtTotalAssetsTax">相続税評価による総資産価額（千円）<span class="help-tip" tabindex="0">?<span class="help-text">第5表①に対応。相続税評価額ベースの総資産を千円単位で入力します。株式等保有割合・土地保有割合の分母になります。</span></span></label>
@@ -276,7 +277,7 @@
 
         <!-- 詳細3: 類似業種比準(第4表) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep3">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 4</span>類似業種比準価額の計算<span class="help-tip" tabindex="0">?<span class="help-text">第4表に対応。A〜Dは国税庁公表の業種目データ、b〜dは自社の1株(50円)当たりの金額です。斟酌率は会社規模から自動設定されます。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 5</span>類似業種比準価額の計算<span class="help-tip" tabindex="0">?<span class="help-text">第4表に対応。A〜Dは国税庁公表の業種目データ、b〜dは自社の1株(50円)当たりの金額です。斟酌率は会社規模から自動設定されます。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtA">類似業種の株価 A（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」で公表される、該当業種の株価(A)。月ごとに公表されます。</span></span></label>
@@ -316,7 +317,7 @@
 
         <!-- 詳細4: 純資産価額(第5表・含み益のみ) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep4">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 5</span>純資産価額の計算（含み益を入力）<span class="help-tip" tabindex="0">?<span class="help-text">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する38%を控除して算定します。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 6</span>純資産価額の計算（含み益を入力）<span class="help-tip" tabindex="0">?<span class="help-text">第5表に対応。帳簿上の純資産に、資産の含み益(相続税評価額と帳簿価額の差額)を加え、その含み益に対する38%を控除して算定します。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtBookNet">帳簿価額による純資産（総資産-負債）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期末の貸借対照表上の純資産(帳簿価額の総資産-負債)を万円単位で入力します。</span></span></label>
@@ -347,7 +348,7 @@
 
         <!-- 詳細5: 配当還元(第3表) -->
         <div class="calc-section bg-white p-6 sm:p-8" id="dstep5">
-          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 6</span>配当還元価額（参考）<span class="help-tip" tabindex="0">?<span class="help-text">第3表に対応。少数株主(同族株主等以外)が取得する場合に用いる特例的評価。原則的評価とは別枠の参考値です。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <h3 class="font-bold text-base mb-5 flex items-center justify-between"><span class="flex items-center"><span class="step-badge">STEP 7</span>配当還元価額（参考）<span class="help-tip" tabindex="0">?<span class="help-text">第3表に対応。少数株主(同族株主等以外)が取得する場合に用いる特例的評価。原則的評価とは別枠の参考値です。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <div class="notice-box text-sm rounded-lg p-4 flex items-center justify-between">
             <span class="flex items-center">1株当たり配当還元価額<span class="help-tip" tabindex="0">?<span class="help-text">（1株(50円)当たり年配当金額 ÷ 10%）×（1株当たり資本金等 ÷ 50円）で算定。年配当金額が2円50銭未満の場合は2円50銭とします。上の「自社の配当 b」「資本金等」「株式数」から自動計算します。</span></span></span>
             <span id="dtHaitoResult" class="font-bold text-[#0f2a4a]">-</span>
@@ -603,7 +604,7 @@
           </div>
 
           <div class="mb-6">
-            <p class="font-bold text-sm mb-2">会社規模の判定(Ⅰ・Ⅱの大きい方を採用)</p>
+            <p class="font-bold text-sm mb-2">第1表の2 会社規模の判定(Ⅰ・Ⅱの大きい方を採用)</p>
             <div class="overflow-x-auto">
               <table class="w-full text-xs border-collapse min-w-[520px]">
                 <thead>
@@ -621,13 +622,29 @@
           </div>
 
           <div class="mb-6">
-            <p class="font-bold text-sm mb-2">会社規模・特定会社による評価方式の選択</p>
+            <p class="font-bold text-sm mb-2">第2表 特定の評価会社の判定</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border-collapse min-w-[420px]">
+                <thead>
+                  <tr class="bg-[#0f2a4a] text-white">
+                    <th class="text-left font-bold px-2 py-1.5 rounded-tl-lg">判定項目</th>
+                    <th class="text-right font-bold px-2 py-1.5 rounded-tr-lg">該当状況</th>
+                  </tr>
+                </thead>
+                <tbody id="cpTokuteiTableBody"></tbody>
+              </table>
+            </div>
+            <p class="text-sm mt-2">判定結果: <span id="cpTokuteiResult" class="font-bold text-[#0f2a4a]"></span></p>
+          </div>
+
+          <div class="mb-6">
+            <p class="font-bold text-sm mb-2">第3表 特定会社・会社規模による評価方式の選択</p>
             <div class="overflow-x-auto">
               <table class="w-full text-xs border-collapse min-w-[480px]">
                 <thead>
                   <tr class="bg-[#0f2a4a] text-white">
-                    <th class="text-left font-bold px-2 py-1.5 rounded-tl-lg">区分</th>
-                    <th class="text-left font-bold px-2 py-1.5 rounded-tr-lg">原則的評価額(相続税評価)</th>
+                    <th class="text-left font-bold px-2 py-1.5 rounded-tl-lg">特定会社/会社規模</th>
+                    <th class="text-left font-bold px-2 py-1.5 rounded-tr-lg">原則的評価方式</th>
                   </tr>
                 </thead>
                 <tbody id="cpMethodTableBody"></tbody>
@@ -636,19 +653,19 @@
           </div>
 
           <div class="rounded-lg border border-gray-200 p-4 mb-4">
-            <p class="font-bold text-sm mb-2 flex items-center justify-between">■類似業種比準価額方式<span id="cpSimilarResult" class="font-black text-[#0f2a4a]"></span></p>
+            <p class="font-bold text-sm mb-2 flex items-center justify-between">第4表 類似業種比準価額方式<span id="cpSimilarResult" class="font-black text-[#0f2a4a]"></span></p>
             <p class="text-xs text-gray-500 mb-3">類似業種の株価(A) × [ b÷B + c÷C + d÷D ] ÷ 3 × 斟酌率 × (1株当たりの資本金等の額 ÷ 50円)</p>
             <div id="cpSimilarInputs" class="text-xs grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5"></div>
           </div>
 
           <div class="rounded-lg border border-gray-200 p-4 mb-4">
-            <p class="font-bold text-sm mb-2 flex items-center justify-between">■純資産価額方式<span id="cpNetResult" class="font-black text-[#0f2a4a]"></span></p>
+            <p class="font-bold text-sm mb-2 flex items-center justify-between">第5表 純資産価額方式<span id="cpNetResult" class="font-black text-[#0f2a4a]"></span></p>
             <p class="text-xs text-gray-500 mb-3">純資産価額(相続税評価) − (純資産価額(相続税評価) − 純資産価額(簿価)) × 38% ÷ 発行済株式数</p>
             <div id="cpNetInputs" class="text-xs grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5"></div>
           </div>
 
           <div class="rounded-lg border border-gray-200 p-4 mb-6">
-            <p class="font-bold text-sm mb-2 flex items-center justify-between">■配当還元価額方式(参考)<span id="cpHaitoResult" class="font-black text-[#0f2a4a]"></span></p>
+            <p class="font-bold text-sm mb-2 flex items-center justify-between">第3表 特例的評価方式(配当還元方式)<span id="cpHaitoResult" class="font-black text-[#0f2a4a]"></span></p>
             <p class="text-xs text-gray-500 mb-3">(1株当たりの配当(直前2期平均) ÷ 10%) × (1株当たりの資本金等の額 ÷ 50円)</p>
             <div id="cpHaitoInputs" class="text-xs grid grid-cols-2 gap-x-4 gap-y-1.5"></div>
           </div>
@@ -700,9 +717,9 @@
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/stock-simple.js?v=20260724b"></script>
-<script src="js/stock-detail.js?v=20260724e"></script>
+<script src="js/stock-detail.js?v=20260724g"></script>
 <script src="js/stock-tdb.js?v=20260724b"></script>
-<script src="js/stock-stepper.js?v=20260724a"></script>
+<script src="js/stock-stepper.js?v=20260724b"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>
