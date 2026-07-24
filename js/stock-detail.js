@@ -31,12 +31,12 @@ document.addEventListener('DOMContentLoaded', function () {
   var sstep3Badge = document.getElementById('sstep3Badge');
   function applyStepLayout(v) {
     if (v === 'detail') {
-      var dstep1 = document.getElementById('dstep1');
-      if (sstep1 && dstep1 && sstep1.nextElementSibling !== dstep1) {
-        detailArea.insertBefore(sstep1, dstep1);
+      var dstepFamily = document.getElementById('dstepFamily');
+      if (sstep1 && dstepFamily && sstep1.nextElementSibling !== dstepFamily) {
+        detailArea.insertBefore(sstep1, dstepFamily);
       }
-      if (sstep3 && dstep1 && sstep3.nextElementSibling !== dstep1) {
-        detailArea.insertBefore(sstep3, dstep1);
+      if (sstep3 && dstepFamily && sstep3.nextElementSibling !== dstepFamily) {
+        detailArea.insertBefore(sstep3, dstepFamily);
       }
       if (sstep2Badge) sstep2Badge.classList.add('hidden');
       if (sstep3Badge) sstep3Badge.textContent = 'STEP 2';
@@ -338,11 +338,82 @@ document.addEventListener('DOMContentLoaded', function () {
 
   }
 
+  // ===== STEP3: 同族株主等の判定(第1表の1)。STEP2の株主データからグループごとの
+  //       議決権割合(株数割合で近似)を集計し、会社区分・各株主の該当を自動判定する =====
+  function judgeFamily() {
+    var famJudgeBody = document.getElementById('famJudgeBody');
+    var famCompanyType = document.getElementById('famCompanyType');
+    var famHolderBody = document.getElementById('famHolderBody');
+    if (!famJudgeBody || !famCompanyType || !famHolderBody) return;
+    var holderBody = document.getElementById('ssHolderBody');
+    var baseShares = num('ssShares');
+    var rows = holderBody ? Array.prototype.slice.call(holderBody.querySelectorAll('.ss-holder')) : [];
+    var entries = rows.map(function (r) {
+      var name = (r.querySelector('.hn') || {}).value || '(無名)';
+      var groupRaw = (r.querySelector('.hg') || {}).value;
+      var group = (groupRaw && groupRaw.trim()) ? groupRaw.trim() : name;
+      var shares = numOf(r.querySelector('.hs'));
+      var ratioIn = numOf(r.querySelector('.hr'));
+      var ratio = (!isNaN(shares) && !isNaN(baseShares) && baseShares > 0) ? (shares / baseShares) * 100
+        : (!isNaN(ratioIn) ? ratioIn : 0);
+      return { name: name, group: group, ratio: ratio };
+    });
+
+    var groups = {};
+    var order = [];
+    entries.forEach(function (e) {
+      if (!groups[e.group]) { groups[e.group] = { ratio: 0, count: 0 }; order.push(e.group); }
+      groups[e.group].ratio += e.ratio;
+      groups[e.group].count += 1;
+    });
+    var topGroup = null;
+    order.forEach(function (g) {
+      if (!topGroup || groups[g].ratio > groups[topGroup].ratio) topGroup = g;
+    });
+    var topRatio = topGroup ? groups[topGroup].ratio : 0;
+
+    var companyType, badgeColor;
+    if (!entries.length) {
+      companyType = 'STEP2で株主を入力してください';
+      badgeColor = '#9ca3af';
+    } else if (topRatio > 50) {
+      companyType = '同族株主のいる会社(50%超基準)';
+      badgeColor = 'var(--color-navy)';
+    } else if (topRatio >= 30) {
+      companyType = '同族株主のいる会社(30%以上50%以下基準)';
+      badgeColor = 'var(--color-navy)';
+    } else {
+      companyType = '同族株主のいない会社';
+      badgeColor = 'var(--color-red)';
+    }
+    famCompanyType.textContent = companyType;
+    famCompanyType.style.backgroundColor = badgeColor;
+
+    var pct = function (n) { return n.toFixed(2) + '%'; };
+    var judgeRows = [
+      ['筆頭株主グループ', topGroup ? topGroup + '(' + groups[topGroup].count + '名)' : '-'],
+      ['筆頭株主グループの議決権割合(株数割合で近似)', topGroup ? pct(topRatio) : '-'],
+      ['判定基準', !entries.length ? '-' : topRatio > 50 ? '50%超' : topRatio >= 30 ? '30%以上50%以下' : '30%未満'],
+    ];
+    famJudgeBody.innerHTML = judgeRows.map(function (r) {
+      return '<tr><td class="px-2 py-1.5 border-b border-gray-100">' + r[0] + '</td><td class="px-2 py-1.5 border-b border-gray-100 text-right">' + r[1] + '</td></tr>';
+    }).join('');
+
+    famHolderBody.innerHTML = entries.length ? entries.map(function (e) {
+      var isFamily = topGroup && e.group === topGroup && topRatio >= 30;
+      return '<tr class="' + (isFamily ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">' + e.name + '</td>' +
+        '<td class="px-2 py-1.5 border-b border-gray-100">' + e.group + '</td>' +
+        '<td class="px-2 py-1.5 border-b border-gray-100 text-right">' + pct(groups[e.group].ratio) + '</td>' +
+        '<td class="px-2 py-1.5 border-b border-gray-100 text-right">' + (isFamily ? '該当' : '非該当') + '</td></tr>';
+    }).join('') : '<tr><td class="px-2 py-2 text-gray-400" colspan="4">STEP2で株主を入力してください</td></tr>';
+  }
+
   function recalcDetail() {
     var size = judgeSize();
     judgeTokutei(size.level);
     calcNetPerShare();
     calcHaito();
+    judgeFamily();
     updateCalcBtnReady();
   }
 
@@ -358,6 +429,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // ライブ更新
   detailArea.addEventListener('input', recalcDetail);
   detailArea.addEventListener('change', recalcDetail);
+  // 株主の追加・削除(クリックのみでinput/changeイベントを伴わない)でも同族株主等の判定を更新する
+  detailArea.addEventListener('click', function (e) {
+    if (e.target && (e.target.id === 'ssAddHolder' || e.target.classList.contains('hdel'))) {
+      setTimeout(recalcDetail, 0);
+    }
+  });
 
   // ===== 原則的評価額の計算 =====
   document.getElementById('dtCalcBtn').addEventListener('click', function () {

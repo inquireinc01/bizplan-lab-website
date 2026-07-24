@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tr.className = 'border-b border-gray-100 ss-holder';
     tr.innerHTML =
       '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" value="' + (d.name || '') + '" placeholder="氏名・法人名" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hg form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:7rem" value="' + (d.group || '') + '" placeholder="(株主名と同じ)" /></td>' +
       '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
       '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.ratio || '') + '" placeholder="％" /></td>' +
       '<td class="px-2 py-2 text-right hreka ss-eval-col">-</td>' +
@@ -142,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
     holderBody.querySelectorAll('.ss-holder').forEach(function (r) {
       holders.push({
         name: r.querySelector('.hn').value,
+        group: r.querySelector('.hg').value,
         shares: r.querySelector('.hs').value,
         ratio: r.querySelector('.hr').value,
       });
