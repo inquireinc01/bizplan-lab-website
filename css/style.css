@@ -1242,6 +1242,85 @@ img {
   border-radius: 1rem;
 }
 
+/* 自社株×生命保険(詳細入力): 株主の状況がSTEP2(株価計算前)で表示される間は
+   相続税評価額・法人税法上評価額の列が未計算のため非表示にする */
+.hide-eval-cols .ss-eval-col {
+  display: none;
+}
+
+/* 自社株×生命保険(詳細入力から): 自社株評価の時価総額は詳細入力の結果からすべて
+   自動入力されるため、入力欄の見た目をやめて計算結果と同じ表示にする */
+.detail-readonly-eval .ss-eval {
+  border: none;
+  background: transparent;
+  padding-right: 0;
+  pointer-events: none;
+}
+
+/* ========== 計算過程パネル: 「取引相場のない株式の明細書」風の枠付き数値ボックス・数式表示 ========== */
+.calc-formula-box {
+  border: 1.5px solid var(--color-gray-300, #cbd2d9);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  background: #fff;
+  text-align: right;
+  min-width: 5.5rem;
+}
+.calc-formula-box .fb-label {
+  font-size: 0.66rem;
+  color: #8a8f98;
+  text-align: left;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+}
+.calc-formula-box .fb-value {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #2b2f36;
+}
+.calc-formula-frac {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  font-size: 0.72rem;
+  padding: 0 0.3rem;
+}
+.calc-formula-frac .fb-num {
+  padding-bottom: 0.25rem;
+  white-space: nowrap;
+  text-align: center;
+}
+.calc-formula-frac .fb-den {
+  border-top: 1.5px solid #4b5563;
+  text-align: center;
+  padding-top: 0.25rem;
+  font-weight: 700;
+}
+.calc-formula-op {
+  font-weight: 900;
+  font-size: 1rem;
+  color: #0f2a4a;
+  padding: 0 0.1rem;
+}
+
+/* 自社株評価額の計算過程パネル: デフォルト折りたたみのトグル見出し */
+.calc-process-toggle {
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+}
+.calc-process-toggle .chevron {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: #6b7280;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+#dtCalcProcess.open .calc-process-toggle .chevron {
+  transform: rotate(180deg);
+}
+
 /* ========== グラフ: 棒が左から順に伸びるアニメーション ========== */
 @keyframes barGrow {
   from { transform: scaleY(0); }

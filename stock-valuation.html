@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607265" />
+<link rel="stylesheet" href="css/style.css?v=202607269" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -558,8 +558,8 @@
                   <th class="text-left font-bold px-2 py-2 rounded-tl-lg" style="min-width:9rem">株主名</th>
                   <th class="text-right font-bold px-2 py-2" style="min-width:7rem">株数</th>
                   <th class="text-right font-bold px-2 py-2" style="min-width:4.5rem">比率</th>
-                  <th class="text-right font-bold px-2 py-2" style="min-width:7.5rem">相続税評価額</th>
-                  <th class="text-right font-bold px-2 py-2" style="min-width:8rem">法人税法上評価額</th>
+                  <th class="text-right font-bold px-2 py-2 ss-eval-col" style="min-width:7.5rem">相続税評価額</th>
+                  <th class="text-right font-bold px-2 py-2 ss-eval-col" style="min-width:8rem">法人税法上評価額</th>
                   <th class="px-2 py-2 rounded-tr-lg w-8"></th>
                 </tr>
               </thead>
@@ -569,8 +569,8 @@
                   <td class="px-2 py-2 text-left">合計</td>
                   <td class="px-2 py-2 text-right" id="ssTotShares">-</td>
                   <td class="px-2 py-2 text-right" id="ssTotRatio">-</td>
-                  <td class="px-2 py-2 text-right" id="ssTotReka">-</td>
-                  <td class="px-2 py-2 text-right" id="ssTotHojin">-</td>
+                  <td class="px-2 py-2 text-right ss-eval-col" id="ssTotReka">-</td>
+                  <td class="px-2 py-2 text-right ss-eval-col" id="ssTotHojin">-</td>
                   <td></td>
                 </tr>
               </tfoot>
@@ -581,9 +581,13 @@
 
         <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
 
-        <!-- ===== 自社株評価額の計算過程(詳細入力からの場合のみ表示) ===== -->
+        <!-- ===== 自社株評価額の計算過程(詳細入力からの場合のみ表示。デフォルトは折りたたみ) ===== -->
         <div id="dtCalcProcess" class="hidden calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-5">自社株評価額の計算過程</h3>
+          <button type="button" id="dtCalcProcessToggle" class="calc-process-toggle w-full flex items-center justify-between" aria-expanded="false">
+            <span class="font-bold text-base">自社株評価額の計算過程</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="dtCalcProcessBody" class="hidden mt-5">
 
           <div class="grid sm:grid-cols-2 gap-4 mb-6 text-sm">
             <div class="rounded-lg border border-gray-200 p-4">
@@ -652,34 +656,76 @@
             </div>
           </div>
 
-          <div class="rounded-lg border border-gray-200 p-4 mb-4">
-            <p class="font-bold text-sm mb-2 flex items-center justify-between">第4表 類似業種比準価額方式<span id="cpSimilarResult" class="font-black text-[#0f2a4a]"></span></p>
-            <p class="text-xs text-gray-500 mb-3">類似業種の株価(A) × [ b÷B + c÷C + d÷D ] ÷ 3 × 斟酌率 × (1株当たりの資本金等の額 ÷ 50円)</p>
-            <div id="cpSimilarInputs" class="text-xs grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5"></div>
-          </div>
-
-          <div class="rounded-lg border border-gray-200 p-4 mb-4">
-            <p class="font-bold text-sm mb-2 flex items-center justify-between">第5表 純資産価額方式<span id="cpNetResult" class="font-black text-[#0f2a4a]"></span></p>
-            <p class="text-xs text-gray-500 mb-3">純資産価額(相続税評価) − (純資産価額(相続税評価) − 純資産価額(簿価)) × 38% ÷ 発行済株式数</p>
-            <div id="cpNetInputs" class="text-xs grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5"></div>
-          </div>
-
-          <div class="rounded-lg border border-gray-200 p-4 mb-6">
-            <p class="font-bold text-sm mb-2 flex items-center justify-between">第3表 特例的評価方式(配当還元方式)<span id="cpHaitoResult" class="font-black text-[#0f2a4a]"></span></p>
-            <p class="text-xs text-gray-500 mb-3">(1株当たりの配当(直前2期平均) ÷ 10%) × (1株当たりの資本金等の額 ÷ 50円)</p>
-            <div id="cpHaitoInputs" class="text-xs grid grid-cols-2 gap-x-4 gap-y-1.5"></div>
-          </div>
-
-          <p class="text-center text-xs text-gray-400 mb-2">それぞれ低い方を採用</p>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div class="rounded-lg p-4 text-center" style="background-color:#0f2a4a">
-              <p class="text-xs text-white/70 mb-1">相続税評価額(1株あたり)</p>
-              <p id="cpFinalSaizoku" class="text-2xl font-black text-white"></p>
+          <div class="rounded-lg border border-gray-200 p-5 mb-4" style="background-color:#f7f8fa">
+            <p class="font-bold text-sm mb-4 flex items-center justify-between">第4表 類似業種比準価額方式<span id="cpSimilarResult" class="font-black text-lg text-[#0f2a4a]"></span></p>
+            <div class="flex flex-wrap items-end gap-3 mb-1.5">
+              <div class="calc-formula-box"><p class="fb-label">年配当金額(※1)</p><p class="fb-value"><span id="cpOwnB"></span> 円</p></div>
+              <div class="calc-formula-box"><p class="fb-label">年利益金額(※1)</p><p class="fb-value"><span id="cpOwnC"></span> 円</p></div>
+              <div class="calc-formula-box"><p class="fb-label">純資産価額(※1)</p><p class="fb-value"><span id="cpOwnD"></span> 円</p></div>
             </div>
-            <div class="rounded-lg p-4 text-center" style="background-color:#0f2a4a">
-              <p class="text-xs text-white/70 mb-1">法人税評価額(1株あたり)</p>
-              <p id="cpFinalHoujin" class="text-2xl font-black text-white"></p>
+            <p class="text-[11px] text-gray-400 mb-3">※1: 自社の1株(50円)あたり</p>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="font-bold text-sm">類似業種の株価(A)</span>
+              <span class="calc-formula-op">×</span>
+              <div class="calc-formula-frac">
+                <span class="fb-num">類似業種の配当金額(B) ＋ 類似業種の利益金額(C) ＋ 類似業種の簿価純資産価額(D)</span>
+                <span class="fb-den">3</span>
+              </div>
+              <span class="calc-formula-op">×</span>
+              <div class="calc-formula-box"><p class="fb-label">斟酌率(※2)</p><p class="fb-value" id="cpShaku"></p></div>
+              <span class="calc-formula-op">×</span>
+              <div class="calc-formula-frac">
+                <span class="fb-num">1株あたりの資本金等の額</span>
+                <span class="fb-den">50 円</span>
+              </div>
             </div>
+            <p class="text-[11px] text-gray-400 mt-2">※2: 大会社は0.7、中会社は0.6、小会社は0.5</p>
+            <div class="mt-3 bg-white border border-gray-200 rounded p-3 text-xs text-gray-600">
+              類似業種の株価等: 株価(A) <span id="cpA" class="font-bold"></span>円、配当金額(B) <span id="cpB" class="font-bold"></span>円、利益金額(C) <span id="cpC" class="font-bold"></span>円、簿価純資産価額(D) <span id="cpD" class="font-bold"></span>円
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 p-5 mb-4" style="background-color:#f7f8fa">
+            <p class="font-bold text-sm mb-4 flex items-center justify-between">第5表 純資産価額方式<span id="cpNetResult" class="font-black text-lg text-[#0f2a4a]"></span></p>
+            <div class="flex flex-wrap items-center gap-1.5 mb-2">
+              <div class="calc-formula-box"><p class="fb-label">純資産価額(相続税評価)</p><p class="fb-value"><span id="cpNetTax"></span> 千円</p></div>
+              <span class="calc-formula-op">−</span>
+              <span class="calc-formula-op">(</span>
+              <div class="calc-formula-box"><p class="fb-label">純資産価額(相続税評価)</p><p class="fb-value"><span id="cpNetTax2"></span> 千円</p></div>
+              <span class="calc-formula-op">−</span>
+              <div class="calc-formula-box"><p class="fb-label">純資産価額(簿価)</p><p class="fb-value"><span id="cpNetBook"></span> 千円</p></div>
+              <span class="calc-formula-op">)</span>
+              <span class="calc-formula-op">×</span>
+              <div class="calc-formula-box"><p class="fb-label">法人税率</p><p class="fb-value">38.00 %</p></div>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="calc-formula-op">÷ (</span>
+              <div class="calc-formula-box"><p class="fb-label">総発行株数</p><p class="fb-value"><span id="cpNetShares"></span> 株</p></div>
+              <span class="calc-formula-op">−</span>
+              <div class="calc-formula-box"><p class="fb-label">うち自己株式(金庫株)数</p><p class="fb-value">0 株</p></div>
+              <span class="calc-formula-op">)</span>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 p-5 mb-6" style="background-color:#f7f8fa">
+            <p class="font-bold text-sm mb-4 flex items-center justify-between">第3表 特例的評価方式(配当還元方式)<span id="cpHaitoResult" class="font-black text-lg text-[#0f2a4a]"></span></p>
+            <div class="flex flex-wrap items-end gap-1.5">
+              <div class="calc-formula-frac">
+                <span class="fb-num">1株あたりの配当(直前2期分の平均)</span>
+                <span class="fb-den"><span id="cpHaitoB"></span> 円</span>
+              </div>
+              <span class="calc-formula-op" style="align-self:center">÷</span>
+              <div class="calc-formula-box" style="align-self:center"><p class="fb-value">10 %</p></div>
+              <span class="calc-formula-op" style="align-self:center">×</span>
+              <div class="calc-formula-frac">
+                <span class="fb-num">1株あたりの資本金等の額</span>
+                <span class="fb-den"><span id="cpHaitoCap"></span> 円</span>
+              </div>
+              <span class="calc-formula-op" style="align-self:center">÷</span>
+              <div class="calc-formula-box" style="align-self:center"><p class="fb-value">50 円</p></div>
+            </div>
+          </div>
+
           </div>
         </div>
 
@@ -716,8 +762,8 @@
 
 <script src="js/menu.js?v=20260723g"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-simple.js?v=20260724b"></script>
-<script src="js/stock-detail.js?v=20260724g"></script>
+<script src="js/stock-simple.js?v=20260724c"></script>
+<script src="js/stock-detail.js?v=20260724k"></script>
 <script src="js/stock-tdb.js?v=20260724b"></script>
 <script src="js/stock-stepper.js?v=20260724b"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
