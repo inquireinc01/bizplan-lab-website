@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
       '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" value="' + (d.name || '') + '" placeholder="氏名・法人名" /></td>' +
       '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
       '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.ratio || '') + '" placeholder="％" /></td>' +
-      '<td class="px-2 py-2 text-right hreka">-</td>' +
-      '<td class="px-2 py-2 text-right hhojin">-</td>' +
+      '<td class="px-2 py-2 text-right hreka ss-eval-col">-</td>' +
+      '<td class="px-2 py-2 text-right hhojin ss-eval-col">-</td>' +
       '<td class="px-1 py-1 text-center"><button type="button" class="hdel text-gray-400 hover:text-red-500 font-bold" title="削除">×</button></td>';
     tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); recalcHolders(); });
     holderBody.appendChild(tr);
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (restored && resume) resume.classList.remove('hidden');
   if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
 
-  // ===== 詳細入力・TD/TSR側から計算後に呼び出し、共有データを画面に反映する =====
+  // ===== 詳細入力・TDB/TSR側から計算後に呼び出し、共有データを画面に反映する =====
   window.bplRefreshSimpleFromShared = function () {
     restore();
     resyncAllHolderRows();

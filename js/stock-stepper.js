@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return [step1, step2, step3, step4, step5, step6, step7];
   }
 
-  // 公開情報から入力(TD/TSR)版: STEP1〜4
+  // 公開情報から入力(TDB/TSR)版: STEP1〜4
   function tdbValidity() {
     var step1 = numVal('tbCapital') > 0 && (numVal('tbSales') > 0 || numVal('tbEmp') > 0);
     var step2 = !isNaN(numVal('tbProfit')) && numVal('tbNetAssets') > 0;
