@@ -19,37 +19,62 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
 
-  // ===== グラフの「予測BSあり/なし」トグル(初期値はなし=非表示) =====
-  // 予測BSがONの時だけ、その計算に関わる「生命保険あり/なし」「次世代BSあり/なし」ボタンを表示する
-  let showPredicted = false;
-  const showPredictedToggle = document.getElementById('showPredictedToggle');
+  // ===== 会計上/実質的/将来予測/将来予測実質の4つのBSを個別に表示ON/OFFできるトグル群。
+  //       4つ同時に表示すると1本1本が細くなりすぎるため、常に2つ以上・最大3つまでしか選べない仕様にする。
+  //       デフォルトは会計上のBS・実質的なBSの2つ =====
+  const showGroup = { 1: true, 2: true, 3: false, 4: false };
+  const groupToggleEls = {
+    1: document.getElementById('showGroup1Toggle'),
+    2: document.getElementById('showGroup2Toggle'),
+    3: document.getElementById('showGroup3Toggle'),
+    4: document.getElementById('showGroup4Toggle'),
+  };
+  const groupToggleLabels = {
+    1: ['会計上表示', '会計上非表示'],
+    2: ['実質的表示', '実質的非表示'],
+    3: ['将来予測表示', '将来予測非表示'],
+    4: ['予測実質表示', '予測実質非表示'],
+  };
   const insuranceToggleEl = document.getElementById('insuranceToggle');
-  const showPredicted2ToggleEl = document.getElementById('showPredicted2Toggle');
-  if (showPredictedToggle) {
-    showPredictedToggle.addEventListener('click', function () {
-      showPredicted = !showPredicted;
-      showPredictedToggle.classList.toggle('is-on', showPredicted);
-      showPredictedToggle.setAttribute('aria-pressed', String(showPredicted));
-      showPredictedToggle.querySelector('.toggle-label').textContent = showPredicted ? '予測BSあり' : '予測BSなし';
-      if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !showPredicted);
-      if (showPredicted2ToggleEl) showPredicted2ToggleEl.classList.toggle('is-collapsed', !showPredicted);
-      recompute();
-    });
-  }
 
-  // ===== 将来予測BSの右にさらに「次世代将来負債」を加味した将来予測実質BSを表示する「次世代BSあり/なし」トグル =====
-  // (将来予測BSの数値を土台に、さらに次世代将来負債を取り崩すため、予測BSがONの時だけボタンを表示する)
-  let showPredicted2 = false;
-  const showPredicted2Toggle = document.getElementById('showPredicted2Toggle');
-  if (showPredicted2Toggle) {
-    showPredicted2Toggle.addEventListener('click', function () {
-      showPredicted2 = !showPredicted2;
-      showPredicted2Toggle.classList.toggle('is-on', showPredicted2);
-      showPredicted2Toggle.setAttribute('aria-pressed', String(showPredicted2));
-      showPredicted2Toggle.querySelector('.toggle-label').textContent = showPredicted2 ? '次世代BSあり' : '次世代BSなし';
-      recompute();
+  function activeGroupCount() {
+    return [1, 2, 3, 4].filter((n) => showGroup[n]).length;
+  }
+  // 上限(3つ)・下限(2つ)に達しているボタンは押せないようにする(押しても変化しないだけでなく、見た目でも分かるようにする)
+  function updateGroupToggleAvailability() {
+    const count = activeGroupCount();
+    [1, 2, 3, 4].forEach((n) => {
+      const btn = groupToggleEls[n];
+      if (!btn) return;
+      const wouldViolate = showGroup[n] ? count <= 2 : count >= 3;
+      btn.disabled = wouldViolate;
     });
   }
+  function setGroupToggleVisual(n, on) {
+    const btn = groupToggleEls[n];
+    if (!btn) return;
+    btn.classList.toggle('is-on', on);
+    btn.setAttribute('aria-pressed', String(on));
+    btn.querySelector('.toggle-label').textContent = groupToggleLabels[n][on ? 0 : 1];
+  }
+  [1, 2, 3, 4].forEach((n) => {
+    const btn = groupToggleEls[n];
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      const count = activeGroupCount();
+      if (showGroup[n] && count <= 2) return; // これ以上減らせない
+      if (!showGroup[n] && count >= 3) return; // これ以上増やせない
+      showGroup[n] = !showGroup[n];
+      setGroupToggleVisual(n, showGroup[n]);
+      updateGroupToggleAvailability();
+      // 生命保険トグルは将来予測BS・将来予測実質BSのどちらかが表示されている時だけ意味を持つ
+      if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !(showGroup[3] || showGroup[4]));
+      recompute();
+    });
+    setGroupToggleVisual(n, showGroup[n]);
+  });
+  updateGroupToggleAvailability();
+  if (insuranceToggleEl) insuranceToggleEl.classList.toggle('is-collapsed', !(showGroup[3] || showGroup[4]));
 
   // ===== グラフの「BS内訳表示/非表示」トグル(初期値は非表示=ひとまとめ表示) =====
   let detailMode = false;
@@ -243,30 +268,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const barWidth = 78;
   const groupGap = 46;
   const pairGap = 16;
-  // 6本のバー(barWidth×6 + pairGap×3 + groupGap×2)がW(700)の中央に来るよう左端を計算する
-  const totalBarsWidth = barWidth * 6 + pairGap * 3 + groupGap * 2;
-  const xAsset1 = (W - totalBarsWidth) / 2;
-  const xLiab1 = xAsset1 + barWidth + pairGap;
-  const xAsset2 = xLiab1 + barWidth + groupGap;
-  const xLiab2 = xAsset2 + barWidth + pairGap;
-  const xAsset3 = xLiab2 + barWidth + groupGap;
-  const xLiab3 = xAsset3 + barWidth + pairGap;
-  const arrowX = xLiab2 + barWidth + groupGap / 2;
-  // 将来予測実質BS(次世代将来負債を加味したさらに先のBS)は「次世代BSあり」の時だけ、将来予測BSの右側に追加で表示する。
-  // 会計上・実質的・将来予測の3組(W=700)の大きさ・位置は変えず、キャンバス幅だけを必要な分右に広げる
-  const xAsset4 = xLiab3 + barWidth + groupGap;
-  const xLiab4 = xAsset4 + barWidth + pairGap;
-  const arrowX34 = xLiab3 + barWidth + groupGap / 2;
-  const W4 = xLiab4 + barWidth + xAsset1; // 4組目まで表示する時のキャンバス幅(右側にxAsset1と同じ余白を確保)
-  // 「予測BSを表示」がOFFのとき用: 会計上のBS・実質的なBSの2組だけをキャンバス(W)の中央に寄せた位置。
-  // グラフ全体のサイズ(viewBox幅)は変えず、バーの位置だけをずらすことで、表示切替時にバーの大きさが変わらないようにする
-  const totalBarsWidth2 = barWidth * 4 + pairGap * 2 + groupGap;
-  const xAsset1Alone = (W - totalBarsWidth2) / 2;
-  const xLiab1Alone = xAsset1Alone + barWidth + pairGap;
-  const xAsset2Alone = xLiab1Alone + barWidth + groupGap;
-  const xLiab2Alone = xAsset2Alone + barWidth + pairGap;
   const DUMMY_VALUE = 25; // ダミー表示用の共通仮値(万円換算は意味を持たない)
   const groupSpanWidth = barWidth * 2 + pairGap; // 各BSの見出し・自己資本比率ボックスの幅(資産+負債・純資産+間隔)
+  // 4つのBS(会計上/実質的/将来予測/将来予測実質)は常に2〜3組だけ選んで表示する仕様のため、
+  // 各バーのx位置は固定値を持たず、選ばれている組数に応じてupdateLayoutが毎回中央寄せで計算する
 
   function segColor(label) {
     const map = {
@@ -341,15 +346,16 @@ document.addEventListener('DOMContentLoaded', function () {
     { label: '次世代事業承継', offBalance: true, assetSide: false },
     { label: '次世代その他', offBalance: true, assetSide: false },
   ];
+  // x位置は持たず、常に0で初期化する(表示ON/OFFの組み合わせに応じてupdateLayoutが毎回設定するため)
   const BAR_DEFS = {
-    a1: { x: xAsset1, segs: ASSET_SEGS_BASE },
-    l1: { x: xLiab1, segs: LIAB_SEGS_BASE },
-    a2: { x: xAsset2, segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS) },
-    l2: { x: xLiab2, segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS) },
-    a3: { x: xAsset3, segs: ASSET_SEGS_BASE },
-    l3: { x: xLiab3, segs: LIAB_SEGS_BASE },
-    a4: { x: xAsset4, segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS_4) },
-    l4: { x: xLiab4, segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS_4) },
+    a1: { segs: ASSET_SEGS_BASE },
+    l1: { segs: LIAB_SEGS_BASE },
+    a2: { segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS) },
+    l2: { segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS) },
+    a3: { segs: ASSET_SEGS_BASE },
+    l3: { segs: LIAB_SEGS_BASE },
+    a4: { segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS_4) },
+    l4: { segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS_4) },
   };
 
   let chartInitialized = false;
@@ -369,48 +375,44 @@ document.addEventListener('DOMContentLoaded', function () {
         const attrs = seg.offBalance
           ? (() => { const s = offBalanceStyle(seg.assetSide); return `fill="${s.fill}" fill-opacity="${s.opacity}" stroke="#fff" stroke-width="1"`; })()
           : `fill="${segColor(seg.label)}"`;
-        svgOut += `<rect id="bs-${barKey}-${i}" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
+        svgOut += `<rect id="bs-${barKey}-${i}" x="0" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
       def.segs.forEach((seg, i) => {
         const textColor = seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff');
-        svgOut += `<text id="bs-${barKey}-t${i}" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
+        svgOut += `<text id="bs-${barKey}-t${i}" x="0" y="${yBottom}" font-size="11" fill="${textColor}" text-anchor="middle"></text>`;
       });
       // 簿外ゾーン全体を囲む1本のダッシュ枠(積んだセグメント数に関わらず、ゾーン全体の外周だけに点線を描く)
       if (def.segs.some((s) => s.offBalance)) {
         const assetSide = def.segs.find((s) => s.offBalance).assetSide;
-        svgOut += `<rect id="bs-${barKey}-offborder" x="${def.x}" y="${yBottom}" width="${barWidth}" height="0" fill="none" stroke="${offBalanceStyle(assetSide).fill}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+        svgOut += `<rect id="bs-${barKey}-offborder" x="0" y="${yBottom}" width="${barWidth}" height="0" fill="none" stroke="${offBalanceStyle(assetSide).fill}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
       }
-      svgOut += `<text id="bs-${barKey}-total" x="${def.x + barWidth / 2}" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle" ${HALO}></text>`;
+      svgOut += `<text id="bs-${barKey}-total" x="0" y="${yBottom}" font-size="12" font-weight="bold" fill="#2b2f36" text-anchor="middle" ${HALO}></text>`;
     });
 
     // グループ見出し: 各BSのバー幅(資産+負債・純資産+間隔)と同じ幅の枠で囲む。
-    // 予測BSだけは塗りつぶし+白抜き文字にして強調する(x/width位置は不変。y位置はupdateLayoutが毎回調整する)
+    // 将来予測・将来予測実質は塗りつぶし+白抜き文字にして強調する(x位置・表示有無はupdateLayoutが毎回調整する)
     // 各見出しの上には自己資本比率ボックスを1組ずつ配置する(表示ON/OFFはトグルで切替、updateEquityRatioBoxで内容更新)
-    svgOut += `<rect id="equity-box-1" x="${xAsset1}" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
-    svgOut += `<text id="equity-text-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
-    svgOut += `<rect id="title-1-box" x="${xAsset1}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
-    svgOut += `<text id="title-1" x="${(xAsset1 + xLiab1 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">会計上（決算書上）のBS</text>`;
-    svgOut += `<rect id="equity-box-2" x="${xAsset2}" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
-    svgOut += `<text id="equity-text-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
-    svgOut += `<rect id="title-2-box" x="${xAsset2}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
-    svgOut += `<text id="title-2" x="${(xAsset2 + xLiab2 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">実質的なBS</text>`;
-    svgOut += `<rect id="equity-box-3" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
-    svgOut += `<text id="equity-text-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
-    svgOut += `<rect id="title-3-box" x="${xAsset3}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
-    svgOut += `<text id="title-3" x="${(xAsset3 + xLiab3 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測BS</text>`;
-    svgOut += `<rect id="equity-box-4" x="${xAsset4}" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
-    svgOut += `<text id="equity-text-4" x="${(xAsset4 + xLiab4 + barWidth) / 2}" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
-    svgOut += `<rect id="title-4-box" x="${xAsset4}" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
-    svgOut += `<text id="title-4" x="${(xAsset4 + xLiab4 + barWidth) / 2}" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測実質BS</text>`;
+    svgOut += `<rect id="equity-box-1" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
+    svgOut += `<text id="equity-text-1" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
+    svgOut += `<rect id="title-1-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
+    svgOut += `<text id="title-1" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">会計上（決算書上）のBS</text>`;
+    svgOut += `<rect id="equity-box-2" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
+    svgOut += `<text id="equity-text-2" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
+    svgOut += `<rect id="title-2-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
+    svgOut += `<text id="title-2" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">実質的なBS</text>`;
+    svgOut += `<rect id="equity-box-3" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
+    svgOut += `<text id="equity-text-3" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
+    svgOut += `<rect id="title-3-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
+    svgOut += `<text id="title-3" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測BS</text>`;
+    svgOut += `<rect id="equity-box-4" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
+    svgOut += `<text id="equity-text-4" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
+    svgOut += `<rect id="title-4-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
+    svgOut += `<text id="title-4" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測実質BS</text>`;
 
-    // 会計上のBS → 実質的なBS、実質的なBS → 予測BS、予測BS → 予測実質BS を結ぶ矢印。
-    // 細い矢印記号ではなく塗りつぶした三角形にして、2つのエリアの区切りを分かりやすくする
-    // (会計上→実質的の矢印は「予測BSを表示」OFF時に会計上・実質的の2組が中央寄せされるため、x位置をupdateLayoutで毎回更新する)
-    const arrowCenterY = (yTop + yBottom) / 2;
-    const arrowX12Init = xLiab1 + barWidth + groupGap / 2;
-    svgOut += `<polygon id="arrow-12" points="${arrowX12Init - 9},${arrowCenterY - 13} ${arrowX12Init - 9},${arrowCenterY + 13} ${arrowX12Init + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
-    svgOut += `<polygon id="predicted-arrow" points="${arrowX - 9},${arrowCenterY - 13} ${arrowX - 9},${arrowCenterY + 13} ${arrowX + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
-    svgOut += `<polygon id="arrow-34" points="${arrowX34 - 9},${arrowCenterY - 13} ${arrowX34 - 9},${arrowCenterY + 13} ${arrowX34 + 11},${arrowCenterY}" fill="#0f2a4a"/>`;
+    // 表示中のBS同士を結ぶ矢印。特定の組同士に固定せず、隣り合って表示されている組の間にだけ
+    // 必要な数(最大2本)を表示する汎用スロットとして用意し、位置・表示有無はupdateLayoutが毎回設定する
+    svgOut += `<polygon id="arrow-gap-0" points="0,0 0,0 0,0" fill="#0f2a4a"/>`;
+    svgOut += `<polygon id="arrow-gap-1" points="0,0 0,0 0,0" fill="#0f2a4a"/>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
@@ -435,40 +437,45 @@ document.addEventListener('DOMContentLoaded', function () {
     equityFontSize = size;
   }
 
-  // 「予測BSを表示」がOFFのときに非表示にする要素(3組目のバー・見出し・矢印)
-  const GROUP3_IDS = [
-    'bs-a3-0', 'bs-a3-1', 'bs-a3-2', 'bs-a3-t0', 'bs-a3-t1', 'bs-a3-t2', 'bs-a3-total',
-    'bs-l3-0', 'bs-l3-1', 'bs-l3-2', 'bs-l3-t0', 'bs-l3-t1', 'bs-l3-t2', 'bs-l3-total',
-    'title-3', 'title-3-box', 'predicted-arrow',
-  ];
-  // 「次世代BSを表示」がONかつ「予測BSを表示」がONの時だけ表示する要素(4組目のバー・見出し・矢印)
-  const GROUP4_IDS = [
-    'bs-a4-0', 'bs-a4-1', 'bs-a4-2', 'bs-a4-3', 'bs-a4-t0', 'bs-a4-t1', 'bs-a4-t2', 'bs-a4-t3', 'bs-a4-total', 'bs-a4-offborder',
-    'bs-l4-0', 'bs-l4-1', 'bs-l4-2', 'bs-l4-3', 'bs-l4-4', 'bs-l4-5',
-    'bs-l4-t0', 'bs-l4-t1', 'bs-l4-t2', 'bs-l4-t3', 'bs-l4-t4', 'bs-l4-t5', 'bs-l4-total', 'bs-l4-offborder',
-    'title-4', 'title-4-box', 'arrow-34',
-  ];
+  // 各BS(1〜4)に属する全要素のidをBAR_DEFSから動的に組み立てる(表示ON/OFF切替・非表示化に使う)
+  function buildGroupIds(n) {
+    const ids = [`title-${n}`, `title-${n}-box`, `equity-box-${n}`, `equity-text-${n}`];
+    ['a', 'l'].forEach((side) => {
+      const barKey = side + n;
+      const def = BAR_DEFS[barKey];
+      def.segs.forEach((seg, i) => { ids.push(`bs-${barKey}-${i}`, `bs-${barKey}-t${i}`); });
+      ids.push(`bs-${barKey}-total`);
+      if (def.segs.some((s) => s.offBalance)) ids.push(`bs-${barKey}-offborder`);
+    });
+    return ids;
+  }
+  const GROUP_IDS = { 1: buildGroupIds(1), 2: buildGroupIds(2), 3: buildGroupIds(3), 4: buildGroupIds(4) };
 
-  // barKeyの全rect/textのx位置を一括で付け替える(予測BS表示ON/OFF切替用)
-  function repositionGroup(barKey, segCount, hasOffBorder, x) {
-    for (let i = 0; i < segCount; i++) {
-      const rect = document.getElementById(`bs-${barKey}-${i}`);
-      if (rect) rect.setAttribute('x', x);
-      const text = document.getElementById(`bs-${barKey}-t${i}`);
-      if (text) text.setAttribute('x', x + barWidth / 2);
-    }
-    const total = document.getElementById(`bs-${barKey}-total`);
-    if (total) total.setAttribute('x', x + barWidth / 2);
-    if (hasOffBorder) {
-      const border = document.getElementById(`bs-${barKey}-offborder`);
-      if (border) border.setAttribute('x', x);
-    }
+  // barKeyの全rect/textのx位置を一括で付け替える(表示中のBSの並び替え用)
+  function repositionGroupBars(n, xAsset, xLiab) {
+    ['a', 'l'].forEach((side) => {
+      const barKey = side + n;
+      const x = side === 'a' ? xAsset : xLiab;
+      const def = BAR_DEFS[barKey];
+      def.segs.forEach((seg, i) => {
+        const rect = document.getElementById(`bs-${barKey}-${i}`);
+        if (rect) rect.setAttribute('x', x);
+        const text = document.getElementById(`bs-${barKey}-t${i}`);
+        if (text) text.setAttribute('x', x + barWidth / 2);
+      });
+      const total = document.getElementById(`bs-${barKey}-total`);
+      if (total) total.setAttribute('x', x + barWidth / 2);
+      if (def.segs.some((s) => s.offBalance)) {
+        const border = document.getElementById(`bs-${barKey}-offborder`);
+        if (border) border.setAttribute('x', x);
+      }
+    });
   }
 
   // 見出し・SVG全体の高さを、債務超過の有無に応じて動的に調整する。
   // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
-  // 予測BSがOFFのときは3組目を非表示にし、グラフの大きさ(viewBox)は変えずに
-  // 会計上のBS・実質的なBSの2組だけをキャンバス中央へ寄せる(バーの大きさが変わらないようにするため)。
+  // 会計上/実質的/将来予測/将来予測実質の4つのBSは常に2〜3組だけを選んで表示する仕様のため、
+  // 選ばれている組をバーの大きさ・間隔は変えずに毎回中央寄せで並べ直す(非表示の組は完全に隠す)。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
     const zoneBottom = yBottom + negZone;
@@ -481,59 +488,54 @@ document.addEventListener('DOMContentLoaded', function () {
     const titleY = titleBoxTop + 17;
     const svgH = titleBoxTop + titleBoxH + 8;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
-    ['title-1', 'title-2', 'title-3', 'title-4'].forEach((id) => setY(id, titleY));
-    ['title-1-box', 'title-2-box', 'title-3-box', 'title-4-box'].forEach((id) => setY(id, titleBoxTop));
-    ['equity-box-1', 'equity-box-2', 'equity-box-3', 'equity-box-4'].forEach((id) => setY(id, equityBoxTop));
-    ['equity-text-1', 'equity-text-2', 'equity-text-3', 'equity-text-4'].forEach((id) => setY(id, equityBoxTop + 16));
-    GROUP3_IDS.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = showPredicted ? '' : 'none';
-    });
-    // 次世代BS(4組目)は「次世代BSあり」かつ「予測BSあり」の時だけ表示する(将来予測BSの数値が土台のため)
-    const showGroup4 = showPredicted2 && showPredicted;
-    GROUP4_IDS.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = showGroup4 ? '' : 'none';
-    });
-    // 自己資本比率ボックスの表示ON/OFFはトグルで切替(3組目・4組目はそれぞれの元のBSが非表示なら連動して隠す)
-    const setDisplay = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; };
-    setDisplay('equity-box-1', showEquityRatio);
-    setDisplay('equity-text-1', showEquityRatio);
-    setDisplay('equity-box-2', showEquityRatio);
-    setDisplay('equity-text-2', showEquityRatio);
-    setDisplay('equity-box-3', showEquityRatio && showPredicted);
-    setDisplay('equity-text-3', showEquityRatio && showPredicted);
-    setDisplay('equity-box-4', showEquityRatio && showGroup4);
-    setDisplay('equity-text-4', showEquityRatio && showGroup4);
-
-    const xA1 = showPredicted ? xAsset1 : xAsset1Alone;
-    const xL1 = showPredicted ? xLiab1 : xLiab1Alone;
-    const xA2 = showPredicted ? xAsset2 : xAsset2Alone;
-    const xL2 = showPredicted ? xLiab2 : xLiab2Alone;
-    repositionGroup('a1', 3, false, xA1);
-    repositionGroup('l1', 3, false, xL1);
-    repositionGroup('a2', 5, true, xA2);
-    repositionGroup('l2', 6, true, xL2);
     const setX = (id, x) => { const el = document.getElementById(id); if (el) el.setAttribute('x', x); };
-    setX('title-1-box', xA1);
-    setX('title-1', (xA1 + xL1 + barWidth) / 2);
-    setX('equity-box-1', xA1);
-    setX('equity-text-1', (xA1 + xL1 + barWidth) / 2);
-    setX('title-2-box', xA2);
-    setX('title-2', (xA2 + xL2 + barWidth) / 2);
-    setX('equity-box-2', xA2);
-    setX('equity-text-2', (xA2 + xL2 + barWidth) / 2);
-    const arrow12 = document.getElementById('arrow-12');
-    if (arrow12) {
-      const ax = xL1 + barWidth + groupGap / 2;
-      const acy = (yTop + yBottom) / 2;
-      arrow12.setAttribute('points', `${ax - 9},${acy - 13} ${ax - 9},${acy + 13} ${ax + 11},${acy}`);
+    const setDisplay = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; };
+
+    // まず全BSを一旦隠し、選ばれているものだけ後段で表示する
+    [1, 2, 3, 4].forEach((n) => { GROUP_IDS[n].forEach((id) => setDisplay(id, false)); });
+
+    const visibleGroups = [1, 2, 3, 4].filter((n) => showGroup[n]);
+    const count = visibleGroups.length;
+    const totalWidth = count * groupSpanWidth + (count - 1) * groupGap;
+    const startX = (W - totalWidth) / 2;
+    const groupX = {};
+
+    visibleGroups.forEach((n, i) => {
+      GROUP_IDS[n].forEach((id) => setDisplay(id, true));
+      const xAsset = startX + i * (groupSpanWidth + groupGap);
+      const xLiab = xAsset + barWidth + pairGap;
+      groupX[n] = { xAsset, xLiab };
+      repositionGroupBars(n, xAsset, xLiab);
+      const cx = (xAsset + xLiab + barWidth) / 2;
+      setX(`title-${n}-box`, xAsset);
+      setX(`title-${n}`, cx);
+      setY(`title-${n}`, titleY);
+      setY(`title-${n}-box`, titleBoxTop);
+      setX(`equity-box-${n}`, xAsset);
+      setX(`equity-text-${n}`, cx);
+      setY(`equity-box-${n}`, equityBoxTop);
+      setY(`equity-text-${n}`, equityBoxTop + 16);
+      // 自己資本比率ボックスは「自己資本表示」トグルにも従う(そのBS自体が非表示なら上でまとめて隠れている)
+      setDisplay(`equity-box-${n}`, showEquityRatio);
+      setDisplay(`equity-text-${n}`, showEquityRatio);
+    });
+
+    // 表示中のBS同士の間だけ、矢印を必要な数(最大2本)だけ表示する
+    const acy = (yTop + yBottom) / 2;
+    for (let g = 0; g < 2; g++) {
+      const arrow = document.getElementById(`arrow-gap-${g}`);
+      if (!arrow) continue;
+      if (g < count - 1) {
+        const ax = groupX[visibleGroups[g]].xLiab + barWidth + groupGap / 2;
+        arrow.setAttribute('points', `${ax - 9},${acy - 13} ${ax - 9},${acy + 13} ${ax + 11},${acy}`);
+        arrow.style.display = '';
+      } else {
+        arrow.style.display = 'none';
+      }
     }
 
     const svg = document.getElementById('bsChart');
-    // 次世代BS(4組目)を表示する時だけ、会計上・実質的・将来予測の3組の大きさ・位置は変えずキャンバス幅を右へ広げる
-    const svgW = showGroup4 ? W4 : W;
-    if (svg) svg.setAttribute('viewBox', `0 0 ${svgW.toFixed(1)} ${svgH.toFixed(1)}`);
+    if (svg) svg.setAttribute('viewBox', `0 0 ${W} ${svgH.toFixed(1)}`);
   }
 
   // 1行に収まらない要素名+金額は、判読できる最小サイズ(6px)まで自動的に縮小して収める。

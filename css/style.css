@@ -1349,6 +1349,11 @@ img {
   cursor: pointer;
   white-space: nowrap;
 }
+/* 上限/下限に達して押せないボタン(例: 表示するBSの選択数が2〜3の範囲を超える操作)を薄くして分かるようにする */
+.overlay-toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 @media (min-width: 640px) {
   .overlay-toggle {
     width: 8.2rem;
