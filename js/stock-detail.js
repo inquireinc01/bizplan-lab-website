@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       if (sstep2Badge) sstep2Badge.classList.remove('hidden');
       if (sstep3Badge) sstep3Badge.textContent = 'STEP 3';
+      var cpEl = document.getElementById('dtCalcProcess');
+      if (cpEl) cpEl.classList.add('hidden');
     }
   }
 
@@ -190,6 +192,84 @@ document.addEventListener('DOMContentLoaded', function () {
     return haito;
   }
 
+  // ===== 自社株評価額の計算過程(最下部の内訳パネル)を描画 =====
+  var BIZ_LABEL = { wholesale: '卸売業', retail: '小売・サービス業', other: 'その他の業種' };
+  var ASSET_T = { wholesale: [20 * OKU, 4 * OKU, 2 * OKU, 7000 * MAN], retail: [15 * OKU, 5 * OKU, 2.5 * OKU, 4000 * MAN], other: [15 * OKU, 5 * OKU, 2.5 * OKU, 5000 * MAN] };
+  var SALES_T = { wholesale: [30 * OKU, 7 * OKU, 3.5 * OKU, 2 * OKU], retail: [20 * OKU, 5 * OKU, 2.5 * OKU, 6000 * MAN], other: [15 * OKU, 4 * OKU, 2 * OKU, 8000 * MAN] };
+  var EMP_T = ['35人超', '-', '20人超', '5人超', '5人以下'];
+  var fmtYen = function (yen) { return (window.numFmt ? window.numFmt(Math.round(yen / MAN)) : Math.round(yen / MAN).toLocaleString('ja-JP')) + ' 万円'; };
+
+  function renderCalcProcess(ctx) {
+    var biz = (document.getElementById('dtBiz') || {}).value || 'other';
+    var assetT = ASSET_T[biz], salesT = SALES_T[biz];
+
+    set('cpBiz', BIZ_LABEL[biz]);
+    setNum('cpAssets', num('dtTotalAssetsBook'), ' 千円');
+    setNum('cpSales', num('dtSales'), ' 千円');
+    set('cpEmp', (document.getElementById('dtEmpTotal') || {}).value + ' 人');
+    set('cpShares', (window.numFmt ? window.numFmt(ctx.shares) : ctx.shares.toLocaleString('ja-JP')) + ' 株');
+
+    set('cpMethod', ctx.tok.hit ? '純資産価額方式' : (ctx.size.level === 0 ? '類似業種比準価額方式(併用)' : ctx.size.level === 4 ? '併用方式(L=0.50)' : '併用方式(L=' + ctx.size.L.toFixed(2) + ')'));
+    set('cpMethodNote', ctx.tok.hit
+      ? '特定の評価会社(' + ctx.tok.reasons.join('・') + ')に該当するため、純資産価額方式で評価しています。'
+      : (ctx.size.level === 0 ? '大会社のため、類似業種比準価額と純資産価額のいずれか低い方で評価しています。'
+        : ctx.size.level === 4 ? '小会社のため、純資産価額と併用方式(L=0.50)のいずれか低い方で評価しています。'
+          : '中会社のため、類似業種比準価額×L＋純資産価額×(1-L)と純資産価額のいずれか低い方で評価しています。'));
+
+    var sizeRows = SIZE_LABEL.map(function (label, i) {
+      var assetTxt = (i === 0 ? window.numFmt(assetT[0] / MAN) : i === 4 ? '(' + window.numFmt(assetT[3] / MAN) + '未満)' : window.numFmt(assetT[i] / MAN)) + '万円' + (i < 4 ? '以上' : '');
+      var salesTxt = (i === 0 ? window.numFmt(salesT[0] / MAN) : i === 4 ? '(' + window.numFmt(salesT[3] / MAN) + '未満)' : window.numFmt(salesT[i] / MAN)) + '万円' + (i < 4 ? '以上' : '');
+      var isRow = i === ctx.size.level;
+      return '<tr class="' + (isRow ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">' + label + '</td>' +
+        '<td class="px-2 py-1.5 border-b border-gray-100 text-right">' + assetTxt + '</td>' +
+        '<td class="px-2 py-1.5 border-b border-gray-100 text-right">' + EMP_T[i] + '</td>' +
+        '<td class="px-2 py-1.5 border-b border-gray-100 text-right">' + salesTxt + '</td></tr>';
+    }).join('');
+    var sizeBody = document.getElementById('cpSizeTableBody');
+    if (sizeBody) sizeBody.innerHTML = sizeRows;
+    set('cpSizeResult', SIZE_LABEL[ctx.size.level] + '(L=' + ctx.size.L.toFixed(2) + '、斟酌率=' + ctx.size.shaku.toFixed(1) + ')');
+
+    var methodRows = '<tr class="' + (ctx.tok.hit ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">特定の評価会社(比準要素数1・株式等保有・土地保有・開業後3年未満等)</td><td class="px-2 py-1.5 border-b border-gray-100">純資産価額(100%)</td></tr>';
+    SIZE_LABEL.forEach(function (label, i) {
+      var desc = i === 0 ? '類似業種比準価額 と 純資産価額 のいずれか低い方'
+        : i === 4 ? '類似業種比準価額×0.5＋純資産価額×0.5 と 純資産価額 のいずれか低い方'
+          : '類似業種比準価額×' + SIZE_L[i].toFixed(2) + '＋純資産価額×' + (1 - SIZE_L[i]).toFixed(2) + ' と 純資産価額 のいずれか低い方';
+      var isRow = !ctx.tok.hit && i === ctx.size.level;
+      methodRows += '<tr class="' + (isRow ? 'bg-[#eef1f4] font-bold' : '') + '"><td class="px-2 py-1.5 border-b border-gray-100">' + label + '</td><td class="px-2 py-1.5 border-b border-gray-100">' + desc + '</td></tr>';
+    });
+    var methodBody = document.getElementById('cpMethodTableBody');
+    if (methodBody) methodBody.innerHTML = methodRows;
+
+    var simInputs = [
+      ['類似業種の株価(A)', num('dtA') + ' 円'], ['配当(B)', num('dtB') + ' 円'], ['利益(C)', num('dtC') + ' 円'], ['純資産(D)', num('dtD') + ' 円'],
+      ['自社の配当(b)', num('dtOwnB') + ' 円'], ['自社の利益(c)', num('dtOwnC') + ' 円'], ['自社の純資産(d)', num('dtOwnD') + ' 円'], ['斟酌率', ctx.size.shaku.toFixed(1)],
+    ];
+    var simHtml = simInputs.map(function (p) { return '<div class="flex justify-between border-b border-gray-100 py-1"><span class="text-gray-500">' + p[0] + '</span><span class="font-bold">' + p[1] + '</span></div>'; }).join('');
+    var simEl = document.getElementById('cpSimilarInputs');
+    if (simEl) simEl.innerHTML = simHtml;
+    set('cpSimilarResult', isNaN(ctx.sim) ? '(未入力)' : (window.numFmt ? window.numFmt(Math.round(ctx.sim)) : Math.round(ctx.sim).toLocaleString('ja-JP')) + ' 円');
+
+    var netInputs = [
+      ['帳簿価額による純資産', fmtYen(num('dtBookNet') * MAN)], ['含み益(評価差額)', fmtYen(num('dtUnrealized') * MAN)],
+      ['評価差額×38%控除', fmtYen(num('dtUnrealized') * MAN * 0.38)], ['発行済株式数', (window.numFmt ? window.numFmt(ctx.shares) : ctx.shares) + ' 株'],
+    ];
+    var netHtml = netInputs.map(function (p) { return '<div class="flex justify-between border-b border-gray-100 py-1"><span class="text-gray-500">' + p[0] + '</span><span class="font-bold">' + p[1] + '</span></div>'; }).join('');
+    var netEl = document.getElementById('cpNetInputs');
+    if (netEl) netEl.innerHTML = netHtml;
+    setNum('cpNetResult', ctx.net, ' 円');
+
+    var haitoInputs = [
+      ['1株当たり配当(直前2期平均)', num('dtOwnB') + ' 円'], ['1株当たり資本金等の額', (num('dtCapital') / ctx.shares).toFixed(1) + ' 円'],
+    ];
+    var haitoHtml = haitoInputs.map(function (p) { return '<div class="flex justify-between border-b border-gray-100 py-1"><span class="text-gray-500">' + p[0] + '</span><span class="font-bold">' + p[1] + '</span></div>'; }).join('');
+    var haitoEl = document.getElementById('cpHaitoInputs');
+    if (haitoEl) haitoEl.innerHTML = haitoHtml;
+    set('cpHaitoResult', isNaN(ctx.haito) ? '(未入力)' : (window.numFmt ? window.numFmt(Math.round(ctx.haito)) : Math.round(ctx.haito).toLocaleString('ja-JP')) + ' 円');
+
+    setNum('cpFinalSaizoku', ctx.finalPer, ' 円');
+    setNum('cpFinalHoujin', ctx.houjinPerShare, ' 円');
+  }
+
   function recalcDetail() {
     var size = judgeSize();
     judgeTokutei(size.level);
@@ -283,6 +363,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (e) {}
 
     document.getElementById('dtResultArea').classList.remove('hidden');
+    renderCalcProcess({ size: size, tok: tok, net: net, sim: sim, haito: haito, combined: combined, finalPer: finalPer, shares: shares, houjinPerShare: houjinPerShareShared });
+    var cpEl = document.getElementById('dtCalcProcess');
+    if (cpEl) cpEl.classList.remove('hidden');
 
     // ===== 株価計算後は、続けて簡易入力(自社株評価テーブル・株主の状況)を下に表示する =====
     if (simpleArea) {
