@@ -1406,15 +1406,23 @@ img {
   width: auto;
   padding: 0.4rem 0.75rem;
 }
-/* 将来負債グラフのトグル群専用: 上下の存在感を抑えた低めのボタン(横幅は通常のoverlay-toggleと同じ) */
+/* 将来負債グラフのトグル群専用: 上下の存在感を抑え、横幅も文字に合わせて縮めることで
+   画面が狭くなっても7つのボタンが常に横一列に収まるようにする小型ボタン */
 .overlay-toggle-compact {
-  padding-top: 0.3rem;
-  padding-bottom: 0.3rem;
+  width: auto;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.64rem;
+  gap: 0.3rem;
+}
+.overlay-toggle-compact .dot {
+  width: 0.42rem;
+  height: 0.42rem;
 }
 @media (min-width: 640px) {
   .overlay-toggle-compact {
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
+    width: auto;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.68rem;
   }
 }
 /* 将来負債グラフの「生命保険あり/なし」ボタン: 予測BSのON/OFFに連動してふわっと(ゆっくり)表示/非表示を切り替える。
