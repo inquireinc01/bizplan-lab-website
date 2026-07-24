@@ -332,14 +332,16 @@ document.addEventListener('DOMContentLoaded', function () {
     { label: 'その他', offBalance: true, assetSide: false },
   ];
   // a4/l4の簿外部分(次世代将来負債)。資産側は生命保険等の充当区分が無いため常に1本、
-  // 負債側はa2/l2と同様、ひとまとめ表示では1本・内訳表示では3本(次世代退職金/次世代自社株買取/次世代その他)に分かれる
+  // 負債側はa2/l2と同様、ひとまとめ表示では1本・内訳表示では3本(退職金/自社株買取/その他)に分かれる。
+  // チャート上のラベルは「次世代」を付けずグループ2と同じ表記にする(このBAR_DEFS内のlabelは
+  // 枠数の判定にのみ使い、実際に表示するラベルはdrawBalanceSheetChart/drawDummyChart側で決める)
   const OFF_BALANCE_ASSET_SEGS_4 = [
-    { label: '次世代簿外資産', offBalance: true, assetSide: true },
+    { label: '簿外資産', offBalance: true, assetSide: true },
   ];
   const OFF_BALANCE_LIAB_SEGS_4 = [
-    { label: '次世代退職金', offBalance: true, assetSide: false },
-    { label: '次世代自社株買取', offBalance: true, assetSide: false },
-    { label: '次世代その他', offBalance: true, assetSide: false },
+    { label: '退職金', offBalance: true, assetSide: false },
+    { label: '自社株買取', offBalance: true, assetSide: false },
+    { label: 'その他', offBalance: true, assetSide: false },
   ];
   // x位置は持たず、常に0で初期化する(表示ON/OFFの組み合わせに応じてupdateLayoutが毎回設定するため)
   const BAR_DEFS = {
@@ -390,11 +392,11 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<rect id="equity-box-1" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
     svgOut += `<text id="equity-text-1" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
     svgOut += `<rect id="title-1-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
-    svgOut += `<text id="title-1" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">会計上（決算書上）のBS</text>`;
+    svgOut += `<text id="title-1" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">貸借対照表</text>`;
     svgOut += `<rect id="equity-box-2" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
     svgOut += `<text id="equity-text-2" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
     svgOut += `<rect id="title-2-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#eef1f5" stroke="#3d4f5c" stroke-width="1.2"/>`;
-    svgOut += `<text id="title-2" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">実質的なBS</text>`;
+    svgOut += `<text id="title-2" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#3d4f5c" text-anchor="middle">実質BS</text>`;
     svgOut += `<rect id="equity-box-3" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
     svgOut += `<text id="equity-text-3" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
     svgOut += `<rect id="title-3-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
@@ -402,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
     svgOut += `<rect id="equity-box-4" x="0" y="${yBottom}" width="${groupSpanWidth}" height="22" rx="4" fill="#e4ebf0" stroke="#c3d0d9" stroke-width="1"/>`;
     svgOut += `<text id="equity-text-4" x="0" y="${yBottom}" font-weight="bold" fill="#3d4f5c" text-anchor="middle">自己資本比率</text>`;
     svgOut += `<rect id="title-4-box" x="0" y="${yBottom}" width="${groupSpanWidth}" height="24" rx="3" fill="#3d4f5c"/>`;
-    svgOut += `<text id="title-4" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">将来予測実質BS</text>`;
+    svgOut += `<text id="title-4" x="0" y="${yBottom}" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">次世代実質BS</text>`;
 
     // 表示中のBS同士を結ぶ矢印。特定の組同士に固定せず、隣り合って表示されている組の間にだけ
     // 必要な数(最大2本)を表示する汎用スロットとして用意し、位置・表示有無はupdateLayoutが毎回設定する
@@ -806,19 +808,19 @@ document.addEventListener('DOMContentLoaded', function () {
           { label: '', value: 0, offBalance: true, assetSide: false },
         ];
 
-    // 次世代簿外資産/次世代将来負債(将来予測BSの数値の上に載せるゾーン)。
+    // 簿外資産/将来負債(将来予測BSの数値の上に載せるゾーン。チャート上は「次世代」を付けずグループ2と同じ表記にする)。
     // 簿外資産側の値は自動的に次世代将来負債の合計と同額にする(生命保険等の充当区分は無いため常に1本)
     const nextOffBalanceAssetSegs = [
-      { label: '次世代簿外資産', value: nextFutureLiabTotal, offBalance: true, assetSide: true },
+      { label: '簿外資産', value: nextFutureLiabTotal, offBalance: true, assetSide: true },
     ];
     const nextOffBalanceLiabSegs = detailMode
       ? [
-          { label: '次世代退職金', value: num('nextRetirement').value, offBalance: true, assetSide: false },
-          { label: '次世代自社株買取', value: num('nextSuccession').value, offBalance: true, assetSide: false },
-          { label: '次世代その他', value: num('nextOtherFuture').value, offBalance: true, assetSide: false },
+          { label: '退職金', value: num('nextRetirement').value, offBalance: true, assetSide: false },
+          { label: '自社株買取', value: num('nextSuccession').value, offBalance: true, assetSide: false },
+          { label: 'その他', value: num('nextOtherFuture').value, offBalance: true, assetSide: false },
         ]
       : [
-          { label: '次世代将来負債', value: nextFutureLiabTotal, offBalance: true, assetSide: false },
+          { label: '将来負債', value: nextFutureLiabTotal, offBalance: true, assetSide: false },
           { label: '', value: 0, offBalance: true, assetSide: false },
           { label: '', value: 0, offBalance: true, assetSide: false },
         ];
@@ -868,11 +870,11 @@ document.addEventListener('DOMContentLoaded', function () {
       a3: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l3: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
       a4: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
-        { label: '次世代簿外資産', value: DUMMY_VALUE, offBalance: true, assetSide: true }],
+        { label: '簿外資産', value: DUMMY_VALUE, offBalance: true, assetSide: true }],
       l4: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
-        { label: '次世代退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
-        { label: '次世代自社株買取', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
-        { label: '次世代その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
+        { label: '退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: '自社株買取', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
+        { label: 'その他', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false }],
     } : (() => {
       const blank = { label: '', value: 0 };
       const assetDummy = { label: '資産', value: DUMMY_VALUE * 3, fill: GROUP_ASSET_FILL, fillOpacity: GROUP_FILL_OPACITY };
@@ -886,8 +888,8 @@ document.addEventListener('DOMContentLoaded', function () {
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
         a3: [blank, assetDummy, blank],
         l3: [netAssetsDummy, liabDummy, blank],
-        a4: [blank, assetDummy, blank, dummySeg('次世代簿外資産', true, true)],
-        l4: [netAssetsDummy, liabDummy, blank, dummySeg('次世代将来負債', true, false), blank, blank],
+        a4: [blank, assetDummy, blank, dummySeg('簿外資産', true, true)],
+        l4: [netAssetsDummy, liabDummy, blank, dummySeg('将来負債', true, false), blank, blank],
       };
     })();
     const pxPerYen = plotH / (DUMMY_VALUE * 4);
