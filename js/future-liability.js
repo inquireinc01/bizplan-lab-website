@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== 会計上/実質的/将来予測/将来予測実質の4つのBSを個別に表示ON/OFFできるトグル群。
-  //       4つ同時に表示すると1本1本が細くなりすぎるため、常に2つ以上・最大3つまでしか選べない仕様にする。
+  //       常に2つ以上は表示する(下限のみ制約)。4つ全部選んだ時だけ、1本1本が細くなりすぎないよう
+  //       updateLayoutでバー幅・間隔を縮小して適正化する(2〜3つの時は従来通りのサイズのまま)。
   //       デフォルトは会計上のBS・実質的なBSの2つ =====
   const showGroup = { 1: true, 2: true, 3: false, 4: false };
   const groupToggleEls = {
@@ -40,14 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function activeGroupCount() {
     return [1, 2, 3, 4].filter((n) => showGroup[n]).length;
   }
-  // 上限(3つ)・下限(2つ)に達しているボタンは押せないようにする(押しても変化しないだけでなく、見た目でも分かるようにする)
+  // 下限(2つ)に達しているボタンは押せないようにする(押しても変化しないだけでなく、見た目でも分かるようにする)。
+  // 上限は無く、4つ全部を選ぶこともできる(4つの時はupdateLayoutが自動でサイズを縮小する)
   function updateGroupToggleAvailability() {
     const count = activeGroupCount();
     [1, 2, 3, 4].forEach((n) => {
       const btn = groupToggleEls[n];
       if (!btn) return;
-      const wouldViolate = showGroup[n] ? count <= 2 : count >= 3;
-      btn.disabled = wouldViolate;
+      btn.disabled = showGroup[n] && count <= 2;
     });
   }
   function setGroupToggleVisual(n, on) {
@@ -63,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', function () {
       const count = activeGroupCount();
       if (showGroup[n] && count <= 2) return; // これ以上減らせない
-      if (!showGroup[n] && count >= 3) return; // これ以上増やせない
       showGroup[n] = !showGroup[n];
       setGroupToggleVisual(n, showGroup[n]);
       updateGroupToggleAvailability();
@@ -265,12 +265,19 @@ document.addEventListener('DOMContentLoaded', function () {
   // 純資産等がマイナス(債務超過)になった場合、基準線(yBottom)から下向きに積む専用の帯。
   // 債務超過が無いときはこの帯を確保せず、グラフ下の余白が出ないようにする(updateLayoutで動的に切替)。
   const NEG_ZONE_H = 90;
+  // 2〜3組表示時の標準サイズ(この見た目を基準とする)。4組すべて表示する時だけ、updateLayoutが
+  // FOUR_GROUP_SCALEを掛けて縮小したサイズ(currentBarWidth等)を使う
   const barWidth = 78;
   const groupGap = 46;
   const pairGap = 16;
   const DUMMY_VALUE = 25; // ダミー表示用の共通仮値(万円換算は意味を持たない)
-  const groupSpanWidth = barWidth * 2 + pairGap; // 各BSの見出し・自己資本比率ボックスの幅(資産+負債・純資産+間隔)
-  // 4つのBS(会計上/実質的/将来予測/将来予測実質)は常に2〜3組だけ選んで表示する仕様のため、
+  const groupSpanWidth = barWidth * 2 + pairGap; // 標準サイズでの1BSぶんの幅(資産+負債・純資産+間隔)
+  const FOUR_GROUP_SCALE = 0.8; // 4組すべて表示する時の縮小率
+  // 実際の描画に使うサイズ。2〜3組の時はbarWidth等と同じ、4組の時はupdateLayoutが縮小して更新する
+  let currentBarWidth = barWidth;
+  let currentPairGap = pairGap;
+  let currentGroupGap = groupGap;
+  let currentGroupSpanWidth = groupSpanWidth;
   // 各バーのx位置は固定値を持たず、選ばれている組数に応じてupdateLayoutが毎回中央寄せで計算する
 
   function segColor(label) {
@@ -413,6 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 必要な数(最大2本)を表示する汎用スロットとして用意し、位置・表示有無はupdateLayoutが毎回設定する
     svgOut += `<polygon id="arrow-gap-0" points="0,0 0,0 0,0" fill="#0f2a4a"/>`;
     svgOut += `<polygon id="arrow-gap-1" points="0,0 0,0 0,0" fill="#0f2a4a"/>`;
+    svgOut += `<polygon id="arrow-gap-2" points="0,0 0,0 0,0" fill="#0f2a4a"/>`;
 
     svg.innerHTML = svgOut;
     chartInitialized = true;
@@ -423,8 +431,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // フォントサイズを揃える(会計上のBSの見出しに必要なサイズに全体を合わせることで統一感を出す)
   let equityFontSize = 13;
   function fitTitleFonts() {
-    const maxW = groupSpanWidth - 10;
+    const maxW = currentGroupSpanWidth - 10;
     const t1 = document.getElementById('title-1');
+    if (!t1) return; // 初回のinitChartOnce実行前(要素未生成)の呼び出しをガードする
     let size = 13;
     t1.setAttribute('font-size', size);
     while (size > 9 && t1.getComputedTextLength() > maxW) {
@@ -451,34 +460,46 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   const GROUP_IDS = { 1: buildGroupIds(1), 2: buildGroupIds(2), 3: buildGroupIds(3), 4: buildGroupIds(4) };
 
-  // barKeyの全rect/textのx位置を一括で付け替える(表示中のBSの並び替え用)
-  function repositionGroupBars(n, xAsset, xLiab) {
+  // barKeyの全rect/textのx位置・幅を一括で付け替える(表示中のBSの並び替え・4組表示時の縮小に使う)
+  function repositionGroupBars(n, xAsset, xLiab, bw) {
     ['a', 'l'].forEach((side) => {
       const barKey = side + n;
       const x = side === 'a' ? xAsset : xLiab;
       const def = BAR_DEFS[barKey];
       def.segs.forEach((seg, i) => {
         const rect = document.getElementById(`bs-${barKey}-${i}`);
-        if (rect) rect.setAttribute('x', x);
+        if (rect) { rect.setAttribute('x', x); rect.setAttribute('width', bw); }
         const text = document.getElementById(`bs-${barKey}-t${i}`);
-        if (text) text.setAttribute('x', x + barWidth / 2);
+        if (text) text.setAttribute('x', x + bw / 2);
       });
       const total = document.getElementById(`bs-${barKey}-total`);
-      if (total) total.setAttribute('x', x + barWidth / 2);
+      if (total) total.setAttribute('x', x + bw / 2);
       if (def.segs.some((s) => s.offBalance)) {
         const border = document.getElementById(`bs-${barKey}-offborder`);
-        if (border) border.setAttribute('x', x);
+        if (border) { border.setAttribute('x', x); border.setAttribute('width', bw); }
       }
     });
   }
 
   // 見出し・SVG全体の高さを、債務超過の有無に応じて動的に調整する。
   // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
-  // 会計上/実質的/将来予測/将来予測実質の4つのBSは常に2〜3組だけを選んで表示する仕様のため、
-  // 選ばれている組をバーの大きさ・間隔は変えずに毎回中央寄せで並べ直す(非表示の組は完全に隠す)。
+  // 会計上/実質的/将来予測/将来予測実質の4つのBSは常に2組以上を選んで表示する仕様。
+  // 2〜3組の時はバーの大きさ・間隔を変えずに中央寄せで並べ直すだけだが、4組全部を選んだ時だけ
+  // 1本1本が細くなりすぎないよう、FOUR_GROUP_SCALE分だけバー幅・間隔を縮小して収める。
   function updateLayout(anyNeg) {
     const negZone = anyNeg ? NEG_ZONE_H : 0;
     const zoneBottom = yBottom + negZone;
+
+    const visibleGroups = [1, 2, 3, 4].filter((n) => showGroup[n]);
+    const count = visibleGroups.length;
+    const scale = count === 4 ? FOUR_GROUP_SCALE : 1;
+    currentBarWidth = barWidth * scale;
+    currentPairGap = pairGap * scale;
+    currentGroupGap = groupGap * scale;
+    currentGroupSpanWidth = currentBarWidth * 2 + currentPairGap;
+    // 見出し・自己資本比率ボックスの文字サイズも、その時のボックス幅に合わせて再計算する
+    fitTitleFonts();
+
     // 自己資本比率ボックスを表示する時だけ、その分の1段を見出し行の上に確保する。
     // 非表示の時は元の余白(zoneBottom+7)まで詰めて空白を残さない。
     const equityBoxH = 22;
@@ -489,29 +510,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const svgH = titleBoxTop + titleBoxH + 8;
     const setY = (id, y) => { const el = document.getElementById(id); if (el) el.setAttribute('y', y.toFixed(1)); };
     const setX = (id, x) => { const el = document.getElementById(id); if (el) el.setAttribute('x', x); };
+    const setW = (id, w) => { const el = document.getElementById(id); if (el) el.setAttribute('width', w); };
     const setDisplay = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; };
 
     // まず全BSを一旦隠し、選ばれているものだけ後段で表示する
     [1, 2, 3, 4].forEach((n) => { GROUP_IDS[n].forEach((id) => setDisplay(id, false)); });
 
-    const visibleGroups = [1, 2, 3, 4].filter((n) => showGroup[n]);
-    const count = visibleGroups.length;
-    const totalWidth = count * groupSpanWidth + (count - 1) * groupGap;
+    const totalWidth = count * currentGroupSpanWidth + (count - 1) * currentGroupGap;
     const startX = (W - totalWidth) / 2;
     const groupX = {};
 
     visibleGroups.forEach((n, i) => {
       GROUP_IDS[n].forEach((id) => setDisplay(id, true));
-      const xAsset = startX + i * (groupSpanWidth + groupGap);
-      const xLiab = xAsset + barWidth + pairGap;
+      const xAsset = startX + i * (currentGroupSpanWidth + currentGroupGap);
+      const xLiab = xAsset + currentBarWidth + currentPairGap;
       groupX[n] = { xAsset, xLiab };
-      repositionGroupBars(n, xAsset, xLiab);
-      const cx = (xAsset + xLiab + barWidth) / 2;
+      repositionGroupBars(n, xAsset, xLiab, currentBarWidth);
+      const cx = (xAsset + xLiab + currentBarWidth) / 2;
       setX(`title-${n}-box`, xAsset);
+      setW(`title-${n}-box`, currentGroupSpanWidth);
       setX(`title-${n}`, cx);
       setY(`title-${n}`, titleY);
       setY(`title-${n}-box`, titleBoxTop);
       setX(`equity-box-${n}`, xAsset);
+      setW(`equity-box-${n}`, currentGroupSpanWidth);
       setX(`equity-text-${n}`, cx);
       setY(`equity-box-${n}`, equityBoxTop);
       setY(`equity-text-${n}`, equityBoxTop + 16);
@@ -520,13 +542,13 @@ document.addEventListener('DOMContentLoaded', function () {
       setDisplay(`equity-text-${n}`, showEquityRatio);
     });
 
-    // 表示中のBS同士の間だけ、矢印を必要な数(最大2本)だけ表示する
+    // 表示中のBS同士の間だけ、矢印を必要な数(最大3本、4組表示時のみ3本)だけ表示する
     const acy = (yTop + yBottom) / 2;
-    for (let g = 0; g < 2; g++) {
+    for (let g = 0; g < 3; g++) {
       const arrow = document.getElementById(`arrow-gap-${g}`);
       if (!arrow) continue;
       if (g < count - 1) {
-        const ax = groupX[visibleGroups[g]].xLiab + barWidth + groupGap / 2;
+        const ax = groupX[visibleGroups[g]].xLiab + currentBarWidth + currentGroupGap / 2;
         arrow.setAttribute('points', `${ax - 9},${acy - 13} ${ax - 9},${acy + 13} ${ax + 11},${acy}`);
         arrow.style.display = '';
       } else {
@@ -541,7 +563,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // 1行に収まらない要素名+金額は、判読できる最小サイズ(6px)まで自動的に縮小して収める。
   // それでも収まらない場合は空白にする(はみ出し・重なりを防ぐため)
   const MIN_FONT_SIZE = 6;
-  const TEXT_MAX_WIDTH = barWidth - 8;
   function fitSingleLine(text, content, maxWidth, startSize) {
     text.textContent = content;
     let size = startSize;
@@ -583,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const box = document.getElementById(boxId);
     const text = document.getElementById(textId);
     if (!box || !text) return;
-    const maxW = groupSpanWidth - 10;
+    const maxW = currentGroupSpanWidth - 10;
     const smallSize = Math.max(MIN_FONT_SIZE, equityFontSize - 4);
     if (!active) {
       box.setAttribute('fill', '#e4ebf0');
@@ -664,12 +685,12 @@ document.addEventListener('DOMContentLoaded', function () {
             // 幅に収まらなければ6pxまで自動縮小し、それでも収まらなければ空白にする
             text.setAttribute('y', (midY + 4).toFixed(1));
             text.setAttribute('font-weight', 'bold');
-            fitSingleLine(text, forceLabel ? `${seg.label} ${man(seg.value)}` : man(seg.value), TEXT_MAX_WIDTH, 9);
+            fitSingleLine(text, forceLabel ? `${seg.label} ${man(seg.value)}` : man(seg.value), currentBarWidth - 8, 9);
           } else if (showValues && (isNeg || forceLabel) && seg.value !== 0) {
             // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する
             text.setAttribute('y', (segY + h + 12).toFixed(1));
             text.setAttribute('font-weight', 'bold');
-            fitSingleLine(text, `${seg.label} ${man(seg.value)}`, TEXT_MAX_WIDTH, 8);
+            fitSingleLine(text, `${seg.label} ${man(seg.value)}`, currentBarWidth - 8, 8);
           } else {
             text.textContent = '';
           }
