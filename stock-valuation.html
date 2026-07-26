@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607272" />
+<link rel="stylesheet" href="css/style.css?v=202607273" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -227,6 +227,21 @@
               <tbody id="famHolderBody"></tbody>
             </table>
           </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>グループの議決権割合</dt>
+              <dd>STEP2で入力した「グループ」名が同じ株主の株数を合計し、<code>グループの株数合計 ÷ 発行済株式数 × 100</code> で算出します。グループ名が空欄の株主は、その株主単独のグループとして扱います。</dd>
+              <dt>筆頭株主グループ</dt>
+              <dd>議決権割合が最も大きいグループ。この割合で会社区分を判定します。</dd>
+              <dt>会社区分の判定（YES / NO）</dt>
+              <dd>① 筆頭株主グループの議決権割合が <code>50%超</code> → 同族株主のいる会社（50%超基準）<br />② ①がNOで <code>30%以上</code> → 同族株主のいる会社（30%以上50%以下基準）<br />③ ②もNO（<code>30%未満</code>） → 同族株主のいない会社</dd>
+              <dt>各株主の「同族株主等に該当」</dt>
+              <dd>筆頭株主グループに属し、かつその割合が30%以上の場合に「該当」と表示します。</dd>
+            </dl>
+            <p class="calc-logic-note">同族株主等に該当する株主は原則的評価方式、該当しない少数株主は特例的評価方式（配当還元価額）で評価するのが原則です。議決権割合は株数割合で近似しています。</p>
+          </div>
         </div>
 
         <!-- 詳細1: 会社規模の判定(第1表の2) -->
@@ -266,6 +281,22 @@
             <span>判定結果：会社規模</span>
             <span><span id="dtSizeResult" class="judge-badge">-</span> <span class="ml-2 text-gray-600 text-sm">Lの割合 = <span id="dtLResult" class="font-bold">-</span></span></span>
           </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>従業員数（自動計算）</dt>
+              <dd><code>継続勤務従業員数 ＋ (その他従業員の年間労働時間合計 ÷ 1,800)</code></dd>
+              <dt>会社規模の判定手順</dt>
+              <dd>① 従業員数が <code>70人以上</code> なら無条件で大会社。<br />② そうでなければ、<strong>Ⅰ</strong>「総資産価額による区分」と「従業員数による区分」の<strong>小さい方（下位）</strong>を採用。<br />③ <strong>Ⅱ</strong>「取引金額による区分」を求める。<br />④ ⅠとⅡの<strong>大きい方（上位）</strong>を最終的な会社規模とします。</dd>
+              <dt>業種別のしきい値（総資産／取引金額）</dt>
+              <dd>業種によって基準額が変わります。<code>卸売業</code>…総資産20億/4億/2億/7千万円、取引金額30億/7億/3.5億/2億円。<code>小売・サービス業</code>…総資産15億/5億/2.5億/4千万円、取引金額20億/5億/2.5億/6千万円。<code>上記以外</code>…総資産15億/5億/2.5億/5千万円、取引金額15億/4億/2億/8千万円。（各々 大会社／中会社の大／中／小 の下限）</dd>
+              <dt>従業員数による区分</dt>
+              <dd><code>35人超→大会社 / 20人超→中会社の中 / 5人超→中会社の小 / 5人以下→小会社</code></dd>
+              <dt>Lの割合・斟酌率</dt>
+              <dd>L: <code>大1.00 / 中大0.90 / 中中0.75 / 中小0.60 / 小0.50</code>　斟酌率: <code>大会社0.7 / 中会社0.6 / 小会社0.5</code></dd>
+            </dl>
+          </div>
         </div>
 
         <!-- 詳細2: 特定の評価会社の判定(第2表) -->
@@ -292,6 +323,23 @@
           <div class="notice-box text-sm rounded-lg p-4 mt-5 flex items-center justify-between">
             <span>判定結果：特定の評価会社</span>
             <span id="dtTokuteiResult" class="judge-badge">-</span>
+          </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>株式等保有特定会社</dt>
+              <dd><code>株式等の価額 ÷ 相続税評価による総資産価額 ≧ 50%</code> で該当</dd>
+              <dt>土地保有特定会社</dt>
+              <dd><code>土地等の価額 ÷ 相続税評価による総資産価額 ≧ しきい値</code> で該当。しきい値は<code>大会社70% / 中会社・小会社90%</code></dd>
+              <dt>比準要素数1の会社</dt>
+              <dd>自社の「1株当たり配当金額 b」「利益金額 c」「純資産価額 d」のうち <code>2つ以上が0</code> の場合に該当</dd>
+              <dt>開業後3年未満・開業前・休業中・清算中</dt>
+              <dd>チェックボックスの選択で該当</dd>
+              <dt>該当した場合の評価</dt>
+              <dd>類似業種比準価額は使わず、原則として <code>純資産価額(100%)</code> で評価します。</dd>
+            </dl>
+            <p class="calc-logic-note">いずれか1つでも該当すれば特定の評価会社となります。当ツールでは複数該当時も純資産価額方式で試算します。</p>
           </div>
         </div>
 
@@ -333,6 +381,21 @@
               <input type="number" id="dtShakushaku" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="" />
             </div>
           </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>類似業種比準価額（1株）</dt>
+              <dd><code>A × [ (b÷B ＋ c÷C ＋ d÷D) ÷ 3 ] × 斟酌率 × (1株当たり資本金等の額 ÷ 50円)</code></dd>
+              <dt>各記号の意味</dt>
+              <dd><code>A</code>…類似業種の株価、<code>B/C/D</code>…類似業種の1株(50円)当たり配当金額／利益金額／簿価純資産価額（いずれも国税庁公表データ）。<code>b/c/d</code>…自社の1株(50円)当たり配当金額／利益金額／簿価純資産価額。</dd>
+              <dt>1株当たり資本金等の額</dt>
+              <dd><code>資本金等の額 ÷ 発行済株式数</code>（STEP7で入力した値を使用）</dd>
+              <dt>斟酌率</dt>
+              <dd>会社規模から自動設定。<code>大会社0.7 / 中会社0.6 / 小会社0.5</code></dd>
+            </dl>
+            <p class="calc-logic-note">最後に「÷50円」で割り戻すのは、B・C・Dが額面50円を前提とした1株当たり金額のため、自社の実際の1株当たり資本金等の額に換算するためです。</p>
+          </div>
         </div>
 
         <!-- 詳細4: 純資産価額(第5表・含み益のみ) -->
@@ -364,6 +427,19 @@
               <input type="number" id="dtNetAssetPerShare" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="" />
             </div>
           </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>評価差額に対する38%控除</dt>
+              <dd><code>含み益（評価差額） × 38%</code>。含み益に対する法人税等相当額として控除します。</dd>
+              <dt>1株当たり純資産価額</dt>
+              <dd><code>(帳簿価額による純資産 ＋ 含み益 − 含み益×38%) ÷ 発行済株式数</code><br />＝ <code>(帳簿純資産 ＋ 含み益×0.62) ÷ 発行済株式数</code></dd>
+              <dt>含み益（評価差額）とは</dt>
+              <dd>土地・有価証券・保険積立金などで、相続税評価額が帳簿価額を上回っている差額の合計。含み損の場合はマイナスで入力します。</dd>
+            </dl>
+            <p class="calc-logic-note">本ツールは含み益を1つの合計額として入力する簡易方式です。実際の第5表では資産・負債を1項目ずつ相続税評価額と帳簿価額に分けて集計します。</p>
+          </div>
         </div>
 
         <!-- 詳細5: 配当還元(第3表) -->
@@ -372,6 +448,23 @@
           <div class="notice-box text-sm rounded-lg p-4 flex items-center justify-between">
             <span class="flex items-center">1株当たり配当還元価額<span class="help-tip" tabindex="0">?<span class="help-text">（1株(50円)当たり年配当金額 ÷ 10%）×（1株当たり資本金等 ÷ 50円）で算定。年配当金額が2円50銭未満の場合は2円50銭とします。上の「自社の配当 b」「資本金等」「株式数」から自動計算します。</span></span></span>
             <span id="dtHaitoResult" class="font-bold text-[#0f2a4a]">-</span>
+          </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>1株当たり配当還元価額</dt>
+              <dd><code>(1株(50円)当たり年配当金額 ÷ 10%) × (1株当たり資本金等の額 ÷ 50円)</code></dd>
+              <dt>年配当金額の下限</dt>
+              <dd>STEP6で入力した「自社の配当 b」を使用しますが、<code>2円50銭未満の場合は2円50銭</code>として計算します（無配でも一定額を仮定）。</dd>
+              <dt>位置づけ</dt>
+              <dd>同族株主等<strong>以外</strong>の少数株主が取得する場合に用いる特例的評価方式です。原則的評価額とは別枠の参考値として表示しています。</dd>
+              <dt>最終的な採用額（原則的評価額）</dt>
+              <dd>特定の評価会社に該当 → <code>純資産価額</code><br />大会社 → <code>min(類似業種比準価額, 純資産価額)</code><br />中会社 → <code>min(類似業種比準価額×L ＋ 純資産価額×(1−L), 純資産価額)</code><br />小会社 → <code>min(純資産価額, 類似業種比準価額×0.5 ＋ 純資産価額×0.5)</code></dd>
+              <dt>法人税評価額</dt>
+              <dd><code>類似業種比準価額×0.5 ＋ 純資産価額×0.5</code></dd>
+            </dl>
+            <p class="calc-logic-note">当ツールでは評価結果のうち低い方を採用して試算しています。</p>
           </div>
         </div>
 
@@ -515,6 +608,17 @@
               <input type="text" id="ssL" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" />
             </div>
           </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>額面（1株・円）</dt>
+              <dd><code>資本金 ÷ 発行済株式数</code>（簡易入力では自動計算。詳細入力では直接入力します）</dd>
+              <dt>Lの割合</dt>
+              <dd>会社規模の区分から自動設定します。<code>大会社 1.00 / 中会社の大 0.90 / 中会社の中 0.75 / 中会社の小 0.60 / 小会社 0.50</code></dd>
+            </dl>
+            <p class="calc-logic-note">Lの割合は併用方式（類似業種比準価額×L ＋ 純資産価額×(1−L)）で使用します。</p>
+          </div>
         </div>
 
         <!-- ■自社株評価(DSレイアウト) -->
@@ -570,6 +674,19 @@
               </tbody>
             </table>
           </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>一株あたり（円）</dt>
+              <dd><code>時価総額 ÷ 発行済株式数</code></dd>
+              <dt>額面倍率</dt>
+              <dd><code>一株あたり ÷ 額面</code>（額面の何倍まで評価が膨らんでいるかを表します）</dd>
+              <dt>各評価方式の位置づけ</dt>
+              <dd><strong>相続税評価額</strong>…相続・贈与の課税に用いる原則的評価額。<strong>類似業種比準価額</strong>…同業種の上場企業の株価と自社の配当・利益・純資産を比準した価額。<strong>純資産価額</strong>…資産を相続税評価に置き換えた1株あたりの純資産。<strong>併用方式</strong>…類似業種比準価額×L ＋ 純資産価額×(1−L)。<strong>法人税法上評価額</strong>…法人が株式を売買する際の時価（<code>類似業種比準価額×0.5 ＋ 純資産価額×0.5</code>）。<strong>配当還元評価額</strong>…少数株主が取得する場合の特例的評価。</dd>
+            </dl>
+            <p class="calc-logic-note">詳細入力から進んだ場合、この表の時価総額はSTEP3〜8の判定・計算結果から自動入力されます（各方式の算式は詳細入力側の計算ロジックに記載）。</p>
+          </div>
         </div>
 
         <!-- 株主の状況(DSレイアウト) -->
@@ -604,6 +721,23 @@
           </div>
           <button type="button" id="ssAddHolder" class="btn-outline mt-4 px-5 py-2 rounded-full text-sm font-bold">＋ 株主を追加</button>
           <p id="ssHolderError" class="hidden text-xs text-red-600 font-bold mt-2"></p>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>比率（議決権割合）</dt>
+              <dd><code>その株主の株数 ÷ 発行済株式数 × 100</code></dd>
+              <dt>その他株主（自動計算）</dt>
+              <dd><code>発行済株式数 − 入力した株主の株数合計</code>。株主名を1件でも入力すると自動で表示されます。</dd>
+              <dt>相続税評価額</dt>
+              <dd><code>その株主の株数 × (相続税評価額の時価総額 ÷ 発行済株式数)</code></dd>
+              <dt>法人税法上評価額</dt>
+              <dd><code>その株主の株数 × (法人税法上評価額の時価総額 ÷ 発行済株式数)</code></dd>
+              <dt>入力チェック</dt>
+              <dd>株数の合計が発行済株式数を超えた場合はエラーとし、超過している入力欄を薄い赤で表示します。</dd>
+            </dl>
+            <p class="calc-logic-note">議決権割合は株数割合で近似しています（種類株式・自己株式等による議決権の差異は考慮していません）。</p>
+          </div>
         </div>
 
         <div id="calcErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
@@ -787,7 +921,7 @@
   </div>
 </footer>
 
-<script src="js/menu.js?v=20260723g"></script>
+<script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/stock-simple.js?v=20260724j"></script>
 <script src="js/stock-detail.js?v=20260724o"></script>

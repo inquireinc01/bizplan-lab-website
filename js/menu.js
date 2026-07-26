@@ -174,6 +174,37 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(dismiss, 6000);
   }, 150);
 
+  // ===== フッターの「計算ロジック」ボタン(全ページ共通) =====
+  //       .calc-logic ブロックを持つページだけ、不具合報告ボタンの右に自動で追加する。
+  //       押すと各セクション下の .calc-logic を一斉に開閉する。
+  (function () {
+    const logicBlocks = document.querySelectorAll('.calc-logic');
+    if (!logicBlocks.length) return;
+    const feedbackLink = document.querySelector('footer a[href="feedback.html"]');
+    if (!feedbackLink) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'footerLogicBtn';
+    btn.className = feedbackLink.className + ' footer-logic-btn ml-3';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.textContent = '計算ロジック';
+    feedbackLink.insertAdjacentElement('afterend', btn);
+
+    btn.addEventListener('click', function () {
+      const willOpen = !btn.classList.contains('is-on');
+      btn.classList.toggle('is-on', willOpen);
+      btn.setAttribute('aria-expanded', String(willOpen));
+      btn.textContent = willOpen ? '計算ロジックを隠す' : '計算ロジック';
+      logicBlocks.forEach(function (el) { el.classList.toggle('is-open', willOpen); });
+      // 開いたときは最初のロジック枠まで移動して、どこに出たか分かるようにする
+      if (willOpen) {
+        const first = document.querySelector('.calc-logic.is-open');
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  })();
+
   // ===== 入力欄フォーカス時に全選択(そのまま入力すれば上書きできるように) =====
   const SKIP_TYPES = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'range', 'color', 'date', 'month', 'week', 'time'];
   document.addEventListener('focusin', function (e) {
