@@ -127,7 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
       bars += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${(w + 0.6).toFixed(1)}" height="${BAR_H}" fill="${p.color}"/>`;
       const label = unitFmt(v);
       const fs = o.slim ? 16 : 20;
-      if (w > widthOf(label, fs)) {
+      // 軽減額のグラフは帯の中に金額を書かない(内訳は折りたたみの凡例で見る)
+      if (!o.noSegLabel && w > widthOf(label, fs)) {
         labels += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + (o.slim ? 5 : 7)}" font-weight="bold" fill="#fff" text-anchor="middle">${svgAmount(label, fs)}</text>`;
       }
       x += w;
@@ -334,12 +335,12 @@ document.addEventListener('DOMContentLoaded', function () {
     renderSaveChart('txChartIncome', [
       { label: '所得税', value: r.saveIt, color: NAVY[0] },
       { label: '住民税', value: r.saveRt, color: NAVY[1] },
-    ], yen, mx.saveIncomeSum, { capLabel: '軽減額の上限', base: NAVY[0], accent: NAVY[3] });
+    ], yen, mx.saveIncomeSum, { base: NAVY[0], accent: NAVY[3], noSegLabel: true });
     renderSaveChart('txChartInherit', [
       { label: '生命保険金', value: r.saveDeath, color: GREEN[0] },
       { label: '死亡退職金', value: r.saveRetire, color: GREEN[1] },
       { label: '弔慰金', value: r.saveCondolence, color: GREEN[2] },
-    ], man, mx.saveInheritSum, { capLabel: '軽減額の上限', base: GREEN[0], accent: GREEN[3] });
+    ], man, mx.saveInheritSum, { base: GREEN[0], accent: GREEN[3], noSegLabel: true });
 
     // --- PDF出力用の明細(画面には出さず印刷シートにだけ書き込む) ---
     const pBody = $('pPremiumBody');
