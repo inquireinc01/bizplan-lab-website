@@ -146,11 +146,69 @@
     <div class="max-w-4xl mx-auto px-5">
       <form id="txForm" class="space-y-8">
 
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">1. 所得税・住民税の計算<span class="help-tip" tabindex="0">?<span class="help-text">収入から給与所得控除・各種所得控除を差し引いて課税所得を求め、超過累進税率で所得税額を計算します。この計算結果をもとに、生命保険料控除を適用した場合の税額と比較して実際の軽減額を算出します。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">生命保険料控除を<strong>適用する前</strong>の状態を入力してください（生命保険料控除は「3.」で計算し、自動で反映されます）。</p>
+                <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1 flex items-center">1. 所得税・住民税<span class="help-tip" tabindex="0">?<span class="help-text">生命保険料控除によって実際にいくら税額が減るかを計算するために、控除を適用する前の所得税・住民税を求めます。入力方法は簡易入力と詳細入力から選べます。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-4">入力方法を選択してください。</p>
+          <div id="itVersionChooser" class="grid sm:grid-cols-2 gap-4 mb-6">
+            <div class="version-card p-5 relative overflow-hidden" data-it-version="simple" tabindex="0" role="button">
+              <span class="font-brand-en absolute -right-1 -bottom-4 text-5xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">SIMPLE</span>
+              <div class="relative">
+                <h4 class="font-bold text-base mb-1.5">簡易入力</h4>
+                <p class="text-xs text-gray-600 leading-relaxed pr-4">課税所得の金額をそのまま入力します。適用される所得税率が自動で表示されます。</p>
+              </div>
+            </div>
+            <div class="version-card p-5 relative overflow-hidden" data-it-version="detail" tabindex="0" role="button">
+              <span class="font-brand-en absolute -right-1 -bottom-4 text-5xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">DETAIL</span>
+              <div class="relative">
+                <h4 class="font-bold text-base mb-1.5">詳細入力</h4>
+                <p class="text-xs text-gray-600 leading-relaxed pr-4">給与収入や各種所得、所得控除を1つずつ入力し、課税所得と税額を精緻に計算します。</p>
+              </div>
+            </div>
+          </div>
 
-          <p class="tx-group-title">給与所得</p>
+          <!-- 所得税: 簡易入力 -->
+          <div id="itSimpleArea" class="hidden">
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txTaxableIncomeSimple">課税所得(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">各種所得控除を差し引いた後の課税所得金額です。源泉徴収票や確定申告書の「課税される所得金額」に相当します。生命保険料控除を<strong>適用する前</strong>の金額を入力してください。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txTaxableIncomeSimple" value="800" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 800" /></div>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">適用される所得税率(自動判定)<span class="help-tip" tabindex="0">?<span class="help-text">課税所得に応じた超過累進税率です。<code>195万円以下5% / 330万円以下10% / 695万円以下20% / 900万円以下23% / 1,800万円以下33% / 4,000万円以下40% / 4,000万円超45%</code></span></span></span>
+                <span class="tx-field-value" id="txSimpleRateIt">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">住民税率(所得割・固定)</span>
+                <span class="tx-field-value" id="txSimpleRateRt">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">所得税額(控除前・自動計算)</span>
+                <span class="tx-field-value" id="txSimpleTaxIt">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">住民税額(控除前・自動計算)</span>
+                <span class="tx-field-value" id="txSimpleTaxRt">-</span>
+              </div>
+            </div>
+
+            <div class="calc-logic">
+              <p class="calc-logic-title">計算ロジック</p>
+              <dl>
+                <dt>所得税率(限界税率)の自動判定</dt>
+                <dd>入力した課税所得を超過累進税率表に当てはめて判定します。<code>195万円以下→5% / 330万円以下→10% / 695万円以下→20% / 900万円以下→23% / 1,800万円以下→33% / 4,000万円以下→40% / 4,000万円超→45%</code></dd>
+                <dt>所得税額</dt>
+                <dd><code>課税所得 × 税率 − 控除額</code>（速算表。控除額は<code>195万円以下0 / 330万円以下9.75万 / 695万円以下42.75万 / 900万円以下63.6万 / 1,800万円以下153.6万 / 4,000万円以下279.6万 / 超479.6万</code>）</dd>
+                <dt>住民税額</dt>
+                <dd><code>課税所得 × 所得割10% ＋ 均等割5,000円</code></dd>
+              </dl>
+              <p class="calc-logic-note">簡易入力では所得税と住民税で同じ課税所得を使います。実際には基礎控除等の控除額が異なるため課税所得も異なります。より正確に計算する場合は詳細入力をご利用ください。</p>
+            </div>
+          </div>
+
+          <!-- 所得税: 詳細入力 -->
+          <div id="itDetailArea" class="hidden">
+            <p class="text-xs text-gray-500 mb-4">生命保険料控除を<strong>適用する前</strong>の状態を入力してください（生命保険料控除は「3.」で計算し、自動で反映されます）。</p>
+<p class="tx-group-title">給与所得</p>
           <div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txSalaryIncome">給与収入(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">源泉徴収票の「支払金額」に相当する年間の給与・役員報酬の総額です。ここから給与所得控除を差し引いて給与所得を計算します。</span></span></label>
@@ -345,31 +403,195 @@
             </dl>
             <p class="calc-logic-note">復興特別所得税(所得税額×2.1%)、調整控除、住宅ローン控除等の税額控除は考慮していません。同居老親等の加算、配偶者特別控除、本人の合計所得による配偶者控除の逓減・不適用も反映していないため、概算としてご利用ください。</p>
           </div>
+          </div>
         </div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">2. 相続税の前提<span class="help-tip" tabindex="0">?<span class="help-text">非課税枠を使えることで軽減される相続税額を計算するために、適用される相続税の税率を設定します。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">相続税の軽減額の計算に使用します。</p>
-          <div class="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="txInheritanceRate">相続税率(%)<span class="help-tip" tabindex="0">?<span class="help-text">相続財産に適用される相続税の税率(限界税率)を入力してください。非課税枠を使えることで軽減される相続税額の計算に使用します。財産規模により10%〜55%の範囲で変動します。</span></span></label>
-              <input type="number" id="txInheritanceRate" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
+          <h3 class="font-bold text-base mb-1 flex items-center">2. 相続税<span class="help-tip" tabindex="0">?<span class="help-text">非課税枠を使えることで軽減される相続税額を計算します。入力方法は簡易入力と詳細入力から選べます。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-4">入力方法を選択してください。</p>
+          <div id="ihVersionChooser" class="grid sm:grid-cols-2 gap-4 mb-6">
+            <div class="version-card p-5 relative overflow-hidden" data-ih-version="simple" tabindex="0" role="button">
+              <span class="font-brand-en absolute -right-1 -bottom-4 text-5xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">SIMPLE</span>
+              <div class="relative">
+                <h4 class="font-bold text-base mb-1.5">簡易入力</h4>
+                <p class="text-xs text-gray-600 leading-relaxed pr-4">適用される相続税率をそのまま入力します。</p>
+              </div>
+            </div>
+            <div class="version-card p-5 relative overflow-hidden" data-ih-version="detail" tabindex="0" role="button">
+              <span class="font-brand-en absolute -right-1 -bottom-4 text-5xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">DETAIL</span>
+              <div class="relative">
+                <h4 class="font-bold text-base mb-1.5">詳細入力</h4>
+                <p class="text-xs text-gray-600 leading-relaxed pr-4">家系図(相続人の構成)と財産目録(正の財産・負の財産)を入力し、相続税の総額を精緻に計算します。</p>
+              </div>
             </div>
           </div>
 
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl>
-              <dt>相続税の軽減額</dt>
-              <dd><code>非課税となった財産額 × 相続税率</code>。非課税枠が使えることで課税対象から外れる財産に、その分の相続税がかからなくなると考えます。</dd>
-              <dt>相続税率の目安</dt>
-              <dd>法定相続分に応ずる取得金額に対して <code>1,000万円以下10% / 3,000万円以下15% / 5,000万円以下20% / 1億円以下30% / 2億円以下40% / 3億円以下45% / 6億円以下50% / 6億円超55%</code></dd>
-            </dl>
-            <p class="calc-logic-note">限界税率による概算です。実際の相続税額は法定相続分による按分計算を経て算出されるため、税理士等の専門家による試算が必要です。</p>
+          <!-- 相続税: 簡易入力 -->
+          <div id="ihSimpleArea" class="hidden">
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txInheritanceRate">相続税率(%)<span class="help-tip" tabindex="0">?<span class="help-text">相続財産に適用される相続税の税率(限界税率)を入力してください。財産規模により10%〜55%の範囲で変動します。法定相続分に応ずる取得金額に対して<code>1,000万円以下10% / 3,000万円以下15% / 5,000万円以下20% / 1億円以下30% / 2億円以下40% / 3億円以下45% / 6億円以下50% / 6億円超55%</code>です。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txInheritanceRate" value="30" step="0.1" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 30" /></div>
+              </div>
+            </div>
+
+            <div class="calc-logic">
+              <p class="calc-logic-title">計算ロジック</p>
+              <dl>
+                <dt>相続税の軽減額</dt>
+                <dd><code>非課税となった財産額 × 相続税率</code>。非課税枠が使えることで課税対象から外れる財産に、その分の相続税がかからなくなると考えます。</dd>
+                <dt>相続税率の目安</dt>
+                <dd>法定相続分に応ずる取得金額に対して <code>1,000万円以下10% / 3,000万円以下15% / 5,000万円以下20% / 1億円以下30% / 2億円以下40% / 3億円以下45% / 6億円以下50% / 6億円超55%</code></dd>
+              </dl>
+              <p class="calc-logic-note">限界税率による概算です。実際の相続税額は法定相続分による按分計算を経て算出されます。より正確に計算する場合は詳細入力をご利用ください。</p>
+            </div>
+          </div>
+
+          <!-- 相続税: 詳細入力 -->
+          <div id="ihDetailArea" class="hidden">
+            <p class="tx-group-title">家系図(相続人の構成)</p>
+            <p class="tx-group-note">法定相続人を判定します。子がいる場合は父母・兄弟姉妹は相続人になりません(子がいなければ父母、父母もいなければ兄弟姉妹が相続人になります)。</p>
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txHasSpouse">配偶者<span class="help-tip" tabindex="0">?<span class="help-text">配偶者は常に相続人になります。法定相続分は、子と相続する場合1/2、直系尊属(父母)と相続する場合2/3、兄弟姉妹と相続する場合3/4です。</span></span></label>
+                <div class="tx-field-input">
+                  <select id="txHasSpouse" class="form-select rounded-lg px-4 py-2.5 text-sm">
+                    <option value="yes" selected>いる</option>
+                    <option value="no">いない</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txChildren">子の人数(実子・人)<span class="help-tip" tabindex="0">?<span class="help-text">実子および代襲相続する孫の人数。子が1人でもいる場合、父母・兄弟姉妹は相続人になりません。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txChildren" value="2" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 2" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txAdopted">養子の人数(人)<span class="help-tip" tabindex="0">?<span class="help-text">相続税の計算では、法定相続人の数に算入できる養子の数に制限があります。実子がいる場合は1人まで、実子がいない場合は2人までです(特別養子等は実子として扱われます)。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txAdopted" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txParents">父母・直系尊属の人数(人)<span class="help-tip" tabindex="0">?<span class="help-text">子(及び代襲相続人)がいない場合に相続人となります。子がいる場合はこの欄の人数は判定に影響しません。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txParents" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txSiblings">兄弟姉妹の人数(人)<span class="help-tip" tabindex="0">?<span class="help-text">子も直系尊属もいない場合に相続人となります。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txSiblings" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">法定相続人の数(自動判定)<span class="help-tip" tabindex="0">?<span class="help-text">相続税の基礎控除(3,000万円＋600万円×法定相続人の数)と、生命保険金・死亡退職金の非課税枠(500万円×法定相続人の数)の計算に使用します。この人数は「4.」の非課税枠にも自動反映されます。</span></span></span>
+                <span class="tx-field-value" id="txHeirsAuto">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">相続人の構成と法定相続分</span>
+                <span class="tx-field-value" id="txHeirsComposition">-</span>
+              </div>
+            </div>
+
+            <p class="tx-group-title">財産目録: 正の財産</p>
+            <p class="tx-group-note">相続税評価額(万円)を入力してください。生命保険金・死亡退職金は「4.」で入力した金額が非課税枠を控除した上で自動的に加算されます。</p>
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txAssetLand">土地(万円)<span class="help-tip" tabindex="0">?<span class="help-text">宅地・農地等の相続税評価額。宅地は路線価方式または倍率方式で評価します。小規模宅地等の特例を適用する場合は減額後の金額を入力してください。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txAssetLand" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txAssetBuilding">建物(万円)<span class="help-tip" tabindex="0">?<span class="help-text">家屋の相続税評価額。原則として固定資産税評価額と同額です。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txAssetBuilding" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txAssetSecurities">有価証券(万円)<span class="help-tip" tabindex="0">?<span class="help-text">上場株式・投資信託・公社債等の相続税評価額。自社株(取引相場のない株式)も含みます。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txAssetSecurities" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txAssetCash">現金・預貯金(万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続開始日の残高。既経過利子も加算します。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txAssetCash" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txAssetOther">その他の財産(万円)<span class="help-tip" tabindex="0">?<span class="help-text">車両・家財・書画骨董・ゴルフ会員権・貸付金・特許権など、上記以外の財産の相続税評価額。相続開始前7年以内の生前贈与財産もここに含めてください。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txAssetOther" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">生命保険金(非課税枠控除後)</span>
+                <span class="tx-field-value" id="txAssetInsuranceNet">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">死亡退職金(非課税枠控除後)</span>
+                <span class="tx-field-value" id="txAssetRetirementNet">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">正の財産の合計</span>
+                <span class="tx-field-value" id="txAssetTotal">-</span>
+              </div>
+            </div>
+
+            <p class="tx-group-title">財産目録: 負の財産</p>
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txDebt">債務(万円)<span class="help-tip" tabindex="0">?<span class="help-text">借入金・未払医療費・未払税金など、被相続人が負っていた債務。確実と認められるものが控除できます。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txDebt" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txFuneralCost">葬式費用(万円)<span class="help-tip" tabindex="0">?<span class="help-text">通夜・本葬・火葬・納骨等の費用。香典返し・法要(初七日以降)・墓石の購入費用は控除できません。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txFuneralCost" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">負の財産の合計</span>
+                <span class="tx-field-value" id="txDebtTotal">-</span>
+              </div>
+            </div>
+
+            <p class="tx-group-title">相続税の計算結果</p>
+            <div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">課税価格<span class="help-tip" tabindex="0">?<span class="help-text"><code>正の財産の合計 − 負の財産の合計</code>。生命保険金・死亡退職金は非課税枠を控除した後の金額で加算されています。</span></span></span>
+                <span class="tx-field-value" id="txTaxableEstate">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">基礎控除<span class="help-tip" tabindex="0">?<span class="help-text"><code>3,000万円 ＋ 600万円 × 法定相続人の数</code></span></span></span>
+                <span class="tx-field-value" id="txEstateBasic">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">課税遺産総額</span>
+                <span class="tx-field-value" id="txNetEstate">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">相続税の総額<span class="help-tip" tabindex="0">?<span class="help-text">課税遺産総額を法定相続分で按分し、各人の取得金額に相続税の速算表を適用して算出した税額の合計です。配偶者の税額軽減や未成年者控除等の税額控除は考慮していません。</span></span></span>
+                <span class="tx-field-value" id="txEstateTaxTotal">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">実効税率(相続税の総額 ÷ 課税価格)</span>
+                <span class="tx-field-value" id="txEstateEffectiveRate">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">限界税率(最大の法定相続分に対応)</span>
+                <span class="tx-field-value" id="txEstateMarginalRate">-</span>
+              </div>
+            </div>
+
+            <div class="calc-logic">
+              <p class="calc-logic-title">計算ロジック</p>
+              <dl>
+                <dt>法定相続人の判定</dt>
+                <dd>配偶者は常に相続人。血族相続人は <code>第1順位: 子(代襲相続人を含む) → 第2順位: 直系尊属(父母) → 第3順位: 兄弟姉妹</code> の順で、上位の順位者がいれば下位は相続人になりません。</dd>
+                <dt>養子の数の制限</dt>
+                <dd>相続税の計算上、法定相続人の数に算入できる養子は <code>実子がいる場合1人まで / 実子がいない場合2人まで</code> です。</dd>
+                <dt>法定相続分</dt>
+                <dd><code>配偶者と子 → 配偶者1/2・子1/2を均分</code>、<code>配偶者と直系尊属 → 配偶者2/3・直系尊属1/3を均分</code>、<code>配偶者と兄弟姉妹 → 配偶者3/4・兄弟姉妹1/4を均分</code>、<code>配偶者のみ → 全部</code>、<code>血族のみ → 均分</code></dd>
+                <dt>課税価格</dt>
+                <dd><code>(土地 ＋ 建物 ＋ 有価証券 ＋ 現金預貯金 ＋ その他 ＋ 生命保険金の課税部分 ＋ 死亡退職金の課税部分) − 債務 − 葬式費用</code></dd>
+                <dt>基礎控除・課税遺産総額</dt>
+                <dd>基礎控除 = <code>3,000万円 ＋ 600万円 × 法定相続人の数</code>、課税遺産総額 = <code>max(0, 課税価格 − 基礎控除)</code></dd>
+                <dt>相続税の総額</dt>
+                <dd>課税遺産総額を法定相続分で按分し、各人の取得金額ごとに速算表を適用して合算します。<code>1,000万円以下10% / 3,000万円以下15%(−50万) / 5,000万円以下20%(−200万) / 1億円以下30%(−700万) / 2億円以下40%(−1,700万) / 3億円以下45%(−2,700万) / 6億円以下50%(−4,200万) / 6億円超55%(−7,200万)</code></dd>
+                <dt>非課税枠による軽減額</dt>
+                <dd>生命保険金・死亡退職金・弔慰金の非課税枠を<strong>使わなかった場合</strong>の相続税の総額と、<strong>使った場合</strong>の相続税の総額を両方計算し、その差額を軽減額とします(限界税率による概算ではありません)。</dd>
+              </dl>
+              <p class="calc-logic-note">配偶者の税額軽減(1億6,000万円または法定相続分まで非課税)、未成年者控除、障害者控除、相続時精算課税、小規模宅地等の特例の自動適用は行っていません。実際の申告額は税理士等の専門家による算定が必要です。</p>
+            </div>
           </div>
         </div>
 
-        <div class="calc-section bg-white p-6 sm:p-8">
+<div class="calc-section bg-white p-6 sm:p-8">
           <h3 class="font-bold text-base mb-1 flex items-center">3. 生命保険料控除(所得税・住民税)<span class="help-tip" tabindex="0">?<span class="help-text">支払った生命保険料は、一定の算式に基づき所得税・住民税の計算上、所得から控除されます(平成24年1月1日以後契約の新制度)。区分ごとの上限は所得税4万円・住民税2.8万円、合計適用限度額は所得税12万円・住民税7万円です。</span></span></h3>
           <p class="text-xs text-gray-500 mb-5">区分ごとの年間払込保険料(円)を入力してください。</p>
           <div class="grid sm:grid-cols-3 gap-5">
@@ -448,159 +670,10 @@
         <div id="txErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
 
         <div class="flex flex-col sm:flex-row gap-4">
-          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">試算する</button>
+          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">シミュレーション結果に進む</button>
           <button type="button" id="txFieldClearBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
         </div>
       </form>
-
-
-      <!-- 結果表示 -->
-      <div id="txResultArea" class="hidden mt-10 space-y-8">
-
-        <!-- 税負担の軽減額(グラフ) -->
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h4 class="inline-flex items-center gap-2 bg-[#0f2a4a] text-white font-bold text-lg px-4 py-2 rounded-lg mb-6">税負担の軽減額<span class="help-tip" tabindex="0">?<span class="help-text">控除枠・非課税枠を活用することで実際に軽減される税額です。所得税・住民税は毎年継続的に効く軽減、相続税は相続発生時に一度効く軽減のため、分けて表示しています。</span></span></h4>
-
-          <div class="grid lg:grid-cols-2 gap-6">
-            <!-- 所得税・住民税 -->
-            <div class="rounded-xl border border-gray-200 p-5">
-              <div class="flex items-baseline justify-between mb-1">
-                <p class="font-bold text-sm">所得税・住民税の軽減額</p>
-                <p class="text-xs text-gray-400">毎年</p>
-              </div>
-              <p id="txSaveIncomeTotal" class="text-3xl font-black text-[#0f2a4a] mb-4"></p>
-              <svg id="txChartIncome" viewBox="0 0 360 150" class="w-full h-auto" role="img" aria-label="所得税・住民税の軽減額の内訳"></svg>
-              <dl class="text-xs mt-3 space-y-1.5">
-                <div class="flex justify-between"><dt class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#0f2a4a"></span>所得税</dt><dd id="txSaveIncomeTax" class="font-bold"></dd></div>
-                <div class="flex justify-between"><dt class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#3b6ea5"></span>住民税</dt><dd id="txSaveResidentTax" class="font-bold"></dd></div>
-                <div class="flex justify-between pt-1.5 border-t border-gray-200"><dt class="text-gray-500">10年間の累計</dt><dd id="txSave10y" class="font-bold text-[#2d5580]"></dd></div>
-              </dl>
-            </div>
-
-            <!-- 相続税 -->
-            <div class="rounded-xl border border-gray-200 p-5">
-              <div class="flex items-baseline justify-between mb-1">
-                <p class="font-bold text-sm">相続税の軽減額</p>
-                <p class="text-xs text-gray-400">相続発生時に一度</p>
-              </div>
-              <p id="txSaveInheritTotal" class="text-3xl font-black text-[#0f2a4a] mb-4"></p>
-              <svg id="txChartInherit" viewBox="0 0 360 150" class="w-full h-auto" role="img" aria-label="相続税の軽減額の内訳"></svg>
-              <dl class="text-xs mt-3 space-y-1.5">
-                <div class="flex justify-between"><dt class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#0f2a4a"></span>生命保険金の非課税枠</dt><dd id="txSaveDeath" class="font-bold"></dd></div>
-                <div class="flex justify-between"><dt class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#3b6ea5"></span>死亡退職金の非課税枠</dt><dd id="txSaveRetire" class="font-bold"></dd></div>
-                <div class="flex justify-between"><dt class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm" style="background:#7a9cc0"></span>弔慰金の非課税枠</dt><dd id="txSaveCondolence" class="font-bold"></dd></div>
-                <div class="flex justify-between pt-1.5 border-t border-gray-200"><dt class="text-gray-500">非課税となる財産の合計</dt><dd id="txExemptTotalAmount" class="font-bold text-[#2d5580]"></dd></div>
-              </dl>
-            </div>
-          </div>
-
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl>
-              <dt>所得税の軽減額(年間)</dt>
-              <dd>「1.」で計算した<strong>控除前の所得税額</strong>と、課税所得から生命保険料控除を差し引いて再計算した<strong>控除後の所得税額</strong>の差額です。<br /><code>所得税(控除前) − 所得税(課税所得 − 生命保険料控除(所得税) で再計算)</code></dd>
-              <dt>住民税の軽減額(年間)</dt>
-              <dd>同じく控除前後の住民税額の差額です。<br /><code>住民税(控除前) − 住民税(課税所得 − 生命保険料控除(住民税) で再計算)</code></dd>
-              <dt>10年間の累計</dt>
-              <dd><code>(所得税の軽減額 ＋ 住民税の軽減額) × 10</code>。生命保険料控除は保険料を払い続ける限り毎年適用されるため、累計効果を示しています。</dd>
-              <dt>相続税の軽減額</dt>
-              <dd>非課税枠として使えた金額に相続税率を掛けて算出します。<br />生命保険金 = <code>min(受取額, 500万円×法定相続人) × 相続税率</code><br />死亡退職金 = <code>min(受取額, 500万円×法定相続人) × 相続税率</code><br />弔慰金 = <code>min(弔慰金, 月額給与×36または6) × 相続税率</code></dd>
-              <dt>グラフ</dt>
-              <dd>各軽減額を積み上げた横棒で表示します。所得税・住民税と相続税は金額の規模と発生時期が異なるため、別のグラフ・別の目盛りで描画しています。</dd>
-            </dl>
-            <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。弔慰金は「5. 弔慰金の非課税枠」で算定した限度額まで支給した場合の軽減額として計算しています。</p>
-          </div>
-        </div>
-
-        <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">3. 生命保険料控除額</h4>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm border-collapse min-w-[480px]">
-              <thead>
-                <tr class="bg-[#0f2a4a] text-white">
-                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">区分</th>
-                  <th class="text-right font-bold px-3 py-2">年間払込保険料</th>
-                  <th class="text-right font-bold px-3 py-2">所得税控除額</th>
-                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">住民税控除額</th>
-                </tr>
-              </thead>
-              <tbody id="txPremiumBody"></tbody>
-              <tfoot>
-                <tr class="border-t-2 border-[#0f2a4a] font-bold">
-                  <td class="px-3 py-2">合計(上限あり)</td>
-                  <td class="px-3 py-2"></td>
-                  <td id="txIncomeTaxTotal" class="text-right px-3 py-2 text-[#2d5580]"></td>
-                  <td id="txResidentTaxTotal" class="text-right px-3 py-2 text-[#2d5580]"></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>所得税の控除額（新制度・平成24年1月1日以後契約）</dt><dd><code>年間保険料2万円以下 → 全額 / 4万円以下 → 保険料×1/2＋1万円 / 8万円以下 → 保険料×1/4＋2万円 / 8万円超 → 4万円（上限）</code></dd><dt>住民税の控除額</dt><dd><code>1.2万円以下 → 全額 / 3.2万円以下 → 保険料×1/2＋6千円 / 5.6万円以下 → 保険料×1/4＋1.4万円 / 5.6万円超 → 2.8万円（上限）</code></dd><dt>3区分の合計と上限</dt><dd>一般生命保険料・個人年金保険料・介護医療保険料の3区分をそれぞれ計算して合算し、全体で <code>所得税12万円 / 住民税7万円</code> を上限とします。</dd></dl>
-            
-          </div>
-</div>
-
-        <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">4. 相続税の非課税枠</h4>
-          <dl class="space-y-2 text-sm">
-            <div class="flex justify-between"><dt class="text-gray-500">非課税枠(1区分あたり: 500万円×法定相続人の数)</dt><dd id="txExemptionEach" class="font-bold"></dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">生命保険金 使用額 / 課税対象額</dt><dd id="txDeathBenefitResult" class="font-bold"></dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">死亡退職金 使用額 / 課税対象額</dt><dd id="txRetirementResult" class="font-bold"></dd></div>
-          </dl>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>非課税枠</dt><dd><code>500万円 × 法定相続人の数</code></dd><dt>生命保険金・死亡退職金</dt><dd>それぞれ<strong>独立して</strong>非課税枠が適用されます。<br />使用額 = <code>min(受取額, 非課税枠)</code>、課税対象 = <code>max(0, 受取額 − 非課税枠)</code></dd></dl>
-            <p class="calc-logic-note">生命保険金と死亡退職金で非課税枠を合計2回使えるため、両方を組み合わせると非課税で承継できる金額が大きくなります。</p>
-          </div>
-</div>
-
-        <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">5. 弔慰金の非課税枠</h4>
-          <dl class="space-y-2 text-sm">
-            <div class="flex justify-between"><dt class="text-gray-500">非課税となる弔慰金の上限額</dt><dd id="txCondolenceResult" class="font-bold"></dd></div>
-          </dl>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>非課税となる弔慰金の限度額</dt><dd><code>業務上の死亡 → 普通給与の36ヶ月分</code>、<code>業務外の死亡 → 普通給与の6ヶ月分</code></dd><dt>計算式</dt><dd><code>月額普通給与 × 36（または6）</code></dd></dl>
-            <p class="calc-logic-note">限度額を超える部分は死亡退職金として扱われ、相続税の課税対象になります。</p>
-          </div>
-</div>
-
-        <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">6. 一時所得の課税対象額</h4>
-          <dl class="space-y-2 text-sm">
-            <div class="flex justify-between"><dt class="text-gray-500">一時所得の金額(受取額-払込保険料-特別控除50万円)</dt><dd id="txOneTimeIncome" class="font-bold"></dd></div>
-            <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">課税対象額(1/2課税)</dt><dd id="txOneTimeTaxable" class="font-black text-[#2d5580]"></dd></div>
-          </dl>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>一時所得の金額</dt><dd><code>満期保険金・解約返戻金 − 払込保険料総額 − 特別控除50万円</code>（マイナスの場合は0）</dd><dt>課税対象額</dt><dd><code>一時所得の金額 × 1/2</code>。他の所得と合算して総合課税されます。</dd></dl>
-            <p class="calc-logic-note">契約者・保険料負担者・受取人がいずれも本人である場合の扱いです。契約形態が異なる場合は贈与税や相続税の対象となることがあります。</p>
-          </div>
-</div>
-
-        <!-- サマリー -->
-        <div class="calc-result-card p-6 sm:p-10">
-          <h3 class="font-black text-xl mb-2">控除枠・非課税枠の活用状況</h3>
-          <p class="text-white/70 text-sm mb-6">生命保険料控除の合計額と、相続税の非課税枠(生命保険金+死亡退職金+弔慰金)の合計額です。</p>
-          <div class="grid sm:grid-cols-2 gap-6">
-            <div>
-              <p class="text-xs text-white/70 mb-1">生命保険料控除 合計(所得税+住民税)</p>
-              <p id="txSummaryPremium" class="text-2xl font-black"></p>
-            </div>
-            <div>
-              <p class="text-xs text-white/70 mb-1">相続税 非課税枠 合計(生命保険金+死亡退職金+弔慰金)</p>
-              <p id="txSummaryInheritance" class="text-2xl font-black"></p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -700,6 +773,7 @@
 
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/tax-exemption.js?v=20260724c"></script>
+<script src="js/tax-exemption-calc.js?v=20260724a"></script>
+<script src="js/tax-exemption.js?v=20260724d"></script>
 </body>
 </html>
