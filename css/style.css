@@ -1531,15 +1531,20 @@ img {
   border-radius: 0.25rem;
   padding: 0.05rem 0.3rem;
 }
-/* 個人契約/法人契約など、カラム内の小見出し */
+/* 個人契約/法人契約は白抜きで強調し、どちらの契約で用意する枠かを一目で分かるようにする */
 .tx-plan-sub {
-  margin: 0.5rem 0 0.25rem;
-  padding-bottom: 0.15rem;
-  border-bottom: 1px dashed #e5e7eb;
-  font-size: 0.625rem;
+  display: inline-block;
+  margin: 0.6rem 0 0.3rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: 0.35rem;
+  font-size: 0.6875rem;
   font-weight: 700;
-  color: var(--color-navy);
   letter-spacing: 0.04em;
+  color: #fff;
+  background-color: var(--color-navy);
+}
+.tx-plan-sub.is-corp {
+  background-color: #0f482b;
 }
 .tx-plan-sub:first-of-type {
   margin-top: 0;
@@ -1665,6 +1670,63 @@ img {
 }
 .tx-pair-body > * + * {
   margin-top: 0.5rem;
+}
+/* 左右のグループでカードの合計高さを揃える(左3枚 = 右2枚) */
+.tx-pair-body.is-even {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tx-pair-body.is-even > * {
+  margin-top: 0;
+  flex: 1 1 0;
+}
+.tx-pair, .tx-pair-body.is-even {
+  height: 100%;
+}
+.tx-pair {
+  display: flex;
+  flex-direction: column;
+}
+.tx-pair-body {
+  flex: 1 1 auto;
+}
+/* 保険料の区分ごとのカードは高さを抑えた簡易版にする */
+.tx-gauge-card.is-slim {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.55rem 0.7rem;
+}
+.tx-gauge-title.is-slim {
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.tx-gauge-pre {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: #9ca3af;
+  margin-right: 0.3em;
+}
+.tx-gauge-now.is-slim {
+  font-size: 1.35rem;
+}
+@media (min-width: 640px) {
+  .tx-gauge-now.is-slim { font-size: 1.5rem; }
+}
+.tx-gauge-card.is-slim .tx-gauge-head {
+  margin-bottom: 0.1rem;
+}
+.tx-gauge-card.is-slim .tx-gauge-lead {
+  margin: 0.15rem 0 0;
+  font-size: 0.6875rem;
+}
+.tx-gauge-card.is-slim .tx-gauge-pill {
+  padding: 0.1rem 0.5rem;
+  font-size: 0.625rem;
+}
+.tx-gauge-card.is-slim .tx-gauge-pill > span:first-child {
+  font-size: 0.875rem;
 }
 .tx-gauge-title {
   font-size: 1rem;

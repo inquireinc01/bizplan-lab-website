@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
      残り(使い残している枠)は斜線で塗り、残り何%かを大きく見せる ===== */
   function drawSaveChart(svg, parts, unitFmt, maxTotal, opt) {
     const o = opt || {};
-    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 4, BAR_H = 78;
+    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 4, BAR_H = o.slim ? 36 : 78;
     const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
     const cap = Math.max(maxTotal, used);
     const pid = svg.id + 'Stripe';
@@ -119,11 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const rx = (isFirst || isLast) ? 10 : 0;
       out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
       const label = unitFmt(v);
-      if (w > widthOf(label, 20)) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 7}" font-weight="bold" fill="#fff" text-anchor="middle">${svgAmount(label, 20)}</text>`;
+      const fs = o.slim ? 16 : 20;
+      if (w > widthOf(label, fs)) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + (o.slim ? 5 : 7)}" font-weight="bold" fill="#fff" text-anchor="middle">${svgAmount(label, fs)}</text>`;
       }
       x += w;
     });
+    if (o.slim) { svg.innerHTML = out; return; }
     out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 24}" font-weight="bold" fill="${o.base || '#0f2a4a'}">`
       + `<tspan font-size="13" font-weight="normal" fill="#6b7280">現状 </tspan>${svgAmount(unitFmt(used), 20)}</text>`;
     out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 24}" text-anchor="end" font-weight="bold" fill="${o.accent || '#2d5580'}">`
@@ -281,13 +283,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // 死亡保険金は個人契約、死亡退職金と弔慰金は法人契約でカバーする前提で分けて表示する
     const corpSum = r.usedRetire + r.condolenceExemption;
     const corpMax = r.exemptionEach + r.condolenceLimit;
-    gauge('txPremiumNow', 'txUsePremium', 'txLeadPremium', paidSum, paidMax, yenY, yen);
+    const premCards = [
+      ['txGenNow', 'txUseGen', 'txLeadGen', 'txChartGen'],
+      ['txPenNow', 'txUsePen', 'txLeadPen', 'txChartPen'],
+      ['txMedNow', 'txUseMed', 'txLeadMed', 'txChartMed'],
+    ];
+    premCards.forEach(function (ids, i) {
+      gauge(ids[0], ids[1], ids[2], paid[i], T.PREMIUM_FULL, yenY, yen);
+      renderSaveChart(ids[3], [{ label: r.premiumRows[i].label, value: paid[i], color: NAVY[i] }],
+        yen, T.PREMIUM_FULL, { base: NAVY[i], accent: NAVY[3], slim: true });
+    });
     gauge('txDeathNow', 'txUseDeath', 'txLeadDeath', r.usedDeath, r.exemptionEach, man);
     gauge('txCorpNow', 'txUseCorp', 'txLeadCorp', corpSum, corpMax, man);
-    countUp('txPaidGeneral', paid[0], yen);
-    countUp('txPaidPension', paid[1], yen);
-    countUp('txPaidMedical', paid[2], yen);
-    countUp('txPaidRoom', Math.max(0, paidMax - paidSum), (v) => yen(v) + ' / 年');
     countUp('txDeathUsed', r.usedDeath, man);
     countUp('txDeathEach', r.exemptionEach, man);
     countUp('txDeathRoom', Math.max(0, r.exemptionEach - r.usedDeath), man);
@@ -295,11 +302,6 @@ document.addEventListener('DOMContentLoaded', function () {
     countUp('txCorpCond', r.condolenceExemption, man);
     countUp('txCorpRoom', Math.max(0, corpMax - corpSum), man);
 
-    renderSaveChart('txChartPremium', [
-      { label: '一般', value: paid[0], color: NAVY[0] },
-      { label: '個人年金', value: paid[1], color: NAVY[1] },
-      { label: '介護医療', value: paid[2], color: NAVY[2] },
-    ], yen, paidMax, { capLabel: '加入できる上限', base: NAVY[0], accent: NAVY[3] });
     renderSaveChart('txChartDeath', [
       { label: '死亡保険金', value: r.usedDeath, color: GREEN[0] },
     ], man, r.exemptionEach, { capLabel: '非課税枠', base: GREEN[0], accent: GREEN[3] });
