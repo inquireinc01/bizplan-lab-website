@@ -246,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function () {
         + `<span class="tx-mode-chip-value">${mode === 'detail' ? '詳細入力' : '簡易入力'}</span></span>`;
       modeEl.innerHTML = chip('所得税・住民税', r.itMode) + chip('相続税', r.ihMode);
     }
-    setTxt('txHeirsCountView', r.heirsCount + ' 人');
 
     // --- 税負担の軽減額(カウントアップで表示) ---
     const itNote = `（${man(r.taxItBefore)} → ${man(r.taxItAfter)}）`;
