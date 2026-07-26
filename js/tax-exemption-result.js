@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const PLAN_IDS = [
     'txGeneralPremium', 'txPensionPremium', 'txMedicalPremium',
     'txDeathBenefit', 'txRetirementBenefit',
-    'txSalaryMonthly', 'txDeathCause', 'txCondolenceAmount',
+    'txSalaryMonthly', 'txCondolenceAmount',
   ];
   // 保存済みの設計内容を入力欄に戻す
   PLAN_IDS.forEach(function (id) {
@@ -244,8 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (modeEl) {
       const chip = (label, mode) => `<span class="tx-mode-chip"><span class="tx-mode-chip-label">${label}</span>`
         + `<span class="tx-mode-chip-value">${mode === 'detail' ? '詳細入力' : '簡易入力'}</span></span>`;
-      modeEl.innerHTML = '<span class="tx-mode-badges-label">この前提で計算中</span>'
-        + chip('所得税・住民税', r.itMode) + chip('相続税', r.ihMode);
+      modeEl.innerHTML = chip('所得税・住民税', r.itMode) + chip('相続税', r.ihMode);
     }
     setTxt('txHeirsCountView', r.heirsCount + ' 人');
 
@@ -302,15 +301,18 @@ document.addEventListener('DOMContentLoaded', function () {
       renderSaveChart(ids[3], [{ label: r.premiumRows[i].label, value: paid[i], color: NAVY[i] }],
         yen, T.PREMIUM_FULL, { base: NAVY[i], accent: NAVY[3], slim: true });
     });
+    // 死亡保険金は個人契約なのでネイビー、死亡退職金・弔慰金は法人契約なのでグリーン
     const inheritCards = [
-      ['txDeathNow', 'txUseDeath', 'txLeadDeath', 'txChartDeath', '死亡保険金', r.usedDeath, r.exemptionEach],
-      ['txRetNow', 'txUseRet', 'txLeadRet', 'txChartRet', '死亡退職金', r.usedRetire, r.exemptionEach],
-      ['txCondNow', 'txUseCond', 'txLeadCond', 'txChartCond', '弔慰金', r.condolenceExemption, r.condolenceLimit],
+      ['txDeathNow', 'txUseDeath', 'txLeadDeath', 'txChartDeath', '死亡保険金', r.usedDeath, r.exemptionEach, NAVY],
+      ['txRetNow', 'txUseRet', 'txLeadRet', 'txChartRet', '死亡退職金', r.usedRetire, r.exemptionEach, GREEN],
+      ['txCondNow', 'txUseCond', 'txLeadCond', 'txChartCond', '弔慰金', r.condolenceExemption, r.condolenceLimit, GREEN],
     ];
     inheritCards.forEach(function (c, i) {
+      const pal = c[7];
+      const tone = pal === GREEN ? i - 1 : 0;
       gauge(c[0], c[1], c[2], c[5], c[6], man);
-      renderSaveChart(c[3], [{ label: c[4], value: c[5], color: GREEN[i] }],
-        man, c[6], { base: GREEN[i], accent: GREEN[3], slim: true });
+      renderSaveChart(c[3], [{ label: c[4], value: c[5], color: pal[tone] }],
+        man, c[6], { base: pal[tone], accent: pal[3], slim: true });
     });
 
     // --- 各入力欄の「あと◯◯」 ---
@@ -332,14 +334,28 @@ document.addEventListener('DOMContentLoaded', function () {
       condEl.classList.remove('is-full');
     }
 
+    // 軽減額を保険料の区分ごとに按分する。
+    // 各区分が生んだ控除額の割合で所得税・住民税それぞれの軽減額を分ける
+    // (合計適用限度額で頭打ちになった場合も、同じ割合で縮まるので按分結果は変わらない)
+    const itSum = r.premiumRows.reduce((a2, row) => a2 + row.it, 0);
+    const rtSum = r.premiumRows.reduce((a2, row) => a2 + row.rt, 0);
+    const saveByKind = r.premiumRows.map(function (row) {
+      return (itSum > 0 ? r.saveIt * (row.it / itSum) : 0)
+        + (rtSum > 0 ? r.saveRt * (row.rt / rtSum) : 0);
+    });
+    countUp('txSaveGen', saveByKind[0], yen);
+    countUp('txSavePen', saveByKind[1], yen);
+    countUp('txSaveMed', saveByKind[2], yen);
+
     renderSaveChart('txChartIncome', [
-      { label: '所得税', value: r.saveIt, color: NAVY[0] },
-      { label: '住民税', value: r.saveRt, color: NAVY[1] },
+      { label: '一般', value: saveByKind[0], color: NAVY[0] },
+      { label: '個人年金', value: saveByKind[1], color: NAVY[1] },
+      { label: '介護医療', value: saveByKind[2], color: NAVY[2] },
     ], yen, mx.saveIncomeSum, { base: NAVY[0], accent: NAVY[3], noSegLabel: true });
     renderSaveChart('txChartInherit', [
-      { label: '生命保険金', value: r.saveDeath, color: GREEN[0] },
-      { label: '死亡退職金', value: r.saveRetire, color: GREEN[1] },
-      { label: '弔慰金', value: r.saveCondolence, color: GREEN[2] },
+      { label: '死亡保険金', value: r.saveDeath, color: NAVY[0] },
+      { label: '死亡退職金', value: r.saveRetire, color: GREEN[0] },
+      { label: '弔慰金', value: r.saveCondolence, color: GREEN[1] },
     ], man, mx.saveInheritSum, { base: GREEN[0], accent: GREEN[3], noSegLabel: true });
 
     // --- PDF出力用の明細(画面には出さず印刷シートにだけ書き込む) ---

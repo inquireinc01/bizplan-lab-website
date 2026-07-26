@@ -267,7 +267,8 @@
     // 弔慰金: 非課税限度額は最終報酬月額×36(または6)ヶ月。
     // 限度額を超えて支給した分は死亡退職金として扱われる(相基通3-20)
     const salaryMonthly = Math.max(0, pickNum(data, 'txSalaryMonthly', 0));
-    const deathCause = pick(data, 'txDeathCause', 'off');
+    // 弔慰金の非課税限度額は業務上の死亡(36ヶ月分)を前提とする
+    const deathCause = pick(data, 'txDeathCause', 'on');
     const condolenceMonths = deathCause === 'on' ? 36 : 6;
     const condolenceLimit = salaryMonthly * condolenceMonths;
     const condolencePaid = Math.max(0, pickNum(data, 'txCondolenceAmount', 0));
