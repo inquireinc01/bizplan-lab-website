@@ -1607,6 +1607,69 @@ img {
   font-weight: 400;
 }
 
+/* 非課税×生命保険: 所得税グループ(ネイビー)と相続税グループ(グリーン)のまとまり。
+   グリーンはネイビーと同じ彩度・明度で色相だけ変えた値(HSL 211→150)を使う */
+.tx-pair {
+  border-radius: 1rem;
+  border: 1.5px solid;
+  padding: 0.85rem;
+}
+.tx-pair.is-navy {
+  --tx-c1: #0f2a4a;
+  --tx-c2: #3b6ea5;
+  --tx-c3: #7a9cc0;
+  --tx-accent: #2d5580;
+  --tx-pill-bg: #eef2f7;
+  border-color: #cbd7e5;
+  background-color: #f5f8fb;
+}
+.tx-pair.is-green {
+  --tx-c1: #0f482b;
+  --tx-c2: #3ba570;
+  --tx-c3: #7ac09d;
+  --tx-accent: #2d8056;
+  --tx-pill-bg: #e7f3ed;
+  border-color: #c2e2d1;
+  background-color: #f4faf7;
+}
+.tx-pair-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+  padding-left: 0.55rem;
+  border-left: 4px solid var(--tx-c1);
+  font-size: 0.9375rem;
+  font-weight: 900;
+  color: var(--tx-c1);
+}
+.tx-pair-head-sub {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: #9ca3af;
+}
+.tx-pair-body > * + * {
+  margin-top: 0.6rem;
+}
+.tx-gauge-card {
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  padding: 0.9rem;
+}
+.tx-swatch {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.125rem;
+}
+.tx-swatch-1 { background-color: var(--tx-c1); }
+.tx-swatch-2 { background-color: var(--tx-c2); }
+.tx-swatch-3 { background-color: var(--tx-c3); }
+.tx-accent { color: var(--tx-accent); }
+
 /* 非課税×生命保険: 軽減額ゲージの見出し(現状の金額と活用率バッジ) */
 .tx-gauge-head {
   display: flex;
@@ -1619,7 +1682,7 @@ img {
   font-size: 2rem;
   font-weight: 900;
   line-height: 1.1;
-  color: var(--color-navy);
+  color: var(--tx-c1, var(--color-navy));
 }
 @media (min-width: 640px) {
   .tx-gauge-now { font-size: 2.4rem; }
@@ -1630,8 +1693,8 @@ img {
   gap: 0.2rem;
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
-  background-color: #eef2f7;
-  color: #2d5580;
+  background-color: var(--tx-pill-bg, #eef2f7);
+  color: var(--tx-accent, #2d5580);
   font-size: 0.6875rem;
   font-weight: 700;
   white-space: nowrap;
@@ -1642,14 +1705,14 @@ img {
 }
 /* 使い切っているときは色を変えて「もう伸びしろがない」ことを示す */
 .tx-gauge-pill.is-full {
-  background-color: var(--color-navy);
+  background-color: var(--tx-c1, var(--color-navy));
   color: #fff;
 }
 .tx-gauge-lead {
   margin-top: 0.4rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #2d5580;
+  color: var(--tx-accent, #2d5580);
 }
 .tx-gauge-lead.is-full {
   color: #9ca3af;

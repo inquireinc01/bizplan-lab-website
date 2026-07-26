@@ -31,6 +31,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
 
+  /* ===== グループの配色 =====
+     所得税グループはネイビー、相続税グループはグリーン。
+     グリーンはネイビーと同じ彩度・明度のまま色相だけ変えた値(HSL 211→150) ===== */
+  const NAVY = ['#0f2a4a', '#3b6ea5', '#7a9cc0', '#2d5580'];
+  const GREEN = ['#0f482b', '#3ba570', '#7ac09d', '#2d8056'];
+
   /* ===== 数値のカウントアップ ===== */
   // 直前に表示していた値を覚えておき、そこから新しい値まで数字を回す
   const countState = {};
@@ -61,9 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ===== 軽減額ゲージ =====
-     MAXお得額を全体の幅とし、現状の軽減額を内訳ごとに積み上げる。
+     上限を全体の幅とし、現状の金額を内訳ごとに積み上げる。
      残り(使い残している枠)は斜線で塗り、残り何%かを大きく見せる ===== */
-  function drawSaveChart(svg, parts, unitFmt, maxTotal, capLabel) {
+  function drawSaveChart(svg, parts, unitFmt, maxTotal, opt) {
+    const o = opt || {};
     const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 34, BAR_H = 78;
     const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
     const cap = Math.max(maxTotal, used);
@@ -121,17 +128,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     // 目盛り(0 と MAX)
     out += `<text x="${BAR_X}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af">0</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af" text-anchor="end">${capLabel || 'MAXお得額'}</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af" text-anchor="end">${o.capLabel || '上限'}</text>`;
     out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 26}"><tspan font-size="13" fill="#6b7280">現状 </tspan>`
-      + `<tspan font-size="20" font-weight="bold" fill="#0f2a4a">${unitFmt(used)}</tspan></text>`;
+      + `<tspan font-size="20" font-weight="bold" fill="${o.base || '#0f2a4a'}">${unitFmt(used)}</tspan></text>`;
     out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 26}" text-anchor="end"><tspan font-size="13" fill="#6b7280">MAX </tspan>`
-      + `<tspan font-size="20" font-weight="bold" fill="#2d5580">${unitFmt(cap)}</tspan></text>`;
+      + `<tspan font-size="20" font-weight="bold" fill="${o.accent || '#2d5580'}">${unitFmt(cap)}</tspan></text>`;
     svg.innerHTML = out;
   }
 
   // 直前の内訳から新しい内訳まで、棒の伸びと数字を同じ時間で動かす
   const chartState = {};
-  function renderSaveChart(svgId, parts, unitFmt, maxTotal, capLabel) {
+  function renderSaveChart(svgId, parts, unitFmt, maxTotal, opt) {
     const svg = $(svgId);
     if (!svg) return;
     const next = parts.map((p) => Math.max(0, p.value)).concat([Math.max(0, maxTotal)]);
@@ -141,18 +148,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
     clearTimeout(svg._chartTimer);
     const at = (vals) => parts.map((p, i) => ({ label: p.label, color: p.color, value: vals[i] }));
-    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], capLabel); return; }
+    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opt); return; }
     // requestAnimationFrameが止まる環境でも最終形は必ず描く
     svg._chartTimer = setTimeout(function () {
       if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
-      drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], capLabel);
+      drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opt);
     }, COUNT_MS + 250);
     const start = performance.now();
     const step = function (now) {
       const t = Math.min(1, (now - start) / COUNT_MS);
       const e = 1 - Math.pow(1 - t, 3); // ease-out
       const cur = next.map((v, i) => prev[i] + (v - prev[i]) * e);
-      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1], capLabel);
+      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1], opt);
       if (t < 1) svg._chartRaf = requestAnimationFrame(step);
       else svg._chartRaf = null;
     };
@@ -247,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
     countUp('txSaveCondolence', r.saveCondolence, (v) => man(v) + `（非課税 ${man(r.condolenceExemption)}）`);
     countUp('txExemptTotalAmount', r.exemptAmountTotal, man);
 
-    // --- MAXお得額(枠を使い切った場合)と活用率 ---
+    // --- 上限まで使い切った場合の軽減額と活用率 ---
     const mx = r.max || r;
     const pct = (cur, top) => (top > 0 ? Math.min(100, Math.round((cur / top) * 100)) : 0);
     // 活用率バッジと、使い残しがいくらあるかの一言
@@ -289,14 +296,14 @@ document.addEventListener('DOMContentLoaded', function () {
     countUp('txBenefitRoom', Math.max(0, benefitMax - benefitSum), man);
 
     renderSaveChart('txChartPremium', [
-      { label: '一般', value: paid[0], color: '#0f2a4a' },
-      { label: '個人年金', value: paid[1], color: '#3b6ea5' },
-      { label: '介護医療', value: paid[2], color: '#7a9cc0' },
-    ], yen, paidMax, '加入できる上限');
+      { label: '一般', value: paid[0], color: NAVY[0] },
+      { label: '個人年金', value: paid[1], color: NAVY[1] },
+      { label: '介護医療', value: paid[2], color: NAVY[2] },
+    ], yen, paidMax, { capLabel: '加入できる上限', base: NAVY[0], accent: NAVY[3] });
     renderSaveChart('txChartBenefit', [
-      { label: '生命保険金', value: r.usedDeath, color: '#0f2a4a' },
-      { label: '死亡退職金', value: r.usedRetire, color: '#3b6ea5' },
-    ], man, benefitMax, '非課税枠の上限');
+      { label: '生命保険金', value: r.usedDeath, color: GREEN[0] },
+      { label: '死亡退職金', value: r.usedRetire, color: GREEN[1] },
+    ], man, benefitMax, { capLabel: '非課税枠の上限', base: GREEN[0], accent: GREEN[3] });
     countUp('txMaxPremiumCol', mx.saveIncomeSum, yen);
     countUp('txMaxExemptCol', mx.saveDeath + mx.saveRetire, man);
     countUp('txMaxCondolenceCol', mx.saveCondolence, man);
@@ -315,14 +322,14 @@ document.addEventListener('DOMContentLoaded', function () {
     room('txRoomRetire', r.roomRetire, man);
 
     renderSaveChart('txChartIncome', [
-      { label: '所得税', value: r.saveIt, color: '#0f2a4a' },
-      { label: '住民税', value: r.saveRt, color: '#3b6ea5' },
-    ], yen, mx.saveIncomeSum);
+      { label: '所得税', value: r.saveIt, color: NAVY[0] },
+      { label: '住民税', value: r.saveRt, color: NAVY[1] },
+    ], yen, mx.saveIncomeSum, { capLabel: '軽減額の上限', base: NAVY[0], accent: NAVY[3] });
     renderSaveChart('txChartInherit', [
-      { label: '生命保険金', value: r.saveDeath, color: '#0f2a4a' },
-      { label: '死亡退職金', value: r.saveRetire, color: '#3b6ea5' },
-      { label: '弔慰金', value: r.saveCondolence, color: '#7a9cc0' },
-    ], man, mx.saveInheritSum);
+      { label: '生命保険金', value: r.saveDeath, color: GREEN[0] },
+      { label: '死亡退職金', value: r.saveRetire, color: GREEN[1] },
+      { label: '弔慰金', value: r.saveCondolence, color: GREEN[2] },
+    ], man, mx.saveInheritSum, { capLabel: '軽減額の上限', base: GREEN[0], accent: GREEN[3] });
 
     // --- PDF出力用の明細(画面には出さず印刷シートにだけ書き込む) ---
     const pBody = $('pPremiumBody');

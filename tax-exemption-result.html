@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072712" />
+<link rel="stylesheet" href="css/style.css?v=2026072713" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -159,86 +159,99 @@
         <div class="calc-section bg-white p-5 sm:p-6">
           <h4 class="inline-flex items-center gap-2 bg-[#0f2a4a] text-white font-bold text-base px-3.5 py-1.5 rounded-lg mb-3">加入できる枠と税負担の軽減額<span class="help-tip" tabindex="0">?<span class="help-text">上段は「控除・非課税が効く範囲であといくら加入できるか」、下段は「その枠を使うことで実際に軽減される税額」です。所得税・住民税は毎年継続的に効く軽減、相続税は相続発生時に一度効く軽減のため、分けて表示しています。下の「生命保険の設計」を変えると即時に反映されます。</span></span></h4>
 
-          <div class="grid lg:grid-cols-2 gap-3">
-            <!-- 年間払込保険料(あといくら加入できるか) -->
-            <div class="rounded-xl border border-gray-200 p-4">
-              <div class="flex items-baseline justify-between mb-0.5">
-                <p class="font-bold text-xs">年間払込保険料<span class="help-tip" tabindex="0">?<span class="help-text">生命保険料控除の対象になる年間払込保険料です。区分ごとに年8万円で控除額が頭打ちになるため、3区分あわせて年24万円までが「控除の効く保険料」の上限になります。これを超えて払い込んでも控除額は増えません。</span></span></p>
-                <p class="text-[10px] text-gray-400">控除が効く範囲</p>
+          <div class="grid lg:grid-cols-2 gap-4">
+            <!-- ===== 所得税・住民税グループ(保険料 → 毎年の軽減額) ===== -->
+            <div class="tx-pair is-navy">
+              <p class="tx-pair-head"><span>所得税・住民税</span><span class="tx-pair-head-sub">保険料を払い込むと毎年効く</span></p>
+              <div class="tx-pair-body">
+                <!-- 年間払込保険料(あといくら加入できるか) -->
+                <div class="tx-gauge-card">
+                  <div class="flex items-baseline justify-between mb-0.5">
+                    <p class="font-bold text-xs">年間払込保険料<span class="help-tip" tabindex="0">?<span class="help-text">生命保険料控除の対象になる年間払込保険料です。区分ごとに年8万円で控除額が頭打ちになるため、3区分あわせて年24万円までが「控除の効く保険料」の上限になります。これを超えて払い込んでも控除額は増えません。</span></span></p>
+                    <p class="text-[10px] text-gray-400">控除が効く範囲</p>
+                  </div>
+                  <div class="tx-gauge-head">
+                    <p id="txPremiumNow" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-pill"><span id="txUsePremium">-</span><span>活用</span></p>
+                  </div>
+                  <svg id="txChartPremium" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="年間払込保険料と控除が効く上限に対する使用状況"></svg>
+                  <p class="tx-gauge-lead" id="txLeadPremium"></p>
+                  <dl class="text-xs mt-2 space-y-1">
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-1"></span>一般生命保険料</dt><dd id="txPaidGeneral" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-2"></span>個人年金保険料</dt><dd id="txPaidPension" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-3"></span>介護医療保険料</dt><dd id="txPaidMedical" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">あと加入できる保険料</dt><dd id="txPaidRoom" class="font-bold tx-accent text-right"></dd></div>
+                  </dl>
+                </div>
+
+                <!-- 所得税・住民税の軽減額 -->
+                <div class="tx-gauge-card">
+                  <div class="flex items-baseline justify-between mb-0.5">
+                    <p class="font-bold text-xs">所得税・住民税の軽減額</p>
+                    <p class="text-[10px] text-gray-400">毎年</p>
+                  </div>
+                  <div class="tx-gauge-head">
+                    <p id="txSaveIncomeTotal" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-pill"><span id="txUseIncome">-</span><span>活用</span></p>
+                  </div>
+                  <svg id="txChartIncome" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="所得税・住民税の軽減額と上限に対する使用状況"></svg>
+                  <p class="tx-gauge-lead" id="txLeadIncome"></p>
+                  <dl class="text-xs mt-2 space-y-1">
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-1"></span>所得税</dt><dd id="txSaveIncomeTax" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-2"></span>住民税</dt><dd id="txSaveResidentTax" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">10年間の累計</dt><dd id="txSave10y" class="font-bold tx-accent text-right"></dd></div>
+                  </dl>
+                </div>
               </div>
-              <div class="tx-gauge-head">
-                <p id="txPremiumNow" class="tx-gauge-now"></p>
-                <p class="tx-gauge-pill"><span id="txUsePremium">-</span><span>活用</span></p>
-              </div>
-              <svg id="txChartPremium" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="年間払込保険料と控除が効く上限に対する使用状況"></svg>
-              <p class="tx-gauge-lead" id="txLeadPremium"></p>
-              <dl class="text-xs mt-2 space-y-1">
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#0f2a4a"></span>一般生命保険料</dt><dd id="txPaidGeneral" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#3b6ea5"></span>個人年金保険料</dt><dd id="txPaidPension" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#7a9cc0"></span>介護医療保険料</dt><dd id="txPaidMedical" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">あと加入できる保険料</dt><dd id="txPaidRoom" class="font-bold text-[#2d5580] text-right"></dd></div>
-              </dl>
             </div>
 
-            <!-- 死亡保険金・死亡退職金(あといくら非課税で受け取れるか) -->
-            <div class="rounded-xl border border-gray-200 p-4">
-              <div class="flex items-baseline justify-between mb-0.5">
-                <p class="font-bold text-xs">死亡保険金・死亡退職金<span class="help-tip" tabindex="0">?<span class="help-text">非課税枠(500万円×法定相続人の数)の範囲で受け取れる金額です。生命保険金と死亡退職金にそれぞれ独立して枠があるため、2つ合わせた金額が上限になります。枠を超えて受け取った分は相続税の課税対象です。弔慰金の枠は最終報酬月額で決まり、保険加入では増やせないためこのグラフには含めていません。</span></span></p>
-                <p class="text-[10px] text-gray-400">非課税で受け取れる範囲</p>
-              </div>
-              <div class="tx-gauge-head">
-                <p id="txBenefitNow" class="tx-gauge-now"></p>
-                <p class="tx-gauge-pill"><span id="txUseBenefit">-</span><span>活用</span></p>
-              </div>
-              <svg id="txChartBenefit" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="死亡保険金・死亡退職金と非課税枠に対する使用状況"></svg>
-              <p class="tx-gauge-lead" id="txLeadBenefit"></p>
-              <dl class="text-xs mt-2 space-y-1">
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#0f2a4a"></span>生命保険金</dt><dd id="txBenefitDeath" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#3b6ea5"></span>死亡退職金</dt><dd id="txBenefitRetire" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="text-gray-500 shrink-0">1区分あたりの非課税枠</dt><dd id="txBenefitEach" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">あと非課税で受け取れる額</dt><dd id="txBenefitRoom" class="font-bold text-[#2d5580] text-right"></dd></div>
-              </dl>
-            </div>
+            <!-- ===== 相続税グループ(保険金・退職金 → 相続時の軽減額) ===== -->
+            <div class="tx-pair is-green">
+              <p class="tx-pair-head"><span>相続税</span><span class="tx-pair-head-sub">相続が起きたときに一度効く</span></p>
+              <div class="tx-pair-body">
+                <!-- 死亡保険金・死亡退職金(あといくら非課税で受け取れるか) -->
+                <div class="tx-gauge-card">
+                  <div class="flex items-baseline justify-between mb-0.5">
+                    <p class="font-bold text-xs">死亡保険金・死亡退職金<span class="help-tip" tabindex="0">?<span class="help-text">非課税枠(500万円×法定相続人の数)の範囲で受け取れる金額です。生命保険金と死亡退職金にそれぞれ独立して枠があるため、2つ合わせた金額が上限になります。枠を超えて受け取った分は相続税の課税対象です。弔慰金の枠は最終報酬月額で決まり、保険加入では増やせないためこのグラフには含めていません。</span></span></p>
+                    <p class="text-[10px] text-gray-400">非課税で受け取れる範囲</p>
+                  </div>
+                  <div class="tx-gauge-head">
+                    <p id="txBenefitNow" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-pill"><span id="txUseBenefit">-</span><span>活用</span></p>
+                  </div>
+                  <svg id="txChartBenefit" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="死亡保険金・死亡退職金と非課税枠に対する使用状況"></svg>
+                  <p class="tx-gauge-lead" id="txLeadBenefit"></p>
+                  <dl class="text-xs mt-2 space-y-1">
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-1"></span>生命保険金</dt><dd id="txBenefitDeath" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-2"></span>死亡退職金</dt><dd id="txBenefitRetire" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="text-gray-500 shrink-0">1区分あたりの非課税枠</dt><dd id="txBenefitEach" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">あと非課税で受け取れる額</dt><dd id="txBenefitRoom" class="font-bold tx-accent text-right"></dd></div>
+                  </dl>
+                </div>
 
-            <!-- 所得税・住民税 -->
-            <div class="rounded-xl border border-gray-200 p-4">
-              <div class="flex items-baseline justify-between mb-0.5">
-                <p class="font-bold text-xs">所得税・住民税の軽減額</p>
-                <p class="text-[10px] text-gray-400">毎年</p>
+                <!-- 相続税の軽減額 -->
+                <div class="tx-gauge-card">
+                  <div class="flex items-baseline justify-between mb-0.5">
+                    <p class="font-bold text-xs">相続税の軽減額</p>
+                    <p class="text-[10px] text-gray-400">相続発生時に一度</p>
+                  </div>
+                  <div class="tx-gauge-head">
+                    <p id="txSaveInheritTotal" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-pill"><span id="txUseInherit">-</span><span>活用</span></p>
+                  </div>
+                  <svg id="txChartInherit" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="相続税の軽減額と上限に対する使用状況"></svg>
+                  <p class="tx-gauge-lead" id="txLeadInherit"></p>
+                  <dl class="text-xs mt-2 space-y-1">
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-1"></span>生命保険金</dt><dd id="txSaveDeath" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-2"></span>死亡退職金</dt><dd id="txSaveRetire" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-3"></span>弔慰金</dt><dd id="txSaveCondolence" class="font-bold text-right"></dd></div>
+                    <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">非課税となる財産の合計</dt><dd id="txExemptTotalAmount" class="font-bold tx-accent text-right"></dd></div>
+                  </dl>
+                </div>
               </div>
-              <div class="tx-gauge-head">
-                <p id="txSaveIncomeTotal" class="tx-gauge-now"></p>
-                <p class="tx-gauge-pill"><span id="txUseIncome">-</span><span>活用</span></p>
-              </div>
-              <svg id="txChartIncome" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="所得税・住民税の軽減額とMAXお得額に対する使用状況"></svg>
-              <p class="tx-gauge-lead" id="txLeadIncome"></p>
-              <dl class="text-xs mt-2 space-y-1">
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#0f2a4a"></span>所得税</dt><dd id="txSaveIncomeTax" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#3b6ea5"></span>住民税</dt><dd id="txSaveResidentTax" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">10年間の累計</dt><dd id="txSave10y" class="font-bold text-[#2d5580] text-right"></dd></div>
-              </dl>
-            </div>
-
-            <!-- 相続税 -->
-            <div class="rounded-xl border border-gray-200 p-4">
-              <div class="flex items-baseline justify-between mb-0.5">
-                <p class="font-bold text-xs">相続税の軽減額</p>
-                <p class="text-[10px] text-gray-400">相続発生時に一度</p>
-              </div>
-              <div class="tx-gauge-head">
-                <p id="txSaveInheritTotal" class="tx-gauge-now"></p>
-                <p class="tx-gauge-pill"><span id="txUseInherit">-</span><span>活用</span></p>
-              </div>
-              <svg id="txChartInherit" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="相続税の軽減額とMAXお得額に対する使用状況"></svg>
-              <p class="tx-gauge-lead" id="txLeadInherit"></p>
-              <dl class="text-xs mt-2 space-y-1">
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#0f2a4a"></span>生命保険金</dt><dd id="txSaveDeath" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#3b6ea5"></span>死亡退職金</dt><dd id="txSaveRetire" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#7a9cc0"></span>弔慰金</dt><dd id="txSaveCondolence" class="font-bold text-right"></dd></div>
-                <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">非課税となる財産の合計</dt><dd id="txExemptTotalAmount" class="font-bold text-[#2d5580] text-right"></dd></div>
-              </dl>
             </div>
           </div>
+
 
           <!-- 生命保険の設計(このページで自由に変更できる) -->
           <div class="tx-plan-head">
@@ -261,7 +274,6 @@
                 <label for="txMedicalPremium">介護医療保険料<span class="tx-plan-room" id="txRoomMedical"></span></label>
                 <input type="number" id="txMedicalPremium" value="20000" class="form-input" placeholder="例: 80,000" />
               </div>
-              <p class="tx-plan-auto is-max"><span>MAXお得額<span class="help-tip" tabindex="0">?<span class="help-text">3区分すべてに年8万円ずつ払い込んで生命保険料控除を使い切った場合の、所得税・住民税の年間軽減額です。8万円を超えて払い込んでも控除額は増えません。</span></span></span><span id="txMaxPremiumCol">-</span></p>
             </div>
 
             <div class="tx-plan-col">
@@ -275,7 +287,6 @@
                 <input type="number" id="txRetirementBenefit" value="300" class="form-input" placeholder="例: 5,000" />
               </div>
               <p class="tx-plan-auto"><span>法定相続人の数<span class="help-tip" tabindex="0">?<span class="help-text">相続税を簡易入力にした場合は入力した人数、詳細入力にした場合は家系図から自動判定した人数です。変更する場合は「入力内容を修正する」から前提条件入力に戻ってください。</span></span></span><span id="txHeirsCountView">-</span></p>
-              <p class="tx-plan-auto is-max"><span>MAXお得額<span class="help-tip" tabindex="0">?<span class="help-text">生命保険金・死亡退職金をそれぞれ非課税枠(500万円×法定相続人の数)いっぱいまで受け取った場合の、相続税の軽減額です。枠を超える部分は課税されるため、軽減額はこれ以上増えません。</span></span></span><span id="txMaxExemptCol">-</span></p>
             </div>
 
             <div class="tx-plan-col">
@@ -292,7 +303,6 @@
                 </select>
               </div>
               <p class="tx-plan-auto"><span>入院・手術・通院給付金<span class="help-tip" tabindex="0">?<span class="help-text">入院給付金・手術給付金・通院給付金など、身体の傷害に基因して支払われる保険金・給付金は、受取人が本人または配偶者・直系血族・生計を一にする親族である場合、原則として全額非課税です(所得税法施行令30条)。</span></span></span><span>全額非課税</span></p>
-              <p class="tx-plan-auto is-max"><span>MAXお得額<span class="help-tip" tabindex="0">?<span class="help-text">最終報酬月額と死亡事由から決まる非課税限度額いっぱいまで弔慰金を支給した場合の、相続税の軽減額です。限度額は報酬月額で決まるため、保険金額を増やしても変わりません。</span></span></span><span id="txMaxCondolenceCol">-</span></p>
             </div>
           </div>
 
@@ -315,10 +325,10 @@
               <dd><code>500万円 × 法定相続人の数</code>。生命保険金と死亡退職金に<strong>それぞれ独立して</strong>適用されます。<br />使用額 = <code>min(受取額, 非課税枠)</code>、課税対象 = <code>max(0, 受取額 − 非課税枠)</code></dd>
               <dt>非課税となる弔慰金の限度額</dt>
               <dd><code>業務上の死亡 → 月額普通給与 × 36ヶ月</code>、<code>業務外の死亡 → 月額普通給与 × 6ヶ月</code>。限度額を超える部分は死亡退職金として扱われ、相続税の課税対象になります。</dd>
-              <dt>MAXお得額</dt>
-              <dd>控除枠・非課税枠を使い切る入力(<code>3区分とも年8万円の払込</code>、<code>生命保険金・死亡退職金とも非課税枠と同額の受取</code>)で同じ計算をやり直した軽減額です。概算ではなく実額で比較しています。弔慰金の限度額は最終報酬月額で決まるため、保険金額を増やしても変わりません。</dd>
+              <dt>上限まで使い切った場合の軽減額</dt>
+              <dd>上限まで使い切る入力(<code>3区分とも年8万円の払込</code>、<code>生命保険金・死亡退職金とも非課税枠と同額の受取</code>)で同じ計算をやり直した軽減額です。概算ではなく実額で比較しています。弔慰金の限度額は最終報酬月額で決まるため、保険金額を増やしても変わりません。</dd>
               <dt>グラフ</dt>
-              <dd>MAXお得額を全体の幅とし、現状の軽減額を内訳ごとに積み上げたゲージです。グレーの部分が使い残している枠(あといくら上乗せできるか)を表します。所得税・住民税と相続税は金額の規模と発生時期が異なるため、別のグラフ・別の目盛りで描画しています。</dd>
+              <dd>上限を全体の幅とし、現状の金額を内訳ごとに積み上げたゲージです。グレーの部分が使い残している枠(あといくら上乗せできるか)を表します。所得税・住民税と相続税は金額の規模と発生時期が異なるため、別のグラフ・別の目盛りで描画しています。</dd>
             </dl>
             <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。弔慰金は非課税限度額まで支給した場合の軽減額として計算しています。</p>
           </div>
@@ -412,6 +422,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727b"></script>
-<script src="js/tax-exemption-result.js?v=20260727s"></script>
+<script src="js/tax-exemption-result.js?v=20260727t"></script>
 </body>
 </html>
