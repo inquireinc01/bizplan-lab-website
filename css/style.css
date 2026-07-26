@@ -1414,6 +1414,119 @@ img {
   }
 }
 
+/* 非課税×生命保険: 生命保険の設計(グラフと同じ画面に収める密な入力エリア)
+   解説はすべて .help-tip の ? に格納し、見えている情報は項目名と数値だけにする */
+.tx-plan-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0.6rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e5e7eb;
+}
+.tx-plan-head-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.tx-plan-head-note {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+.tx-plan-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+@media (min-width: 640px) {
+  .tx-plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .tx-plan-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.tx-plan-col {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.7rem 0.75rem 0.75rem;
+  background-color: #fcfdfe;
+}
+.tx-plan-title {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.tx-plan-unit {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #6b7280;
+  background-color: #eef2f7;
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.3rem;
+}
+.tx-plan-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tx-plan-field + .tx-plan-field {
+  margin-top: 0.35rem;
+}
+.tx-plan-field > label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  line-height: 1.25;
+}
+.tx-plan-field > input,
+.tx-plan-field > select {
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8125rem;
+}
+.tx-plan-field > input {
+  flex: 0 0 5.5rem;
+  width: 5.5rem;
+  text-align: right;
+}
+/* 選択肢が長い項目はラベルを上に置いて全幅で表示する */
+.tx-plan-field.is-stack {
+  display: block;
+}
+.tx-plan-field.is-stack > label {
+  display: block;
+  margin-bottom: 0.12rem;
+}
+.tx-plan-field.is-stack > select {
+  width: 100%;
+}
+.tx-plan-auto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed #e5e7eb;
+  font-size: 0.6875rem;
+  color: #6b7280;
+}
+.tx-plan-auto > span:last-child {
+  font-weight: 700;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
 /* 非課税×生命保険: 軽減額グラフの帯が左から伸びるアニメーション */
 @keyframes txSaveBarGrow {
   from { transform: scaleX(0); }

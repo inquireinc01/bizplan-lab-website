@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ===== 軽減額グラフ(積み上げ横棒) ===== */
   function drawSaveChart(svg, parts, unitFmt) {
-    const W = 360, BAR_X = 8, BAR_W = 344, BAR_Y = 34, BAR_H = 46;
+    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 24, BAR_H = 38;
     const total = parts.reduce((s, p) => s + Math.max(0, p.value), 0);
     let out = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="6" fill="#eef1f4"/>`;
     if (total <= 0) {
@@ -76,12 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
         out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 4}" font-size="11" font-weight="bold" fill="#fff" text-anchor="middle">${unitFmt(v)}</text>`;
       }
       if (w > 34) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y - 8}" font-size="10" fill="#6b7280" text-anchor="middle">${((v / total) * 100).toFixed(0)}%</text>`;
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y - 7}" font-size="10" fill="#6b7280" text-anchor="middle">${((v / total) * 100).toFixed(0)}%</text>`;
       }
       x += w;
     });
-    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 22}" font-size="11" fill="#6b7280">合計</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 22}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(total)}</text>`;
+    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 20}" font-size="11" fill="#6b7280">合計</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 20}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(total)}</text>`;
     svg.innerHTML = out;
   }
 
