@@ -53,55 +53,73 @@ document.addEventListener('DOMContentLoaded', function () {
     el._countRaf = requestAnimationFrame(step);
   }
 
-  /* ===== 軽減額グラフ(積み上げ横棒) ===== */
-  function drawSaveChart(svg, parts, unitFmt) {
-    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 24, BAR_H = 38;
-    const total = parts.reduce((s, p) => s + Math.max(0, p.value), 0);
+  /* ===== 軽減額ゲージ(MAXお得額を全体幅とし、現状の内訳を積み上げる) ===== */
+  function drawSaveChart(svg, parts, unitFmt, maxTotal) {
+    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 26, BAR_H = 46;
+    const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
+    const cap = Math.max(maxTotal, used);
     let out = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="6" fill="#eef1f4"/>`;
-    if (total <= 0) {
-      out += `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 4}" font-size="12" fill="#9ca3af" text-anchor="middle">軽減額なし</text>`;
+    if (cap <= 0) {
+      out += `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="17" fill="#9ca3af" text-anchor="middle">軽減額なし</text>`;
       svg.innerHTML = out;
       return;
     }
+    // 帯に入れる文字の必要幅を文字数から見積もる(半角9.5・全角18)
+    const widthOf = (label) => {
+      let need = 12;
+      for (let k = 0; k < label.length; k += 1) need += /[0-9,.\s]/.test(label[k]) ? 9.5 : 18;
+      return need;
+    };
     let x = BAR_X;
     parts.forEach(function (p, i) {
       const v = Math.max(0, p.value);
       if (v <= 0) return;
-      const w = (v / total) * BAR_W;
+      const w = (v / cap) * BAR_W;
       const isFirst = x === BAR_X;
-      const isLast = i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0);
+      const isLast = used >= cap && (i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0));
       const rx = (isFirst || isLast) ? 6 : 0;
       out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
-      if (w > 62) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 4}" font-size="11" font-weight="bold" fill="#fff" text-anchor="middle">${unitFmt(v)}</text>`;
+      const label = unitFmt(v);
+      if (w > widthOf(label)) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">${label}</text>`;
       }
-      if (w > 34) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y - 7}" font-size="10" fill="#6b7280" text-anchor="middle">${((v / total) * 100).toFixed(0)}%</text>`;
+      if (w > 46) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y - 7}" font-size="13" fill="#6b7280" text-anchor="middle">${((v / cap) * 100).toFixed(0)}%</text>`;
       }
       x += w;
     });
-    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 20}" font-size="11" fill="#6b7280">合計</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 20}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(total)}</text>`;
+    // 未使用の枠(あといくら上乗せできるか)
+    const room = Math.max(0, cap - used);
+    if (room > 0) {
+      const rw = (room / cap) * BAR_W;
+      const label = 'あと ' + unitFmt(room);
+      if (rw > widthOf(label)) {
+        out += `<text x="${(x + rw / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="18" font-weight="bold" fill="#9aa5b1" text-anchor="middle">${label}</text>`;
+      }
+    }
+    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 22}" font-size="14" fill="#6b7280">MAXお得額</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 22}" font-size="19" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(cap)}</text>`;
     svg.innerHTML = out;
   }
 
   // 直前の内訳から新しい内訳まで、棒の伸びと数字を同じ時間で動かす
   const chartState = {};
-  function renderSaveChart(svgId, parts, unitFmt) {
+  function renderSaveChart(svgId, parts, unitFmt, maxTotal) {
     const svg = $(svgId);
     if (!svg) return;
-    const next = parts.map((p) => Math.max(0, p.value));
+    const next = parts.map((p) => Math.max(0, p.value)).concat([Math.max(0, maxTotal)]);
     const prev = chartState[svgId] && chartState[svgId].length === next.length
       ? chartState[svgId] : next.map(() => 0);
     chartState[svgId] = next;
     if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
     const at = (vals) => parts.map((p, i) => ({ label: p.label, color: p.color, value: vals[i] }));
-    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt); return; }
+    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1]); return; }
     const start = performance.now();
     const step = function (now) {
       const t = Math.min(1, (now - start) / COUNT_MS);
       const e = 1 - Math.pow(1 - t, 3); // ease-out
-      drawSaveChart(svg, at(next.map((v, i) => prev[i] + (v - prev[i]) * e)), unitFmt);
+      const cur = next.map((v, i) => prev[i] + (v - prev[i]) * e);
+      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1]);
       if (t < 1) svg._chartRaf = requestAnimationFrame(step);
       else svg._chartRaf = null;
     };
@@ -190,15 +208,39 @@ document.addEventListener('DOMContentLoaded', function () {
     countUp('txSaveCondolence', r.saveCondolence, (v) => man(v) + `（非課税 ${man(r.condolenceExemption)}）`);
     countUp('txExemptTotalAmount', r.exemptAmountTotal, man);
 
+    // --- MAXお得額(枠を使い切った場合)と活用率 ---
+    const mx = r.max || r;
+    const pct = (cur, top) => (top > 0 ? Math.min(100, Math.round((cur / top) * 100)) : 0);
+    countUp('txMaxIncome', mx.saveIncomeSum, yen);
+    setTxt('txUseIncome', pct(r.saveIncomeSum, mx.saveIncomeSum) + ' %');
+    countUp('txMaxInherit', mx.saveInheritSum, man);
+    setTxt('txUseInherit', pct(r.saveInheritSum, mx.saveInheritSum) + ' %');
+    countUp('txMaxPremiumCol', mx.saveIncomeSum, yen);
+    countUp('txMaxExemptCol', mx.saveDeath + mx.saveRetire, man);
+    countUp('txMaxCondolenceCol', mx.saveCondolence, man);
+
+    // --- 各入力欄の「あと◯◯」 ---
+    const room = (id, v, fmt) => {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = v > 0 ? 'あと ' + fmt(v) : '枠を使い切っています';
+      el.classList.toggle('is-full', !(v > 0));
+    };
+    room('txRoomGeneral', r.roomGeneral, yen);
+    room('txRoomPension', r.roomPension, yen);
+    room('txRoomMedical', r.roomMedical, yen);
+    room('txRoomDeath', r.roomDeath, man);
+    room('txRoomRetire', r.roomRetire, man);
+
     renderSaveChart('txChartIncome', [
       { label: '所得税', value: r.saveIt, color: '#0f2a4a' },
       { label: '住民税', value: r.saveRt, color: '#3b6ea5' },
-    ], yen);
+    ], yen, mx.saveIncomeSum);
     renderSaveChart('txChartInherit', [
       { label: '生命保険金', value: r.saveDeath, color: '#0f2a4a' },
       { label: '死亡退職金', value: r.saveRetire, color: '#3b6ea5' },
       { label: '弔慰金', value: r.saveCondolence, color: '#7a9cc0' },
-    ], man);
+    ], man, mx.saveInheritSum);
 
     // --- 1. 生命保険料控除額 ---
     const tbody = $('txPremiumBody');

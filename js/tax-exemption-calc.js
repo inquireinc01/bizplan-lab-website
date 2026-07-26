@@ -17,6 +17,8 @@
     { id: 'txPensionPremium', label: '個人年金保険料' },
     { id: 'txMedicalPremium', label: '介護医療保険料' },
   ];
+  // 区分ごとに控除額が頭打ちになる年間払込保険料(所得税8万円で4万円・住民税5.6万円で2.8万円が上限)
+  const PREMIUM_FULL = 80000;
 
   const SPOUSE_DEDUCTION = { none: [0, 0], general: [38, 33], elderly: [48, 38] };
 
@@ -229,7 +231,7 @@
   /* ==========================================================
      入力データ一式から、結果表示に必要な値をすべて計算して返す
      ========================================================== */
-  function calcAll(data) {
+  function calcAll(data, skipMax) {
     const itMode = pick(data, 'txItVersion', 'simple');
     const ihMode = pick(data, 'txIhVersion', 'simple');
 
@@ -396,8 +398,29 @@
     }
     const saveInheritSum = saveDeath + saveRetire + saveCondolence;
 
+    // ---- 枠を使い切った場合(MAXお得額)の再計算 ----
+    // 同じロジックをそのまま流用したいので、枠いっぱいの入力を作って自分自身をもう一度呼ぶ
+    let max = null;
+    let roomGeneral = 0, roomPension = 0, roomMedical = 0, roomDeath = 0, roomRetire = 0;
+    if (!skipMax) {
+      const maxData = Object.assign({}, data, {
+        txGeneralPremium: PREMIUM_FULL,
+        txPensionPremium: PREMIUM_FULL,
+        txMedicalPremium: PREMIUM_FULL,
+        txDeathBenefit: exemptionEach,
+        txRetirementBenefit: exemptionEach,
+      });
+      max = calcAll(maxData, true);
+      roomGeneral = Math.max(0, PREMIUM_FULL - premiumRows[0].premium);
+      roomPension = Math.max(0, PREMIUM_FULL - premiumRows[1].premium);
+      roomMedical = Math.max(0, PREMIUM_FULL - premiumRows[2].premium);
+      roomDeath = Math.max(0, exemptionEach - deathBenefit);
+      roomRetire = Math.max(0, exemptionEach - retirementBenefit);
+    }
+
     return {
       itMode, ihMode,
+      max, roomGeneral, roomPension, roomMedical, roomDeath, roomRetire,
       premiumRows, premiumItTotal, premiumRtTotal,
       heirs, heirsCount, exemptionEach,
       deathBenefit, retirementBenefit, usedDeath, taxableDeath, usedRetire, taxableRetire,
@@ -414,7 +437,7 @@
 
   window.bplTax = {
     STORAGE_KEY, RESIDENT_TAX_RATE, RESIDENT_PER_CAPITA, SEPARATE_RATE, LAND_SHORT_RATE,
-    PREMIUM_ITEMS, SPOUSE_DEDUCTION,
+    PREMIUM_ITEMS, PREMIUM_FULL, SPOUSE_DEDUCTION,
     fmt, yen, man,
     premiumDeductionIt, premiumDeductionRt,
     salaryDeduction, basicDeduction, marginalIncomeTaxRate, incomeTaxAmount, residentTaxAmount,
