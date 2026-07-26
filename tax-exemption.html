@@ -500,23 +500,23 @@
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetLand">土地(万円)<span class="help-tip" tabindex="0">?<span class="help-text">宅地・農地等の相続税評価額。宅地は路線価方式または倍率方式で評価します。小規模宅地等の特例を適用する場合は減額後の金額を入力してください。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetLand" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetLand" value="8000" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetBuilding">建物(万円)<span class="help-tip" tabindex="0">?<span class="help-text">家屋の相続税評価額。原則として固定資産税評価額と同額です。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetBuilding" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetBuilding" value="2000" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetSecurities">有価証券(万円)<span class="help-tip" tabindex="0">?<span class="help-text">上場株式・投資信託・公社債等の相続税評価額。自社株(取引相場のない株式)も含みます。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetSecurities" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetSecurities" value="3000" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetCash">現金・預貯金(万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続開始日の残高。既経過利子も加算します。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetCash" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetCash" value="5000" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetOther">その他の財産(万円)<span class="help-tip" tabindex="0">?<span class="help-text">車両・家財・書画骨董・ゴルフ会員権・貸付金・特許権など、上記以外の財産の相続税評価額。相続開始前7年以内の生前贈与財産もここに含めてください。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetOther" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetOther" value="500" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">生命保険金(非課税枠控除後)</span>
@@ -539,8 +539,8 @@
                 <label class="tx-field-label" for="txSmallLotType">宅地の区分<span class="help-tip" tabindex="0">?<span class="help-text"><strong>特定居住用宅地等</strong>…被相続人の自宅の敷地。限度面積330㎡・減額率80%。<strong>特定事業用宅地等</strong>…被相続人の事業用の敷地。限度面積400㎡・減額率80%。<strong>貸付事業用宅地等</strong>…賃貸アパート・駐車場等の敷地。限度面積200㎡・減額率50%。いずれも保有継続・居住継続等の要件を満たす必要があります。</span></span></label>
                 <div class="tx-field-input">
                   <select id="txSmallLotType" class="form-select rounded-lg px-4 py-2.5 text-sm">
-                    <option value="none" selected>適用しない</option>
-                    <option value="residence">特定居住用宅地等(330㎡・80%減)</option>
+                    <option value="none">適用しない</option>
+                    <option value="residence" selected>特定居住用宅地等(330㎡・80%減)</option>
                     <option value="business">特定事業用宅地等(400㎡・80%減)</option>
                     <option value="rental">貸付事業用宅地等(200㎡・50%減)</option>
                   </select>
@@ -548,11 +548,11 @@
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txSmallLotValue">対象宅地の評価額(万円)<span class="help-tip" tabindex="0">?<span class="help-text">特例を適用する宅地の相続税評価額(減額前)を入力してください。この金額は上の「土地」にも含めて入力しておく必要があります(ここでの入力は減額額の計算にのみ使用します)。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txSmallLotValue" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txSmallLotValue" value="6000" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txSmallLotArea">対象宅地の面積(㎡)<span class="help-tip" tabindex="0">?<span class="help-text">特例を適用する宅地の地積です。限度面積を超える部分は減額の対象になりません(限度面積までの割合で按分して減額します)。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txSmallLotArea" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txSmallLotArea" value="300" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">小規模宅地等の減額額(自動計算)<span class="help-tip" tabindex="0">?<span class="help-text"><code>対象宅地の評価額 × (min(限度面積, 面積) ÷ 面積) × 減額率</code>で計算し、課税価格から差し引きます。</span></span></span>
@@ -564,11 +564,11 @@
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txDebt">債務(万円)<span class="help-tip" tabindex="0">?<span class="help-text">借入金・未払医療費・未払税金など、被相続人が負っていた債務。確実と認められるものが控除できます。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txDebt" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txDebt" value="2000" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txFuneralCost">葬式費用(万円)<span class="help-tip" tabindex="0">?<span class="help-text">通夜・本葬・火葬・納骨等の費用。香典返し・法要(初七日以降)・墓石の購入費用は控除できません。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txFuneralCost" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txFuneralCost" value="300" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">負の財産の合計</span>
@@ -767,6 +767,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260724b"></script>
-<script src="js/tax-exemption.js?v=20260727a"></script>
+<script src="js/tax-exemption.js?v=20260727b"></script>
 </body>
 </html>
