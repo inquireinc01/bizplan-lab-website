@@ -176,7 +176,13 @@
           <div class="notice-box text-sm rounded-lg p-4 mt-5 leading-relaxed">
             算定される退職金額(万円): <span id="retirementAmountDisplay" class="font-black text-base">-</span>
           </div>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>功績倍率法による退職金額</dt><dd><code>最終月額報酬 × 勤続年数 × 功績倍率 × (1 ＋ 功績加算率 ÷ 100)</code></dd><dt>功績倍率の目安</dt><dd>役職に応じた倍率を用います（社長3.0倍程度が一般的な目安）。過大と判断されると損金算入が否認されるリスクがあります。</dd></dl>
+            <p class="calc-logic-note">功績加算率は特別功労金等の上乗せ割合です。金額は万円単位です。</p>
+          </div>
+</div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
           <h3 class="font-bold text-base mb-1">2. 生命保険(退職金原資)の情報</h3>
@@ -195,7 +201,13 @@
               <input type="number" id="corpTaxRateRb" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
             </div>
           </div>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>保険差益（益金算入額）</dt><dd><code>max(0, 解約返戻金 − 資産計上額（簿価）)</code></dd><dt>位置づけ</dt><dd>退職金の原資として保険を解約する場合、返戻金のうち簿価を超える部分が法人の益金となります。この益金を退職金の損金で相殺する設計が基本になります。</dd></dl>
+            
+          </div>
+</div>
 
         <div id="rbErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
 
@@ -216,7 +228,13 @@
             <div class="flex justify-between"><dt class="text-gray-500">保険差益(益金算入額)</dt><dd id="rbCorpGain" class="font-bold"></dd></div>
             <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">法人税への影響額</dt><dd id="rbCorpTaxImpact" class="font-black text-[#2d5580]"></dd></div>
           </dl>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>退職金の損金算入額</dt><dd>上記で算定した退職金額をそのまま損金として計上します。</dd><dt>法人税への影響</dt><dd><code>(保険差益 − 退職金の損金) × 法人税率</code></dd><dt>符号の意味</dt><dd>マイナスなら法人税の軽減（節税）、プラスなら追加の税負担が生じる試算結果です。</dd></dl>
+            
+          </div>
+</div>
 
         <div class="grid sm:grid-cols-2 gap-6">
           <!-- シナリオA -->
@@ -230,7 +248,13 @@
               <div class="flex justify-between"><dt class="text-gray-500">住民税(10%)</dt><dd id="aResidentTax" class="font-bold text-[#a83d3d]"></dd></div>
               <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">手取り額</dt><dd id="aNet" class="font-black text-[#2d5580]"></dd></div>
             </dl>
+          
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>給与所得控除額</dt><dd>2020年分以降の規定で計算します。<code>162.5万円以下→55万円 / 180万円以下→収入×40%−10万円 / 360万円以下→収入×30%＋8万円 / 660万円以下→収入×20%＋44万円 / 850万円以下→収入×10%＋110万円 / 850万円超→195万円（上限）</code></dd><dt>課税所得</dt><dd><code>max(0, 収入 − 給与所得控除 − 基礎控除48万円)</code></dd><dt>所得税</dt><dd>超過累進税率で計算します。<code>195万円以下5% / 330万円以下10%(−9.75万円) / 695万円以下20%(−42.75万円) / 900万円以下23%(−63.6万円) / 1,800万円以下33%(−153.6万円) / 4,000万円以下40%(−279.6万円) / 4,000万円超45%(−479.6万円)</code></dd><dt>住民税</dt><dd><code>課税所得 × 10%</code></dd><dt>手残り</dt><dd><code>収入 − 所得税 − 住民税</code></dd></dl>
+            
           </div>
+</div>
 
           <!-- シナリオB -->
           <div class="calc-section bg-white p-6">
@@ -243,7 +267,13 @@
               <div class="flex justify-between"><dt class="text-gray-500">住民税(10%)</dt><dd id="bResidentTax" class="font-bold text-[#a83d3d]"></dd></div>
               <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">手取り額</dt><dd id="bNet" class="font-black text-[#2d5580]"></dd></div>
             </dl>
+          
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>退職所得控除額</dt><dd><code>勤続20年以下 → 勤続年数 × 40万円</code>、<code>勤続20年超 → 800万円 ＋ (勤続年数 − 20) × 70万円</code></dd><dt>課税退職所得</dt><dd><code>(収入 − 退職所得控除) × 1/2</code>（2分の1課税）</dd><dt>所得税・住民税</dt><dd>所得税はAと同じ超過累進税率、住民税は <code>課税退職所得 × 10%</code>。退職所得は他の所得と分離して課税されます。</dd><dt>手残り</dt><dd><code>収入 − 所得税 − 住民税</code></dd><dt>AとBの差額</dt><dd><code>Bの手残り − Aの手残り</code>。退職所得控除と2分の1課税により、同額でも退職金として受け取る方が手残りが多くなります。</dd></dl>
+            <p class="calc-logic-note">復興特別所得税、社会保険料、各種所得控除（配偶者控除等）は考慮していません。</p>
           </div>
+</div>
         </div>
 
         <!-- 比較サマリー -->

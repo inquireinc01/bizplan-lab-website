@@ -163,7 +163,13 @@
               <input type="number" id="socialInsRate" value="15" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
             </div>
           </div>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>社会保険料の削減額</dt><dd><code>役員報酬の振替額 × 社会保険料率</code></dd><dt>考え方</dt><dd>役員報酬の一部を保険等に振り替えることで、その分の社会保険料（会社負担分＋本人負担分）が発生しなくなります。その削減額を保険料の原資と捉えます。</dd></dl>
+            <p class="calc-logic-note">役員報酬の現況額は、決算書情報を入力済みの場合そこから自動反映されます。</p>
+          </div>
+</div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
           <h3 class="font-bold text-base mb-1">2. 各経費科目の適正化</h3>
@@ -182,7 +188,13 @@
               </tbody>
             </table>
           </div>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>科目ごとの創出額</dt><dd><code>その科目の年間金額 × 適正化率</code></dd><dt>適正化率とは</dt><dd>その科目のうち見直し・削減が可能と見込む割合です。初期値は科目の性質に応じた目安（交際費・旅費交通費・福利厚生費10%、地代家賃・法定福利費5%、生命保険料・損害保険料15%）を設定しています。</dd><dt>経費削減額の合計</dt><dd>全科目の創出額を合算します。</dd></dl>
+            <p class="calc-logic-note">各科目の年間金額は、決算書情報を入力済みの場合そこから自動反映されます（円→万円に換算）。</p>
+          </div>
+</div>
 
         <div id="pfErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
 
@@ -199,7 +211,13 @@
         <div class="calc-section bg-white p-6">
           <h4 class="font-bold text-sm mb-4">科目別の創出額</h4>
           <dl id="pfBreakdownList" class="space-y-2 text-sm"></dl>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>創出額の合計</dt><dd><code>役員報酬による社会保険料削減額 ＋ 各経費科目の創出額の合計</code></dd><dt>月額換算</dt><dd><code>年間の合計創出額 ÷ 12</code></dd></dl>
+            <p class="calc-logic-note">ここで算出した金額が、新たな保険料に充当できる原資の目安となります。</p>
+          </div>
+</div>
 
         <!-- サマリー -->
         <div class="calc-result-card p-6 sm:p-10">

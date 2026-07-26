@@ -166,7 +166,13 @@
           <div class="notice-box text-sm rounded-lg p-4 mt-5 leading-relaxed">
             減額により捻出される原資(万円): <span id="fundedAmountDisplay" class="font-black text-base">-</span>
           </div>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>減額により捻出される原資</dt><dd><code>max(0, 減額前の解約返戻金 − 減額後の解約返戻金)</code></dd><dt>資産計上額の減少</dt><dd>減額に伴って取り崩す簿価（資産計上額）です。次のセクションで雑収入の計算に使用します。</dd></dl>
+            <p class="calc-logic-note">金額は万円単位です。</p>
+          </div>
+</div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
           <h3 class="font-bold text-base mb-1">2. 新契約の情報</h3>
@@ -185,7 +191,13 @@
               <input type="number" id="corpTaxRateRnc" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
             </div>
           </div>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>雑収入（益金算入額）</dt><dd><code>max(0, 捻出される原資 − 資産計上額の減少分)</code>。返戻金のうち簿価を超える部分が法人の益金となります。</dd><dt>新契約保険料の損金算入額</dt><dd><code>新契約の年間保険料 × 損金算入割合</code></dd></dl>
+            
+          </div>
+</div>
 
         <div id="rncErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
 
@@ -208,7 +220,13 @@
             <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">初年度の法人税への影響額</dt><dd id="rncTaxImpact" class="font-black text-[#2d5580]"></dd></div>
             <div class="flex justify-between"><dt class="text-gray-500">原資で賄える新契約保険料</dt><dd id="rncFundedYears" class="font-bold"></dd></div>
           </dl>
-        </div>
+        
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>初年度の法人税影響</dt><dd><code>(雑収入 − 新契約保険料の損金算入額) × 法人税率</code></dd><dt>符号の意味</dt><dd>プラスなら初年度に追加の法人税負担が生じ、マイナスなら雑収入を保険料の損金で相殺できて税負担が軽減される試算結果です。</dd><dt>充当できる年数</dt><dd><code>捻出される原資 ÷ 新契約の年間保険料</code>。減額で得た原資で新契約の保険料を何年分支払えるかの目安です。</dd></dl>
+            <p class="calc-logic-note">新契約の保険料は翌年度以降も継続的に損金算入されるため、初年度に負担が出る場合でも中長期では税効果が見込めます。</p>
+          </div>
+</div>
 
         <!-- サマリー -->
         <div class="calc-result-card p-6 sm:p-10">

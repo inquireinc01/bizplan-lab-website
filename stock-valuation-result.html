@@ -235,7 +235,13 @@
           <svg id="trendChart" viewBox="0 0 830 320" class="w-full h-auto" role="img" aria-label="30年後までの評価額推移グラフ"></svg>
           <div id="chartTooltip" class="hidden absolute z-10 pointer-events-none bg-white border border-gray-300 rounded-lg shadow-lg p-3 text-xs" style="min-width:180px"></div>
         </div>
-      </div>
+      
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl><dt>グラフの縦軸</dt><dd>入力ページで指定した各評価方式の時価総額（万円）を、経過年数に応じて推移させたものです。</dd><dt>表示指標の切替</dt><dd>上の評価額タイルをクリックすると表示する指標を切り替えられます（最大2つまで同時表示）。</dd><dt>死亡保険金額の上昇率</dt><dd>保険金額が年々増加する設計の場合、指定した上昇率で複利的に増加させて表示します。</dd><dt>経過年数</dt><dd>0〜30年の範囲で指定できます。範囲外の値を入力した場合は30年に補正されます。</dd></dl>
+            <p class="calc-logic-note">評価額の推移は、入力時点の評価額を基準に一定の前提で延長した概算です。実際の評価額は毎期の業績・資産内容によって変動します。</p>
+          </div>
+</div>
       <!-- ▲ ここまでを枠で囲み、iPad一画面に収まるようにしている -->
 
       <!-- 試算条件(グラフ下・変更で即時反映) -->
