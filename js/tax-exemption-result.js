@@ -242,46 +242,22 @@ document.addEventListener('DOMContentLoaded', function () {
       { label: '弔慰金', value: r.saveCondolence, color: '#7a9cc0' },
     ], man, mx.saveInheritSum);
 
-    // --- 1. 生命保険料控除額 ---
-    const tbody = $('txPremiumBody');
+    // --- PDF出力用の明細(画面には出さず印刷シートにだけ書き込む) ---
     const pBody = $('pPremiumBody');
-    if (tbody) tbody.innerHTML = '';
-    if (pBody) pBody.innerHTML = '';
-    r.premiumRows.forEach(function (row) {
-      if (tbody) {
-        const tr = document.createElement('tr');
-        tr.className = 'border-b border-gray-100';
-        tr.innerHTML = `<td class="px-3 py-1.5 text-gray-800">${row.label}</td>`
-          + `<td class="px-3 py-1.5 text-right">${yen(row.premium)}</td>`
-          + `<td class="px-3 py-1.5 text-right">${yen(row.it)}</td>`
-          + `<td class="px-3 py-1.5 text-right">${yen(row.rt)}</td>`;
-        tbody.appendChild(tr);
-      }
-      if (pBody) {
+    if (pBody) {
+      pBody.innerHTML = '';
+      r.premiumRows.forEach(function (row) {
         const ptr = document.createElement('tr');
         ptr.innerHTML = `<td class="lbl">${row.label}</td><td>${yen(row.premium)}</td><td>${yen(row.it)}</td><td>${yen(row.rt)}</td>`;
         pBody.appendChild(ptr);
-      }
-    });
-    countUp('txIncomeTaxTotal', r.premiumItTotal, yen);
-    countUp('txResidentTaxTotal', r.premiumRtTotal, yen);
+      });
+    }
     setTxt('pIncomeTaxTotal', yen(r.premiumItTotal));
     setTxt('pResidentTaxTotal', yen(r.premiumRtTotal));
-
-    // --- 2. 相続税の非課税枠 ---
-    countUp('txExemptionEach', r.exemptionEach, man);
     setTxt('pExemptionEach', man(r.exemptionEach));
-    const deathTxt = `使用 ${man(r.usedDeath)} / 課税対象 ${man(r.taxableDeath)}`;
-    const retireTxt = `使用 ${man(r.usedRetire)} / 課税対象 ${man(r.taxableRetire)}`;
-    setTxt('txDeathBenefitResult', deathTxt);
-    setTxt('pDeathBenefitResult', deathTxt);
-    setTxt('txRetirementResult', retireTxt);
-    setTxt('pRetirementResult', retireTxt);
-
-    // --- 3. 弔慰金 ---
-    const condTxt = `${man(r.condolenceExemption)}(${r.condolenceMonths}ヶ月分)`;
-    setTxt('txCondolenceResult', condTxt);
-    setTxt('pCondolenceResult', condTxt);
+    setTxt('pDeathBenefitResult', `使用 ${man(r.usedDeath)} / 課税対象 ${man(r.taxableDeath)}`);
+    setTxt('pRetirementResult', `使用 ${man(r.usedRetire)} / 課税対象 ${man(r.taxableRetire)}`);
+    setTxt('pCondolenceResult', `${man(r.condolenceExemption)}(${r.condolenceMonths}ヶ月分)`);
   }
 
   /* ===== 入力確定時に再計算(入力中は反映しない) ===== */
