@@ -31,10 +31,30 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
 
+  /* ===== 数値のカウントアップ ===== */
+  // 直前に表示していた値を覚えておき、そこから新しい値まで数字を回す
+  const countState = {};
+  const COUNT_MS = 800;
+  function countUp(id, to, fmt) {
+    const el = $(id);
+    if (!el) return;
+    const from = countState[id] === undefined ? 0 : countState[id];
+    countState[id] = to;
+    if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
+    if (from === to) { el.textContent = fmt(to); return; }
+    const start = performance.now();
+    const step = function (now) {
+      const p = Math.min(1, (now - start) / COUNT_MS);
+      const e = 1 - Math.pow(1 - p, 3); // ease-out
+      el.textContent = fmt(from + (to - from) * e);
+      if (p < 1) el._countRaf = requestAnimationFrame(step);
+      else el._countRaf = null;
+    };
+    el._countRaf = requestAnimationFrame(step);
+  }
+
   /* ===== 軽減額グラフ(積み上げ横棒) ===== */
-  function renderSaveChart(svgId, parts, unitFmt) {
-    const svg = $(svgId);
-    if (!svg) return;
+  function drawSaveChart(svg, parts, unitFmt) {
     const W = 360, BAR_X = 8, BAR_W = 344, BAR_Y = 34, BAR_H = 46;
     const total = parts.reduce((s, p) => s + Math.max(0, p.value), 0);
     let out = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="6" fill="#eef1f4"/>`;
@@ -51,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const isFirst = x === BAR_X;
       const isLast = i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0);
       const rx = (isFirst || isLast) ? 6 : 0;
-      out += `<rect class="tx-save-bar" x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}" style="animation-delay:${i * 160}ms"/>`;
+      out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
       if (w > 62) {
         out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 4}" font-size="11" font-weight="bold" fill="#fff" text-anchor="middle">${unitFmt(v)}</text>`;
       }
@@ -63,6 +83,29 @@ document.addEventListener('DOMContentLoaded', function () {
     out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 22}" font-size="11" fill="#6b7280">合計</text>`;
     out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 22}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(total)}</text>`;
     svg.innerHTML = out;
+  }
+
+  // 直前の内訳から新しい内訳まで、棒の伸びと数字を同じ時間で動かす
+  const chartState = {};
+  function renderSaveChart(svgId, parts, unitFmt) {
+    const svg = $(svgId);
+    if (!svg) return;
+    const next = parts.map((p) => Math.max(0, p.value));
+    const prev = chartState[svgId] && chartState[svgId].length === next.length
+      ? chartState[svgId] : next.map(() => 0);
+    chartState[svgId] = next;
+    if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
+    const at = (vals) => parts.map((p, i) => ({ label: p.label, color: p.color, value: vals[i] }));
+    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt); return; }
+    const start = performance.now();
+    const step = function (now) {
+      const t = Math.min(1, (now - start) / COUNT_MS);
+      const e = 1 - Math.pow(1 - t, 3); // ease-out
+      drawSaveChart(svg, at(next.map((v, i) => prev[i] + (v - prev[i]) * e)), unitFmt);
+      if (t < 1) svg._chartRaf = requestAnimationFrame(step);
+      else svg._chartRaf = null;
+    };
+    svg._chartRaf = requestAnimationFrame(step);
   }
 
   /* ===== 前提条件の読み込み ===== */
@@ -135,17 +178,19 @@ document.addEventListener('DOMContentLoaded', function () {
       + ' / 相続税: ' + (r.ihMode === 'detail' ? '詳細入力' : '簡易入力'));
     setTxt('txHeirsCountView', r.heirsCount + ' 人');
 
-    // --- 税負担の軽減額 ---
-    setTxt('txSaveIncomeTotal', yen(r.saveIncomeSum) + ' / 年');
-    setTxt('txSaveIncomeTax', yen(r.saveIt) + `（${man(r.taxItBefore)} → ${man(r.taxItAfter)}）`);
-    setTxt('txSaveResidentTax', yen(r.saveRt) + `（${man(r.taxRtBefore)} → ${man(r.taxRtAfter)}）`);
-    setTxt('txSave10y', yen(r.saveIncomeSum * 10));
+    // --- 税負担の軽減額(カウントアップで表示) ---
+    const itNote = `（${man(r.taxItBefore)} → ${man(r.taxItAfter)}）`;
+    const rtNote = `（${man(r.taxRtBefore)} → ${man(r.taxRtAfter)}）`;
+    countUp('txSaveIncomeTotal', r.saveIncomeSum, (v) => yen(v) + ' / 年');
+    countUp('txSaveIncomeTax', r.saveIt, (v) => yen(v) + itNote);
+    countUp('txSaveResidentTax', r.saveRt, (v) => yen(v) + rtNote);
+    countUp('txSave10y', r.saveIncomeSum * 10, yen);
 
-    setTxt('txSaveInheritTotal', man(r.saveInheritSum));
-    setTxt('txSaveDeath', man(r.saveDeath) + `（非課税 ${man(r.usedDeath)}）`);
-    setTxt('txSaveRetire', man(r.saveRetire) + `（非課税 ${man(r.usedRetire)}）`);
-    setTxt('txSaveCondolence', man(r.saveCondolence) + `（非課税 ${man(r.condolenceExemption)}）`);
-    setTxt('txExemptTotalAmount', man(r.exemptAmountTotal));
+    countUp('txSaveInheritTotal', r.saveInheritSum, man);
+    countUp('txSaveDeath', r.saveDeath, (v) => man(v) + `（非課税 ${man(r.usedDeath)}）`);
+    countUp('txSaveRetire', r.saveRetire, (v) => man(v) + `（非課税 ${man(r.usedRetire)}）`);
+    countUp('txSaveCondolence', r.saveCondolence, (v) => man(v) + `（非課税 ${man(r.condolenceExemption)}）`);
+    countUp('txExemptTotalAmount', r.exemptAmountTotal, man);
 
     renderSaveChart('txChartIncome', [
       { label: '所得税', value: r.saveIt, color: '#0f2a4a' },
@@ -178,13 +223,13 @@ document.addEventListener('DOMContentLoaded', function () {
         pBody.appendChild(ptr);
       }
     });
-    setTxt('txIncomeTaxTotal', yen(r.premiumItTotal));
-    setTxt('txResidentTaxTotal', yen(r.premiumRtTotal));
+    countUp('txIncomeTaxTotal', r.premiumItTotal, yen);
+    countUp('txResidentTaxTotal', r.premiumRtTotal, yen);
     setTxt('pIncomeTaxTotal', yen(r.premiumItTotal));
     setTxt('pResidentTaxTotal', yen(r.premiumRtTotal));
 
     // --- 2. 相続税の非課税枠 ---
-    setTxt('txExemptionEach', man(r.exemptionEach));
+    countUp('txExemptionEach', r.exemptionEach, man);
     setTxt('pExemptionEach', man(r.exemptionEach));
     const deathTxt = `使用 ${man(r.usedDeath)} / 課税対象 ${man(r.taxableDeath)}`;
     const retireTxt = `使用 ${man(r.usedRetire)} / 課税対象 ${man(r.taxableRetire)}`;
@@ -199,14 +244,14 @@ document.addEventListener('DOMContentLoaded', function () {
     setTxt('pCondolenceResult', condTxt);
 
     // --- 4. 一時所得 ---
-    setTxt('txOneTimeIncome', man(r.oneTimeIncome));
+    countUp('txOneTimeIncome', r.oneTimeIncome, man);
     setTxt('pOneTimeIncome', man(r.oneTimeIncome));
-    setTxt('txOneTimeTaxable', man(r.oneTimeTaxable));
+    countUp('txOneTimeTaxable', r.oneTimeTaxable, man);
     setTxt('pOneTimeTaxable', man(r.oneTimeTaxable));
 
     // --- サマリー ---
-    setTxt('txSummaryPremium', `${yen(r.premiumItTotal)} + ${yen(r.premiumRtTotal)}`);
-    setTxt('txSummaryInheritance', man(r.exemptionEach * 2 + r.condolenceExemption));
+    countUp('txSummaryPremium', r.premiumItTotal, (v) => `${yen(v)} + ${yen(r.premiumRtTotal)}`);
+    countUp('txSummaryInheritance', r.exemptionEach * 2 + r.condolenceExemption, man);
   }
 
   /* ===== 入力確定時に再計算(入力中は反映しない) ===== */
