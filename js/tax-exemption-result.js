@@ -90,22 +90,10 @@ document.addEventListener('DOMContentLoaded', function () {
       return need;
     };
     const usedW = (used / cap) * BAR_W;
-    // 残り(使い残している枠)を斜線で表示する
+    // 残り(使い残している枠)は斜線で示すだけにし、金額はカード上部のリード文で伝える
     const room = Math.max(0, cap - used);
     if (room > 0) {
       out += `<rect x="${(BAR_X + usedW).toFixed(1)}" y="${BAR_Y}" width="${(BAR_W - usedW).toFixed(1)}" height="${BAR_H}" rx="10" fill="url(#${pid})"/>`;
-      const roomPct = Math.round((room / cap) * 100);
-      const cx = BAR_X + usedW + (BAR_W - usedW) / 2;
-      const big = '残り ' + roomPct + '%';
-      if (BAR_W - usedW > widthOf(big, 26)) {
-        out += `<text x="${cx.toFixed(1)}" y="${BAR_Y + BAR_H / 2 - 2}" font-size="26" font-weight="bold" fill="#8d99a8" text-anchor="middle">${big}</text>`;
-        const sub = unitFmt(room);
-        if (BAR_W - usedW > widthOf(sub, 15)) {
-          out += `<text x="${cx.toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 22}" font-size="15" fill="#8d99a8" text-anchor="middle">${sub}</text>`;
-        }
-      } else if (BAR_W - usedW > widthOf(roomPct + '%', 20)) {
-        out += `<text x="${cx.toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 8}" font-size="20" font-weight="bold" fill="#8d99a8" text-anchor="middle">${roomPct}%</text>`;
-      }
     }
     // 現状の内訳を積み上げる
     let x = BAR_X;
@@ -280,30 +268,38 @@ document.addEventListener('DOMContentLoaded', function () {
     const paid = r.premiumRows.map((row) => Math.min(row.premium, T.PREMIUM_FULL));
     const paidSum = paid.reduce((a2, b2) => a2 + b2, 0);
     const paidMax = T.PREMIUM_FULL * T.PREMIUM_ITEMS.length;
-    const benefitSum = r.usedDeath + r.usedRetire;
-    const benefitMax = r.exemptionEach * 2;
+    // 死亡保険金は個人契約、死亡退職金と弔慰金は法人契約でカバーする前提で分けて表示する
+    const corpSum = r.usedRetire + r.condolenceExemption;
+    const corpMax = r.exemptionEach + r.condolenceExemption;
     countUp('txPremiumNow', paidSum, (v) => yen(v) + ' / 年');
-    countUp('txBenefitNow', benefitSum, man);
+    countUp('txDeathNow', r.usedDeath, man);
+    countUp('txCorpNow', corpSum, man);
     gauge('txUsePremium', 'txLeadPremium', paidSum, paidMax, yen, '', '加入できます(毎年の払込)');
-    gauge('txUseBenefit', 'txLeadBenefit', benefitSum, benefitMax, man, '', '非課税で受け取れます');
+    gauge('txUseDeath', 'txLeadDeath', r.usedDeath, r.exemptionEach, man, '', '非課税で受け取れます');
+    gauge('txUseCorp', 'txLeadCorp', corpSum, corpMax, man, '', '非課税で受け取れます');
     countUp('txPaidGeneral', paid[0], yen);
     countUp('txPaidPension', paid[1], yen);
     countUp('txPaidMedical', paid[2], yen);
     countUp('txPaidRoom', Math.max(0, paidMax - paidSum), (v) => yen(v) + ' / 年');
-    countUp('txBenefitDeath', r.usedDeath, man);
-    countUp('txBenefitRetire', r.usedRetire, man);
-    countUp('txBenefitEach', r.exemptionEach, man);
-    countUp('txBenefitRoom', Math.max(0, benefitMax - benefitSum), man);
+    countUp('txDeathUsed', r.usedDeath, man);
+    countUp('txDeathEach', r.exemptionEach, man);
+    countUp('txDeathRoom', Math.max(0, r.exemptionEach - r.usedDeath), man);
+    countUp('txCorpRetire', r.usedRetire, man);
+    countUp('txCorpCond', r.condolenceExemption, man);
+    countUp('txCorpRoom', Math.max(0, corpMax - corpSum), man);
 
     renderSaveChart('txChartPremium', [
       { label: '一般', value: paid[0], color: NAVY[0] },
       { label: '個人年金', value: paid[1], color: NAVY[1] },
       { label: '介護医療', value: paid[2], color: NAVY[2] },
     ], yen, paidMax, { capLabel: '加入できる上限', base: NAVY[0], accent: NAVY[3] });
-    renderSaveChart('txChartBenefit', [
-      { label: '生命保険金', value: r.usedDeath, color: GREEN[0] },
+    renderSaveChart('txChartDeath', [
+      { label: '死亡保険金', value: r.usedDeath, color: GREEN[0] },
+    ], man, r.exemptionEach, { capLabel: '非課税枠', base: GREEN[0], accent: GREEN[3] });
+    renderSaveChart('txChartCorp', [
       { label: '死亡退職金', value: r.usedRetire, color: GREEN[1] },
-    ], man, benefitMax, { capLabel: '非課税枠の上限', base: GREEN[0], accent: GREEN[3] });
+      { label: '弔慰金', value: r.condolenceExemption, color: GREEN[2] },
+    ], man, corpMax, { capLabel: '非課税枠の合計', base: GREEN[0], accent: GREEN[3] });
     countUp('txMaxPremiumCol', mx.saveIncomeSum, yen);
     countUp('txMaxExemptCol', mx.saveDeath + mx.saveRetire, man);
     countUp('txMaxCondolenceCol', mx.saveCondolence, man);

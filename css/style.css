@@ -1709,10 +1709,38 @@ img {
   color: #fff;
 }
 .tx-gauge-lead {
-  margin-top: 0.4rem;
+  margin: 0 0 0.5rem;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--tx-accent, #2d5580);
+}
+
+/* 凡例(内訳)は既定で閉じておき、必要なときだけ開く */
+.tx-legend > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+.tx-legend > summary::-webkit-details-marker {
+  display: none;
+}
+.tx-legend > summary::before {
+  content: '▶';
+  font-size: 0.5rem;
+}
+.tx-legend[open] > summary::before {
+  content: '▼';
+}
+.tx-legend > summary:hover {
+  color: var(--tx-c1, var(--color-navy));
+}
+.tx-legend > dl {
+  margin-top: 0.45rem;
 }
 .tx-gauge-lead.is-full {
   color: #9ca3af;
