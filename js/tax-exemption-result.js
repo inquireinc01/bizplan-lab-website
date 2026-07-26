@@ -300,18 +300,15 @@ document.addEventListener('DOMContentLoaded', function () {
       renderSaveChart(ids[3], [{ label: r.premiumRows[i].label, value: paid[i], color: NAVY[i] }],
         yen, T.PREMIUM_FULL, { base: NAVY[i], accent: NAVY[3], slim: true });
     });
-    // 死亡保険金は個人契約なのでネイビー、死亡退職金・弔慰金は法人契約なのでグリーン
     const inheritCards = [
-      ['txDeathNow', 'txUseDeath', 'txLeadDeath', 'txChartDeath', '死亡保険金', r.usedDeath, r.exemptionEach, NAVY],
-      ['txRetNow', 'txUseRet', 'txLeadRet', 'txChartRet', '死亡退職金', r.usedRetire, r.exemptionEach, GREEN],
-      ['txCondNow', 'txUseCond', 'txLeadCond', 'txChartCond', '弔慰金', r.condolenceExemption, r.condolenceLimit, GREEN],
+      ['txDeathNow', 'txUseDeath', 'txLeadDeath', 'txChartDeath', '死亡保険金', r.usedDeath, r.exemptionEach],
+      ['txRetNow', 'txUseRet', 'txLeadRet', 'txChartRet', '死亡退職金', r.usedRetire, r.exemptionEach],
+      ['txCondNow', 'txUseCond', 'txLeadCond', 'txChartCond', '弔慰金', r.condolenceExemption, r.condolenceLimit],
     ];
     inheritCards.forEach(function (c, i) {
-      const pal = c[7];
-      const tone = pal === GREEN ? i - 1 : 0;
       gauge(c[0], c[1], c[2], c[5], c[6], man);
-      renderSaveChart(c[3], [{ label: c[4], value: c[5], color: pal[tone] }],
-        man, c[6], { base: pal[tone], accent: pal[3], slim: true });
+      renderSaveChart(c[3], [{ label: c[4], value: c[5], color: GREEN[i] }],
+        man, c[6], { base: GREEN[i], accent: GREEN[3], slim: true });
     });
 
     // --- 各入力欄の「あと◯◯」 ---
@@ -352,9 +349,9 @@ document.addEventListener('DOMContentLoaded', function () {
       { label: '介護医療', value: saveByKind[2], color: NAVY[2] },
     ], yen, mx.saveIncomeSum, { base: NAVY[0], accent: NAVY[3], noSegLabel: true });
     renderSaveChart('txChartInherit', [
-      { label: '死亡保険金', value: r.saveDeath, color: NAVY[0] },
-      { label: '死亡退職金', value: r.saveRetire, color: GREEN[0] },
-      { label: '弔慰金', value: r.saveCondolence, color: GREEN[1] },
+      { label: '死亡保険金', value: r.saveDeath, color: GREEN[0] },
+      { label: '死亡退職金', value: r.saveRetire, color: GREEN[1] },
+      { label: '弔慰金', value: r.saveCondolence, color: GREEN[2] },
     ], man, mx.saveInheritSum, { base: GREEN[0], accent: GREEN[3], noSegLabel: true });
 
     // --- PDF出力用の明細(画面には出さず印刷シートにだけ書き込む) ---

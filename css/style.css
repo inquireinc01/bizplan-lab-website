@@ -1798,18 +1798,11 @@ img {
   height: 0.625rem;
   border-radius: 0.125rem;
 }
-/* 個人契約のカードは相続税グループの中でもネイビー系にそろえる */
-.tx-gauge-card.is-personal {
-  --tx-c1: #0f2a4a;
-  --tx-c2: #3b6ea5;
-  --tx-c3: #7a9cc0;
-  --tx-accent: #2d5580;
-  --tx-pill-bg: #eef2f7;
-}
+/* 契約区分のチップだけ色を分ける(個人契約=ネイビー / 法人契約=グリーン)。
+   カード本体の配色はグループの色をそのまま使う */
 .tx-gauge-card.is-personal .tx-gauge-tag {
   background-color: #0f2a4a;
 }
-.tx-swatch-personal { background-color: #0f2a4a; }
 .tx-swatch-1 { background-color: var(--tx-c1); }
 .tx-swatch-2 { background-color: var(--tx-c2); }
 .tx-swatch-3 { background-color: var(--tx-c3); }
