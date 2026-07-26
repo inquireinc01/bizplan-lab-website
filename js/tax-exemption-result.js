@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
      残り(使い残している枠)は斜線で塗り、残り何%かを大きく見せる ===== */
   function drawSaveChart(svg, parts, unitFmt, maxTotal, opt) {
     const o = opt || {};
-    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 34, BAR_H = 78;
+    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 4, BAR_H = 78;
     const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
     const cap = Math.max(maxTotal, used);
     const pid = svg.id + 'Stripe';
@@ -114,12 +114,9 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       x += w;
     });
-    // 目盛り(0 と MAX)
-    out += `<text x="${BAR_X}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af">0</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af" text-anchor="end">${o.capLabel || '上限'}</text>`;
-    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 26}"><tspan font-size="13" fill="#6b7280">現状 </tspan>`
+    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 24}"><tspan font-size="13" fill="#6b7280">現状 </tspan>`
       + `<tspan font-size="20" font-weight="bold" fill="${o.base || '#0f2a4a'}">${unitFmt(used)}</tspan></text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 26}" text-anchor="end"><tspan font-size="13" fill="#6b7280">MAX </tspan>`
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 24}" text-anchor="end"><tspan font-size="13" fill="#6b7280">MAX </tspan>`
       + `<tspan font-size="20" font-weight="bold" fill="${o.accent || '#2d5580'}">${unitFmt(cap)}</tspan></text>`;
     svg.innerHTML = out;
   }
