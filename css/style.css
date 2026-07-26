@@ -457,18 +457,75 @@ input[type="number"] {
 
 /* 版選択カード */
 .version-card {
+  position: relative;
   cursor: pointer;
   border: 2px solid var(--color-gray-200);
   border-radius: 0.9rem;
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 .version-card:hover {
   border-color: var(--color-blue);
 }
+/* 選択していない方は控えめにして、どちらで計算しているかを一目で分かるようにする */
+.version-card:not(.selected) {
+  opacity: 0.6;
+  background-color: #fafbfc;
+}
+.version-card:not(.selected):hover {
+  opacity: 1;
+}
 .version-card.selected {
   border-color: var(--color-navy);
+  border-width: 3px;
   background-color: var(--color-blue-soft);
-  box-shadow: 0 6px 16px rgba(15, 42, 74, 0.12);
+  box-shadow: 0 8px 20px rgba(15, 42, 74, 0.18);
+}
+/* 選択中のカードには右上にラベルを出す */
+.version-card.selected::after {
+  content: 'この方式で計算中';
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  background-color: var(--color-navy);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.7rem;
+  border-bottom-left-radius: 0.7rem;
+}
+
+/* 結果ページで「いまどちらの入力方式で計算しているか」を示すチップ */
+.tx-mode-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.tx-mode-badges-label {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+.tx-mode-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  border: 1.5px solid var(--color-navy);
+  border-radius: 999px;
+  padding: 0.22rem 0.8rem;
+  background-color: #fff;
+  white-space: nowrap;
+}
+.tx-mode-chip-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #6b7280;
+}
+.tx-mode-chip-value {
+  font-size: 0.875rem;
+  font-weight: 900;
+  color: var(--color-navy);
 }
 
 /* ========== 入力の進捗ゲージ(ステッパー上部) ========== */

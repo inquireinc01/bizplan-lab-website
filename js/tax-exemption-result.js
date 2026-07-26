@@ -223,8 +223,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function render() {
     const r = T.calcAll(data);
 
-    setTxt('txResultMode', '所得税: ' + (r.itMode === 'detail' ? '詳細入力' : '簡易入力')
-      + ' / 相続税: ' + (r.ihMode === 'detail' ? '詳細入力' : '簡易入力'));
+    // いまどちらの入力方式で計算しているかをチップで示す
+    const modeEl = $('txResultMode');
+    if (modeEl) {
+      const chip = (label, mode) => `<span class="tx-mode-chip"><span class="tx-mode-chip-label">${label}</span>`
+        + `<span class="tx-mode-chip-value">${mode === 'detail' ? '詳細入力' : '簡易入力'}</span></span>`;
+      modeEl.innerHTML = '<span class="tx-mode-badges-label">この前提で計算中</span>'
+        + chip('所得税・住民税', r.itMode) + chip('相続税', r.ihMode);
+    }
     setTxt('txHeirsCountView', r.heirsCount + ' 人');
 
     // --- 税負担の軽減額(カウントアップで表示) ---
