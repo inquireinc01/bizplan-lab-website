@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072716" />
+<link rel="stylesheet" href="css/style.css?v=2026072717" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -157,8 +157,7 @@
 
         <!-- 税負担の軽減額(グラフ)と生命保険の設計を1画面に収める -->
         <div class="calc-section bg-white p-5 sm:p-6">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <h4 class="inline-flex items-center gap-2 bg-[#0f2a4a] text-white font-bold text-base px-3.5 py-1.5 rounded-lg">加入できる枠と税負担の軽減額<span class="help-tip" tabindex="0">?<span class="help-text">上段は「控除・非課税が効く範囲であといくら加入できるか」、下段は「その枠を使うことで実際に軽減される税額」です。所得税・住民税は毎年継続的に効く軽減、相続税は相続発生時に一度効く軽減のため、分けて表示しています。下の「生命保険の設計」を変えると即時に反映されます。</span></span></h4>
+          <div class="flex flex-wrap items-center justify-end gap-2 mb-3">
             <button type="button" id="txDetailBtn" class="tx-detail-btn">内訳を表示</button>
           </div>
 
@@ -173,6 +172,7 @@
                     <p class="tx-gauge-title">年間払込保険料<span class="help-tip" tabindex="0">?<span class="help-text">生命保険料控除の対象になる年間払込保険料です。区分ごとに年8万円で控除額が頭打ちになるため、3区分あわせて年24万円までが「控除の効く保険料」の上限になります。これを超えて払い込んでも控除額は増えません。</span></span></p>
                     <p class="tx-gauge-tag">控除が効く範囲</p>
                   </div>
+                  <p class="tx-gauge-nowlabel">あと加入できる保険料</p>
                   <div class="tx-gauge-head">
                     <p id="txPremiumNow" class="tx-gauge-now"></p>
                     <p class="tx-gauge-pill"><span id="txUsePremium">-</span><span>活用</span></p>
@@ -196,6 +196,7 @@
                     <p class="tx-gauge-title">所得税・住民税の軽減額</p>
                     <p class="tx-gauge-tag">毎年</p>
                   </div>
+                  <p class="tx-gauge-nowlabel">あと軽減できる税額</p>
                   <div class="tx-gauge-head">
                     <p id="txSaveIncomeTotal" class="tx-gauge-now"></p>
                     <p class="tx-gauge-pill"><span id="txUseIncome">-</span><span>活用</span></p>
@@ -224,6 +225,7 @@
                     <p class="tx-gauge-title">死亡保険金<span class="help-tip" tabindex="0">?<span class="help-text">個人契約の生命保険から遺族が受け取る死亡保険金です。「500万円×法定相続人の数」までが相続税の非課税財産になります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></p>
                     <p class="tx-gauge-tag">個人契約</p>
                   </div>
+                  <p class="tx-gauge-nowlabel">あと非課税で受け取れる額</p>
                   <div class="tx-gauge-head">
                     <p id="txDeathNow" class="tx-gauge-now"></p>
                     <p class="tx-gauge-pill"><span id="txUseDeath">-</span><span>活用</span></p>
@@ -246,6 +248,7 @@
                     <p class="tx-gauge-title">死亡退職金・弔慰金<span class="help-tip" tabindex="0">?<span class="help-text">法人契約の保険を原資に会社から遺族へ支給する死亡退職金と弔慰金です。死亡退職金は「500万円×法定相続人の数」まで、弔慰金は業務上の死亡なら普通給与の36ヶ月分・業務外なら6ヶ月分まで相続税がかかりません。弔慰金の枠は最終報酬月額で決まるため、保険金額を増やしても広がりません。</span></span></p>
                     <p class="tx-gauge-tag">法人契約</p>
                   </div>
+                  <p class="tx-gauge-nowlabel">あと非課税で受け取れる額</p>
                   <div class="tx-gauge-head">
                     <p id="txCorpNow" class="tx-gauge-now"></p>
                     <p class="tx-gauge-pill"><span id="txUseCorp">-</span><span>活用</span></p>
@@ -268,6 +271,7 @@
                     <p class="tx-gauge-title">相続税の軽減額</p>
                     <p class="tx-gauge-tag">相続時に一度</p>
                   </div>
+                  <p class="tx-gauge-nowlabel">あと軽減できる税額</p>
                   <div class="tx-gauge-head">
                     <p id="txSaveInheritTotal" class="tx-gauge-now"></p>
                     <p class="tx-gauge-pill"><span id="txUseInherit">-</span><span>活用</span></p>
@@ -458,6 +462,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727b"></script>
-<script src="js/tax-exemption-result.js?v=20260727x"></script>
+<script src="js/tax-exemption-result.js?v=202607271a"></script>
 </body>
 </html>

@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
 
+  /* ===== 数字と単位 =====
+     全体ルールとして、万円・円・％などの単位は数字より小さく表示する ===== */
+  const UNIT_RE = /([0-9][0-9,.]*)\s*(円\s*\/\s*年|万円|円|％|%|人|ヶ月分)/g;
+  const withUnit = (txt) => String(txt).replace(UNIT_RE, '$1<span class="unit">$2</span>');
+  // SVG内はspanが使えないのでtspanでフォントサイズを直接落とす
+  const svgAmount = (txt, size) => String(txt).replace(UNIT_RE, function (m, n, u) {
+    return `<tspan font-size="${size}">${n}</tspan><tspan font-size="${Math.round(size * 0.68)}"> ${u}</tspan>`;
+  });
+
   /* ===== グループの配色 =====
      所得税グループはネイビー、相続税グループはグリーン。
      グリーンはネイビーと同じ彩度・明度のまま色相だけ変えた値(HSL 211→150) ===== */
@@ -50,12 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
     countState[id] = to;
     if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
     clearTimeout(el._countTimer);
-    if (from === to) { el.textContent = fmt(to); return; }
+    if (from === to) { el.innerHTML = withUnit(fmt(to)); return; }
     const start = performance.now();
     const step = function (now) {
       const p = Math.min(1, (now - start) / COUNT_MS);
       const e = 1 - Math.pow(1 - p, 3); // ease-out
-      el.textContent = fmt(from + (to - from) * e);
+      el.innerHTML = withUnit(fmt(from + (to - from) * e));
       if (p < 1) el._countRaf = requestAnimationFrame(step);
       else el._countRaf = null;
     };
@@ -64,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // アニメーション時間を過ぎたら確実に最終値を表示する
     el._countTimer = setTimeout(function () {
       if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
-      el.textContent = fmt(to);
+      el.innerHTML = withUnit(fmt(to));
     }, COUNT_MS + 250);
   }
 
@@ -111,14 +120,14 @@ document.addEventListener('DOMContentLoaded', function () {
       out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
       const label = unitFmt(v);
       if (w > widthOf(label, 20)) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 7}" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">${label}</text>`;
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 7}" font-weight="bold" fill="#fff" text-anchor="middle">${svgAmount(label, 20)}</text>`;
       }
       x += w;
     });
-    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 24}"><tspan font-size="13" fill="#6b7280">現状 </tspan>`
-      + `<tspan font-size="20" font-weight="bold" fill="${o.base || '#0f2a4a'}">${unitFmt(used)}</tspan></text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 24}" text-anchor="end"><tspan font-size="13" fill="#6b7280">MAX </tspan>`
-      + `<tspan font-size="20" font-weight="bold" fill="${o.accent || '#2d5580'}">${unitFmt(cap)}</tspan></text>`;
+    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 24}" font-weight="bold" fill="${o.base || '#0f2a4a'}">`
+      + `<tspan font-size="13" font-weight="normal" fill="#6b7280">現状 </tspan>${svgAmount(unitFmt(used), 20)}</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 24}" text-anchor="end" font-weight="bold" fill="${o.accent || '#2d5580'}">`
+      + `<tspan font-size="13" font-weight="normal" fill="#6b7280">上限 </tspan>${svgAmount(unitFmt(cap), 20)}</text>`;
     svg.innerHTML = out;
   }
 
@@ -230,12 +239,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 税負担の軽減額(カウントアップで表示) ---
     const itNote = `（${man(r.taxItBefore)} → ${man(r.taxItAfter)}）`;
     const rtNote = `（${man(r.taxRtBefore)} → ${man(r.taxRtAfter)}）`;
-    countUp('txSaveIncomeTotal', r.saveIncomeSum, (v) => yen(v) + ' / 年');
     countUp('txSaveIncomeTax', r.saveIt, (v) => yen(v) + itNote);
     countUp('txSaveResidentTax', r.saveRt, (v) => yen(v) + rtNote);
     countUp('txSave10y', r.saveIncomeSum * 10, yen);
 
-    countUp('txSaveInheritTotal', r.saveInheritSum, man);
     countUp('txSaveDeath', r.saveDeath, (v) => man(v) + `（非課税 ${man(r.usedDeath)}）`);
     countUp('txSaveRetire', r.saveRetire, (v) => man(v) + `（非課税 ${man(r.usedRetire)}）`);
     countUp('txSaveCondolence', r.saveCondolence, (v) => man(v) + `（非課税 ${man(r.condolenceExemption)}）`);
@@ -244,23 +251,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 上限まで使い切った場合の軽減額と活用率 ---
     const mx = r.max || r;
     const pct = (cur, top) => (top > 0 ? Math.min(100, Math.round((cur / top) * 100)) : 0);
-    // 活用率バッジと、使い残しがいくらあるかの一言
-    const gauge = function (pillId, leadId, now, top, fmt, more, verb) {
-      const p = pct(now, top);
-      const full = top - now <= 0.5;
-      setTxt(pillId, p + '%');
+    // 大きい数字は「あといくら上乗せできるか」。現状と上限はその下に添える
+    const yenY = (v) => yen(v) + ' / 年';
+    const gauge = function (nowId, pillId, leadId, now, top, fmt, leadFmt) {
+      const lf = leadFmt || fmt;
+      const left = Math.max(0, top - now);
+      const full = left <= 0.5;
+      countUp(nowId, left, fmt);
+      const pillEl = $(pillId);
+      if (pillEl) pillEl.innerHTML = withUnit(pct(now, top) + '%');
       const pill = $(pillId) ? $(pillId).parentNode : null;
       if (pill) pill.classList.toggle('is-full', full);
       const lead = $(leadId);
       if (lead) {
         lead.textContent = full
-          ? 'MAX ' + fmt(top) + ' を使い切っています'
-          : 'あと ' + fmt(top - now) + ' ' + (verb || ('上乗せできます' + more));
+          ? '上限 ' + lf(top) + ' を使い切っています'
+          : '現状 ' + lf(now) + ' ・ 上限 ' + lf(top);
         lead.classList.toggle('is-full', full);
       }
     };
-    gauge('txUseIncome', 'txLeadIncome', r.saveIncomeSum, mx.saveIncomeSum, yen, '(毎年)');
-    gauge('txUseInherit', 'txLeadInherit', r.saveInheritSum, mx.saveInheritSum, man, '');
+    gauge('txSaveIncomeTotal', 'txUseIncome', 'txLeadIncome', r.saveIncomeSum, mx.saveIncomeSum, yenY, yen);
+    gauge('txSaveInheritTotal', 'txUseInherit', 'txLeadInherit', r.saveInheritSum, mx.saveInheritSum, man);
 
     // --- 保険料・保険金そのものの枠(あといくら加入できるか) ---
     // 控除・非課税が効く範囲だけを「使用済み」として数える(超過分は枠を増やさないため)
@@ -270,12 +281,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 死亡保険金は個人契約、死亡退職金と弔慰金は法人契約でカバーする前提で分けて表示する
     const corpSum = r.usedRetire + r.condolenceExemption;
     const corpMax = r.exemptionEach + r.condolenceExemption;
-    countUp('txPremiumNow', paidSum, (v) => yen(v) + ' / 年');
-    countUp('txDeathNow', r.usedDeath, man);
-    countUp('txCorpNow', corpSum, man);
-    gauge('txUsePremium', 'txLeadPremium', paidSum, paidMax, yen, '', '加入できます(毎年の払込)');
-    gauge('txUseDeath', 'txLeadDeath', r.usedDeath, r.exemptionEach, man, '', '非課税で受け取れます');
-    gauge('txUseCorp', 'txLeadCorp', corpSum, corpMax, man, '', '非課税で受け取れます');
+    gauge('txPremiumNow', 'txUsePremium', 'txLeadPremium', paidSum, paidMax, yenY, yen);
+    gauge('txDeathNow', 'txUseDeath', 'txLeadDeath', r.usedDeath, r.exemptionEach, man);
+    gauge('txCorpNow', 'txUseCorp', 'txLeadCorp', corpSum, corpMax, man);
     countUp('txPaidGeneral', paid[0], yen);
     countUp('txPaidPension', paid[1], yen);
     countUp('txPaidMedical', paid[2], yen);
