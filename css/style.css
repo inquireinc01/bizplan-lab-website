@@ -1338,6 +1338,16 @@ img {
   border-color: #fca5a5 !important;
 }
 
+/* 非課税×生命保険: 軽減額グラフの帯が左から伸びるアニメーション */
+@keyframes txSaveBarGrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.tx-save-bar {
+  transform-origin: left center;
+  animation: txSaveBarGrow 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ========== 計算ロジックの開示(フッターの「計算ロジック」ボタンで各セクション下に表示) ========== */
 .calc-logic {
   display: none;

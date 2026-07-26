@@ -32,6 +32,71 @@ document.addEventListener('DOMContentLoaded', function () {
     return 28000;
   }
 
+  // ===== 課税所得(万円)から所得税の限界税率を判定する(超過累進税率) =====
+  const RESIDENT_TAX_RATE = 10; // 住民税(所得割)の標準税率%
+  function marginalIncomeTaxRate(taxableIncomeMan) {
+    const x = Math.max(0, taxableIncomeMan);
+    if (x <= 195) return 5;
+    if (x <= 330) return 10;
+    if (x <= 695) return 20;
+    if (x <= 900) return 23;
+    if (x <= 1800) return 33;
+    if (x <= 4000) return 40;
+    return 45;
+  }
+  // 課税所得を入力したら所得税率欄に自動反映する(入力確定時)
+  const taxableIncomeEl = document.getElementById('txTaxableIncome');
+  const incomeRateEl = document.getElementById('txIncomeTaxRate');
+  function refreshIncomeTaxRate() {
+    if (!taxableIncomeEl || !incomeRateEl) return;
+    const v = window.numClean ? window.numClean(taxableIncomeEl.value) : parseFloat(taxableIncomeEl.value);
+    incomeRateEl.value = isNaN(v) ? '' : marginalIncomeTaxRate(v) + ' %';
+  }
+  if (taxableIncomeEl) taxableIncomeEl.addEventListener('change', refreshIncomeTaxRate);
+  refreshIncomeTaxRate();
+
+  // ===== 軽減額グラフ(積み上げ横棒)を描画する =====
+  // parts: [{label, value, color}] / unitFmt: 数値を表示用文字列にする関数
+  function renderSaveChart(svgId, parts, unitFmt) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const W = 360, BAR_X = 8, BAR_W = 344, BAR_Y = 34, BAR_H = 46;
+    const total = parts.reduce((s, p) => s + Math.max(0, p.value), 0);
+    let out = '';
+    // 目盛りの土台(未使用分はグレーで示し、枠の大きさを一定に保つ)
+    out += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="6" fill="#eef1f4"/>`;
+    if (total <= 0) {
+      out += `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 4}" font-size="12" fill="#9ca3af" text-anchor="middle">軽減額なし(入力してください)</text>`;
+      svg.innerHTML = out;
+      return;
+    }
+    let x = BAR_X;
+    parts.forEach(function (p, i) {
+      const v = Math.max(0, p.value);
+      if (v <= 0) return;
+      const w = (v / total) * BAR_W;
+      const isFirst = x === BAR_X;
+      const isLast = i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0);
+      // 両端だけ角を丸める(rx指定は矩形全体にかかるため、中間の帯は角丸なしにする)
+      const rx = (isFirst || isLast) ? 6 : 0;
+      out += `<rect class="tx-save-bar" x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}" style="animation-delay:${i * 160}ms"/>`;
+      // 帯が十分広いときだけ帯の中に金額を書く
+      if (w > 62) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 4}" font-size="11" font-weight="bold" fill="#fff" text-anchor="middle">${unitFmt(v)}</text>`;
+      }
+      // 帯の上に構成比
+      const pct = (v / total) * 100;
+      if (w > 34) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y - 8}" font-size="10" fill="#6b7280" text-anchor="middle">${pct.toFixed(0)}%</text>`;
+      }
+      x += w;
+    });
+    // 合計を下に表示
+    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 22}" font-size="11" fill="#6b7280">合計</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 22}" font-size="13" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(total)}</text>`;
+    svg.innerHTML = out;
+  }
+
   const showError = (msg) => {
     errorArea.textContent = msg;
     errorArea.classList.remove('hidden');
@@ -185,11 +250,60 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('txOneTimeTaxable').textContent = man(oneTimeTaxable);
     document.getElementById('pOneTimeTaxable').textContent = man(oneTimeTaxable);
 
+    // ---- 5. 税負担の軽減額(お得になる金額) ----
+    const taxableIncome = pnum(document.getElementById('txTaxableIncome').value);
+    const inheritanceRate = pnum(document.getElementById('txInheritanceRate').value);
+    if (isNaN(taxableIncome) || taxableIncome < 0 || isNaN(inheritanceRate) || inheritanceRate < 0) {
+      showError('「1. 税率の前提」の課税所得と相続税率を入力してください。');
+      return;
+    }
+    if (inheritanceRate > 100) {
+      showError('相続税率は100%以内で入力してください。');
+      document.getElementById('txInheritanceRate').focus();
+      return;
+    }
+    const incomeRate = marginalIncomeTaxRate(taxableIncome);
+    refreshIncomeTaxRate();
+
+    // 所得税・住民税: 控除額 × 税率(毎年効く軽減)
+    const saveIncomeTax = incomeTaxTotal * incomeRate / 100;
+    const saveResidentTax = residentTaxTotal * RESIDENT_TAX_RATE / 100;
+    const saveIncomeSum = saveIncomeTax + saveResidentTax;
+
+    // 相続税: 非課税となった財産額 × 相続税率(相続時に一度効く軽減)
+    const usedCondolence = condolenceExemption; // 限度額まで支給した場合
+    const saveDeath = usedDeathBenefit * inheritanceRate / 100;
+    const saveRetire = usedRetirementBenefit * inheritanceRate / 100;
+    const saveCondolence = usedCondolence * inheritanceRate / 100;
+    const saveInheritSum = saveDeath + saveRetire + saveCondolence;
+    const exemptAmountTotal = usedDeathBenefit + usedRetirementBenefit + usedCondolence;
+
+    document.getElementById('txSaveIncomeTotal').textContent = yen(saveIncomeSum) + ' / 年';
+    document.getElementById('txSaveIncomeTax').textContent = yen(saveIncomeTax) + `（控除 ${yen(incomeTaxTotal)} × ${incomeRate}%）`;
+    document.getElementById('txSaveResidentTax').textContent = yen(saveResidentTax) + `（控除 ${yen(residentTaxTotal)} × ${RESIDENT_TAX_RATE}%）`;
+    document.getElementById('txSave10y').textContent = yen(saveIncomeSum * 10);
+
+    document.getElementById('txSaveInheritTotal').textContent = man(saveInheritSum);
+    document.getElementById('txSaveDeath').textContent = man(saveDeath) + `（非課税 ${man(usedDeathBenefit)}）`;
+    document.getElementById('txSaveRetire').textContent = man(saveRetire) + `（非課税 ${man(usedRetirementBenefit)}）`;
+    document.getElementById('txSaveCondolence').textContent = man(saveCondolence) + `（非課税 ${man(usedCondolence)}）`;
+    document.getElementById('txExemptTotalAmount').textContent = man(exemptAmountTotal);
+
+    renderSaveChart('txChartIncome', [
+      { label: '所得税', value: saveIncomeTax, color: '#0f2a4a' },
+      { label: '住民税', value: saveResidentTax, color: '#3b6ea5' },
+    ], yen);
+    renderSaveChart('txChartInherit', [
+      { label: '生命保険金', value: saveDeath, color: '#0f2a4a' },
+      { label: '死亡退職金', value: saveRetire, color: '#3b6ea5' },
+      { label: '弔慰金', value: saveCondolence, color: '#7a9cc0' },
+    ], man);
+
     // ---- サマリー ----
     document.getElementById('txSummaryPremium').textContent = `${yen(incomeTaxTotal)} + ${yen(residentTaxTotal)}`;
     document.getElementById('txSummaryInheritance').textContent = man(exemptionEach + exemptionEach + condolenceExemption);
 
-    lastResult = { incomeTaxTotal, residentTaxTotal };
+    lastResult = { incomeTaxTotal, residentTaxTotal, saveIncomeSum, saveInheritSum };
 
     resultArea.classList.remove('hidden');
     if (!suppressScroll) {
