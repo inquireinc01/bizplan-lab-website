@@ -1338,6 +1338,82 @@ img {
   border-color: #fca5a5 !important;
 }
 
+/* ========== 非課税×生命保険: 所得税計算シートの縦1列レイアウト ==========
+   入力に不慣れな人でも迷わないよう、1項目1行(左=項目名/右=入力欄)で縦に並べる */
+.tx-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+}
+.tx-field-row:last-child {
+  border-bottom: none;
+}
+.tx-field-row > .tx-field-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 500;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tx-field-row > .tx-field-input {
+  flex: 0 0 auto;
+  width: 11rem;
+  max-width: 45%;
+}
+.tx-field-row > .tx-field-input input,
+.tx-field-row > .tx-field-input select {
+  width: 100%;
+}
+/* 自動計算行: 入力欄ではなく計算結果を右に表示する */
+.tx-field-row.is-auto {
+  background-color: #f7f9fc;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+  border-radius: 0.4rem;
+}
+.tx-field-row .tx-field-value {
+  flex: 0 0 auto;
+  width: 11rem;
+  max-width: 45%;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-navy);
+}
+.tx-group-title {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  letter-spacing: 0.04em;
+  margin: 1.4rem 0 0.35rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--color-navy);
+}
+.tx-group-title:first-child {
+  margin-top: 0;
+}
+.tx-group-note {
+  font-size: 0.7rem;
+  color: #8a8f98;
+  margin: 0.3rem 0 0.5rem;
+}
+@media (max-width: 639px) {
+  .tx-field-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+  .tx-field-row > .tx-field-input,
+  .tx-field-row .tx-field-value {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 /* 非課税×生命保険: 軽減額グラフの帯が左から伸びるアニメーション */
 @keyframes txSaveBarGrow {
   from { transform: scaleX(0); }

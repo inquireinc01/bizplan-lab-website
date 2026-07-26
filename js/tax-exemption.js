@@ -88,60 +88,116 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const SPOUSE_DEDUCTION = { none: [0, 0], general: [38, 33], elderly: [48, 38] };
+  const SEPARATE_RATE = 20.315; // 利子・配当(分離)・株式譲渡・土地建物長期譲渡
+  const LAND_SHORT_RATE = 39.63; // 土地建物の短期譲渡
+
+  // 「6. 一時所得」で算定した課税対象額(1/2後・万円)。総合課税に合算する
+  let oneTimeTaxableMan = 0;
+
+  const pn = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return NaN;
+    return window.numClean ? window.numClean(el.value) : parseFloat(el.value);
+  };
 
   // 生命保険料控除を除いた所得・控除の状態を集計する
   function collectIncomeBase() {
-    const pn = (id) => {
-      const el = document.getElementById(id);
-      if (!el) return NaN;
-      return window.numClean ? window.numClean(el.value) : parseFloat(el.value);
-    };
     const salary = pn('txSalaryIncome');
-    const other = pn('txOtherIncome');
+    const business = pn('txBusinessIncome');
+    const realEstate = pn('txRealEstateIncome');
+    const dividend = pn('txDividendIncome');
+    const misc = pn('txMiscIncome');
+    const transferShort = pn('txTransferShort');
+    const transferLong = pn('txTransferLong');
+    const forestry = pn('txForestryIncome');
+    const dividendMethod = (document.getElementById('txDividendMethod') || {}).value || 'aggregate';
+
     const social = pn('txSocialInsurance');
+    const smallBiz = pn('txSmallBizDeduction');
+    const earthquake = pn('txEarthquakeDeduction');
+    const medical = pn('txMedicalDeduction');
     const depGen = pn('txDependentGeneral');
     const depSpe = pn('txDependentSpecific');
     const depEld = pn('txDependentElderly');
     const otherDed = pn('txOtherDeduction');
     const spouseKey = (document.getElementById('txSpouseDeduction') || {}).value || 'none';
 
-    if ([salary, other, social, depGen, depSpe, depEld, otherDed].some((v) => isNaN(v) || v < 0)) return null;
+    // 不動産所得・事業所得は損失(マイナス)もあり得るため負値を許容する
+    const signed = [salary, business, realEstate, dividend, misc, transferShort, transferLong, forestry];
+    const nonNegative = [salary, social, smallBiz, earthquake, medical, depGen, depSpe, depEld, otherDed];
+    if (signed.some((v) => isNaN(v)) || nonNegative.some((v) => isNaN(v) || v < 0)) return null;
 
     const salDed = salaryDeduction(salary);
     const salaryIncome = Math.max(0, salary - salDed);
-    const totalIncome = salaryIncome + other;
+    // 総合課税の合計所得金額(配当は総合課税を選択した場合のみ含める。長期譲渡は1/2)
+    const dividendAggregated = dividendMethod === 'aggregate' ? dividend : 0;
+    const totalIncome = salaryIncome + business + realEstate + dividendAggregated + misc
+      + transferShort + transferLong / 2 + forestry + oneTimeTaxableMan;
 
     const sp = SPOUSE_DEDUCTION[spouseKey] || SPOUSE_DEDUCTION.none;
     // 扶養控除: 所得税 一般38/特定63/老人48、住民税 一般33/特定45/老人38
     const depIt = depGen * 38 + depSpe * 63 + depEld * 48;
     const depRt = depGen * 33 + depSpe * 45 + depEld * 38;
+    // 地震保険料控除は住民税では上限2.5万円
+    const earthquakeRt = Math.min(earthquake, 2.5);
 
     const basicIt = basicDeduction(totalIncome, false);
     const basicRt = basicDeduction(totalIncome, true);
     // 生命保険料控除以外の所得控除合計
-    const dedIt = social + sp[0] + depIt + otherDed + basicIt;
-    const dedRt = social + sp[1] + depRt + otherDed + basicRt;
+    const common = social + smallBiz + medical + otherDed;
+    const dedIt = common + earthquake + sp[0] + depIt + basicIt;
+    const dedRt = common + earthquakeRt + sp[1] + depRt + basicRt;
 
-    return { salary, salDed, salaryIncome, other, totalIncome, basicIt, basicRt, dedIt, dedRt };
+    // 分離課税の税額(参考。総合課税の課税所得には含めない)
+    const interest = pn('txInterestIncome');
+    const stockTransfer = pn('txStockTransfer');
+    const landTransfer = pn('txLandTransfer');
+    const landType = (document.getElementById('txLandTransferType') || {}).value || 'long';
+    const sepInputs = [interest, stockTransfer, landTransfer];
+    let separateTax = NaN;
+    if (!sepInputs.some((v) => isNaN(v) || v < 0)) {
+      const landRate = landType === 'short' ? LAND_SHORT_RATE : SEPARATE_RATE;
+      const dividendSeparate = dividendMethod === 'separate' ? Math.max(0, dividend) : 0;
+      separateTax = (interest + stockTransfer + dividendSeparate) * SEPARATE_RATE / 100
+        + landTransfer * landRate / 100;
+    }
+
+    return {
+      salary, salDed, salaryIncome, totalIncome, basicIt, basicRt, dedIt, dedRt,
+      dividend, dividendMethod, dividendAggregated, separateTax,
+    };
+  }
+
+  // 配当控除(税額控除)。課税総所得1,000万円以下は所得税10%・住民税2.8%、超は5%・1.4%
+  function dividendCredit(dividendAggregated, taxableIt) {
+    if (dividendAggregated <= 0) return [0, 0];
+    const low = taxableIt <= 1000;
+    return [dividendAggregated * (low ? 0.10 : 0.05), dividendAggregated * (low ? 0.028 : 0.014)];
   }
 
   // 「1. 所得税・住民税の計算」欄(生命保険料控除の適用前)を更新する
   function refreshIncomeSheet() {
     const b = collectIncomeBase();
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-    const salDedEl = document.getElementById('txSalaryDeduction');
+    const autoIds = ['txSalaryDeduction', 'txSalaryIncomeNet', 'txOneTimeLinked', 'txTotalIncomeSum', 'txSeparateTax',
+      'txTotalIncomeIt', 'txTotalIncomeRt', 'txBasicIt', 'txBasicRt', 'txDeductionIt', 'txDeductionRt',
+      'txTaxableIt', 'txTaxableRt', 'txRateIt', 'txRateRt', 'txDividendCreditIt', 'txDividendCreditRt',
+      'txTaxBeforeIt', 'txTaxBeforeRt'];
     if (!b) {
-      if (salDedEl) salDedEl.value = '';
-      ['txTotalIncomeIt', 'txTotalIncomeRt', 'txBasicIt', 'txBasicRt', 'txDeductionIt', 'txDeductionRt',
-        'txTaxableIt', 'txTaxableRt', 'txRateIt', 'txRateRt', 'txTaxBeforeIt', 'txTaxBeforeRt'].forEach((id) => set(id, '-'));
+      autoIds.forEach((id) => set(id, '-'));
       return null;
     }
     const taxableIt = floorTaxable(b.totalIncome - b.dedIt);
     const taxableRt = floorTaxable(b.totalIncome - b.dedRt);
-    const taxIt = incomeTaxAmount(taxableIt);
-    const taxRt = taxableRt > 0 ? taxableRt * RESIDENT_TAX_RATE / 100 + RESIDENT_PER_CAPITA : 0;
+    const [credIt, credRt] = dividendCredit(b.dividendAggregated, taxableIt);
+    const taxIt = Math.max(0, incomeTaxAmount(taxableIt) - credIt);
+    const taxRt = taxableRt > 0 ? Math.max(0, taxableRt * RESIDENT_TAX_RATE / 100 - credRt) + RESIDENT_PER_CAPITA : 0;
 
-    if (salDedEl) salDedEl.value = man(b.salDed);
+    set('txSalaryDeduction', man(b.salDed));
+    set('txSalaryIncomeNet', man(b.salaryIncome));
+    set('txOneTimeLinked', man(oneTimeTaxableMan));
+    set('txTotalIncomeSum', man(b.totalIncome));
+    set('txSeparateTax', isNaN(b.separateTax) ? '-' : man(b.separateTax));
     set('txTotalIncomeIt', man(b.totalIncome));
     set('txTotalIncomeRt', man(b.totalIncome));
     set('txBasicIt', man(b.basicIt));
@@ -152,13 +208,19 @@ document.addEventListener('DOMContentLoaded', function () {
     set('txTaxableRt', man(taxableRt));
     set('txRateIt', marginalIncomeTaxRate(taxableIt) + ' %');
     set('txRateRt', RESIDENT_TAX_RATE + ' %＋均等割');
+    set('txDividendCreditIt', credIt > 0 ? '△ ' + man(credIt) : man(0));
+    set('txDividendCreditRt', credRt > 0 ? '△ ' + man(credRt) : man(0));
     set('txTaxBeforeIt', man(taxIt));
     set('txTaxBeforeRt', man(taxRt));
-    return { base: b, taxableIt, taxableRt, taxIt, taxRt };
+    return { base: b, taxableIt, taxableRt, taxIt, taxRt, credIt, credRt };
   }
   // 収入・控除の入力を確定したら計算欄を更新する
-  ['txSalaryIncome', 'txOtherIncome', 'txSocialInsurance', 'txSpouseDeduction',
-    'txDependentGeneral', 'txDependentSpecific', 'txDependentElderly', 'txOtherDeduction'].forEach(function (id) {
+  ['txSalaryIncome', 'txBusinessIncome', 'txRealEstateIncome', 'txDividendIncome', 'txDividendMethod',
+    'txMiscIncome', 'txTransferShort', 'txTransferLong', 'txForestryIncome',
+    'txInterestIncome', 'txStockTransfer', 'txLandTransfer', 'txLandTransferType',
+    'txSocialInsurance', 'txSmallBizDeduction', 'txEarthquakeDeduction', 'txMedicalDeduction',
+    'txSpouseDeduction', 'txDependentGeneral', 'txDependentSpecific', 'txDependentElderly',
+    'txOtherDeduction'].forEach(function (id) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', refreshIncomeSheet);
   });
@@ -359,6 +421,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pOneTimeTaxable').textContent = man(oneTimeTaxable);
 
     // ---- 5. 税負担の軽減額(お得になる金額) ----
+    // 一時所得の課税対象額(1/2後)を総合課税に合算してから所得税を計算する
+    oneTimeTaxableMan = oneTimeTaxable;
     const sheet = refreshIncomeSheet();
     if (!sheet) {
       showError('「1. 所得税・住民税の計算」の収入・所得控除を入力してください。');
@@ -382,8 +446,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const lifeDedRtMan = residentTaxTotal / 10000;
     const taxableItAfter = floorTaxable(sheet.taxableIt - lifeDedItMan);
     const taxableRtAfter = floorTaxable(sheet.taxableRt - lifeDedRtMan);
-    const taxItAfter = incomeTaxAmount(taxableItAfter);
-    const taxRtAfter = taxableRtAfter > 0 ? taxableRtAfter * RESIDENT_TAX_RATE / 100 + RESIDENT_PER_CAPITA : 0;
+    // 控除後の課税所得で配当控除も再判定する(1,000万円の境界をまたぐ場合に率が変わる)
+    const [credItAfter, credRtAfter] = dividendCredit(sheet.base.dividendAggregated, taxableItAfter);
+    const taxItAfter = Math.max(0, incomeTaxAmount(taxableItAfter) - credItAfter);
+    const taxRtAfter = taxableRtAfter > 0 ? Math.max(0, taxableRtAfter * RESIDENT_TAX_RATE / 100 - credRtAfter) + RESIDENT_PER_CAPITA : 0;
     // 万円→円に戻して表示(既存の yen() 表示に合わせる)
     const saveIncomeTax = Math.max(0, sheet.taxIt - taxItAfter) * 10000;
     const saveResidentTax = Math.max(0, sheet.taxRt - taxRtAfter) * 10000;
