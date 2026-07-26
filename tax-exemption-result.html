@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072717" />
+<link rel="stylesheet" href="css/style.css?v=2026072718" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -318,31 +318,29 @@
             </div>
 
             <div class="tx-plan-col">
-              <p class="tx-plan-title">相続税の非課税枠<span class="tx-plan-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">被相続人の死亡により支払われる生命保険金・死亡退職金は、それぞれ独立して「500万円×法定相続人の数」までが相続税の非課税財産となります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></p>
+              <p class="tx-plan-title">相続税の非課税枠<span class="tx-plan-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">生命保険金と死亡退職金は、それぞれ独立して「500万円×法定相続人の数」までが相続税の非課税財産になります(相続税法12条)。弔慰金は業務上の死亡なら普通給与の36ヶ月分、業務外の死亡なら6ヶ月分まで相続税の課税対象外です(相続税法基本通達3-20)。死亡退職金と弔慰金は法人契約の保険を原資に会社から遺族へ支給する前提で計算しています。</span></span></p>
+              <p class="tx-plan-sub">個人契約</p>
               <div class="tx-plan-field">
                 <label for="txDeathBenefit">死亡保険金の受取見込額<span class="tx-plan-room" id="txRoomDeath"></span></label>
                 <input type="number" id="txDeathBenefit" value="600" class="form-input" placeholder="例: 5,000" />
               </div>
+              <p class="tx-plan-sub">法人契約</p>
               <div class="tx-plan-field">
                 <label for="txRetirementBenefit">死亡退職金の見込額<span class="tx-plan-room" id="txRoomRetire"></span></label>
                 <input type="number" id="txRetirementBenefit" value="300" class="form-input" placeholder="例: 5,000" />
               </div>
-              <p class="tx-plan-auto"><span>法定相続人の数<span class="help-tip" tabindex="0">?<span class="help-text">相続税を簡易入力にした場合は入力した人数、詳細入力にした場合は家系図から自動判定した人数です。変更する場合は「入力内容を修正する」から前提条件入力に戻ってください。</span></span></span><span id="txHeirsCountView">-</span></p>
-            </div>
-
-            <div class="tx-plan-col">
-              <p class="tx-plan-title">弔慰金の非課税枠<span class="tx-plan-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">会社が遺族に支払う弔慰金は、業務上の死亡なら死亡当時の普通給与の3年分(36ヶ月分)、業務外の死亡なら半年分(6ヶ月分)まで相続税の課税対象外です(相続税法基本通達3-20)。これを超える部分は死亡退職金として扱われます。</span></span></p>
               <div class="tx-plan-field">
-                <label for="txSalaryMonthly">最終報酬月額</label>
+                <label for="txSalaryMonthly">最終報酬月額<span class="tx-plan-room" id="txRoomCond"></span></label>
                 <input type="number" id="txSalaryMonthly" value="100" class="form-input" placeholder="例: 100" />
               </div>
               <div class="tx-plan-field is-stack">
-                <label for="txDeathCause">死亡事由</label>
+                <label for="txDeathCause">死亡事由<span class="help-tip" tabindex="0">?<span class="help-text">弔慰金の非課税限度額を決めます。業務上の死亡なら普通給与の36ヶ月分、業務外の死亡なら6ヶ月分までが非課税です。限度額を超える部分は死亡退職金として扱われます。</span></span></label>
                 <select id="txDeathCause" class="form-select">
                   <option value="on" selected>業務上の死亡(36ヶ月分)</option>
                   <option value="off">業務外の死亡(6ヶ月分)</option>
                 </select>
               </div>
+              <p class="tx-plan-auto"><span>法定相続人の数<span class="help-tip" tabindex="0">?<span class="help-text">相続税を簡易入力にした場合は入力した人数、詳細入力にした場合は家系図から自動判定した人数です。変更する場合は「入力内容を修正する」から前提条件入力に戻ってください。</span></span></span><span id="txHeirsCountView">-</span></p>
             </div>
           </div>
 
@@ -370,7 +368,7 @@
               <dt>グラフ</dt>
               <dd>上限を全体の幅とし、現状の金額を内訳ごとに積み上げたゲージです。グレーの部分が使い残している枠(あといくら上乗せできるか)を表します。所得税・住民税と相続税は金額の規模と発生時期が異なるため、別のグラフ・別の目盛りで描画しています。</dd>
             </dl>
-            <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。弔慰金は非課税限度額まで支給した場合の軽減額として計算しています。</p>
+            <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。死亡保険金は個人契約、死亡退職金と弔慰金は法人契約の保険を原資に会社から遺族へ支給する前提で計算しています。弔慰金は非課税限度額まで支給した場合の軽減額としています。</p>
           </div>
         </div>
       </div>
@@ -462,6 +460,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727b"></script>
-<script src="js/tax-exemption-result.js?v=202607271a"></script>
+<script src="js/tax-exemption-result.js?v=202607271b"></script>
 </body>
 </html>

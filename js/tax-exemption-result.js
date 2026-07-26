@@ -323,6 +323,11 @@ document.addEventListener('DOMContentLoaded', function () {
     room('txRoomMedical', r.roomMedical, yen);
     room('txRoomDeath', r.roomDeath, man);
     room('txRoomRetire', r.roomRetire, man);
+    const condEl = $('txRoomCond');
+    if (condEl) {
+      condEl.textContent = '弔慰金の非課税枠 ' + man(r.condolenceExemption) + '(' + r.condolenceMonths + 'ヶ月分)';
+      condEl.classList.remove('is-full');
+    }
 
     renderSaveChart('txChartIncome', [
       { label: '所得税', value: r.saveIt, color: NAVY[0] },

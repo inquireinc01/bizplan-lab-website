@@ -1505,7 +1505,7 @@ img {
   .tx-plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1024px) {
-  .tx-plan-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tx-plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .tx-plan-col {
   border: 1px solid #e5e7eb;
@@ -1530,6 +1530,19 @@ img {
   background-color: #eef2f7;
   border-radius: 0.25rem;
   padding: 0.05rem 0.3rem;
+}
+/* 個人契約/法人契約など、カラム内の小見出し */
+.tx-plan-sub {
+  margin: 0.5rem 0 0.25rem;
+  padding-bottom: 0.15rem;
+  border-bottom: 1px dashed #e5e7eb;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  letter-spacing: 0.04em;
+}
+.tx-plan-sub:first-of-type {
+  margin-top: 0;
 }
 .tx-plan-field {
   display: flex;
