@@ -44,8 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
      所得税グループはネイビー、相続税グループはグリーン。
      グリーンはネイビーと同じ彩度・明度のまま色相だけ変えた値(HSL 211→150) ===== */
   const NAVY = ['#0f2a4a', '#3b6ea5', '#7a9cc0', '#2d5580'];
-  // 既定は内訳をまとめた1本の帯。ボタンで内訳表示に切り替える
-  let showDetail = false;
   const GREEN = ['#0f482b', '#3ba570', '#7ac09d', '#2d8056'];
 
   /* ===== 数値のカウントアップ ===== */
@@ -106,9 +104,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (room > 0) {
       out += `<rect x="${(BAR_X + usedW).toFixed(1)}" y="${BAR_Y}" width="${(BAR_W - usedW).toFixed(1)}" height="${BAR_H}" rx="10" fill="url(#${pid})"/>`;
     }
-    // 現状の内訳を積み上げる
-    // 既定は内訳をまとめた1本の帯。内訳表示のときだけ区分ごとに塗り分ける
-    const drawn = o.detail ? parts : [{ label: '合計', value: used, color: o.base || parts[0].color }];
+    // 現状の内訳を区分ごとに積み上げる
+    const drawn = parts;
     let x = BAR_X;
     drawn.forEach(function (p, i) {
       const v = Math.max(0, p.value);
@@ -144,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
     chartState[svgId] = next;
     if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
     clearTimeout(svg._chartTimer);
-    const opts = Object.assign({}, opt, { detail: showDetail });
+    const opts = opt || {};
     const at = (vals) => parts.map((p, i) => ({ label: p.label, color: p.color, value: vals[i] }));
     if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opts); return; }
     // requestAnimationFrameが止まる環境でも最終形は必ず描く
@@ -280,9 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const paid = r.premiumRows.map((row) => Math.min(row.premium, T.PREMIUM_FULL));
     const paidSum = paid.reduce((a2, b2) => a2 + b2, 0);
     const paidMax = T.PREMIUM_FULL * T.PREMIUM_ITEMS.length;
-    // 死亡保険金は個人契約、死亡退職金と弔慰金は法人契約でカバーする前提で分けて表示する
-    const corpSum = r.usedRetire + r.condolenceExemption;
-    const corpMax = r.exemptionEach + r.condolenceLimit;
+    // 死亡保険金は個人契約、死亡退職金と弔慰金は法人契約でカバーする前提で1枚ずつ表示する
     const premCards = [
       ['txGenNow', 'txUseGen', 'txLeadGen', 'txChartGen'],
       ['txPenNow', 'txUsePen', 'txLeadPen', 'txChartPen'],
@@ -293,31 +288,22 @@ document.addEventListener('DOMContentLoaded', function () {
       renderSaveChart(ids[3], [{ label: r.premiumRows[i].label, value: paid[i], color: NAVY[i] }],
         yen, T.PREMIUM_FULL, { base: NAVY[i], accent: NAVY[3], slim: true });
     });
-    gauge('txDeathNow', 'txUseDeath', 'txLeadDeath', r.usedDeath, r.exemptionEach, man);
-    gauge('txCorpNow', 'txUseCorp', 'txLeadCorp', corpSum, corpMax, man);
-    countUp('txDeathUsed', r.usedDeath, man);
-    countUp('txDeathEach', r.exemptionEach, man);
-    countUp('txDeathRoom', Math.max(0, r.exemptionEach - r.usedDeath), man);
-    countUp('txCorpRetire', r.usedRetire, man);
-    countUp('txCorpCond', r.condolenceExemption, man);
-    countUp('txCorpRoom', Math.max(0, corpMax - corpSum), man);
-
-    renderSaveChart('txChartDeath', [
-      { label: '死亡保険金', value: r.usedDeath, color: GREEN[0] },
-    ], man, r.exemptionEach, { capLabel: '非課税枠', base: GREEN[0], accent: GREEN[3] });
-    renderSaveChart('txChartCorp', [
-      { label: '死亡退職金', value: r.usedRetire, color: GREEN[1] },
-      { label: '弔慰金', value: r.condolenceExemption, color: GREEN[2] },
-    ], man, corpMax, { capLabel: '非課税枠の合計', base: GREEN[0], accent: GREEN[3] });
-    countUp('txMaxPremiumCol', mx.saveIncomeSum, yen);
-    countUp('txMaxExemptCol', mx.saveDeath + mx.saveRetire, man);
-    countUp('txMaxCondolenceCol', mx.saveCondolence, man);
+    const inheritCards = [
+      ['txDeathNow', 'txUseDeath', 'txLeadDeath', 'txChartDeath', '死亡保険金', r.usedDeath, r.exemptionEach],
+      ['txRetNow', 'txUseRet', 'txLeadRet', 'txChartRet', '死亡退職金', r.usedRetire, r.exemptionEach],
+      ['txCondNow', 'txUseCond', 'txLeadCond', 'txChartCond', '弔慰金', r.condolenceExemption, r.condolenceLimit],
+    ];
+    inheritCards.forEach(function (c, i) {
+      gauge(c[0], c[1], c[2], c[5], c[6], man);
+      renderSaveChart(c[3], [{ label: c[4], value: c[5], color: GREEN[i] }],
+        man, c[6], { base: GREEN[i], accent: GREEN[3], slim: true });
+    });
 
     // --- 各入力欄の「あと◯◯」 ---
     const room = (id, v, fmt) => {
       const el = $(id);
       if (!el) return;
-      el.textContent = v > 0 ? 'あと ' + fmt(v) : '枠を使い切っています';
+      el.textContent = v > 0 ? 'あと ' + fmt(v) : '使い切り';
       el.classList.toggle('is-full', !(v > 0));
     };
     room('txRoomGeneral', r.roomGeneral, yen);
@@ -328,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
     room('txRoomCondolence', r.roomCondolence, man);
     const condEl = $('txRoomCond');
     if (condEl) {
-      condEl.textContent = '弔慰金の非課税枠 ' + man(r.condolenceLimit) + '(' + r.condolenceMonths + 'ヶ月分)';
+      condEl.textContent = '非課税枠 ' + man(r.condolenceLimit) + '(' + r.condolenceMonths + 'ヶ月分)';
       condEl.classList.remove('is-full');
     }
 
@@ -388,18 +374,6 @@ document.addEventListener('DOMContentLoaded', function () {
   collectPlan();
   savePlan();
   render();
-
-  /* ===== 内訳表示の切り替え(グラフの塗り分けと凡例をまとめて切り替える) ===== */
-  const detailBtn = $('txDetailBtn');
-  if (detailBtn) {
-    detailBtn.addEventListener('click', function () {
-      showDetail = !showDetail;
-      detailBtn.classList.toggle('is-on', showDetail);
-      detailBtn.textContent = showDetail ? 'まとめて表示' : '内訳を表示';
-      document.querySelectorAll('.tx-legend').forEach(function (d) { d.open = showDetail; });
-      render();
-    });
-  }
 
   /* ===== 生命保険の設計だけをクリア =====
      window.confirm()はLINE等アプリ内ブラウザで反応しないことがあるため、

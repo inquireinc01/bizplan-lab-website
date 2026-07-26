@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072720" />
+<link rel="stylesheet" href="css/style.css?v=2026072722" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -157,10 +157,6 @@
 
         <!-- 税負担の軽減額(グラフ)と生命保険の設計を1画面に収める -->
         <div class="calc-section bg-white p-5 sm:p-6">
-          <div class="flex flex-wrap items-center justify-end gap-2 mb-3">
-            <button type="button" id="txDetailBtn" class="tx-detail-btn">内訳を表示</button>
-          </div>
-
           <!-- 上段: あといくら加入できるか(左=所得税グループ3枚 / 右=相続税グループ2枚) -->
           <div class="grid lg:grid-cols-2 gap-4">
             <div class="tx-pair is-navy">
@@ -201,48 +197,43 @@
             <div class="tx-pair is-green">
               <p class="tx-pair-head"><span>相続税</span><span class="tx-pair-head-sub">相続が起きたときに一度効く</span></p>
               <div class="tx-pair-body is-even">
-                <div class="tx-gauge-card">
-                  <div class="flex items-baseline justify-between gap-2 mb-1">
-                    <p class="tx-gauge-title">死亡保険金<span class="help-tip" tabindex="0">?<span class="help-text">個人契約の生命保険から遺族が受け取る死亡保険金です。「500万円×法定相続人の数」までが相続税の非課税財産になります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></p>
-                    <p class="tx-gauge-tag">個人契約</p>
+                <div class="tx-gauge-card is-slim">
+                  <div class="tx-gauge-slim-head">
+                    <p class="tx-gauge-title is-slim">死亡保険金<span class="help-tip" tabindex="0">?<span class="help-text">個人契約の生命保険から遺族が受け取る死亡保険金です。「500万円×法定相続人の数」までが相続税の非課税財産になります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></p>
+                    <p class="tx-gauge-tag is-slim ">個人契約</p>
                   </div>
-                  <p class="tx-gauge-nowlabel">あと非課税で受け取れる額</p>
                   <div class="tx-gauge-head">
-                    <p id="txDeathNow" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-now is-slim"><span class="tx-gauge-pre">あと</span><span id="txDeathNow"></span></p>
                     <p class="tx-gauge-pill"><span id="txUseDeath">-</span><span>活用</span></p>
                   </div>
+                  <svg id="txChartDeath" viewBox="0 0 560 44" class="w-full h-auto" role="img" aria-label="死亡保険金と非課税枠に対する使用状況"></svg>
                   <p class="tx-gauge-lead" id="txLeadDeath"></p>
-                  <svg id="txChartDeath" viewBox="0 0 560 112" class="w-full h-auto" role="img" aria-label="死亡保険金と非課税枠に対する使用状況"></svg>
-                  <details class="tx-legend">
-                    <summary>内訳</summary>
-                    <dl class="text-xs space-y-1">
-                      <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-1"></span>非課税枠に収まる額</dt><dd id="txDeathUsed" class="font-bold text-right"></dd></div>
-                      <div class="flex justify-between gap-2"><dt class="text-gray-500 shrink-0">非課税枠(500万円×法定相続人)</dt><dd id="txDeathEach" class="font-bold text-right"></dd></div>
-                      <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">あと非課税で受け取れる額</dt><dd id="txDeathRoom" class="font-bold tx-accent text-right"></dd></div>
-                    </dl>
-                  </details>
                 </div>
 
-                <div class="tx-gauge-card">
-                  <div class="flex items-baseline justify-between gap-2 mb-1">
-                    <p class="tx-gauge-title">死亡退職金・弔慰金<span class="help-tip" tabindex="0">?<span class="help-text">法人契約の保険を原資に会社から遺族へ支給する死亡退職金と弔慰金です。死亡退職金は「500万円×法定相続人の数」まで、弔慰金は業務上の死亡なら普通給与の36ヶ月分・業務外なら6ヶ月分まで相続税がかかりません。弔慰金が限度額を超えた分は死亡退職金に合算して判定します。</span></span></p>
-                    <p class="tx-gauge-tag">法人契約</p>
+                <div class="tx-gauge-card is-slim">
+                  <div class="tx-gauge-slim-head">
+                    <p class="tx-gauge-title is-slim">死亡退職金<span class="help-tip" tabindex="0">?<span class="help-text">法人契約の保険を原資に会社から遺族へ支給する死亡退職金です。「500万円×法定相続人の数」までが相続税の非課税財産になります。弔慰金が非課税限度額を超えた分はここに合算して判定します。</span></span></p>
+                    <p class="tx-gauge-tag is-slim is-corp">法人契約</p>
                   </div>
-                  <p class="tx-gauge-nowlabel">あと非課税で受け取れる額</p>
                   <div class="tx-gauge-head">
-                    <p id="txCorpNow" class="tx-gauge-now"></p>
-                    <p class="tx-gauge-pill"><span id="txUseCorp">-</span><span>活用</span></p>
+                    <p class="tx-gauge-now is-slim"><span class="tx-gauge-pre">あと</span><span id="txRetNow"></span></p>
+                    <p class="tx-gauge-pill"><span id="txUseRet">-</span><span>活用</span></p>
                   </div>
-                  <p class="tx-gauge-lead" id="txLeadCorp"></p>
-                  <svg id="txChartCorp" viewBox="0 0 560 112" class="w-full h-auto" role="img" aria-label="死亡退職金・弔慰金と非課税枠に対する使用状況"></svg>
-                  <details class="tx-legend">
-                    <summary>内訳</summary>
-                    <dl class="text-xs space-y-1">
-                      <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-2"></span>死亡退職金</dt><dd id="txCorpRetire" class="font-bold text-right"></dd></div>
-                      <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="tx-swatch tx-swatch-3"></span>弔慰金</dt><dd id="txCorpCond" class="font-bold text-right"></dd></div>
-                      <div class="flex justify-between gap-2 pt-1 border-t border-gray-200"><dt class="text-gray-500 shrink-0">あと非課税で受け取れる額</dt><dd id="txCorpRoom" class="font-bold tx-accent text-right"></dd></div>
-                    </dl>
-                  </details>
+                  <svg id="txChartRet" viewBox="0 0 560 44" class="w-full h-auto" role="img" aria-label="死亡退職金と非課税枠に対する使用状況"></svg>
+                  <p class="tx-gauge-lead" id="txLeadRet"></p>
+                </div>
+
+                <div class="tx-gauge-card is-slim">
+                  <div class="tx-gauge-slim-head">
+                    <p class="tx-gauge-title is-slim">弔慰金<span class="help-tip" tabindex="0">?<span class="help-text">法人契約の保険を原資に会社から遺族へ支給する弔慰金です。業務上の死亡なら普通給与の36ヶ月分、業務外の死亡なら6ヶ月分まで相続税がかかりません。限度額は最終報酬月額で決まるため、保険金額を増やしても広がりません。</span></span></p>
+                    <p class="tx-gauge-tag is-slim is-corp">法人契約</p>
+                  </div>
+                  <div class="tx-gauge-head">
+                    <p class="tx-gauge-now is-slim"><span class="tx-gauge-pre">あと</span><span id="txCondNow"></span></p>
+                    <p class="tx-gauge-pill"><span id="txUseCond">-</span><span>活用</span></p>
+                  </div>
+                  <svg id="txChartCond" viewBox="0 0 560 44" class="w-full h-auto" role="img" aria-label="弔慰金と非課税限度額に対する使用状況"></svg>
+                  <p class="tx-gauge-lead" id="txLeadCond"></p>
                 </div>
               </div>
             </div>
@@ -473,6 +464,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727c"></script>
-<script src="js/tax-exemption-result.js?v=202607271f"></script>
+<script src="js/tax-exemption-result.js?v=202607271i"></script>
 </body>
 </html>

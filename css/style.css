@@ -1560,19 +1560,19 @@ img {
 .tx-plan-field > label {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.6875rem;
-  color: #6b7280;
-  line-height: 1.25;
+  font-size: 0.8125rem;
+  color: #374151;
+  line-height: 1.3;
 }
 .tx-plan-field > input,
 .tx-plan-field > select {
   border-radius: 0.5rem;
   padding: 0.3rem 0.5rem;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
 .tx-plan-field > input {
-  flex: 0 0 5.5rem;
-  width: 5.5rem;
+  flex: 0 0 6rem;
+  width: 6rem;
   text-align: right;
 }
 /* 選択肢が長い項目はラベルを上に置いて全幅で表示する */
@@ -1613,12 +1613,15 @@ img {
   color: #2d5580;
 }
 /* 入力欄の横に出す「あと◯◯」の余力表示 */
+/* 「あと◯◯」は項目名と同じ行に並べる(改行させない) */
 .tx-plan-room {
-  display: block;
-  font-size: 0.625rem;
+  display: inline;
+  margin-left: 0.5em;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.3;
   color: #2d5580;
+  white-space: nowrap;
 }
 .tx-plan-room.is-full {
   color: #9ca3af;
@@ -1697,6 +1700,20 @@ img {
   flex-direction: column;
   justify-content: center;
   padding: 0.55rem 0.7rem;
+}
+/* 簡易版カードの見出し行(項目名 + 契約区分) */
+.tx-gauge-slim-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.tx-gauge-tag.is-slim {
+  font-size: 0.625rem;
+  padding: 0.1rem 0.5rem;
+}
+.tx-gauge-tag.is-corp {
+  background-color: #0f482b;
 }
 .tx-gauge-title.is-slim {
   font-size: 0.8125rem;
