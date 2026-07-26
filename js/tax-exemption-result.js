@@ -136,11 +136,14 @@ document.addEventListener('DOMContentLoaded', function () {
     bars += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="url(#${gid})"/>`;
 
     let out = `<defs>${defs}</defs><g clip-path="url(#${cid})">${bars}</g>${labels}`;
-    if (o.slim) { svg.innerHTML = out; return; }
-    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 24}" font-weight="bold" fill="${o.base || '#0f2a4a'}">`
-      + `<tspan font-size="13" font-weight="normal" fill="#6b7280">現状 </tspan>${svgAmount(unitFmt(used), 20)}</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 24}" text-anchor="end" font-weight="bold" fill="${o.accent || '#2d5580'}">`
-      + `<tspan font-size="13" font-weight="normal" fill="#6b7280">上限 </tspan>${svgAmount(unitFmt(cap), 20)}</text>`;
+    // 帯の下に「現状」と「上限」を左右に並べる(簡易版カードも同じレイアウトにそろえる)
+    const capFs = o.slim ? 17 : 20;
+    const capLabelFs = o.slim ? 12 : 13;
+    const capY = BAR_Y + BAR_H + (o.slim ? 22 : 24);
+    out += `<text x="${BAR_X}" y="${capY}" font-weight="bold" fill="${o.base || '#0f2a4a'}">`
+      + `<tspan font-size="${capLabelFs}" font-weight="normal" fill="#6b7280">現状 </tspan>${svgAmount(unitFmt(used), capFs)}</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${capY}" text-anchor="end" font-weight="bold" fill="${o.accent || '#2d5580'}">`
+      + `<tspan font-size="${capLabelFs}" font-weight="normal" fill="#6b7280">上限 </tspan>${svgAmount(unitFmt(cap), capFs)}</text>`;
     svg.innerHTML = out;
   }
 
