@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const from = countState[id] === undefined ? 0 : countState[id];
     countState[id] = to;
     if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
+    clearTimeout(el._countTimer);
     if (from === to) { el.textContent = fmt(to); return; }
     const start = performance.now();
     const step = function (now) {
@@ -51,12 +52,18 @@ document.addEventListener('DOMContentLoaded', function () {
       else el._countRaf = null;
     };
     el._countRaf = requestAnimationFrame(step);
+    // 非表示タブなどでrequestAnimationFrameが止まると数字が出ないままになるため、
+    // アニメーション時間を過ぎたら確実に最終値を表示する
+    el._countTimer = setTimeout(function () {
+      if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
+      el.textContent = fmt(to);
+    }, COUNT_MS + 250);
   }
 
   /* ===== 軽減額ゲージ =====
      MAXお得額を全体の幅とし、現状の軽減額を内訳ごとに積み上げる。
      残り(使い残している枠)は斜線で塗り、残り何%かを大きく見せる ===== */
-  function drawSaveChart(svg, parts, unitFmt, maxTotal) {
+  function drawSaveChart(svg, parts, unitFmt, maxTotal, capLabel) {
     const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 34, BAR_H = 78;
     const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
     const cap = Math.max(maxTotal, used);
@@ -114,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     // 目盛り(0 と MAX)
     out += `<text x="${BAR_X}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af">0</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af" text-anchor="end">MAXお得額</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af" text-anchor="end">${capLabel || 'MAXお得額'}</text>`;
     out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 26}"><tspan font-size="13" fill="#6b7280">現状 </tspan>`
       + `<tspan font-size="20" font-weight="bold" fill="#0f2a4a">${unitFmt(used)}</tspan></text>`;
     out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 26}" text-anchor="end"><tspan font-size="13" fill="#6b7280">MAX </tspan>`
@@ -124,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 直前の内訳から新しい内訳まで、棒の伸びと数字を同じ時間で動かす
   const chartState = {};
-  function renderSaveChart(svgId, parts, unitFmt, maxTotal) {
+  function renderSaveChart(svgId, parts, unitFmt, maxTotal, capLabel) {
     const svg = $(svgId);
     if (!svg) return;
     const next = parts.map((p) => Math.max(0, p.value)).concat([Math.max(0, maxTotal)]);
@@ -132,14 +139,20 @@ document.addEventListener('DOMContentLoaded', function () {
       ? chartState[svgId] : next.map(() => 0);
     chartState[svgId] = next;
     if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
+    clearTimeout(svg._chartTimer);
     const at = (vals) => parts.map((p, i) => ({ label: p.label, color: p.color, value: vals[i] }));
-    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1]); return; }
+    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], capLabel); return; }
+    // requestAnimationFrameが止まる環境でも最終形は必ず描く
+    svg._chartTimer = setTimeout(function () {
+      if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
+      drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], capLabel);
+    }, COUNT_MS + 250);
     const start = performance.now();
     const step = function (now) {
       const t = Math.min(1, (now - start) / COUNT_MS);
       const e = 1 - Math.pow(1 - t, 3); // ease-out
       const cur = next.map((v, i) => prev[i] + (v - prev[i]) * e);
-      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1]);
+      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1], capLabel);
       if (t < 1) svg._chartRaf = requestAnimationFrame(step);
       else svg._chartRaf = null;
     };
@@ -232,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const mx = r.max || r;
     const pct = (cur, top) => (top > 0 ? Math.min(100, Math.round((cur / top) * 100)) : 0);
     // 活用率バッジと、使い残しがいくらあるかの一言
-    const gauge = function (pillId, leadId, now, top, fmt, more) {
+    const gauge = function (pillId, leadId, now, top, fmt, more, verb) {
       const p = pct(now, top);
       const full = top - now <= 0.5;
       setTxt(pillId, p + '%');
@@ -242,12 +255,42 @@ document.addEventListener('DOMContentLoaded', function () {
       if (lead) {
         lead.textContent = full
           ? 'MAX ' + fmt(top) + ' を使い切っています'
-          : 'あと ' + fmt(top - now) + ' 上乗せできます' + more;
+          : 'あと ' + fmt(top - now) + ' ' + (verb || ('上乗せできます' + more));
         lead.classList.toggle('is-full', full);
       }
     };
     gauge('txUseIncome', 'txLeadIncome', r.saveIncomeSum, mx.saveIncomeSum, yen, '(毎年)');
     gauge('txUseInherit', 'txLeadInherit', r.saveInheritSum, mx.saveInheritSum, man, '');
+
+    // --- 保険料・保険金そのものの枠(あといくら加入できるか) ---
+    // 控除・非課税が効く範囲だけを「使用済み」として数える(超過分は枠を増やさないため)
+    const paid = r.premiumRows.map((row) => Math.min(row.premium, T.PREMIUM_FULL));
+    const paidSum = paid.reduce((a2, b2) => a2 + b2, 0);
+    const paidMax = T.PREMIUM_FULL * T.PREMIUM_ITEMS.length;
+    const benefitSum = r.usedDeath + r.usedRetire;
+    const benefitMax = r.exemptionEach * 2;
+    countUp('txPremiumNow', paidSum, (v) => yen(v) + ' / 年');
+    countUp('txBenefitNow', benefitSum, man);
+    gauge('txUsePremium', 'txLeadPremium', paidSum, paidMax, yen, '', '加入できます(毎年の払込)');
+    gauge('txUseBenefit', 'txLeadBenefit', benefitSum, benefitMax, man, '', '非課税で受け取れます');
+    countUp('txPaidGeneral', paid[0], yen);
+    countUp('txPaidPension', paid[1], yen);
+    countUp('txPaidMedical', paid[2], yen);
+    countUp('txPaidRoom', Math.max(0, paidMax - paidSum), (v) => yen(v) + ' / 年');
+    countUp('txBenefitDeath', r.usedDeath, man);
+    countUp('txBenefitRetire', r.usedRetire, man);
+    countUp('txBenefitEach', r.exemptionEach, man);
+    countUp('txBenefitRoom', Math.max(0, benefitMax - benefitSum), man);
+
+    renderSaveChart('txChartPremium', [
+      { label: '一般', value: paid[0], color: '#0f2a4a' },
+      { label: '個人年金', value: paid[1], color: '#3b6ea5' },
+      { label: '介護医療', value: paid[2], color: '#7a9cc0' },
+    ], yen, paidMax, '加入できる上限');
+    renderSaveChart('txChartBenefit', [
+      { label: '生命保険金', value: r.usedDeath, color: '#0f2a4a' },
+      { label: '死亡退職金', value: r.usedRetire, color: '#3b6ea5' },
+    ], man, benefitMax, '非課税枠の上限');
     countUp('txMaxPremiumCol', mx.saveIncomeSum, yen);
     countUp('txMaxExemptCol', mx.saveDeath + mx.saveRetire, man);
     countUp('txMaxCondolenceCol', mx.saveCondolence, man);
