@@ -330,6 +330,10 @@
                 <input type="number" id="txRetirementBenefit" value="300" class="form-input" placeholder="例: 5,000" />
               </div>
               <div class="tx-plan-field">
+                <label for="txCondolenceAmount">弔慰金の支給見込額<span class="tx-plan-room" id="txRoomCondolence"></span></label>
+                <input type="number" id="txCondolenceAmount" value="1000" class="form-input" placeholder="例: 1,000" />
+              </div>
+              <div class="tx-plan-field">
                 <label for="txSalaryMonthly">最終報酬月額<span class="tx-plan-room" id="txRoomCond"></span></label>
                 <input type="number" id="txSalaryMonthly" value="100" class="form-input" placeholder="例: 100" />
               </div>
@@ -356,19 +360,19 @@
               <dt>10年間の累計</dt>
               <dd><code>(所得税の軽減額 ＋ 住民税の軽減額) × 10</code>。生命保険料控除は保険料を払い続ける限り毎年適用されるため、累計効果を示しています。</dd>
               <dt>相続税の軽減額</dt>
-              <dd>非課税枠として使えた金額に相続税率を掛けて算出します。<br />生命保険金 = <code>min(受取額, 500万円×法定相続人) × 相続税率</code><br />死亡退職金 = <code>min(受取額, 500万円×法定相続人) × 相続税率</code><br />弔慰金 = <code>min(弔慰金, 月額給与×36または6) × 相続税率</code></dd>
+              <dd>非課税枠として使えた金額に相続税率を掛けて算出します。<br />生命保険金 = <code>min(受取額, 500万円×法定相続人) × 相続税率</code><br />死亡退職金 = <code>min(受取額, 500万円×法定相続人) × 相続税率</code><br />弔慰金 = <code>min(弔慰金の支給額, 月額給与×36または6) × 相続税率</code>。限度額を超えて支給した分は死亡退職金に合算して非課税枠を判定します。</dd>
               <dt>生命保険料控除額(新制度・平成24年1月1日以後契約)</dt>
               <dd>所得税 = <code>年間保険料2万円以下 → 全額 / 4万円以下 → 保険料×1/2＋1万円 / 8万円以下 → 保険料×1/4＋2万円 / 8万円超 → 4万円(上限)</code><br />住民税 = <code>1.2万円以下 → 全額 / 3.2万円以下 → 保険料×1/2＋6千円 / 5.6万円以下 → 保険料×1/4＋1.4万円 / 5.6万円超 → 2.8万円(上限)</code><br />一般生命保険料・個人年金保険料・介護医療保険料の3区分をそれぞれ計算して合算し、全体で <code>所得税12万円 / 住民税7万円</code> を上限とします。</dd>
               <dt>相続税の非課税枠</dt>
               <dd><code>500万円 × 法定相続人の数</code>。生命保険金と死亡退職金に<strong>それぞれ独立して</strong>適用されます。<br />使用額 = <code>min(受取額, 非課税枠)</code>、課税対象 = <code>max(0, 受取額 − 非課税枠)</code></dd>
               <dt>非課税となる弔慰金の限度額</dt>
-              <dd><code>業務上の死亡 → 月額普通給与 × 36ヶ月</code>、<code>業務外の死亡 → 月額普通給与 × 6ヶ月</code>。限度額を超える部分は死亡退職金として扱われ、相続税の課税対象になります。</dd>
+              <dd><code>業務上の死亡 → 月額普通給与 × 36ヶ月</code>、<code>業務外の死亡 → 月額普通給与 × 6ヶ月</code>。非課税になるのは <code>min(弔慰金の支給額, 限度額)</code> で、限度額を超えて支給した分は死亡退職金に合算し、死亡退職金の非課税枠(500万円×法定相続人)で判定します。</dd>
               <dt>上限まで使い切った場合の軽減額</dt>
               <dd>上限まで使い切る入力(<code>3区分とも年8万円の払込</code>、<code>生命保険金・死亡退職金とも非課税枠と同額の受取</code>)で同じ計算をやり直した軽減額です。概算ではなく実額で比較しています。弔慰金の限度額は最終報酬月額で決まるため、保険金額を増やしても変わりません。</dd>
               <dt>グラフ</dt>
               <dd>上限を全体の幅とし、現状の金額を内訳ごとに積み上げたゲージです。グレーの部分が使い残している枠(あといくら上乗せできるか)を表します。所得税・住民税と相続税は金額の規模と発生時期が異なるため、別のグラフ・別の目盛りで描画しています。</dd>
             </dl>
-            <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。死亡保険金は個人契約、死亡退職金と弔慰金は法人契約の保険を原資に会社から遺族へ支給する前提で計算しています。弔慰金は非課税限度額まで支給した場合の軽減額としています。</p>
+            <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。死亡保険金は個人契約、死亡退職金と弔慰金は法人契約の保険を原資に会社から遺族へ支給する前提で計算しています。弔慰金は入力した支給見込額のうち非課税限度額に収まる部分を軽減額としています。</p>
           </div>
         </div>
       </div>
@@ -459,7 +463,7 @@
 
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/tax-exemption-calc.js?v=20260727b"></script>
-<script src="js/tax-exemption-result.js?v=202607271b"></script>
+<script src="js/tax-exemption-calc.js?v=20260727c"></script>
+<script src="js/tax-exemption-result.js?v=202607271d"></script>
 </body>
 </html>

@@ -263,15 +263,22 @@
     const exemptionEach = EXEMPTION_PER_HEIR * heirsCount;
     const deathBenefit = Math.max(0, pickNum(data, 'txDeathBenefit', 0));
     const retirementBenefit = Math.max(0, pickNum(data, 'txRetirementBenefit', 0));
-    const usedDeath = Math.min(deathBenefit, exemptionEach);
-    const taxableDeath = Math.max(0, deathBenefit - exemptionEach);
-    const usedRetire = Math.min(retirementBenefit, exemptionEach);
-    const taxableRetire = Math.max(0, retirementBenefit - exemptionEach);
 
+    // 弔慰金: 非課税限度額は最終報酬月額×36(または6)ヶ月。
+    // 限度額を超えて支給した分は死亡退職金として扱われる(相基通3-20)
     const salaryMonthly = Math.max(0, pickNum(data, 'txSalaryMonthly', 0));
     const deathCause = pick(data, 'txDeathCause', 'off');
     const condolenceMonths = deathCause === 'on' ? 36 : 6;
-    const condolenceExemption = salaryMonthly * condolenceMonths;
+    const condolenceLimit = salaryMonthly * condolenceMonths;
+    const condolencePaid = Math.max(0, pickNum(data, 'txCondolenceAmount', 0));
+    const condolenceExemption = Math.min(condolencePaid, condolenceLimit);
+    const condolenceExcess = Math.max(0, condolencePaid - condolenceLimit);
+    const retirementTotal = retirementBenefit + condolenceExcess;
+
+    const usedDeath = Math.min(deathBenefit, exemptionEach);
+    const taxableDeath = Math.max(0, deathBenefit - exemptionEach);
+    const usedRetire = Math.min(retirementTotal, exemptionEach);
+    const taxableRetire = Math.max(0, retirementTotal - exemptionEach);
 
     /* ---------- 所得税・住民税 ---------- */
     let taxableIt = 0, taxableRt = 0, taxItBefore = 0, taxRtBefore = 0;
@@ -365,7 +372,7 @@
       const spouseRate = (rawSpouseRate === '' || rawSpouseRate === null) ? null : numOf(rawSpouseRate);
       // 非課税枠を「使った場合」と「使わなかった場合」の課税価格
       const priceWith = assets + taxableDeath + taxableRetire - lotReduction - debt - funeral;
-      const priceWithout = assets + deathBenefit + retirementBenefit + condolenceExemption - lotReduction - debt - funeral;
+      const priceWithout = assets + deathBenefit + retirementBenefit + condolencePaid - lotReduction - debt - funeral;
       const withRes = inheritanceTaxTotal(Math.max(0, priceWith), heirs, spouseRate);
       const withoutRes = inheritanceTaxTotal(Math.max(0, priceWithout), heirs, spouseRate);
       // 軽減額は税額控除後の納付税額の差額で見る
@@ -401,7 +408,7 @@
     // ---- 枠を使い切った場合(MAXお得額)の再計算 ----
     // 同じロジックをそのまま流用したいので、枠いっぱいの入力を作って自分自身をもう一度呼ぶ
     let max = null;
-    let roomGeneral = 0, roomPension = 0, roomMedical = 0, roomDeath = 0, roomRetire = 0;
+    let roomGeneral = 0, roomPension = 0, roomMedical = 0, roomDeath = 0, roomRetire = 0, roomCondolence = 0;
     if (!skipMax) {
       const maxData = Object.assign({}, data, {
         txGeneralPremium: PREMIUM_FULL,
@@ -409,22 +416,25 @@
         txMedicalPremium: PREMIUM_FULL,
         txDeathBenefit: exemptionEach,
         txRetirementBenefit: exemptionEach,
+        txCondolenceAmount: condolenceLimit,
       });
       max = calcAll(maxData, true);
       roomGeneral = Math.max(0, PREMIUM_FULL - premiumRows[0].premium);
       roomPension = Math.max(0, PREMIUM_FULL - premiumRows[1].premium);
       roomMedical = Math.max(0, PREMIUM_FULL - premiumRows[2].premium);
       roomDeath = Math.max(0, exemptionEach - deathBenefit);
-      roomRetire = Math.max(0, exemptionEach - retirementBenefit);
+      roomRetire = Math.max(0, exemptionEach - retirementTotal);
+      roomCondolence = Math.max(0, condolenceLimit - condolencePaid);
     }
 
     return {
       itMode, ihMode,
-      max, roomGeneral, roomPension, roomMedical, roomDeath, roomRetire,
+      max, roomGeneral, roomPension, roomMedical, roomDeath, roomRetire, roomCondolence,
       premiumRows, premiumItTotal, premiumRtTotal,
       heirs, heirsCount, exemptionEach,
       deathBenefit, retirementBenefit, usedDeath, taxableDeath, usedRetire, taxableRetire,
-      condolenceExemption, condolenceMonths,
+      condolenceExemption, condolenceMonths, condolenceLimit, condolencePaid, condolenceExcess,
+      retirementTotal,
       taxableIt, taxableRt, taxItBefore, taxRtBefore, credIt, credRt, detail,
       taxableItAfter, taxableRtAfter, taxItAfter, taxRtAfter,
       saveIt, saveRt, saveIncomeSum: saveIt + saveRt,

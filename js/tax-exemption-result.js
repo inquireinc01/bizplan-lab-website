@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const PLAN_IDS = [
     'txGeneralPremium', 'txPensionPremium', 'txMedicalPremium',
     'txDeathBenefit', 'txRetirementBenefit',
-    'txSalaryMonthly', 'txDeathCause',
+    'txSalaryMonthly', 'txDeathCause', 'txCondolenceAmount',
   ];
   // 保存済みの設計内容を入力欄に戻す
   PLAN_IDS.forEach(function (id) {
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isNaN(v) || v < 0) { showPlanError(it.label + 'を入力してください。', $(it.id)); return false; }
       if (v > MAX_YEN) { showPlanError('保険料は ' + T.fmt(MAX_YEN) + ' 円以内で入力してください。', $(it.id)); return false; }
     }
-    for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly']) {
+    for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly', 'txCondolenceAmount']) {
       const v = numOf(id);
       if (isNaN(v) || v < 0) { showPlanError('生命保険の設計の各項目を入力してください。', $(id)); return false; }
       if (v > MAX_MAN) { showPlanError('入力値が大きすぎます。数値をご確認ください。', $(id)); return false; }
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const paidMax = T.PREMIUM_FULL * T.PREMIUM_ITEMS.length;
     // 死亡保険金は個人契約、死亡退職金と弔慰金は法人契約でカバーする前提で分けて表示する
     const corpSum = r.usedRetire + r.condolenceExemption;
-    const corpMax = r.exemptionEach + r.condolenceExemption;
+    const corpMax = r.exemptionEach + r.condolenceLimit;
     gauge('txPremiumNow', 'txUsePremium', 'txLeadPremium', paidSum, paidMax, yenY, yen);
     gauge('txDeathNow', 'txUseDeath', 'txLeadDeath', r.usedDeath, r.exemptionEach, man);
     gauge('txCorpNow', 'txUseCorp', 'txLeadCorp', corpSum, corpMax, man);
@@ -323,9 +323,10 @@ document.addEventListener('DOMContentLoaded', function () {
     room('txRoomMedical', r.roomMedical, yen);
     room('txRoomDeath', r.roomDeath, man);
     room('txRoomRetire', r.roomRetire, man);
+    room('txRoomCondolence', r.roomCondolence, man);
     const condEl = $('txRoomCond');
     if (condEl) {
-      condEl.textContent = '弔慰金の非課税枠 ' + man(r.condolenceExemption) + '(' + r.condolenceMonths + 'ヶ月分)';
+      condEl.textContent = '弔慰金の非課税枠 ' + man(r.condolenceLimit) + '(' + r.condolenceMonths + 'ヶ月分)';
       condEl.classList.remove('is-full');
     }
 
@@ -381,7 +382,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ===== 初期表示 ===== */
+  // 未保存の既定値も保存しておき、表示と保存データを常に一致させる
   collectPlan();
+  savePlan();
   render();
 
   /* ===== 内訳表示の切り替え(グラフの塗り分けと凡例をまとめて切り替える) ===== */
