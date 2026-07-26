@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072725" />
+<link rel="stylesheet" href="css/style.css?v=2026072726" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -248,9 +248,8 @@
                     <p class="tx-gauge-title">所得税・住民税の軽減額</p>
                     <p class="tx-gauge-tag">毎年</p>
                   </div>
-                  <p class="tx-gauge-nowlabel">あと軽減できる税額</p>
                   <div class="tx-gauge-head">
-                    <p id="txSaveIncomeTotal" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-now"><span class="tx-gauge-pre">あと</span><span id="txSaveIncomeTotal"></span></p>
                     <p class="tx-gauge-pill"><span id="txUseIncome">-</span><span>活用</span></p>
                   </div>
                   <svg id="txChartIncome" viewBox="0 0 560 112" class="w-full h-auto" role="img" aria-label="所得税・住民税の軽減額と上限に対する使用状況"></svg>
@@ -275,9 +274,8 @@
                     <p class="tx-gauge-title">相続税の軽減額</p>
                     <p class="tx-gauge-tag">相続時に一度</p>
                   </div>
-                  <p class="tx-gauge-nowlabel">あと軽減できる税額</p>
                   <div class="tx-gauge-head">
-                    <p id="txSaveInheritTotal" class="tx-gauge-now"></p>
+                    <p class="tx-gauge-now"><span class="tx-gauge-pre">あと</span><span id="txSaveInheritTotal"></span></p>
                     <p class="tx-gauge-pill"><span id="txUseInherit">-</span><span>活用</span></p>
                   </div>
                   <svg id="txChartInherit" viewBox="0 0 560 112" class="w-full h-auto" role="img" aria-label="相続税の軽減額と上限に対する使用状況"></svg>
@@ -459,6 +457,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727d"></script>
-<script src="js/tax-exemption-result.js?v=202607271t"></script>
+<script src="js/tax-exemption-result.js?v=202607271u"></script>
 </body>
 </html>
