@@ -1321,6 +1321,12 @@ img {
   transform: rotate(180deg);
 }
 
+/* 株数の入力欄: 発行済株式数を超えて入力された場合に薄い赤で警告する */
+.input-error {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+}
+
 /* ========== 同族株主等の判定: YES/NOフローチャート ========== */
 .fam-flow {
   display: flex;
