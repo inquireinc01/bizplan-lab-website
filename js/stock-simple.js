@@ -23,7 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isNaN(v) || isNaN(shares) || shares <= 0) return NaN;
     return v / shares;
   }
-  // 詳細入力中は額面を直接編集させるため、資本金からの自動計算は行わない
+  // 詳細入力中は額面を直接編集させるため、資本金からの自動計算は行わない。
+  // 資本金が未入力のときは既存の額面を消さない(消すと額面倍率が全て「-」になってしまう)
   function updateParFromCapital() {
     var detailArea = document.getElementById('detailArea');
     var inDetail = detailArea && !detailArea.classList.contains('hidden');
@@ -33,11 +34,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!capitalEl || !parEl) return;
     var capital = num(capitalEl.value);
     var shares = num(document.getElementById('ssShares').value);
-    if (!isNaN(capital) && !isNaN(shares) && shares > 0) {
-      parEl.value = String(Math.round(capital / shares));
-    } else {
-      parEl.value = '';
-    }
+    if (isNaN(capital) || capital <= 0 || isNaN(shares) || shares <= 0) return;
+    parEl.value = fmt(capital / shares); // カンマ区切りで表示する
   }
   window.bplUpdateParFromCapital = updateParFromCapital;
 
@@ -231,6 +229,17 @@ document.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('input', clearOwnError);
   form.addEventListener('change', clearOwnError);
 
+  // 入力欄でEnterを押しただけで暗黙送信(=結果ページへ遷移)されるのを防ぐ。
+  // Enterは「入力確定」として扱い、blurでchangeを発火させて再計算だけ行う。
+  form.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var t = e.target;
+    if (!t || t.tagName === 'TEXTAREA') return;
+    if (t.tagName === 'BUTTON' || t.type === 'submit') return; // ボタン上のEnterは通す
+    e.preventDefault();
+    if (typeof t.blur === 'function') t.blur();
+  });
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var err = document.getElementById('calcErrorArea');
@@ -303,10 +312,17 @@ document.addEventListener('DOMContentLoaded', function () {
     var d = { saizoku: '302371500', ruiji: '235572000', junsisan: '502770000', heiyo: '302371500', houjin: '369171000', haito: '40000000' };
     EVAL_KEYS.forEach(function (k) { var el = document.getElementById('ssV_' + k); if (el && el.value === '') el.value = d[k]; });
   }
+  // 額面は資本金から自動計算されるため、初期表示でも整合するよう資本金を入れておく
+  // (発行済株式数400株 × 額面50,000円 = 20,000,000円)
+  function seedCapital() {
+    var capEl = document.getElementById('ssCapital');
+    if (capEl && capEl.value === '') capEl.value = '20000000';
+  }
 
   // ===== 初期化 =====
   var restored = restore();
   if (!restored) { seedEval(); seedHolders(); }
+  seedCapital();
   recalcAll();
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');
