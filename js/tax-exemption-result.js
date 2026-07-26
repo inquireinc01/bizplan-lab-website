@@ -282,10 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const condTxt = `${man(r.condolenceExemption)}(${r.condolenceMonths}ヶ月分)`;
     setTxt('txCondolenceResult', condTxt);
     setTxt('pCondolenceResult', condTxt);
-
-    // --- サマリー ---
-    countUp('txSummaryPremium', r.premiumItTotal, (v) => `${yen(v)} + ${yen(r.premiumRtTotal)}`);
-    countUp('txSummaryInheritance', r.exemptionEach * 2 + r.condolenceExemption, man);
   }
 
   /* ===== 入力確定時に再計算(入力中は反映しない) ===== */
