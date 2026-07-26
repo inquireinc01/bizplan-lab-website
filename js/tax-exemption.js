@@ -32,8 +32,29 @@ document.addEventListener('DOMContentLoaded', function () {
     return 28000;
   }
 
-  // ===== 課税所得(万円)から所得税の限界税率を判定する(超過累進税率) =====
+  // ===== 所得税・住民税の計算(すべて万円ベース) =====
   const RESIDENT_TAX_RATE = 10; // 住民税(所得割)の標準税率%
+  const RESIDENT_PER_CAPITA = 0.5; // 住民税の均等割 5,000円 = 0.5万円
+
+  // 給与所得控除額(2020年分以降)
+  function salaryDeduction(incomeMan) {
+    const x = Math.max(0, incomeMan);
+    if (x <= 162.5) return Math.min(x, 55);
+    if (x <= 180) return x * 0.4 - 10;
+    if (x <= 360) return x * 0.3 + 8;
+    if (x <= 660) return x * 0.2 + 44;
+    if (x <= 850) return x * 0.1 + 110;
+    return 195;
+  }
+  // 基礎控除(合計所得金額に応じて縮小)。所得税48/32/16、住民税43/29/15
+  function basicDeduction(totalIncomeMan, isResident) {
+    const t = Math.max(0, totalIncomeMan);
+    if (t <= 2400) return isResident ? 43 : 48;
+    if (t <= 2450) return isResident ? 29 : 32;
+    if (t <= 2500) return isResident ? 15 : 16;
+    return 0;
+  }
+  // 所得税の限界税率(%)
   function marginalIncomeTaxRate(taxableIncomeMan) {
     const x = Math.max(0, taxableIncomeMan);
     if (x <= 195) return 5;
@@ -44,16 +65,103 @@ document.addEventListener('DOMContentLoaded', function () {
     if (x <= 4000) return 40;
     return 45;
   }
-  // 課税所得を入力したら所得税率欄に自動反映する(入力確定時)
-  const taxableIncomeEl = document.getElementById('txTaxableIncome');
-  const incomeRateEl = document.getElementById('txIncomeTaxRate');
-  function refreshIncomeTaxRate() {
-    if (!taxableIncomeEl || !incomeRateEl) return;
-    const v = window.numClean ? window.numClean(taxableIncomeEl.value) : parseFloat(taxableIncomeEl.value);
-    incomeRateEl.value = isNaN(v) ? '' : marginalIncomeTaxRate(v) + ' %';
+  // 所得税額(超過累進税率・万円)
+  function incomeTaxAmount(taxableIncomeMan) {
+    const x = Math.max(0, taxableIncomeMan);
+    const brackets = [
+      [195, 0.05, 0],
+      [330, 0.10, 9.75],
+      [695, 0.20, 42.75],
+      [900, 0.23, 63.6],
+      [1800, 0.33, 153.6],
+      [4000, 0.40, 279.6],
+      [Infinity, 0.45, 479.6],
+    ];
+    for (const [limit, rate, ded] of brackets) {
+      if (x <= limit) return Math.max(0, x * rate - ded);
+    }
+    return 0;
   }
-  if (taxableIncomeEl) taxableIncomeEl.addEventListener('change', refreshIncomeTaxRate);
-  refreshIncomeTaxRate();
+  // 課税所得は1,000円未満切捨て(万円ベースなので0.1万円単位で切捨て)
+  function floorTaxable(man) {
+    return Math.max(0, Math.floor(Math.max(0, man) * 10) / 10);
+  }
+
+  const SPOUSE_DEDUCTION = { none: [0, 0], general: [38, 33], elderly: [48, 38] };
+
+  // 生命保険料控除を除いた所得・控除の状態を集計する
+  function collectIncomeBase() {
+    const pn = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return NaN;
+      return window.numClean ? window.numClean(el.value) : parseFloat(el.value);
+    };
+    const salary = pn('txSalaryIncome');
+    const other = pn('txOtherIncome');
+    const social = pn('txSocialInsurance');
+    const depGen = pn('txDependentGeneral');
+    const depSpe = pn('txDependentSpecific');
+    const depEld = pn('txDependentElderly');
+    const otherDed = pn('txOtherDeduction');
+    const spouseKey = (document.getElementById('txSpouseDeduction') || {}).value || 'none';
+
+    if ([salary, other, social, depGen, depSpe, depEld, otherDed].some((v) => isNaN(v) || v < 0)) return null;
+
+    const salDed = salaryDeduction(salary);
+    const salaryIncome = Math.max(0, salary - salDed);
+    const totalIncome = salaryIncome + other;
+
+    const sp = SPOUSE_DEDUCTION[spouseKey] || SPOUSE_DEDUCTION.none;
+    // 扶養控除: 所得税 一般38/特定63/老人48、住民税 一般33/特定45/老人38
+    const depIt = depGen * 38 + depSpe * 63 + depEld * 48;
+    const depRt = depGen * 33 + depSpe * 45 + depEld * 38;
+
+    const basicIt = basicDeduction(totalIncome, false);
+    const basicRt = basicDeduction(totalIncome, true);
+    // 生命保険料控除以外の所得控除合計
+    const dedIt = social + sp[0] + depIt + otherDed + basicIt;
+    const dedRt = social + sp[1] + depRt + otherDed + basicRt;
+
+    return { salary, salDed, salaryIncome, other, totalIncome, basicIt, basicRt, dedIt, dedRt };
+  }
+
+  // 「1. 所得税・住民税の計算」欄(生命保険料控除の適用前)を更新する
+  function refreshIncomeSheet() {
+    const b = collectIncomeBase();
+    const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    const salDedEl = document.getElementById('txSalaryDeduction');
+    if (!b) {
+      if (salDedEl) salDedEl.value = '';
+      ['txTotalIncomeIt', 'txTotalIncomeRt', 'txBasicIt', 'txBasicRt', 'txDeductionIt', 'txDeductionRt',
+        'txTaxableIt', 'txTaxableRt', 'txRateIt', 'txRateRt', 'txTaxBeforeIt', 'txTaxBeforeRt'].forEach((id) => set(id, '-'));
+      return null;
+    }
+    const taxableIt = floorTaxable(b.totalIncome - b.dedIt);
+    const taxableRt = floorTaxable(b.totalIncome - b.dedRt);
+    const taxIt = incomeTaxAmount(taxableIt);
+    const taxRt = taxableRt > 0 ? taxableRt * RESIDENT_TAX_RATE / 100 + RESIDENT_PER_CAPITA : 0;
+
+    if (salDedEl) salDedEl.value = man(b.salDed);
+    set('txTotalIncomeIt', man(b.totalIncome));
+    set('txTotalIncomeRt', man(b.totalIncome));
+    set('txBasicIt', man(b.basicIt));
+    set('txBasicRt', man(b.basicRt));
+    set('txDeductionIt', man(b.dedIt));
+    set('txDeductionRt', man(b.dedRt));
+    set('txTaxableIt', man(taxableIt));
+    set('txTaxableRt', man(taxableRt));
+    set('txRateIt', marginalIncomeTaxRate(taxableIt) + ' %');
+    set('txRateRt', RESIDENT_TAX_RATE + ' %＋均等割');
+    set('txTaxBeforeIt', man(taxIt));
+    set('txTaxBeforeRt', man(taxRt));
+    return { base: b, taxableIt, taxableRt, taxIt, taxRt };
+  }
+  // 収入・控除の入力を確定したら計算欄を更新する
+  ['txSalaryIncome', 'txOtherIncome', 'txSocialInsurance', 'txSpouseDeduction',
+    'txDependentGeneral', 'txDependentSpecific', 'txDependentElderly', 'txOtherDeduction'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', refreshIncomeSheet);
+  });
 
   // ===== 軽減額グラフ(積み上げ横棒)を描画する =====
   // parts: [{label, value, color}] / unitFmt: 数値を表示用文字列にする関数
@@ -251,10 +359,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pOneTimeTaxable').textContent = man(oneTimeTaxable);
 
     // ---- 5. 税負担の軽減額(お得になる金額) ----
-    const taxableIncome = pnum(document.getElementById('txTaxableIncome').value);
+    const sheet = refreshIncomeSheet();
+    if (!sheet) {
+      showError('「1. 所得税・住民税の計算」の収入・所得控除を入力してください。');
+      return;
+    }
     const inheritanceRate = pnum(document.getElementById('txInheritanceRate').value);
-    if (isNaN(taxableIncome) || taxableIncome < 0 || isNaN(inheritanceRate) || inheritanceRate < 0) {
-      showError('「1. 税率の前提」の課税所得と相続税率を入力してください。');
+    if (isNaN(inheritanceRate) || inheritanceRate < 0) {
+      showError('「2. 相続税の前提」の相続税率を入力してください。');
+      document.getElementById('txInheritanceRate').focus();
       return;
     }
     if (inheritanceRate > 100) {
@@ -262,13 +375,20 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('txInheritanceRate').focus();
       return;
     }
-    const incomeRate = marginalIncomeTaxRate(taxableIncome);
-    refreshIncomeTaxRate();
 
-    // 所得税・住民税: 控除額 × 税率(毎年効く軽減)
-    const saveIncomeTax = incomeTaxTotal * incomeRate / 100;
-    const saveResidentTax = residentTaxTotal * RESIDENT_TAX_RATE / 100;
+    // 所得税・住民税: 生命保険料控除を適用した後の税額との差額(=正確な軽減額)
+    // incomeTaxTotal / residentTaxTotal は円単位なので万円に換算して課税所得から差し引く
+    const lifeDedItMan = incomeTaxTotal / 10000;
+    const lifeDedRtMan = residentTaxTotal / 10000;
+    const taxableItAfter = floorTaxable(sheet.taxableIt - lifeDedItMan);
+    const taxableRtAfter = floorTaxable(sheet.taxableRt - lifeDedRtMan);
+    const taxItAfter = incomeTaxAmount(taxableItAfter);
+    const taxRtAfter = taxableRtAfter > 0 ? taxableRtAfter * RESIDENT_TAX_RATE / 100 + RESIDENT_PER_CAPITA : 0;
+    // 万円→円に戻して表示(既存の yen() 表示に合わせる)
+    const saveIncomeTax = Math.max(0, sheet.taxIt - taxItAfter) * 10000;
+    const saveResidentTax = Math.max(0, sheet.taxRt - taxRtAfter) * 10000;
     const saveIncomeSum = saveIncomeTax + saveResidentTax;
+    const incomeRate = marginalIncomeTaxRate(sheet.taxableIt);
 
     // 相続税: 非課税となった財産額 × 相続税率(相続時に一度効く軽減)
     const usedCondolence = condolenceExemption; // 限度額まで支給した場合
@@ -279,8 +399,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const exemptAmountTotal = usedDeathBenefit + usedRetirementBenefit + usedCondolence;
 
     document.getElementById('txSaveIncomeTotal').textContent = yen(saveIncomeSum) + ' / 年';
-    document.getElementById('txSaveIncomeTax').textContent = yen(saveIncomeTax) + `（控除 ${yen(incomeTaxTotal)} × ${incomeRate}%）`;
-    document.getElementById('txSaveResidentTax').textContent = yen(saveResidentTax) + `（控除 ${yen(residentTaxTotal)} × ${RESIDENT_TAX_RATE}%）`;
+    document.getElementById('txSaveIncomeTax').textContent = yen(saveIncomeTax) + `（${man(sheet.taxIt)} → ${man(taxItAfter)}）`;
+    document.getElementById('txSaveResidentTax').textContent = yen(saveResidentTax) + `（${man(sheet.taxRt)} → ${man(taxRtAfter)}）`;
     document.getElementById('txSave10y').textContent = yen(saveIncomeSum * 10);
 
     document.getElementById('txSaveInheritTotal').textContent = man(saveInheritSum);

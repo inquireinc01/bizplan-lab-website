@@ -147,17 +147,110 @@
       <form id="txForm" class="space-y-8">
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">1. 税率の前提<span class="help-tip" tabindex="0">?<span class="help-text">控除額・非課税枠が実際にいくらの税負担軽減になるかを計算するために、適用される税率を設定します。所得税率は課税所得から超過累進税率表を用いて自動判定し、住民税率は一律10%で計算します。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">軽減額(お得になる金額)の計算に使用します。</p>
+          <h3 class="font-bold text-base mb-1 flex items-center">1. 所得税・住民税の計算<span class="help-tip" tabindex="0">?<span class="help-text">収入から給与所得控除・各種所得控除を差し引いて課税所得を求め、超過累進税率で所得税額を計算します。この計算結果をもとに、生命保険料控除を適用した場合の税額と比較して実際の軽減額を算出します。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-5">生命保険料控除を<strong>適用する前</strong>の状態を入力してください（生命保険料控除は「3.」で計算し、自動で反映されます）。</p>
+
+          <p class="text-xs font-bold text-gray-500 mb-2">■ 収入</p>
+          <div class="grid sm:grid-cols-3 gap-5 mb-6">
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txSalaryIncome">給与収入(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">源泉徴収票の「支払金額」に相当する年間の給与・役員報酬の総額です。ここから給与所得控除を差し引いて給与所得を計算します。</span></span></label>
+              <input type="number" id="txSalaryIncome" value="1200" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1,200" />
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txSalaryDeduction">給与所得控除(自動)<span class="help-tip" tabindex="0">?<span class="help-text">給与収入に応じて自動計算されます(2020年分以降)。<code>162.5万円以下→55万円 / 180万円以下→収入×40%−10万円 / 360万円以下→収入×30%＋8万円 / 660万円以下→収入×20%＋44万円 / 850万円以下→収入×10%＋110万円 / 850万円超→195万円(上限)</code></span></span></label>
+              <input type="text" id="txSalaryDeduction" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" />
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txOtherIncome">その他の所得(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">不動産所得・事業所得・雑所得など、給与以外の所得金額(収入から必要経費を引いた後の金額)の合計を入力してください。無い場合は0のままで構いません。</span></span></label>
+              <input type="number" id="txOtherIncome" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+          </div>
+
+          <p class="text-xs font-bold text-gray-500 mb-2">■ 所得控除（生命保険料控除以外）</p>
+          <div class="grid sm:grid-cols-3 gap-5 mb-6">
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txSocialInsurance">社会保険料控除(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">健康保険・厚生年金・雇用保険などの本人負担分の年間合計額です。支払った全額が控除されます。給与収入の約14〜15%が目安です。</span></span></label>
+              <input type="number" id="txSocialInsurance" value="150" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 150" />
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txSpouseDeduction">配偶者控除<span class="help-tip" tabindex="0">?<span class="help-text">配偶者の所得が48万円以下の場合に適用されます。控除額は所得税38万円(70歳以上の老人控除対象配偶者は48万円)、住民税33万円(老人は38万円)です。本人の合計所得が1,000万円を超える場合は適用されません。</span></span></label>
+              <select id="txSpouseDeduction" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
+                <option value="none" selected>なし</option>
+                <option value="general">一般(所得税38万円)</option>
+                <option value="elderly">老人・70歳以上(所得税48万円)</option>
+              </select>
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txDependentGeneral">扶養親族 一般(人)<span class="help-tip" tabindex="0">?<span class="help-text">16歳以上で特定扶養親族・老人扶養親族に該当しない扶養親族の人数。控除額は1人あたり所得税38万円・住民税33万円です。</span></span></label>
+              <input type="number" id="txDependentGeneral" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txDependentSpecific">扶養親族 特定・19〜22歳(人)<span class="help-tip" tabindex="0">?<span class="help-text">19歳以上23歳未満の扶養親族の人数。控除額は1人あたり所得税63万円・住民税45万円です。</span></span></label>
+              <input type="number" id="txDependentSpecific" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txDependentElderly">扶養親族 老人・70歳以上(人)<span class="help-tip" tabindex="0">?<span class="help-text">70歳以上の扶養親族の人数。控除額は1人あたり所得税48万円・住民税38万円です(同居老親等は所得税58万円・住民税45万円ですが、本ツールでは一律48万円/38万円で計算します)。</span></span></label>
+              <input type="number" id="txDependentElderly" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+            <div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="txOtherDeduction">その他の所得控除(万円)<span class="help-tip" tabindex="0">?<span class="help-text">地震保険料控除・医療費控除・小規模企業共済等掛金控除・寄附金控除など、上記以外の所得控除の合計額を入力してください。</span></span></label>
+              <input type="number" id="txOtherDeduction" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            </div>
+          </div>
+
+          <p class="text-xs font-bold text-gray-500 mb-2">■ 計算結果（生命保険料控除の適用前）</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[460px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">項目</th>
+                  <th class="text-right font-bold px-3 py-2">所得税</th>
+                  <th class="text-right font-bold px-3 py-2 rounded-tr-lg">住民税</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-gray-100"><td class="px-3 py-2">合計所得金額</td><td id="txTotalIncomeIt" class="text-right px-3 py-2">-</td><td id="txTotalIncomeRt" class="text-right px-3 py-2">-</td></tr>
+                <tr class="border-b border-gray-100"><td class="px-3 py-2">基礎控除<span class="help-tip" tabindex="0">?<span class="help-text">所得税は合計所得2,400万円以下で48万円(2,450万円以下32万円・2,500万円以下16万円・超は0円)、住民税は43万円(同様に段階的に縮小)です。</span></span></td><td id="txBasicIt" class="text-right px-3 py-2">-</td><td id="txBasicRt" class="text-right px-3 py-2">-</td></tr>
+                <tr class="border-b border-gray-100"><td class="px-3 py-2">所得控除の合計</td><td id="txDeductionIt" class="text-right px-3 py-2">-</td><td id="txDeductionRt" class="text-right px-3 py-2">-</td></tr>
+                <tr class="border-b border-gray-100 bg-[#f7f9fc]"><td class="px-3 py-2 font-bold">課税所得</td><td id="txTaxableIt" class="text-right px-3 py-2 font-bold">-</td><td id="txTaxableRt" class="text-right px-3 py-2 font-bold">-</td></tr>
+                <tr class="border-b border-gray-100"><td class="px-3 py-2">適用税率</td><td id="txRateIt" class="text-right px-3 py-2">-</td><td id="txRateRt" class="text-right px-3 py-2">-</td></tr>
+              </tbody>
+              <tfoot>
+                <tr class="border-t-2 border-[#0f2a4a] font-bold">
+                  <td class="px-3 py-2">税額(控除前)</td>
+                  <td id="txTaxBeforeIt" class="text-right px-3 py-2 text-[#2d5580]">-</td>
+                  <td id="txTaxBeforeRt" class="text-right px-3 py-2 text-[#2d5580]">-</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="calc-logic">
+            <p class="calc-logic-title">計算ロジック</p>
+            <dl>
+              <dt>給与所得控除額(2020年分以降)</dt>
+              <dd><code>162.5万円以下→55万円 / 180万円以下→収入×40%−10万円 / 360万円以下→収入×30%＋8万円 / 660万円以下→収入×20%＋44万円 / 850万円以下→収入×10%＋110万円 / 850万円超→195万円(上限)</code></dd>
+              <dt>合計所得金額</dt>
+              <dd><code>(給与収入 − 給与所得控除) ＋ その他の所得</code></dd>
+              <dt>基礎控除</dt>
+              <dd>合計所得金額に応じて縮小します。所得税 <code>2,400万円以下48万円 / 2,450万円以下32万円 / 2,500万円以下16万円 / 超0円</code>、住民税 <code>2,400万円以下43万円 / 2,450万円以下29万円 / 2,500万円以下15万円 / 超0円</code></dd>
+              <dt>所得控除の合計</dt>
+              <dd><code>社会保険料控除 ＋ 配偶者控除 ＋ 扶養控除 ＋ その他の所得控除 ＋ 基礎控除</code>。配偶者控除・扶養控除は所得税と住民税で控除額が異なります(配偶者一般: 所得税38万／住民税33万、扶養一般: 38万／33万、特定: 63万／45万、老人: 48万／38万)。</dd>
+              <dt>課税所得</dt>
+              <dd><code>max(0, 合計所得金額 − 所得控除の合計)</code>（1,000円未満切捨て）</dd>
+              <dt>所得税額</dt>
+              <dd>超過累進税率で計算します。<code>195万円以下5% / 330万円以下10%(−9.75万円) / 695万円以下20%(−42.75万円) / 900万円以下23%(−63.6万円) / 1,800万円以下33%(−153.6万円) / 4,000万円以下40%(−279.6万円) / 4,000万円超45%(−479.6万円)</code></dd>
+              <dt>住民税額</dt>
+              <dd><code>課税所得 × 所得割10% ＋ 均等割5,000円</code></dd>
+            </dl>
+            <p class="calc-logic-note">復興特別所得税(所得税額×2.1%)、調整控除、住宅ローン控除等の税額控除は考慮していません。同居老親等の加算、配偶者特別控除、本人の合計所得による配偶者控除の逓減・不適用も反映していないため、概算としてご利用ください。</p>
+          </div>
+        </div>
+
+        <div class="calc-section bg-white p-6 sm:p-8">
+          <h3 class="font-bold text-base mb-1 flex items-center">2. 相続税の前提<span class="help-tip" tabindex="0">?<span class="help-text">非課税枠を使えることで軽減される相続税額を計算するために、適用される相続税の税率を設定します。</span></span></h3>
+          <p class="text-xs text-gray-500 mb-5">相続税の軽減額の計算に使用します。</p>
           <div class="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="txTaxableIncome">課税所得(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">各種所得控除を差し引いた後の課税所得金額を万円単位で入力してください。この金額から適用される所得税の限界税率を自動判定します。</span></span></label>
-              <input type="number" id="txTaxableIncome" value="800" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 800" />
-            </div>
-            <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="txIncomeTaxRate">所得税率(自動)<span class="help-tip" tabindex="0">?<span class="help-text">課税所得に応じた超過累進税率です。<code>195万円以下5% / 330万円以下10% / 695万円以下20% / 900万円以下23% / 1,800万円以下33% / 4,000万円以下40% / 4,000万円超45%</code>。住民税は一律10%として計算します。</span></span></label>
-              <input type="text" id="txIncomeTaxRate" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" />
-            </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="txInheritanceRate">相続税率(%)<span class="help-tip" tabindex="0">?<span class="help-text">相続財産に適用される相続税の税率(限界税率)を入力してください。非課税枠を使えることで軽減される相続税額の計算に使用します。財産規模により10%〜55%の範囲で変動します。</span></span></label>
               <input type="number" id="txInheritanceRate" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
@@ -167,19 +260,17 @@
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl>
-              <dt>所得税率(限界税率)の自動判定</dt>
-              <dd>入力した課税所得を超過累進税率表に当てはめて判定します。<code>195万円以下→5% / 330万円以下→10% / 695万円以下→20% / 900万円以下→23% / 1,800万円以下→33% / 4,000万円以下→40% / 4,000万円超→45%</code></dd>
-              <dt>住民税率</dt>
-              <dd>所得割の標準税率 <code>10%</code> で固定して計算します。</dd>
-              <dt>軽減額の考え方</dt>
-              <dd>所得控除は「控除額 × 税率」の分だけ税額が減ります。非課税枠は「非課税となった財産額 × 相続税率」の分だけ相続税が減ります。</dd>
+              <dt>相続税の軽減額</dt>
+              <dd><code>非課税となった財産額 × 相続税率</code>。非課税枠が使えることで課税対象から外れる財産に、その分の相続税がかからなくなると考えます。</dd>
+              <dt>相続税率の目安</dt>
+              <dd>法定相続分に応ずる取得金額に対して <code>1,000万円以下10% / 3,000万円以下15% / 5,000万円以下20% / 1億円以下30% / 2億円以下40% / 3億円以下45% / 6億円以下50% / 6億円超55%</code></dd>
             </dl>
-            <p class="calc-logic-note">限界税率による概算です。控除により課税所得が下位の税率区分に移る場合、実際の軽減額は試算値より小さくなります。復興特別所得税(所得税額×2.1%)は考慮していません。</p>
+            <p class="calc-logic-note">限界税率による概算です。実際の相続税額は法定相続分による按分計算を経て算出されるため、税理士等の専門家による試算が必要です。</p>
           </div>
         </div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">2. 生命保険料控除(所得税・住民税)<span class="help-tip" tabindex="0">?<span class="help-text">支払った生命保険料は、一定の算式に基づき所得税・住民税の計算上、所得から控除されます(平成24年1月1日以後契約の新制度)。区分ごとの上限は所得税4万円・住民税2.8万円、合計適用限度額は所得税12万円・住民税7万円です。</span></span></h3>
+          <h3 class="font-bold text-base mb-1 flex items-center">3. 生命保険料控除(所得税・住民税)<span class="help-tip" tabindex="0">?<span class="help-text">支払った生命保険料は、一定の算式に基づき所得税・住民税の計算上、所得から控除されます(平成24年1月1日以後契約の新制度)。区分ごとの上限は所得税4万円・住民税2.8万円、合計適用限度額は所得税12万円・住民税7万円です。</span></span></h3>
           <p class="text-xs text-gray-500 mb-5">区分ごとの年間払込保険料(円)を入力してください。</p>
           <div class="grid sm:grid-cols-3 gap-5">
             <div>
@@ -198,7 +289,7 @@
         </div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">3. 相続税の非課税枠(生命保険金・死亡退職金)<span class="help-tip" tabindex="0">?<span class="help-text">被相続人の死亡によって支払われる生命保険金・死亡退職金は、それぞれ独立して「500万円×法定相続人の数」までが相続税の非課税財産となります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></h3>
+          <h3 class="font-bold text-base mb-1 flex items-center">4. 相続税の非課税枠(生命保険金・死亡退職金)<span class="help-tip" tabindex="0">?<span class="help-text">被相続人の死亡によって支払われる生命保険金・死亡退職金は、それぞれ独立して「500万円×法定相続人の数」までが相続税の非課税財産となります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></h3>
           <p class="text-xs text-gray-500 mb-5">法定相続人の数と、死亡保険金・死亡退職金の見込額(万円)を入力してください。</p>
           <div class="grid sm:grid-cols-3 gap-5">
             <div>
@@ -217,7 +308,7 @@
         </div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">4. 弔慰金の非課税枠<span class="help-tip" tabindex="0">?<span class="help-text">会社が遺族に支払う弔慰金は、業務上の死亡の場合は死亡当時の普通給与の3年分(36ヶ月分)、業務外の死亡の場合は半年分(6ヶ月分)まで相続税の課税対象外とされます(相続税法基本通達3-20)。これを超える部分は死亡退職金として扱われます。</span></span></h3>
+          <h3 class="font-bold text-base mb-1 flex items-center">5. 弔慰金の非課税枠<span class="help-tip" tabindex="0">?<span class="help-text">会社が遺族に支払う弔慰金は、業務上の死亡の場合は死亡当時の普通給与の3年分(36ヶ月分)、業務外の死亡の場合は半年分(6ヶ月分)まで相続税の課税対象外とされます(相続税法基本通達3-20)。これを超える部分は死亡退職金として扱われます。</span></span></h3>
           <p class="text-xs text-gray-500 mb-5">最終報酬月額(万円)と死亡事由を選択してください。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
@@ -235,7 +326,7 @@
         </div>
 
         <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">5. 一時所得の課税対象額(満期保険金・解約返戻金等)<span class="help-tip" tabindex="0">?<span class="help-text">満期保険金・解約返戻金等を保険契約者本人が受け取る場合、受取額から払込保険料総額と特別控除額(年50万円)を差し引いた金額が一時所得となり、その1/2が他の所得と合算して課税されます。</span></span></h3>
+          <h3 class="font-bold text-base mb-1 flex items-center">6. 一時所得の課税対象額(満期保険金・解約返戻金等)<span class="help-tip" tabindex="0">?<span class="help-text">満期保険金・解約返戻金等を保険契約者本人が受け取る場合、受取額から払込保険料総額と特別控除額(年50万円)を差し引いた金額が一時所得となり、その1/2が他の所得と合算して課税されます。</span></span></h3>
           <p class="text-xs text-gray-500 mb-5">受取額と払込保険料の総額(万円)を入力してください。</p>
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
@@ -250,7 +341,7 @@
         </div>
 
         <div class="notice-box text-sm rounded-lg p-4 leading-relaxed flex items-start">
-          <span class="font-bold mr-1">6. 生命保険契約に基づく給付金(所得税)</span>
+          <span class="font-bold mr-1">7. 生命保険契約に基づく給付金(所得税)</span>
           <span class="help-tip" tabindex="0">?<span class="help-text">入院給付金・手術給付金・通院給付金など、身体の傷害に基因して支払われる保険金・給付金は、受取人が本人または配偶者・直系血族・生計を一にする親族である場合、原則として全額非課税です(所得税法施行令30条)。</span></span>
         </div>
 
@@ -307,9 +398,9 @@
             <p class="calc-logic-title">計算ロジック</p>
             <dl>
               <dt>所得税の軽減額(年間)</dt>
-              <dd><code>生命保険料控除(所得税)の合計額 × 所得税率</code></dd>
+              <dd>「1.」で計算した<strong>控除前の所得税額</strong>と、課税所得から生命保険料控除を差し引いて再計算した<strong>控除後の所得税額</strong>の差額です。<br /><code>所得税(控除前) − 所得税(課税所得 − 生命保険料控除(所得税) で再計算)</code></dd>
               <dt>住民税の軽減額(年間)</dt>
-              <dd><code>生命保険料控除(住民税)の合計額 × 10%</code></dd>
+              <dd>同じく控除前後の住民税額の差額です。<br /><code>住民税(控除前) − 住民税(課税所得 − 生命保険料控除(住民税) で再計算)</code></dd>
               <dt>10年間の累計</dt>
               <dd><code>(所得税の軽減額 ＋ 住民税の軽減額) × 10</code>。生命保険料控除は保険料を払い続ける限り毎年適用されるため、累計効果を示しています。</dd>
               <dt>相続税の軽減額</dt>
@@ -317,12 +408,12 @@
               <dt>グラフ</dt>
               <dd>各軽減額を積み上げた横棒で表示します。所得税・住民税と相続税は金額の規模と発生時期が異なるため、別のグラフ・別の目盛りで描画しています。</dd>
             </dl>
-            <p class="calc-logic-note">弔慰金は「4. 弔慰金の非課税枠」で算定した限度額まで支給した場合の軽減額として計算しています。</p>
+            <p class="calc-logic-note">所得税・住民税の軽減額は限界税率による概算ではなく、控除前後の税額を実際に再計算した差額です。そのため控除によって税率区分が下がる場合も正しく反映されます。弔慰金は「5. 弔慰金の非課税枠」で算定した限度額まで支給した場合の軽減額として計算しています。</p>
           </div>
         </div>
 
         <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">2. 生命保険料控除額</h4>
+          <h4 class="font-bold text-sm mb-4">3. 生命保険料控除額</h4>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse min-w-[480px]">
               <thead>
@@ -353,7 +444,7 @@
 </div>
 
         <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">3. 相続税の非課税枠</h4>
+          <h4 class="font-bold text-sm mb-4">4. 相続税の非課税枠</h4>
           <dl class="space-y-2 text-sm">
             <div class="flex justify-between"><dt class="text-gray-500">非課税枠(1区分あたり: 500万円×法定相続人の数)</dt><dd id="txExemptionEach" class="font-bold"></dd></div>
             <div class="flex justify-between"><dt class="text-gray-500">生命保険金 使用額 / 課税対象額</dt><dd id="txDeathBenefitResult" class="font-bold"></dd></div>
@@ -368,7 +459,7 @@
 </div>
 
         <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">4. 弔慰金の非課税枠</h4>
+          <h4 class="font-bold text-sm mb-4">5. 弔慰金の非課税枠</h4>
           <dl class="space-y-2 text-sm">
             <div class="flex justify-between"><dt class="text-gray-500">非課税となる弔慰金の上限額</dt><dd id="txCondolenceResult" class="font-bold"></dd></div>
           </dl>
@@ -381,7 +472,7 @@
 </div>
 
         <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">5. 一時所得の課税対象額</h4>
+          <h4 class="font-bold text-sm mb-4">6. 一時所得の課税対象額</h4>
           <dl class="space-y-2 text-sm">
             <div class="flex justify-between"><dt class="text-gray-500">一時所得の金額(受取額-払込保険料-特別控除50万円)</dt><dd id="txOneTimeIncome" class="font-bold"></dd></div>
             <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">課税対象額(1/2課税)</dt><dd id="txOneTimeTaxable" class="font-black text-[#2d5580]"></dd></div>
@@ -509,6 +600,6 @@
 
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/tax-exemption.js?v=20260724a"></script>
+<script src="js/tax-exemption.js?v=20260724b"></script>
 </body>
 </html>
