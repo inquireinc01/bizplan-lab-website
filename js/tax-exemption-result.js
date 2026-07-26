@@ -1,6 +1,7 @@
 /* ============================================================
-   非課税×生命保険(結果ページ)
-   - 入力ページが保存した内容を読み込み、共有ロジックで計算して描画する
+   非課税×生命保険(シミュレーションページ)
+   - 前提条件(所得税・相続税)は入力ページが保存した内容を読み込む
+   - 生命保険の設計はこのページで自由に変更でき、確定するたびに再計算する
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   const root = document.getElementById('txResultArea');
@@ -11,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const $ = (id) => document.getElementById(id);
   const setTxt = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
+  const numOf = (id) => {
+    const el = $(id);
+    if (!el) return NaN;
+    return window.numClean ? window.numClean(el.value) : parseFloat(el.value);
+  };
 
   /* ===== ？ツールチップ ===== */
   document.querySelectorAll('.help-tip').forEach(function (tip) {
@@ -59,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
     svg.innerHTML = out;
   }
 
-  /* ===== 描画 ===== */
+  /* ===== 前提条件の読み込み ===== */
   const data = T.loadInputs();
   if (!data) {
     root.classList.add('hidden');
@@ -67,83 +73,177 @@ document.addEventListener('DOMContentLoaded', function () {
     if (noData) noData.classList.remove('hidden');
     return;
   }
-  const r = T.calcAll(data);
 
-  setTxt('txResultMode', '所得税: ' + (r.itMode === 'detail' ? '詳細入力' : '簡易入力')
-    + ' / 相続税: ' + (r.ihMode === 'detail' ? '詳細入力' : '簡易入力'));
+  /* ===== 生命保険の設計(このページで変更できる項目) ===== */
+  const PLAN_IDS = [
+    'txGeneralPremium', 'txPensionPremium', 'txMedicalPremium',
+    'txDeathBenefit', 'txRetirementBenefit',
+    'txSalaryMonthly', 'txDeathCause',
+    'txMaturityAmount', 'txPaidPremiumTotal',
+  ];
+  // 保存済みの設計内容を入力欄に戻す
+  PLAN_IDS.forEach(function (id) {
+    const el = $(id);
+    if (el && data[id] !== undefined && data[id] !== null) el.value = data[id];
+  });
 
-  // --- 税負担の軽減額 ---
-  setTxt('txSaveIncomeTotal', yen(r.saveIncomeSum) + ' / 年');
-  setTxt('txSaveIncomeTax', yen(r.saveIt) + `（${man(r.taxItBefore)} → ${man(r.taxItAfter)}）`);
-  setTxt('txSaveResidentTax', yen(r.saveRt) + `（${man(r.taxRtBefore)} → ${man(r.taxRtAfter)}）`);
-  setTxt('txSave10y', yen(r.saveIncomeSum * 10));
-
-  setTxt('txSaveInheritTotal', man(r.saveInheritSum));
-  setTxt('txSaveDeath', man(r.saveDeath) + `（非課税 ${man(r.usedDeath)}）`);
-  setTxt('txSaveRetire', man(r.saveRetire) + `（非課税 ${man(r.usedRetire)}）`);
-  setTxt('txSaveCondolence', man(r.saveCondolence) + `（非課税 ${man(r.condolenceExemption)}）`);
-  setTxt('txExemptTotalAmount', man(r.exemptAmountTotal));
-
-  renderSaveChart('txChartIncome', [
-    { label: '所得税', value: r.saveIt, color: '#0f2a4a' },
-    { label: '住民税', value: r.saveRt, color: '#3b6ea5' },
-  ], yen);
-  renderSaveChart('txChartInherit', [
-    { label: '生命保険金', value: r.saveDeath, color: '#0f2a4a' },
-    { label: '死亡退職金', value: r.saveRetire, color: '#3b6ea5' },
-    { label: '弔慰金', value: r.saveCondolence, color: '#7a9cc0' },
-  ], man);
-
-  // --- 1. 生命保険料控除額 ---
-  const tbody = $('txPremiumBody');
-  const pBody = $('pPremiumBody');
-  if (tbody) tbody.innerHTML = '';
-  if (pBody) pBody.innerHTML = '';
-  r.premiumRows.forEach(function (row) {
-    if (tbody) {
-      const tr = document.createElement('tr');
-      tr.className = 'border-b border-gray-100';
-      tr.innerHTML = `<td class="px-3 py-1.5 text-gray-800">${row.label}</td>`
-        + `<td class="px-3 py-1.5 text-right">${yen(row.premium)}</td>`
-        + `<td class="px-3 py-1.5 text-right">${yen(row.it)}</td>`
-        + `<td class="px-3 py-1.5 text-right">${yen(row.rt)}</td>`;
-      tbody.appendChild(tr);
+  const planError = $('txPlanErrorArea');
+  const clearPlanError = () => {
+    if (planError) { planError.classList.add('hidden'); planError.textContent = ''; }
+    PLAN_IDS.forEach(function (id) { const el = $(id); if (el) el.classList.remove('input-error'); });
+  };
+  const showPlanError = (msg, el) => {
+    if (planError) { planError.textContent = msg; planError.classList.remove('hidden'); }
+    if (el) {
+      el.classList.add('input-error');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
     }
-    if (pBody) {
-      const ptr = document.createElement('tr');
-      ptr.innerHTML = `<td class="lbl">${row.label}</td><td>${yen(row.premium)}</td><td>${yen(row.it)}</td><td>${yen(row.rt)}</td>`;
-      pBody.appendChild(ptr);
+  };
+
+  const MAX_YEN = 99999999;   // 保険料(円)の上限
+  const MAX_MAN = 99999999;   // 金額(万円)の上限
+
+  function validatePlan() {
+    clearPlanError();
+    for (const it of T.PREMIUM_ITEMS) {
+      const v = numOf(it.id);
+      if (isNaN(v) || v < 0) { showPlanError(it.label + 'を入力してください。', $(it.id)); return false; }
+      if (v > MAX_YEN) { showPlanError('保険料は ' + T.fmt(MAX_YEN) + ' 円以内で入力してください。', $(it.id)); return false; }
+    }
+    for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly',
+      'txMaturityAmount', 'txPaidPremiumTotal']) {
+      const v = numOf(id);
+      if (isNaN(v) || v < 0) { showPlanError('生命保険の設計の各項目を入力してください。', $(id)); return false; }
+      if (v > MAX_MAN) { showPlanError('入力値が大きすぎます。数値をご確認ください。', $(id)); return false; }
+    }
+    return true;
+  }
+
+  function collectPlan() {
+    PLAN_IDS.forEach(function (id) { const el = $(id); if (el) data[id] = el.value; });
+  }
+  function savePlan() {
+    try { localStorage.setItem(T.STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  /* ===== 描画 ===== */
+  function render() {
+    const r = T.calcAll(data);
+
+    setTxt('txResultMode', '所得税: ' + (r.itMode === 'detail' ? '詳細入力' : '簡易入力')
+      + ' / 相続税: ' + (r.ihMode === 'detail' ? '詳細入力' : '簡易入力'));
+    setTxt('txHeirsCountView', r.heirsCount + ' 人');
+
+    // --- 税負担の軽減額 ---
+    setTxt('txSaveIncomeTotal', yen(r.saveIncomeSum) + ' / 年');
+    setTxt('txSaveIncomeTax', yen(r.saveIt) + `（${man(r.taxItBefore)} → ${man(r.taxItAfter)}）`);
+    setTxt('txSaveResidentTax', yen(r.saveRt) + `（${man(r.taxRtBefore)} → ${man(r.taxRtAfter)}）`);
+    setTxt('txSave10y', yen(r.saveIncomeSum * 10));
+
+    setTxt('txSaveInheritTotal', man(r.saveInheritSum));
+    setTxt('txSaveDeath', man(r.saveDeath) + `（非課税 ${man(r.usedDeath)}）`);
+    setTxt('txSaveRetire', man(r.saveRetire) + `（非課税 ${man(r.usedRetire)}）`);
+    setTxt('txSaveCondolence', man(r.saveCondolence) + `（非課税 ${man(r.condolenceExemption)}）`);
+    setTxt('txExemptTotalAmount', man(r.exemptAmountTotal));
+
+    renderSaveChart('txChartIncome', [
+      { label: '所得税', value: r.saveIt, color: '#0f2a4a' },
+      { label: '住民税', value: r.saveRt, color: '#3b6ea5' },
+    ], yen);
+    renderSaveChart('txChartInherit', [
+      { label: '生命保険金', value: r.saveDeath, color: '#0f2a4a' },
+      { label: '死亡退職金', value: r.saveRetire, color: '#3b6ea5' },
+      { label: '弔慰金', value: r.saveCondolence, color: '#7a9cc0' },
+    ], man);
+
+    // --- 1. 生命保険料控除額 ---
+    const tbody = $('txPremiumBody');
+    const pBody = $('pPremiumBody');
+    if (tbody) tbody.innerHTML = '';
+    if (pBody) pBody.innerHTML = '';
+    r.premiumRows.forEach(function (row) {
+      if (tbody) {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-100';
+        tr.innerHTML = `<td class="px-3 py-1.5 text-gray-800">${row.label}</td>`
+          + `<td class="px-3 py-1.5 text-right">${yen(row.premium)}</td>`
+          + `<td class="px-3 py-1.5 text-right">${yen(row.it)}</td>`
+          + `<td class="px-3 py-1.5 text-right">${yen(row.rt)}</td>`;
+        tbody.appendChild(tr);
+      }
+      if (pBody) {
+        const ptr = document.createElement('tr');
+        ptr.innerHTML = `<td class="lbl">${row.label}</td><td>${yen(row.premium)}</td><td>${yen(row.it)}</td><td>${yen(row.rt)}</td>`;
+        pBody.appendChild(ptr);
+      }
+    });
+    setTxt('txIncomeTaxTotal', yen(r.premiumItTotal));
+    setTxt('txResidentTaxTotal', yen(r.premiumRtTotal));
+    setTxt('pIncomeTaxTotal', yen(r.premiumItTotal));
+    setTxt('pResidentTaxTotal', yen(r.premiumRtTotal));
+
+    // --- 2. 相続税の非課税枠 ---
+    setTxt('txExemptionEach', man(r.exemptionEach));
+    setTxt('pExemptionEach', man(r.exemptionEach));
+    const deathTxt = `使用 ${man(r.usedDeath)} / 課税対象 ${man(r.taxableDeath)}`;
+    const retireTxt = `使用 ${man(r.usedRetire)} / 課税対象 ${man(r.taxableRetire)}`;
+    setTxt('txDeathBenefitResult', deathTxt);
+    setTxt('pDeathBenefitResult', deathTxt);
+    setTxt('txRetirementResult', retireTxt);
+    setTxt('pRetirementResult', retireTxt);
+
+    // --- 3. 弔慰金 ---
+    const condTxt = `${man(r.condolenceExemption)}(${r.condolenceMonths}ヶ月分)`;
+    setTxt('txCondolenceResult', condTxt);
+    setTxt('pCondolenceResult', condTxt);
+
+    // --- 4. 一時所得 ---
+    setTxt('txOneTimeIncome', man(r.oneTimeIncome));
+    setTxt('pOneTimeIncome', man(r.oneTimeIncome));
+    setTxt('txOneTimeTaxable', man(r.oneTimeTaxable));
+    setTxt('pOneTimeTaxable', man(r.oneTimeTaxable));
+
+    // --- サマリー ---
+    setTxt('txSummaryPremium', `${yen(r.premiumItTotal)} + ${yen(r.premiumRtTotal)}`);
+    setTxt('txSummaryInheritance', man(r.exemptionEach * 2 + r.condolenceExemption));
+  }
+
+  /* ===== 入力確定時に再計算(入力中は反映しない) ===== */
+  root.addEventListener('change', function (e) {
+    if (!e.target || PLAN_IDS.indexOf(e.target.id) < 0) return;
+    if (!validatePlan()) return;
+    collectPlan();
+    savePlan();
+    render();
+  });
+  // エラーの赤枠は入力し直したら即座に解除する
+  root.addEventListener('input', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('input-error')) {
+      e.target.classList.remove('input-error');
     }
   });
-  setTxt('txIncomeTaxTotal', yen(r.premiumItTotal));
-  setTxt('txResidentTaxTotal', yen(r.premiumRtTotal));
-  setTxt('pIncomeTaxTotal', yen(r.premiumItTotal));
-  setTxt('pResidentTaxTotal', yen(r.premiumRtTotal));
+  // 入力欄でEnterを押したら入力確定として扱う
+  root.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    const t = e.target;
+    if (!t || PLAN_IDS.indexOf(t.id) < 0) return;
+    e.preventDefault();
+    if (typeof t.blur === 'function') t.blur();
+  });
 
-  // --- 2. 相続税の非課税枠 ---
-  setTxt('txExemptionEach', man(r.exemptionEach));
-  setTxt('pExemptionEach', man(r.exemptionEach));
-  const deathTxt = `使用 ${man(r.usedDeath)} / 課税対象 ${man(r.taxableDeath)}`;
-  const retireTxt = `使用 ${man(r.usedRetire)} / 課税対象 ${man(r.taxableRetire)}`;
-  setTxt('txDeathBenefitResult', deathTxt);
-  setTxt('pDeathBenefitResult', deathTxt);
-  setTxt('txRetirementResult', retireTxt);
-  setTxt('pRetirementResult', retireTxt);
+  /* ===== 初期表示 ===== */
+  collectPlan();
+  render();
 
-  // --- 3. 弔慰金 ---
-  const condTxt = `${man(r.condolenceExemption)}(${r.condolenceMonths}ヶ月分)`;
-  setTxt('txCondolenceResult', condTxt);
-  setTxt('pCondolenceResult', condTxt);
-
-  // --- 4. 一時所得 ---
-  setTxt('txOneTimeIncome', man(r.oneTimeIncome));
-  setTxt('pOneTimeIncome', man(r.oneTimeIncome));
-  setTxt('txOneTimeTaxable', man(r.oneTimeTaxable));
-  setTxt('pOneTimeTaxable', man(r.oneTimeTaxable));
-
-  // --- サマリー ---
-  setTxt('txSummaryPremium', `${yen(r.premiumItTotal)} + ${yen(r.premiumRtTotal)}`);
-  setTxt('txSummaryInheritance', man(r.exemptionEach * 2 + r.condolenceExemption));
+  /* ===== 全データクリア ===== */
+  const clearBtn = $('txClearBtn');
+  if (clearBtn && window.armHeroClearBtn) {
+    window.armHeroClearBtn(clearBtn, function () {
+      try { localStorage.removeItem(T.STORAGE_KEY); } catch (e) {}
+      window.location.href = 'tax-exemption.html';
+    });
+  }
 
   /* ===== PDF出力 ===== */
   function doPrint() {

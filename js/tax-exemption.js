@@ -68,12 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     $('ihSimpleArea').classList.toggle('hidden', v !== 'simple');
     $('ihDetailArea').classList.toggle('hidden', v !== 'detail');
-    // 詳細入力では法定相続人の数を家系図から自動判定するため、「4.」の入力欄は読み取り専用にする
-    const heirsEl = $('txHeirs');
-    if (heirsEl) {
-      heirsEl.readOnly = (v === 'detail');
-      heirsEl.classList.toggle('bg-gray-50', v === 'detail');
-    }
     refreshAuto();
   }
   document.querySelectorAll('#itVersionChooser .version-card').forEach(function (c) {
@@ -103,6 +97,9 @@ document.addEventListener('DOMContentLoaded', function () {
       setTxt('txSimpleTaxIt', man(r.taxItBefore));
       setTxt('txSimpleTaxRt', man(r.taxRtBefore));
     }
+
+    // --- 相続税: 簡易入力 ---
+    setTxt('txExemptionEachSimple', man(r.exemptionEach));
 
     // --- 所得税: 詳細入力 ---
     if (r.itMode === 'detail' && r.detail) {
@@ -153,9 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
       setTxt('txEstateTaxPayable', man(e.payable));
       setTxt('txEstateEffectiveRate', e.effectiveRate.toFixed(1) + ' %');
       setTxt('txEstateMarginalRate', e.marginalRate + ' %');
-      // 「4.」の法定相続人の数を家系図の判定結果で上書きする
-      const heirsEl = $('txHeirs');
-      if (heirsEl) heirsEl.value = String(h.count);
     }
   }
 
@@ -170,21 +164,20 @@ document.addEventListener('DOMContentLoaded', function () {
     'txSocialInsurance', 'txSmallBizDeduction', 'txEarthquakeDeduction', 'txMedicalDeduction',
     'txSpouseDeduction', 'txDependentGeneral', 'txDependentSpecific', 'txDependentElderly', 'txOtherDeduction',
     // 相続税(簡易)
-    'txInheritanceRate',
+    'txInheritanceRate', 'txHeirs',
     // 相続税(詳細)
     'txHasSpouse', 'txChildren', 'txAdopted', 'txParents', 'txSiblings',
     'txAssetLand', 'txAssetBuilding', 'txAssetSecurities', 'txAssetCash', 'txAssetOther',
     'txSmallLotType', 'txSmallLotValue', 'txSmallLotArea', 'txSpouseAcquireRate',
     'txDebt', 'txFuneralCost',
-    // 共通
-    'txGeneralPremium', 'txPensionPremium', 'txMedicalPremium',
-    'txHeirs', 'txDeathBenefit', 'txRetirementBenefit',
-    'txSalaryMonthly', 'txDeathCause',
-    'txMaturityAmount', 'txPaidPremiumTotal',
   ];
+  // 生命保険の設計(保険料・保険金・退職金・弔慰金・満期保険金)はシミュレーションページ側で入力するため、
+  // このページの保存では保持されている値をそのまま引き継ぐ。
   function collect() {
-    const data = { txItVersion: itVersion, txIhVersion: ihVersion };
-    FIELD_IDS.forEach(function (id) { data[id] = valOf(id); });
+    const data = T.loadInputs() || {};
+    data.txItVersion = itVersion;
+    data.txIhVersion = ihVersion;
+    FIELD_IDS.forEach(function (id) { const el = $(id); if (el) data[id] = el.value; });
     return data;
   }
   function save() {
@@ -222,17 +215,10 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ===== 検証してから結果ページへ ===== */
-  const MAX_YEN = 99999999;   // 保険料(円)の上限
   const MAX_MAN = 99999999;   // 金額(万円)の上限
   const MAX_HEIRS = 100;
 
   function validate() {
-    // 保険料(円)
-    for (const it of T.PREMIUM_ITEMS) {
-      const v = numOf(it.id);
-      if (isNaN(v) || v < 0) { showError(it.label + 'を入力してください。', $(it.id)); return false; }
-      if (v > MAX_YEN) { showError('保険料は ' + T.fmt(MAX_YEN) + ' 円以内で入力してください。', $(it.id)); return false; }
-    }
     // 所得税
     if (itVersion === 'simple') {
       const v = numOf('txTaxableIncomeSimple');
@@ -261,6 +247,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const v = numOf('txInheritanceRate');
       if (isNaN(v) || v < 0) { showError('相続税率を入力してください。', $('txInheritanceRate')); return false; }
       if (v > 100) { showError('相続税率は100%以内で入力してください。', $('txInheritanceRate')); return false; }
+      const h = numOf('txHeirs');
+      if (isNaN(h) || h < 0) { showError('法定相続人の数を入力してください。', $('txHeirs')); return false; }
+      if (h > MAX_HEIRS) { showError('法定相続人の数は ' + MAX_HEIRS + ' 人以内で入力してください。', $('txHeirs')); return false; }
     } else {
       for (const id of ['txChildren', 'txAdopted', 'txParents', 'txSiblings',
         'txAssetLand', 'txAssetBuilding', 'txAssetSecurities', 'txAssetCash', 'txAssetOther',
@@ -296,18 +285,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showError('法定相続人が0人です。配偶者の有無、子・父母・兄弟姉妹の人数をご確認ください。', $('txChildren'));
         return false;
       }
-    }
-    // 共通(非課税枠・弔慰金・一時所得)
-    if (ihVersion === 'simple') {
-      const h = numOf('txHeirs');
-      if (isNaN(h) || h < 0) { showError('法定相続人の数を入力してください。', $('txHeirs')); return false; }
-      if (h > MAX_HEIRS) { showError('法定相続人の数は ' + MAX_HEIRS + ' 人以内で入力してください。', $('txHeirs')); return false; }
-    }
-    for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly',
-      'txMaturityAmount', 'txPaidPremiumTotal']) {
-      const v = numOf(id);
-      if (isNaN(v) || v < 0) { showError('非課税枠・一時所得の項目を入力してください。', $(id)); return false; }
-      if (v > MAX_MAN) { showError('入力値が大きすぎます。数値をご確認ください。', $(id)); return false; }
     }
     return true;
   }

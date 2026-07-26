@@ -433,6 +433,14 @@
                 <label class="tx-field-label" for="txInheritanceRate">相続税率(%)<span class="help-tip" tabindex="0">?<span class="help-text">相続財産に適用される相続税の税率(限界税率)を入力してください。財産規模により10%〜55%の範囲で変動します。法定相続分に応ずる取得金額に対して<code>1,000万円以下10% / 3,000万円以下15% / 5,000万円以下20% / 1億円以下30% / 2億円以下40% / 3億円以下45% / 6億円以下50% / 6億円超55%</code>です。</span></span></label>
                 <div class="tx-field-input"><input type="number" id="txInheritanceRate" value="30" step="0.1" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 30" /></div>
               </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txHeirs">法定相続人の数(人)<span class="help-tip" tabindex="0">?<span class="help-text">生命保険金・死亡退職金の非課税枠(500万円×法定相続人の数)の計算に使用します。詳細入力を選んだ場合は家系図から自動判定されます。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txHeirs" value="2" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 2" /></div>
+              </div>
+              <div class="tx-field-row">
+                <span class="tx-field-label">非課税枠(1区分あたり)</span>
+                <span class="tx-field-value" id="txExemptionEachSimple">-</span>
+              </div>
             </div>
 
             <div class="calc-logic">
@@ -478,7 +486,7 @@
                 <div class="tx-field-input"><input type="number" id="txSiblings" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
               </div>
               <div class="tx-field-row is-auto">
-                <span class="tx-field-label">法定相続人の数(自動判定)<span class="help-tip" tabindex="0">?<span class="help-text">相続税の基礎控除(3,000万円＋600万円×法定相続人の数)と、生命保険金・死亡退職金の非課税枠(500万円×法定相続人の数)の計算に使用します。この人数は「4.」の非課税枠にも自動反映されます。</span></span></span>
+                <span class="tx-field-label">法定相続人の数(自動判定)<span class="help-tip" tabindex="0">?<span class="help-text">相続税の基礎控除(3,000万円＋600万円×法定相続人の数)と、生命保険金・死亡退職金の非課税枠(500万円×法定相続人の数)の計算に使用します。この人数はシミュレーションページの非課税枠にも自動反映されます。</span></span></span>
                 <span class="tx-field-value" id="txHeirsAuto">-</span>
               </div>
               <div class="tx-field-row is-auto">
@@ -488,7 +496,7 @@
             </div>
 
             <p class="tx-group-title">財産目録: 正の財産</p>
-            <p class="tx-group-note">相続税評価額(万円)を入力してください。生命保険金・死亡退職金は「4.」で入力した金額が非課税枠を控除した上で自動的に加算されます。</p>
+            <p class="tx-group-note">相続税評価額(万円)を入力してください。生命保険金・死亡退職金は、シミュレーションページで入力した金額が非課税枠を控除した上で自動的に加算されます。</p>
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetLand">土地(万円)<span class="help-tip" tabindex="0">?<span class="help-text">宅地・農地等の相続税評価額。宅地は路線価方式または倍率方式で評価します。小規模宅地等の特例を適用する場合は減額後の金額を入力してください。</span></span></label>
@@ -648,80 +656,8 @@
           </div>
         </div>
 
-<div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">3. 生命保険料控除(所得税・住民税)<span class="help-tip" tabindex="0">?<span class="help-text">支払った生命保険料は、一定の算式に基づき所得税・住民税の計算上、所得から控除されます(平成24年1月1日以後契約の新制度)。区分ごとの上限は所得税4万円・住民税2.8万円、合計適用限度額は所得税12万円・住民税7万円です。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">区分ごとの年間払込保険料(円)を入力してください。</p>
-          <div class="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txGeneralPremium">一般生命保険料(円/年)</label>
-              <input type="number" id="txGeneralPremium" value="80000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txPensionPremium">個人年金保険料(円/年)</label>
-              <input type="number" id="txPensionPremium" value="80000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txMedicalPremium">介護医療保険料(円/年)</label>
-              <input type="number" id="txMedicalPremium" value="80000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-          </div>
-        </div>
-
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">4. 相続税の非課税枠(生命保険金・死亡退職金)<span class="help-tip" tabindex="0">?<span class="help-text">被相続人の死亡によって支払われる生命保険金・死亡退職金は、それぞれ独立して「500万円×法定相続人の数」までが相続税の非課税財産となります(相続税法12条)。受取人が相続人でない場合は非課税の適用はありません。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">法定相続人の数と、死亡保険金・死亡退職金の見込額(万円)を入力してください。</p>
-          <div class="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txHeirs">法定相続人の数(人)</label>
-              <input type="number" id="txHeirs" value="2" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txDeathBenefit">死亡保険金の受取見込額(万円)</label>
-              <input type="number" id="txDeathBenefit" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txRetirementBenefit">死亡退職金の見込額(万円)</label>
-              <input type="number" id="txRetirementBenefit" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-          </div>
-        </div>
-
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">5. 弔慰金の非課税枠<span class="help-tip" tabindex="0">?<span class="help-text">会社が遺族に支払う弔慰金は、業務上の死亡の場合は死亡当時の普通給与の3年分(36ヶ月分)、業務外の死亡の場合は半年分(6ヶ月分)まで相続税の課税対象外とされます(相続税法基本通達3-20)。これを超える部分は死亡退職金として扱われます。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">最終報酬月額(万円)と死亡事由を選択してください。</p>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txSalaryMonthly">最終報酬月額(万円)</label>
-              <input type="number" id="txSalaryMonthly" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txDeathCause">死亡事由</label>
-              <select id="txDeathCause" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
-                <option value="off" selected>業務外の死亡(6ヶ月分)</option>
-                <option value="on">業務上の死亡(36ヶ月分)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1 flex items-center">6. 一時所得の課税対象額(満期保険金・解約返戻金等)<span class="help-tip" tabindex="0">?<span class="help-text">満期保険金・解約返戻金等を保険契約者本人が受け取る場合、受取額から払込保険料総額と特別控除額(年50万円)を差し引いた金額が一時所得となり、その1/2が他の所得と合算して課税されます。</span></span></h3>
-          <p class="text-xs text-gray-500 mb-5">受取額と払込保険料の総額(万円)を入力してください。</p>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txMaturityAmount">満期保険金・解約返戻金等の受取額(万円)</label>
-              <input type="number" id="txMaturityAmount" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="txPaidPremiumTotal">払込保険料の総額(万円)</label>
-              <input type="number" id="txPaidPremiumTotal" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-          </div>
-        </div>
-
-        <div class="notice-box text-sm rounded-lg p-4 leading-relaxed flex items-start">
-          <span class="font-bold mr-1">7. 生命保険契約に基づく給付金(所得税)</span>
-          <span class="help-tip" tabindex="0">?<span class="help-text">入院給付金・手術給付金・通院給付金など、身体の傷害に基因して支払われる保険金・給付金は、受取人が本人または配偶者・直系血族・生計を一にする親族である場合、原則として全額非課税です(所得税法施行令30条)。</span></span>
+        <div class="notice-box text-sm rounded-lg p-4 leading-relaxed">
+          生命保険の設計(払込保険料・死亡保険金・死亡退職金・弔慰金・満期保険金)は、<strong>シミュレーションページ</strong>で入力します。前提条件を確定してから、シミュレーションページで保険の内容を自由に変えて効果を比較してください。
         </div>
 
         <div id="txErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
@@ -831,6 +767,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260724b"></script>
-<script src="js/tax-exemption.js?v=20260724e"></script>
+<script src="js/tax-exemption.js?v=20260727a"></script>
 </body>
 </html>
