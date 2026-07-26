@@ -1550,6 +1550,55 @@ img {
   font-weight: 400;
 }
 
+/* 非課税×生命保険: 軽減額ゲージの見出し(現状の金額と活用率バッジ) */
+.tx-gauge-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.tx-gauge-now {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--color-navy);
+}
+@media (min-width: 640px) {
+  .tx-gauge-now { font-size: 2.4rem; }
+}
+.tx-gauge-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background-color: #eef2f7;
+  color: #2d5580;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tx-gauge-pill > span:first-child {
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+/* 使い切っているときは色を変えて「もう伸びしろがない」ことを示す */
+.tx-gauge-pill.is-full {
+  background-color: var(--color-navy);
+  color: #fff;
+}
+.tx-gauge-lead {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2d5580;
+}
+.tx-gauge-lead.is-full {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
 /* 非課税×生命保険: 軽減額グラフの帯が左から伸びるアニメーション */
 @keyframes txSaveBarGrow {
   from { transform: scaleX(0); }

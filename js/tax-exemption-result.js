@@ -53,52 +53,72 @@ document.addEventListener('DOMContentLoaded', function () {
     el._countRaf = requestAnimationFrame(step);
   }
 
-  /* ===== 軽減額ゲージ(MAXお得額を全体幅とし、現状の内訳を積み上げる) ===== */
+  /* ===== 軽減額ゲージ =====
+     MAXお得額を全体の幅とし、現状の軽減額を内訳ごとに積み上げる。
+     残り(使い残している枠)は斜線で塗り、残り何%かを大きく見せる ===== */
   function drawSaveChart(svg, parts, unitFmt, maxTotal) {
-    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 26, BAR_H = 46;
+    const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 34, BAR_H = 78;
     const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
     const cap = Math.max(maxTotal, used);
-    let out = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="6" fill="#eef1f4"/>`;
+    const pid = svg.id + 'Stripe';
+    let out = `<defs><pattern id="${pid}" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">`
+      + `<rect width="14" height="14" fill="#eef1f4"/><rect width="6" height="14" fill="#dfe5ee"/></pattern></defs>`;
+    out += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="10" fill="#eef1f4"/>`;
     if (cap <= 0) {
-      out += `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="17" fill="#9ca3af" text-anchor="middle">軽減額なし</text>`;
+      out += `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 8}" font-size="20" fill="#9ca3af" text-anchor="middle">軽減額なし</text>`;
       svg.innerHTML = out;
       return;
     }
-    // 帯に入れる文字の必要幅を文字数から見積もる(半角9.5・全角18)
-    const widthOf = (label) => {
-      let need = 12;
-      for (let k = 0; k < label.length; k += 1) need += /[0-9,.\s]/.test(label[k]) ? 9.5 : 18;
+    // 帯に入れる文字の必要幅を文字数から見積もる(半角0.55em・全角1em)
+    const widthOf = (label, size) => {
+      let need = size * 0.8;
+      for (let k = 0; k < label.length; k += 1) need += /[0-9,.\s%]/.test(label[k]) ? size * 0.55 : size;
       return need;
     };
+    const usedW = (used / cap) * BAR_W;
+    // 残り(使い残している枠)を斜線で表示する
+    const room = Math.max(0, cap - used);
+    if (room > 0) {
+      out += `<rect x="${(BAR_X + usedW).toFixed(1)}" y="${BAR_Y}" width="${(BAR_W - usedW).toFixed(1)}" height="${BAR_H}" rx="10" fill="url(#${pid})"/>`;
+      const roomPct = Math.round((room / cap) * 100);
+      const cx = BAR_X + usedW + (BAR_W - usedW) / 2;
+      const big = '残り ' + roomPct + '%';
+      if (BAR_W - usedW > widthOf(big, 26)) {
+        out += `<text x="${cx.toFixed(1)}" y="${BAR_Y + BAR_H / 2 - 2}" font-size="26" font-weight="bold" fill="#8d99a8" text-anchor="middle">${big}</text>`;
+        const sub = unitFmt(room);
+        if (BAR_W - usedW > widthOf(sub, 15)) {
+          out += `<text x="${cx.toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 22}" font-size="15" fill="#8d99a8" text-anchor="middle">${sub}</text>`;
+        }
+      } else if (BAR_W - usedW > widthOf(roomPct + '%', 20)) {
+        out += `<text x="${cx.toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 8}" font-size="20" font-weight="bold" fill="#8d99a8" text-anchor="middle">${roomPct}%</text>`;
+      }
+    }
+    // 現状の内訳を積み上げる
     let x = BAR_X;
     parts.forEach(function (p, i) {
       const v = Math.max(0, p.value);
       if (v <= 0) return;
       const w = (v / cap) * BAR_W;
       const isFirst = x === BAR_X;
-      const isLast = used >= cap && (i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0));
-      const rx = (isFirst || isLast) ? 6 : 0;
+      const isLast = room <= 0 && (i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0));
+      const rx = (isFirst || isLast) ? 10 : 0;
       out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
       const label = unitFmt(v);
-      if (w > widthOf(label)) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">${label}</text>`;
-      }
-      if (w > 46) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y - 7}" font-size="13" fill="#6b7280" text-anchor="middle">${((v / cap) * 100).toFixed(0)}%</text>`;
+      if (w > widthOf(label, 20)) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 1}" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">${label}</text>`;
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 22}" font-size="14" fill="#ffffffb0" text-anchor="middle">${((v / cap) * 100).toFixed(0)}%</text>`;
+      } else if (w > widthOf('00%', 15)) {
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">${((v / cap) * 100).toFixed(0)}%</text>`;
       }
       x += w;
     });
-    // 未使用の枠(あといくら上乗せできるか)
-    const room = Math.max(0, cap - used);
-    if (room > 0) {
-      const rw = (room / cap) * BAR_W;
-      const label = 'あと ' + unitFmt(room);
-      if (rw > widthOf(label)) {
-        out += `<text x="${(x + rw / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="18" font-weight="bold" fill="#9aa5b1" text-anchor="middle">${label}</text>`;
-      }
-    }
-    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 22}" font-size="14" fill="#6b7280">MAXお得額</text>`;
-    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 22}" font-size="19" font-weight="bold" fill="#0f2a4a" text-anchor="end">${unitFmt(cap)}</text>`;
+    // 目盛り(0 と MAX)
+    out += `<text x="${BAR_X}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af">0</text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y - 10}" font-size="13" fill="#9ca3af" text-anchor="end">MAXお得額</text>`;
+    out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 26}"><tspan font-size="13" fill="#6b7280">現状 </tspan>`
+      + `<tspan font-size="20" font-weight="bold" fill="#0f2a4a">${unitFmt(used)}</tspan></text>`;
+    out += `<text x="${BAR_X + BAR_W}" y="${BAR_Y + BAR_H + 26}" text-anchor="end"><tspan font-size="13" fill="#6b7280">MAX </tspan>`
+      + `<tspan font-size="20" font-weight="bold" fill="#2d5580">${unitFmt(cap)}</tspan></text>`;
     svg.innerHTML = out;
   }
 
@@ -211,10 +231,23 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- MAXお得額(枠を使い切った場合)と活用率 ---
     const mx = r.max || r;
     const pct = (cur, top) => (top > 0 ? Math.min(100, Math.round((cur / top) * 100)) : 0);
-    countUp('txMaxIncome', mx.saveIncomeSum, yen);
-    setTxt('txUseIncome', pct(r.saveIncomeSum, mx.saveIncomeSum) + ' %');
-    countUp('txMaxInherit', mx.saveInheritSum, man);
-    setTxt('txUseInherit', pct(r.saveInheritSum, mx.saveInheritSum) + ' %');
+    // 活用率バッジと、使い残しがいくらあるかの一言
+    const gauge = function (pillId, leadId, now, top, fmt, more) {
+      const p = pct(now, top);
+      const full = top - now <= 0.5;
+      setTxt(pillId, p + '%');
+      const pill = $(pillId) ? $(pillId).parentNode : null;
+      if (pill) pill.classList.toggle('is-full', full);
+      const lead = $(leadId);
+      if (lead) {
+        lead.textContent = full
+          ? 'MAX ' + fmt(top) + ' を使い切っています'
+          : 'あと ' + fmt(top - now) + ' 上乗せできます' + more;
+        lead.classList.toggle('is-full', full);
+      }
+    };
+    gauge('txUseIncome', 'txLeadIncome', r.saveIncomeSum, mx.saveIncomeSum, yen, '(毎年)');
+    gauge('txUseInherit', 'txLeadInherit', r.saveInheritSum, mx.saveInheritSum, man, '');
     countUp('txMaxPremiumCol', mx.saveIncomeSum, yen);
     countUp('txMaxExemptCol', mx.saveDeath + mx.saveRetire, man);
     countUp('txMaxCondolenceCol', mx.saveCondolence, man);

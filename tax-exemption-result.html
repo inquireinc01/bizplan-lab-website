@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072710" />
+<link rel="stylesheet" href="css/style.css?v=2026072711" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -166,9 +166,12 @@
                 <p class="font-bold text-xs">所得税・住民税の軽減額</p>
                 <p class="text-[10px] text-gray-400">毎年</p>
               </div>
-              <p id="txSaveIncomeTotal" class="text-2xl sm:text-3xl font-black text-[#0f2a4a] leading-tight"></p>
-              <p class="text-[11px] text-gray-500 mb-2">MAXお得額 <span id="txMaxIncome" class="font-bold text-[#2d5580]"></span> のうち <span id="txUseIncome" class="font-bold text-[#2d5580]"></span> を活用</p>
-              <svg id="txChartIncome" viewBox="0 0 560 104" class="w-full h-auto" role="img" aria-label="所得税・住民税の軽減額の内訳"></svg>
+              <div class="tx-gauge-head">
+                <p id="txSaveIncomeTotal" class="tx-gauge-now"></p>
+                <p class="tx-gauge-pill"><span id="txUseIncome">-</span><span>活用</span></p>
+              </div>
+              <svg id="txChartIncome" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="所得税・住民税の軽減額とMAXお得額に対する使用状況"></svg>
+              <p class="tx-gauge-lead" id="txLeadIncome"></p>
               <dl class="text-xs mt-2 space-y-1">
                 <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#0f2a4a"></span>所得税</dt><dd id="txSaveIncomeTax" class="font-bold text-right"></dd></div>
                 <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#3b6ea5"></span>住民税</dt><dd id="txSaveResidentTax" class="font-bold text-right"></dd></div>
@@ -182,9 +185,12 @@
                 <p class="font-bold text-xs">相続税の軽減額</p>
                 <p class="text-[10px] text-gray-400">相続発生時に一度</p>
               </div>
-              <p id="txSaveInheritTotal" class="text-2xl sm:text-3xl font-black text-[#0f2a4a] leading-tight"></p>
-              <p class="text-[11px] text-gray-500 mb-2">MAXお得額 <span id="txMaxInherit" class="font-bold text-[#2d5580]"></span> のうち <span id="txUseInherit" class="font-bold text-[#2d5580]"></span> を活用</p>
-              <svg id="txChartInherit" viewBox="0 0 560 104" class="w-full h-auto" role="img" aria-label="相続税の軽減額の内訳"></svg>
+              <div class="tx-gauge-head">
+                <p id="txSaveInheritTotal" class="tx-gauge-now"></p>
+                <p class="tx-gauge-pill"><span id="txUseInherit">-</span><span>活用</span></p>
+              </div>
+              <svg id="txChartInherit" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="相続税の軽減額とMAXお得額に対する使用状況"></svg>
+              <p class="tx-gauge-lead" id="txLeadInherit"></p>
               <dl class="text-xs mt-2 space-y-1">
                 <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#0f2a4a"></span>生命保険金</dt><dd id="txSaveDeath" class="font-bold text-right"></dd></div>
                 <div class="flex justify-between gap-2"><dt class="flex items-center gap-1.5 shrink-0"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#3b6ea5"></span>死亡退職金</dt><dd id="txSaveRetire" class="font-bold text-right"></dd></div>
@@ -366,6 +372,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727b"></script>
-<script src="js/tax-exemption-result.js?v=20260727n"></script>
+<script src="js/tax-exemption-result.js?v=20260727o"></script>
 </body>
 </html>
