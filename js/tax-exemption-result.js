@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
      所得税グループはネイビー、相続税グループはグリーン。
      グリーンはネイビーと同じ彩度・明度のまま色相だけ変えた値(HSL 211→150) ===== */
   const NAVY = ['#0f2a4a', '#3b6ea5', '#7a9cc0', '#2d5580'];
+  // 既定は内訳をまとめた1本の帯。ボタンで内訳表示に切り替える
+  let showDetail = false;
   const GREEN = ['#0f482b', '#3ba570', '#7ac09d', '#2d8056'];
 
   /* ===== 数値のカウントアップ ===== */
@@ -96,21 +98,20 @@ document.addEventListener('DOMContentLoaded', function () {
       out += `<rect x="${(BAR_X + usedW).toFixed(1)}" y="${BAR_Y}" width="${(BAR_W - usedW).toFixed(1)}" height="${BAR_H}" rx="10" fill="url(#${pid})"/>`;
     }
     // 現状の内訳を積み上げる
+    // 既定は内訳をまとめた1本の帯。内訳表示のときだけ区分ごとに塗り分ける
+    const drawn = o.detail ? parts : [{ label: '合計', value: used, color: o.base || parts[0].color }];
     let x = BAR_X;
-    parts.forEach(function (p, i) {
+    drawn.forEach(function (p, i) {
       const v = Math.max(0, p.value);
       if (v <= 0) return;
       const w = (v / cap) * BAR_W;
       const isFirst = x === BAR_X;
-      const isLast = room <= 0 && (i === parts.length - 1 || parts.slice(i + 1).every((q) => Math.max(0, q.value) <= 0));
+      const isLast = room <= 0 && (i === drawn.length - 1 || drawn.slice(i + 1).every((q) => Math.max(0, q.value) <= 0));
       const rx = (isFirst || isLast) ? 10 : 0;
       out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
       const label = unitFmt(v);
       if (w > widthOf(label, 20)) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 1}" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">${label}</text>`;
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 22}" font-size="14" fill="#ffffffb0" text-anchor="middle">${((v / cap) * 100).toFixed(0)}%</text>`;
-      } else if (w > widthOf('00%', 15)) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">${((v / cap) * 100).toFixed(0)}%</text>`;
+        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + 7}" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">${label}</text>`;
       }
       x += w;
     });
@@ -132,19 +133,20 @@ document.addEventListener('DOMContentLoaded', function () {
     chartState[svgId] = next;
     if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
     clearTimeout(svg._chartTimer);
+    const opts = Object.assign({}, opt, { detail: showDetail });
     const at = (vals) => parts.map((p, i) => ({ label: p.label, color: p.color, value: vals[i] }));
-    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opt); return; }
+    if (prev.every((v, i) => v === next[i])) { drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opts); return; }
     // requestAnimationFrameが止まる環境でも最終形は必ず描く
     svg._chartTimer = setTimeout(function () {
       if (svg._chartRaf) { cancelAnimationFrame(svg._chartRaf); svg._chartRaf = null; }
-      drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opt);
+      drawSaveChart(svg, at(next), unitFmt, next[next.length - 1], opts);
     }, COUNT_MS + 250);
     const start = performance.now();
     const step = function (now) {
       const t = Math.min(1, (now - start) / COUNT_MS);
       const e = 1 - Math.pow(1 - t, 3); // ease-out
       const cur = next.map((v, i) => prev[i] + (v - prev[i]) * e);
-      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1], opt);
+      drawSaveChart(svg, at(cur), unitFmt, cur[cur.length - 1], opts);
       if (t < 1) svg._chartRaf = requestAnimationFrame(step);
       else svg._chartRaf = null;
     };
@@ -368,6 +370,18 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ===== 初期表示 ===== */
   collectPlan();
   render();
+
+  /* ===== 内訳表示の切り替え(グラフの塗り分けと凡例をまとめて切り替える) ===== */
+  const detailBtn = $('txDetailBtn');
+  if (detailBtn) {
+    detailBtn.addEventListener('click', function () {
+      showDetail = !showDetail;
+      detailBtn.classList.toggle('is-on', showDetail);
+      detailBtn.textContent = showDetail ? 'まとめて表示' : '内訳を表示';
+      document.querySelectorAll('.tx-legend').forEach(function (d) { d.open = showDetail; });
+      render();
+    });
+  }
 
   /* ===== 生命保険の設計だけをクリア =====
      window.confirm()はLINE等アプリ内ブラウザで反応しないことがあるため、
