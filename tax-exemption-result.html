@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072724" />
+<link rel="stylesheet" href="css/style.css?v=2026072725" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -331,12 +331,12 @@
                 <input type="number" id="txRetirementBenefit" value="300" class="form-input" placeholder="例: 5,000" />
               </div>
               <div class="tx-plan-field">
-                <label for="txCondolenceAmount">弔慰金保険加入額<span class="tx-plan-room" id="txRoomCondolence"></span></label>
-                <input type="number" id="txCondolenceAmount" value="1000" class="form-input" placeholder="例: 1,000" />
-              </div>
-              <div class="tx-plan-field">
                 <label for="txSalaryMonthly">最終報酬月額<span class="tx-plan-room" id="txRoomCond"></span><span class="help-tip" tabindex="0">?<span class="help-text">弔慰金の非課税限度額です。業務上の死亡なら普通給与の36ヶ月分、業務外の死亡なら6ヶ月分までが非課税ですが、本シミュレーションは<strong>業務上の死亡(36ヶ月分)</strong>を前提としています。限度額を超えて支給した分は死亡退職金に合算して判定します。</span></span></label>
                 <input type="number" id="txSalaryMonthly" value="100" class="form-input" placeholder="例: 100" />
+              </div>
+              <div class="tx-plan-field">
+                <label for="txCondolenceAmount">弔慰金保険加入額<span class="tx-plan-room" id="txRoomCondolence"></span></label>
+                <input type="number" id="txCondolenceAmount" value="1000" class="form-input" placeholder="例: 1,000" />
               </div>
             </div>
           </div>
@@ -459,6 +459,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727d"></script>
-<script src="js/tax-exemption-result.js?v=202607271r"></script>
+<script src="js/tax-exemption-result.js?v=202607271t"></script>
 </body>
 </html>

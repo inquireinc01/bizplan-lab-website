@@ -1576,6 +1576,12 @@ img {
   text-align: right;
 }
 /* 選択肢が長い項目はラベルを上に置いて全幅で表示する */
+/* 前提となる項目が未入力のあいだは操作できないことを見た目でも示す */
+.tx-plan-field > input:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
 .tx-plan-field.is-stack {
   display: block;
 }

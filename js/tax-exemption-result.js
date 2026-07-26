@@ -213,16 +213,21 @@ document.addEventListener('DOMContentLoaded', function () {
   const MAX_YEN = 99999999;   // 保険料(円)の上限
   const MAX_MAN = 99999999;   // 金額(万円)の上限
 
+  // 空欄は「まだ入れていない(0扱い)」として許容し、値が入っているときだけ範囲を見る
+  const isBlank = (id) => { const el = $(id); return !el || String(el.value).trim() === ''; };
+
   function validatePlan() {
     clearPlanError();
     for (const it of T.PREMIUM_ITEMS) {
+      if (isBlank(it.id)) continue;
       const v = numOf(it.id);
-      if (isNaN(v) || v < 0) { showPlanError(it.label + 'を入力してください。', $(it.id)); return false; }
+      if (isNaN(v) || v < 0) { showPlanError(it.label + 'は0以上の数値で入力してください。', $(it.id)); return false; }
       if (v > MAX_YEN) { showPlanError('保険料は ' + T.fmt(MAX_YEN) + ' 円以内で入力してください。', $(it.id)); return false; }
     }
     for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly', 'txCondolenceAmount']) {
+      if (isBlank(id)) continue;
       const v = numOf(id);
-      if (isNaN(v) || v < 0) { showPlanError('生命保険の設計の各項目を入力してください。', $(id)); return false; }
+      if (isNaN(v) || v < 0) { showPlanError('金額は0以上の数値で入力してください。', $(id)); return false; }
       if (v > MAX_MAN) { showPlanError('入力値が大きすぎます。数値をご確認ください。', $(id)); return false; }
     }
     return true;
@@ -323,11 +328,28 @@ document.addEventListener('DOMContentLoaded', function () {
     room('txRoomMedical', r.roomMedical, yen);
     room('txRoomDeath', r.roomDeath, man);
     room('txRoomRetire', r.roomRetire, man);
-    room('txRoomCondolence', r.roomCondolence, man);
     const condEl = $('txRoomCond');
     if (condEl) {
-      condEl.textContent = '非課税枠 ' + man(r.condolenceLimit) + '(' + r.condolenceMonths + 'ヶ月分)';
-      condEl.classList.remove('is-full');
+      condEl.textContent = r.condolenceLimit > 0
+        ? '非課税枠 ' + man(r.condolenceLimit) + '(' + r.condolenceMonths + 'ヶ月分)'
+        : '入力すると弔慰金の枠が決まります';
+      condEl.classList.toggle('is-full', !(r.condolenceLimit > 0));
+    }
+    // 弔慰金の非課税枠は最終報酬月額で決まるため、それが入るまで入力できないようにする
+    const condInput = $('txCondolenceAmount');
+    if (condInput) {
+      const ready = r.condolenceLimit > 0;
+      condInput.disabled = !ready;
+      if (!ready && condInput.value !== '') { condInput.value = ''; data.txCondolenceAmount = ''; }
+      const roomEl = $('txRoomCondolence');
+      if (roomEl) {
+        if (ready) {
+          room('txRoomCondolence', r.roomCondolence, man);
+        } else {
+          roomEl.textContent = '最終報酬月額を入力すると入力できます';
+          roomEl.classList.add('is-full');
+        }
+      }
     }
 
     // 軽減額を保険料の区分ごとに按分する。
