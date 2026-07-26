@@ -446,7 +446,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ライブ更新
-  detailArea.addEventListener('input', recalcDetail);
   detailArea.addEventListener('change', recalcDetail);
   // 株主の追加・削除(クリックのみでinput/changeイベントを伴わない)でも同族株主等の判定を更新する
   detailArea.addEventListener('click', function (e) {

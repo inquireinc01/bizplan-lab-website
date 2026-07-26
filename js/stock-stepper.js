@@ -164,19 +164,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var simpleForm = document.getElementById('stockCalcForm');
   if (simpleForm) {
-    simpleForm.addEventListener('input', updateValidity);
     simpleForm.addEventListener('change', updateValidity);
   }
   var detailArea = document.getElementById('detailArea');
   if (detailArea) {
-    detailArea.addEventListener('input', updateValidity);
     detailArea.addEventListener('change', updateValidity);
     var dtCalcBtn = document.getElementById('dtCalcBtn');
     if (dtCalcBtn) dtCalcBtn.addEventListener('click', function () { setTimeout(updateValidity, 0); });
   }
   var tdbArea = document.getElementById('tdbArea');
   if (tdbArea) {
-    tdbArea.addEventListener('input', updateValidity);
     tdbArea.addEventListener('change', updateValidity);
     tdbArea.addEventListener('click', function (e) {
       if (e.target && (e.target.id === 'tbAddHolder' || e.target.classList.contains('hdel'))) setTimeout(updateValidity, 0);

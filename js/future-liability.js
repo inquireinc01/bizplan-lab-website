@@ -222,19 +222,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   BS_CHECK_IDS.forEach((id) => {
-    document.getElementById(id).addEventListener('input', updateBalanceCheck);
+    document.getElementById(id).addEventListener('change', updateBalanceCheck);
   });
   FUTURE_LIAB_IDS.forEach((id) => {
-    document.getElementById(id).addEventListener('input', function () {
+    document.getElementById(id).addEventListener('change', function () {
       updateFutureLiabTotal();
       updateOffBalanceAsset(); // 将来負債合計が変わると不足分も連動して変わる
     });
   });
   OFF_BALANCE_ASSET_IDS.forEach((id) => {
-    document.getElementById(id).addEventListener('input', updateOffBalanceAsset);
+    document.getElementById(id).addEventListener('change', updateOffBalanceAsset);
   });
   NEXT_FUTURE_LIAB_IDS.forEach((id) => {
-    document.getElementById(id).addEventListener('input', updateNextFutureLiabTotal);
+    document.getElementById(id).addEventListener('change', updateNextFutureLiabTotal);
   });
   updateBalanceCheck();
   updateFutureLiabTotal();

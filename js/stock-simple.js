@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function () {
   function recalcAll() { recalcEval(); recalcHolders(); }
 
   document.getElementById('ssAddHolder').addEventListener('click', function () { holderRow({}); recalcHolders(); });
-  form.addEventListener('input', recalcAll);
   form.addEventListener('change', recalcAll);
 
   // ===== 保存 / 復元 =====
@@ -209,49 +208,87 @@ document.addEventListener('DOMContentLoaded', function () {
   var MAX_PAR = 9999999; // 額面(円)の上限
   var MAX_EVAL = 999999999999; // 評価額(時価総額・円)の上限
 
+  // 進めない原因になった入力欄を薄い赤でマークし、そこへスクロール+フォーカスして入力を促す
+  function clearFieldErrors() {
+    form.querySelectorAll('.input-error').forEach(function (el) { el.classList.remove('input-error'); });
+  }
+  function failWith(message, el) {
+    var err = document.getElementById('calcErrorArea');
+    err.textContent = message;
+    err.classList.remove('hidden');
+    if (el) {
+      el.classList.add('input-error');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try { el.focus({ preventScroll: true }); } catch (e2) { el.focus(); }
+    }
+  }
+  // 一度エラーになった欄は、値を入れ直したら赤を解除する(入力中でも即座に消す)
+  function clearOwnError(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('input-error')) {
+      e.target.classList.remove('input-error');
+    }
+  }
+  form.addEventListener('input', clearOwnError);
+  form.addEventListener('change', clearOwnError);
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var err = document.getElementById('calcErrorArea');
     err.classList.add('hidden');
-    var shares = num(document.getElementById('ssShares').value);
+    clearFieldErrors();
+
+    var sharesEl = document.getElementById('ssShares');
+    var shares = num(sharesEl.value);
     if (isNaN(shares) || shares <= 0) {
-      err.textContent = '発行済株式数を入力してください。'; err.classList.remove('hidden'); return;
-    }
-    if (shares > MAX_SHARES) {
-      err.textContent = '発行済株式数は ' + fmt(MAX_SHARES) + ' 株までです。数値をご確認ください。';
-      err.classList.remove('hidden');
-      document.getElementById('ssShares').focus();
+      failWith('発行済株式数を入力してください。', sharesEl);
       return;
     }
-    var par = num(document.getElementById('ssParValue').value);
-    if (!isNaN(par) && par > MAX_PAR) {
-      err.textContent = '額面は ' + fmt(MAX_PAR) + ' 円までです。数値をご確認ください。';
-      err.classList.remove('hidden');
-      document.getElementById('ssParValue').focus();
+    if (shares > MAX_SHARES) {
+      failWith('発行済株式数は ' + fmt(MAX_SHARES) + ' 株までです。数値をご確認ください。', sharesEl);
+      return;
+    }
+    var parEl = document.getElementById('ssParValue');
+    var par = num(parEl.value);
+    if (isNaN(par) || par <= 0) {
+      // 額面は資本金÷発行済株式数で自動計算されるため、未入力なら資本金の入力を促す
+      // 親div(.ss-simple-only)が非表示のときはoffsetParentがnullになるので、それで判定する
+      var capEl = document.getElementById('ssCapital');
+      var isSimple = capEl && capEl.offsetParent !== null;
+      failWith(isSimple ? '資本金を入力してください（額面を自動計算します）。' : '額面を入力してください。', isSimple ? capEl : parEl);
+      return;
+    }
+    if (par > MAX_PAR) {
+      failWith('額面は ' + fmt(MAX_PAR) + ' 円までです。数値をご確認ください。', parEl);
       return;
     }
     for (var i = 0; i < EVAL_KEYS.length; i++) {
       var evKey = EVAL_KEYS[i];
       var v = num((document.getElementById('ssV_' + evKey) || {}).value);
       if (!isNaN(v) && Math.abs(v) > MAX_EVAL) {
-        err.textContent = '評価額(時価総額)は ' + fmt(MAX_EVAL) + ' 円までです。数値をご確認ください。';
-        err.classList.remove('hidden');
-        document.getElementById('ssV_' + evKey).focus();
+        failWith('評価額(時価総額)は ' + fmt(MAX_EVAL) + ' 円までです。数値をご確認ください。', document.getElementById('ssV_' + evKey));
         return;
       }
     }
-    var ratioOver100 = false;
+    // 比率は株数から自動計算されるため、株数の合計が発行済株式数を超えていないかで判定する
+    var sumHolderShares = 0, firstHolderShareEl = null;
     holderBody.querySelectorAll('.ss-holder').forEach(function (r) {
-      var ratio = num(r.querySelector('.hr').value);
-      if (!isNaN(ratio) && ratio > 100) ratioOver100 = true;
+      var hsEl = r.querySelector('.hs');
+      if (!firstHolderShareEl) firstHolderShareEl = hsEl;
+      var s = num(hsEl.value);
+      if (!isNaN(s)) sumHolderShares += s;
     });
-    if (ratioOver100) {
-      err.textContent = '株主の比率が100%を超えています。株数・比率をご確認ください。';
-      err.classList.remove('hidden');
+    if (sumHolderShares > shares) {
+      holderBody.querySelectorAll('.ss-holder .hs').forEach(function (el) { el.classList.add('input-error'); });
+      failWith('株主の株数の合計(' + fmt(sumHolderShares) + '株)が発行済株式数(' + fmt(shares) + '株)を超えています。株数をご確認ください。', firstHolderShareEl);
+      return;
+    }
+    if (sumHolderShares <= 0) {
+      failWith('株主の株数を入力してください。', firstHolderShareEl);
       return;
     }
     if (isNaN(num((document.getElementById('ssV_junsisan') || {}).value))) {
-      err.textContent = '純資産価額の時価総額を入力してください（グラフの起点に必要です）。'; err.classList.remove('hidden'); return;
+      failWith('純資産価額の時価総額を入力してください（グラフの起点に必要です）。', document.getElementById('ssV_junsisan'));
+      return;
     }
     persistOnly();
     window.location.href = 'stock-valuation-result.html';

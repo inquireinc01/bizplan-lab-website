@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (cashLockBtn) cashLockBtn.addEventListener('click', function () { setCashMode(!cashManual); });
   ['corpTaxRate', 'insuranceGainRate', 'stockCorpValue'].forEach(function (id) {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', refreshAutoCash);
+    if (el) el.addEventListener('change', refreshAutoCash);
   });
 
   // 各マーカーの表示状態と、再描画用に最後の設定を保持する
@@ -448,7 +448,6 @@ document.addEventListener('DOMContentLoaded', function () {
     recomputeTimer = setTimeout(recompute, 400);
   }
   form.addEventListener('submit', function (e) { e.preventDefault(); clearTimeout(recomputeTimer); recompute(); });
-  form.addEventListener('input', scheduleRecompute);
   form.addEventListener('change', function () { clearTimeout(recomputeTimer); recompute(); });
 
   // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====

@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     if (window.numReformatAll) window.numReformatAll();
   }
-  holderBody.addEventListener('input', function (e) {
+  holderBody.addEventListener('change', function (e) {
     var row = e.target.closest('.tb-holder');
     if (!row) return;
     var baseShares = baseSharesFromCapital();
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   var tbCapitalEl = document.getElementById('tbCapital');
-  if (tbCapitalEl) tbCapitalEl.addEventListener('input', resyncAllHolderRows);
+  if (tbCapitalEl) tbCapitalEl.addEventListener('change', resyncAllHolderRows);
 
   function collectHolders() {
     var holders = [];
@@ -139,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     holderRow({});
   }
-  area.addEventListener('input', persistOwn);
   area.addEventListener('change', persistOwn);
 
   // ===== 試算(自社株×生命保険の結果ページへブリッジ) =====

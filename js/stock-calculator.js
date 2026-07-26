@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (livePanel) {
     let liveTimer = null;
-    livePanel.addEventListener('input', function (e) {
+    livePanel.addEventListener('change', function (e) {
       const id = e.target && e.target.id;
       if (!id || !PROJECTION_IDS.includes(id)) return;
       const parsed = parseFloat((e.target.value || '').replace(/,/g, ''));
@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const dsYearInput = document.getElementById('dsYearInput');
   const dsYearError = document.getElementById('dsYearError');
   if (dsYearInput) {
-    dsYearInput.addEventListener('input', function () {
+    dsYearInput.addEventListener('change', function () {
       const parsed = parseFloat(dsYearInput.value);
       if (isNaN(parsed) || parsed < 0 || parsed > 30) {
         if (dsYearError) dsYearError.classList.remove('hidden');
