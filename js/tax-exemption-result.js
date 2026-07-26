@@ -281,6 +281,38 @@ document.addEventListener('DOMContentLoaded', function () {
   collectPlan();
   render();
 
+  /* ===== 生命保険の設計だけをクリア =====
+     window.confirm()はLINE等アプリ内ブラウザで反応しないことがあるため、
+     1回目のクリックで「本当にクリア？」に変わり、2回目のクリックで実行する */
+  const planClearBtn = $('txPlanClearBtn');
+  if (planClearBtn) {
+    const originalText = planClearBtn.textContent;
+    let revertTimer = null;
+    planClearBtn.addEventListener('click', function () {
+      if (planClearBtn.classList.contains('is-confirming')) {
+        clearTimeout(revertTimer);
+        planClearBtn.classList.remove('is-confirming');
+        planClearBtn.textContent = originalText;
+        PLAN_IDS.forEach(function (id) {
+          const el = $(id);
+          if (!el) return;
+          if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+        });
+        clearPlanError();
+        collectPlan();
+        savePlan();
+        render();
+        return;
+      }
+      planClearBtn.classList.add('is-confirming');
+      planClearBtn.textContent = '本当にクリア？';
+      revertTimer = setTimeout(function () {
+        planClearBtn.classList.remove('is-confirming');
+        planClearBtn.textContent = originalText;
+      }, 4000);
+    });
+  }
+
   /* ===== 全データクリア ===== */
   const clearBtn = $('txClearBtn');
   if (clearBtn && window.armHeroClearBtn) {

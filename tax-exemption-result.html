@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607277" />
+<link rel="stylesheet" href="css/style.css?v=202607278" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -198,7 +198,7 @@
           <!-- 生命保険の設計(このページで自由に変更できる) -->
           <div class="tx-plan-head">
             <span class="tx-plan-head-title">生命保険の設計<span class="help-tip" tabindex="0">?<span class="help-text">前提条件(所得税・相続税)を固定したまま、保険の内容だけを変えて効果を比較するための入力欄です。入力を確定すると、上の軽減額グラフと下の各明細がその場で再計算されます。前提条件を変える場合は「入力内容を修正する」から戻ってください。</span></span></span>
-            <span class="tx-plan-head-note">入力を確定するとグラフが動きます</span>
+            <button type="button" id="txPlanClearBtn" class="tx-plan-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0">入力データクリア</button>
           </div>
 
           <div class="tx-plan-grid">
@@ -469,6 +469,6 @@
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260724b"></script>
-<script src="js/tax-exemption-result.js?v=20260727d"></script>
+<script src="js/tax-exemption-result.js?v=20260727e"></script>
 </body>
 </html>

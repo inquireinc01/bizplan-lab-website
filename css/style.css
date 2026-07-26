@@ -1434,9 +1434,10 @@ img {
   font-weight: 700;
   color: var(--color-navy);
 }
-.tx-plan-head-note {
-  font-size: 0.6875rem;
-  color: #9ca3af;
+/* 生命保険の設計だけをクリアするボタン(window.confirm()は使わずボタン自身で確認する) */
+.tx-plan-clear-btn.is-confirming {
+  color: var(--color-red) !important;
+  font-weight: 700;
 }
 .tx-plan-grid {
   display: grid;
