@@ -241,12 +241,6 @@
     const premiumItTotal = Math.min(premiumRows.reduce((s, r) => s + r.it, 0), 120000);
     const premiumRtTotal = Math.min(premiumRows.reduce((s, r) => s + r.rt, 0), 70000);
 
-    // ---- 一時所得 ----
-    const maturity = pickNum(data, 'txMaturityAmount', 0);
-    const paidPremium = pickNum(data, 'txPaidPremiumTotal', 0);
-    const oneTimeIncome = Math.max(0, maturity - paidPremium - 50);
-    const oneTimeTaxable = oneTimeIncome / 2;
-
     // ---- 相続人の数(詳細入力なら家系図から自動、簡易入力なら「4.」の入力値) ----
     let heirs, heirsCount;
     if (ihMode === 'detail') {
@@ -296,7 +290,7 @@
       const dividendAggregated = dividendMethod === 'aggregate' ? dividend : 0;
 
       const totalIncome = salaryIncome + business + realEstate + dividendAggregated + misc
-        + trShort + trLong / 2 + forestry + oneTimeTaxable;
+        + trShort + trLong / 2 + forestry;
 
       const social = pickNum(data, 'txSocialInsurance', 0);
       const smallBiz = pickNum(data, 'txSmallBizDeduction', 0);
@@ -332,7 +326,7 @@
 
       detail = {
         salary, salDed, salaryIncome, totalIncome, basicIt, basicRt, dedIt, dedRt,
-        dividend, dividendMethod, dividendAggregated, separateTax, oneTimeTaxable,
+        dividend, dividendMethod, dividendAggregated, separateTax,
       };
     } else {
       taxableIt = floorTaxable(pickNum(data, 'txTaxableIncomeSimple', 0));
@@ -405,7 +399,6 @@
     return {
       itMode, ihMode,
       premiumRows, premiumItTotal, premiumRtTotal,
-      oneTimeIncome, oneTimeTaxable,
       heirs, heirsCount, exemptionEach,
       deathBenefit, retirementBenefit, usedDeath, taxableDeath, usedRetire, taxableRetire,
       condolenceExemption, condolenceMonths,

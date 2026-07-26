@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=202607278" />
+<link rel="stylesheet" href="css/style.css?v=202607279" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -113,7 +113,7 @@
         <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1">TAX EXEMPTION &amp; INSURANCE</p>
         <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">非課税×生命保険<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
         <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-2xl sm:text-3xl mt-1">COMING SOON</p>
-        <p class="hero-info-text hidden">生命保険を活用できる「控除枠・非課税枠」の使い残しがないかをチェックするツールです。生命保険料控除(所得税・住民税)、相続税の非課税枠(生命保険金・死亡退職金・弔慰金)、一時所得の課税対象額を、それぞれ入力内容から試算します。</p>
+        <p class="hero-info-text hidden">生命保険を活用できる「控除枠・非課税枠」の使い残しがないかをチェックするツールです。生命保険料控除(所得税・住民税)と、相続税の非課税枠(生命保険金・死亡退職金・弔慰金)を、それぞれ入力内容から試算します。</p>
       </div>
       <div class="hero-actions" data-backup-keys="bpl_tax_exemption_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
@@ -266,10 +266,6 @@
               <div class="tx-field-input"><input type="number" id="txForestryIncome" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
             </div>
             <div class="tx-field-row is-auto">
-              <span class="tx-field-label">一時所得(1/2課税後)<span class="help-tip" tabindex="0">?<span class="help-text">「6. 一時所得の課税対象額」で計算した金額が自動で反映されます。満期保険金・解約返戻金等の一時所得は、その1/2が総合課税の対象になります。</span></span></span>
-              <span class="tx-field-value" id="txOneTimeLinked">-</span>
-            </div>
-            <div class="tx-field-row is-auto">
               <span class="tx-field-label">合計所得金額(自動計算)<span class="help-tip" tabindex="0">?<span class="help-text">給与所得と上記の各所得を合算した金額です。配当所得は「総合課税」を選択した場合のみ含まれます。</span></span></span>
               <span class="tx-field-value" id="txTotalIncomeSum">-</span>
             </div>
@@ -385,7 +381,7 @@
               <dt>給与所得控除額(2020年分以降)</dt>
               <dd><code>162.5万円以下→55万円 / 180万円以下→収入×40%−10万円 / 360万円以下→収入×30%＋8万円 / 660万円以下→収入×20%＋44万円 / 850万円以下→収入×10%＋110万円 / 850万円超→195万円(上限)</code></dd>
               <dt>合計所得金額(総合課税)</dt>
-              <dd><code>給与所得 ＋ 事業所得 ＋ 不動産所得 ＋ 配当所得(総合課税選択時) ＋ 雑所得 ＋ 総合譲渡(短期) ＋ 総合譲渡(長期)×1/2 ＋ 山林所得 ＋ 一時所得×1/2</code><br />不動産所得等がマイナスの場合はそのまま合算され、他の所得と損益通算されます。</dd>
+              <dd><code>給与所得 ＋ 事業所得 ＋ 不動産所得 ＋ 配当所得(総合課税選択時) ＋ 雑所得 ＋ 総合譲渡(短期) ＋ 総合譲渡(長期)×1/2 ＋ 山林所得</code><br />不動産所得等がマイナスの場合はそのまま合算され、他の所得と損益通算されます。</dd>
               <dt>分離課税の所得(総合課税の課税所得には含めない)</dt>
               <dd>利子所得・配当所得(申告分離選択時)・株式等の譲渡所得は <code>20.315%</code>、土地建物等の譲渡所得は長期 <code>20.315%</code> / 短期 <code>39.63%</code> で別途課税されます。</dd>
               <dt>配当控除(税額控除)</dt>
@@ -744,18 +740,6 @@
     </div>
   </div>
 
-  <div class="print-sec">4. 一時所得の課税対象額</div>
-  <div class="print-stats">
-    <div>
-      <div class="k">一時所得の金額</div>
-      <div class="v" id="pOneTimeIncome"></div>
-    </div>
-    <div>
-      <div class="k">課税対象額(1/2課税)</div>
-      <div class="v" id="pOneTimeTaxable"></div>
-    </div>
-  </div>
-
   <div class="print-keymsg">生命保険を活用できる控除枠・非課税枠に使い残しがないかを確認し、必要に応じて契約内容の見直しをご検討ください。</div>
 
   <div class="print-foot">
@@ -766,7 +750,7 @@
 
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/tax-exemption-calc.js?v=20260724b"></script>
-<script src="js/tax-exemption.js?v=20260727b"></script>
+<script src="js/tax-exemption-calc.js?v=20260727a"></script>
+<script src="js/tax-exemption.js?v=20260727c"></script>
 </body>
 </html>

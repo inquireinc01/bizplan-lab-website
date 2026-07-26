@@ -106,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const d = r.detail;
       setTxt('txSalaryDeduction', man(d.salDed));
       setTxt('txSalaryIncomeNet', man(d.salaryIncome));
-      setTxt('txOneTimeLinked', man(r.oneTimeTaxable));
       setTxt('txTotalIncomeSum', man(d.totalIncome));
       setTxt('txSeparateTax', man(d.separateTax));
       setTxt('txTotalIncomeIt', man(d.totalIncome));

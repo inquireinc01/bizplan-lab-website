@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function () {
     'txGeneralPremium', 'txPensionPremium', 'txMedicalPremium',
     'txDeathBenefit', 'txRetirementBenefit',
     'txSalaryMonthly', 'txDeathCause',
-    'txMaturityAmount', 'txPaidPremiumTotal',
   ];
   // 保存済みの設計内容を入力欄に戻す
   PLAN_IDS.forEach(function (id) {
@@ -154,8 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isNaN(v) || v < 0) { showPlanError(it.label + 'を入力してください。', $(it.id)); return false; }
       if (v > MAX_YEN) { showPlanError('保険料は ' + T.fmt(MAX_YEN) + ' 円以内で入力してください。', $(it.id)); return false; }
     }
-    for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly',
-      'txMaturityAmount', 'txPaidPremiumTotal']) {
+    for (const id of ['txDeathBenefit', 'txRetirementBenefit', 'txSalaryMonthly']) {
       const v = numOf(id);
       if (isNaN(v) || v < 0) { showPlanError('生命保険の設計の各項目を入力してください。', $(id)); return false; }
       if (v > MAX_MAN) { showPlanError('入力値が大きすぎます。数値をご確認ください。', $(id)); return false; }
@@ -242,12 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const condTxt = `${man(r.condolenceExemption)}(${r.condolenceMonths}ヶ月分)`;
     setTxt('txCondolenceResult', condTxt);
     setTxt('pCondolenceResult', condTxt);
-
-    // --- 4. 一時所得 ---
-    countUp('txOneTimeIncome', r.oneTimeIncome, man);
-    setTxt('pOneTimeIncome', man(r.oneTimeIncome));
-    countUp('txOneTimeTaxable', r.oneTimeTaxable, man);
-    setTxt('pOneTimeTaxable', man(r.oneTimeTaxable));
 
     // --- サマリー ---
     countUp('txSummaryPremium', r.premiumItTotal, (v) => `${yen(v)} + ${yen(r.premiumRtTotal)}`);
