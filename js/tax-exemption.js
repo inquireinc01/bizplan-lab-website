@@ -141,11 +141,16 @@ document.addEventListener('DOMContentLoaded', function () {
       setTxt('txAssetInsuranceNet', man(e.insuranceNet));
       setTxt('txAssetRetirementNet', man(e.retirementNet));
       setTxt('txAssetTotal', man(e.assetTotal));
+      setTxt('txSmallLotReduction', e.lotReduction > 0 ? '△ ' + man(e.lotReduction) : man(0));
       setTxt('txDebtTotal', man(e.debtTotal));
+      setTxt('txSpouseAcquireAmount', e.spouseLegalShare > 0 ? man(e.spouseAcquire) : '(配偶者なし)');
+      setTxt('txSpouseLimit', e.spouseLegalShare > 0 ? man(e.spouseLimit) : '-');
       setTxt('txTaxableEstate', man(e.priceWith));
       setTxt('txEstateBasic', man(e.basic));
       setTxt('txNetEstate', man(e.net));
       setTxt('txEstateTaxTotal', man(e.total));
+      setTxt('txSpouseCredit', e.spouseCredit > 0 ? '△ ' + man(e.spouseCredit) : man(0));
+      setTxt('txEstateTaxPayable', man(e.payable));
       setTxt('txEstateEffectiveRate', e.effectiveRate.toFixed(1) + ' %');
       setTxt('txEstateMarginalRate', e.marginalRate + ' %');
       // 「4.」の法定相続人の数を家系図の判定結果で上書きする
@@ -169,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 相続税(詳細)
     'txHasSpouse', 'txChildren', 'txAdopted', 'txParents', 'txSiblings',
     'txAssetLand', 'txAssetBuilding', 'txAssetSecurities', 'txAssetCash', 'txAssetOther',
+    'txSmallLotType', 'txSmallLotValue', 'txSmallLotArea', 'txSpouseAcquireRate',
     'txDebt', 'txFuneralCost',
     // 共通
     'txGeneralPremium', 'txPensionPremium', 'txMedicalPremium',
@@ -258,9 +264,29 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       for (const id of ['txChildren', 'txAdopted', 'txParents', 'txSiblings',
         'txAssetLand', 'txAssetBuilding', 'txAssetSecurities', 'txAssetCash', 'txAssetOther',
-        'txDebt', 'txFuneralCost']) {
+        'txSmallLotValue', 'txSmallLotArea', 'txDebt', 'txFuneralCost']) {
         const v = numOf(id);
         if (isNaN(v) || v < 0) { showError('「2. 相続税」の家系図・財産目録を入力してください。', $(id)); return false; }
+      }
+      // 小規模宅地等の特例を適用する場合は評価額と面積が必要
+      if (valOf('txSmallLotType') !== 'none') {
+        if (!(numOf('txSmallLotValue') > 0)) {
+          showError('小規模宅地等の特例を適用する場合は、対象宅地の評価額を入力してください。', $('txSmallLotValue')); return false;
+        }
+        if (!(numOf('txSmallLotArea') > 0)) {
+          showError('小規模宅地等の特例を適用する場合は、対象宅地の面積を入力してください。', $('txSmallLotArea')); return false;
+        }
+        if (numOf('txSmallLotValue') > numOf('txAssetLand')) {
+          showError('対象宅地の評価額が「土地」の入力額を超えています。土地の金額に対象宅地を含めて入力してください。', $('txSmallLotValue')); return false;
+        }
+      }
+      // 配偶者の取得割合は空欄(法定相続分)を許容し、入力時のみ0〜100%を検証する
+      const spRate = valOf('txSpouseAcquireRate');
+      if (spRate !== '') {
+        const v = numOf('txSpouseAcquireRate');
+        if (isNaN(v) || v < 0 || v > 100) {
+          showError('配偶者の取得割合は0〜100%で入力してください(空欄なら法定相続分で計算します)。', $('txSpouseAcquireRate')); return false;
+        }
       }
       const heirs = T.judgeHeirs({
         hasSpouse: valOf('txHasSpouse'), children: numOf('txChildren'), adopted: numOf('txAdopted'),

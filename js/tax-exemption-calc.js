@@ -157,8 +157,26 @@
       composition: parts.length ? parts.join(' ＋ ') : '該当なし',
     };
   }
-  // 課税価格から相続税の総額を計算する
-  function inheritanceTaxTotal(taxablePriceMan, heirs) {
+  // 小規模宅地等の特例: 限度面積と減額率
+  const SMALL_LOT = {
+    none: { limit: 0, rate: 0, label: '適用しない' },
+    residence: { limit: 330, rate: 0.8, label: '特定居住用宅地等' },
+    business: { limit: 400, rate: 0.8, label: '特定事業用宅地等' },
+    rental: { limit: 200, rate: 0.5, label: '貸付事業用宅地等' },
+  };
+  // 減額額 = 評価額 × (min(限度面積, 面積) ÷ 面積) × 減額率
+  function smallLotReduction(type, valueMan, areaSqm) {
+    const cfg = SMALL_LOT[type] || SMALL_LOT.none;
+    if (!cfg.limit || !(valueMan > 0) || !(areaSqm > 0)) return 0;
+    const applied = Math.min(cfg.limit, areaSqm) / areaSqm;
+    return valueMan * applied * cfg.rate;
+  }
+
+  const SPOUSE_CREDIT_FLOOR = 16000; // 配偶者の税額軽減の下限枠 1億6,000万円
+
+  // 課税価格から相続税の総額と納付税額(配偶者の税額軽減後)を計算する
+  // spouseAcquireRate: 配偶者の取得割合(%)。null なら法定相続分で取得したものとする
+  function inheritanceTaxTotal(taxablePriceMan, heirs, spouseAcquireRate) {
     const basic = 3000 + 600 * heirs.count;
     const net = Math.max(0, taxablePriceMan - basic);
     let total = 0, maxShare = 0;
@@ -167,10 +185,26 @@
       if (amount > maxShare) maxShare = amount;
       total += inheritanceTaxByShare(amount);
     });
+
+    // 配偶者の税額軽減
+    const spouse = heirs.shares.find((h) => h.label === '配偶者');
+    const spouseLegalShare = spouse ? spouse.share : 0;
+    let spouseAcquire = 0, spouseLimit = 0, spouseCredit = 0;
+    if (spouse && taxablePriceMan > 0) {
+      const rate = (spouseAcquireRate === null || spouseAcquireRate === undefined || isNaN(spouseAcquireRate))
+        ? spouseLegalShare : Math.max(0, Math.min(100, spouseAcquireRate)) / 100;
+      spouseAcquire = taxablePriceMan * rate;
+      spouseLimit = Math.max(SPOUSE_CREDIT_FLOOR, taxablePriceMan * spouseLegalShare);
+      spouseCredit = total * Math.min(spouseAcquire, spouseLimit) / taxablePriceMan;
+      spouseCredit = Math.min(spouseCredit, total);
+    }
+    const payable = Math.max(0, total - spouseCredit);
+
     return {
       basic, net, total,
+      spouseLegalShare, spouseAcquire, spouseLimit, spouseCredit, payable,
       marginalRate: net > 0 ? inheritanceRateByShare(maxShare) : 0,
-      effectiveRate: taxablePriceMan > 0 ? (total / taxablePriceMan) * 100 : 0,
+      effectiveRate: taxablePriceMan > 0 ? (payable / taxablePriceMan) * 100 : 0,
     };
   }
 
@@ -327,12 +361,19 @@
         .reduce((s, k) => s + pickNum(data, k, 0), 0);
       const debt = pickNum(data, 'txDebt', 0);
       const funeral = pickNum(data, 'txFuneralCost', 0);
+      // 小規模宅地等の特例による減額(非課税枠の有無にかかわらず適用する)
+      const lotType = pick(data, 'txSmallLotType', 'none');
+      const lotReduction = smallLotReduction(lotType, pickNum(data, 'txSmallLotValue', 0), pickNum(data, 'txSmallLotArea', 0));
+      // 配偶者の取得割合(空欄なら法定相続分)
+      const rawSpouseRate = pick(data, 'txSpouseAcquireRate', '');
+      const spouseRate = (rawSpouseRate === '' || rawSpouseRate === null) ? null : numOf(rawSpouseRate);
       // 非課税枠を「使った場合」と「使わなかった場合」の課税価格
-      const priceWith = assets + taxableDeath + taxableRetire - debt - funeral;
-      const priceWithout = assets + deathBenefit + retirementBenefit + condolenceExemption - debt - funeral;
-      const withRes = inheritanceTaxTotal(Math.max(0, priceWith), heirs);
-      const withoutRes = inheritanceTaxTotal(Math.max(0, priceWithout), heirs);
-      const totalSave = Math.max(0, withoutRes.total - withRes.total);
+      const priceWith = assets + taxableDeath + taxableRetire - lotReduction - debt - funeral;
+      const priceWithout = assets + deathBenefit + retirementBenefit + condolenceExemption - lotReduction - debt - funeral;
+      const withRes = inheritanceTaxTotal(Math.max(0, priceWith), heirs, spouseRate);
+      const withoutRes = inheritanceTaxTotal(Math.max(0, priceWithout), heirs, spouseRate);
+      // 軽減額は税額控除後の納付税額の差額で見る
+      const totalSave = Math.max(0, withoutRes.payable - withRes.payable);
       // 内訳は非課税となった財産額の比で按分する
       const exemptDeath = usedDeath, exemptRetire = usedRetire, exemptCond = condolenceExemption;
       const exemptSum = exemptDeath + exemptRetire + exemptCond;
@@ -342,12 +383,16 @@
       inheritanceRateUsed = withRes.marginalRate;
       estate = {
         assets, debt, funeral, priceWith,
+        lotType, lotTypeLabel: (SMALL_LOT[lotType] || SMALL_LOT.none).label, lotReduction,
         insuranceNet: taxableDeath, retirementNet: taxableRetire,
         assetTotal: assets + taxableDeath + taxableRetire,
         debtTotal: debt + funeral,
         basic: withRes.basic, net: withRes.net, total: withRes.total,
+        spouseLegalShare: withRes.spouseLegalShare, spouseAcquire: withRes.spouseAcquire,
+        spouseLimit: withRes.spouseLimit, spouseCredit: withRes.spouseCredit,
+        payable: withRes.payable,
         effectiveRate: withRes.effectiveRate, marginalRate: withRes.marginalRate,
-        totalWithout: withoutRes.total, totalSave,
+        totalWithout: withoutRes.total, payableWithout: withoutRes.payable, totalSave,
       };
     } else {
       inheritanceRateUsed = pickNum(data, 'txInheritanceRate', 0);
@@ -382,6 +427,7 @@
     salaryDeduction, basicDeduction, marginalIncomeTaxRate, incomeTaxAmount, residentTaxAmount,
     floorTaxable, dividendCredit,
     inheritanceTaxByShare, inheritanceRateByShare, judgeHeirs, inheritanceTaxTotal,
+    SMALL_LOT, smallLotReduction, SPOUSE_CREDIT_FLOOR,
     loadInputs, calcAll, numOf, pick, pickNum,
   };
 })();

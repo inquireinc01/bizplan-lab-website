@@ -524,6 +524,34 @@
               </div>
             </div>
 
+            <p class="tx-group-title">小規模宅地等の特例</p>
+            <p class="tx-group-note">要件を満たす宅地は、限度面積までの部分の評価額を大幅に減額できます。適用する場合は対象宅地の区分・評価額・面積を入力してください。</p>
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txSmallLotType">宅地の区分<span class="help-tip" tabindex="0">?<span class="help-text"><strong>特定居住用宅地等</strong>…被相続人の自宅の敷地。限度面積330㎡・減額率80%。<strong>特定事業用宅地等</strong>…被相続人の事業用の敷地。限度面積400㎡・減額率80%。<strong>貸付事業用宅地等</strong>…賃貸アパート・駐車場等の敷地。限度面積200㎡・減額率50%。いずれも保有継続・居住継続等の要件を満たす必要があります。</span></span></label>
+                <div class="tx-field-input">
+                  <select id="txSmallLotType" class="form-select rounded-lg px-4 py-2.5 text-sm">
+                    <option value="none" selected>適用しない</option>
+                    <option value="residence">特定居住用宅地等(330㎡・80%減)</option>
+                    <option value="business">特定事業用宅地等(400㎡・80%減)</option>
+                    <option value="rental">貸付事業用宅地等(200㎡・50%減)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txSmallLotValue">対象宅地の評価額(万円)<span class="help-tip" tabindex="0">?<span class="help-text">特例を適用する宅地の相続税評価額(減額前)を入力してください。この金額は上の「土地」にも含めて入力しておく必要があります(ここでの入力は減額額の計算にのみ使用します)。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txSmallLotValue" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txSmallLotArea">対象宅地の面積(㎡)<span class="help-tip" tabindex="0">?<span class="help-text">特例を適用する宅地の地積です。限度面積を超える部分は減額の対象になりません(限度面積までの割合で按分して減額します)。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txSmallLotArea" value="0" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">小規模宅地等の減額額(自動計算)<span class="help-tip" tabindex="0">?<span class="help-text"><code>対象宅地の評価額 × (min(限度面積, 面積) ÷ 面積) × 減額率</code>で計算し、課税価格から差し引きます。</span></span></span>
+                <span class="tx-field-value" id="txSmallLotReduction">-</span>
+              </div>
+            </div>
+
             <p class="tx-group-title">財産目録: 負の財産</p>
             <div>
               <div class="tx-field-row">
@@ -540,10 +568,27 @@
               </div>
             </div>
 
+            <p class="tx-group-title">配偶者の税額軽減</p>
+            <p class="tx-group-note">配偶者が取得した財産は「1億6,000万円」または「配偶者の法定相続分」のいずれか多い金額まで相続税がかかりません。配偶者がいない場合は適用されません。</p>
+            <div>
+              <div class="tx-field-row">
+                <label class="tx-field-label" for="txSpouseAcquireRate">配偶者の取得割合(%)<span class="help-tip" tabindex="0">?<span class="help-text">配偶者が実際に取得する財産の割合を入力してください。未入力(空欄)の場合は法定相続分で取得したものとして計算します。取得割合を上げると配偶者の税額軽減が大きくなり、その相続での納税額は減りますが、次の相続(二次相続)での負担は増える点に注意が必要です。</span></span></label>
+                <div class="tx-field-input"><input type="number" id="txSpouseAcquireRate" value="" step="0.1" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="法定相続分" /></div>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">配偶者の取得額</span>
+                <span class="tx-field-value" id="txSpouseAcquireAmount">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">軽減の上限額<span class="help-tip" tabindex="0">?<span class="help-text"><code>max(1億6,000万円, 課税価格 × 配偶者の法定相続分)</code>。この金額までの取得分には相続税がかかりません。</span></span></span>
+                <span class="tx-field-value" id="txSpouseLimit">-</span>
+              </div>
+            </div>
+
             <p class="tx-group-title">相続税の計算結果</p>
             <div>
               <div class="tx-field-row is-auto">
-                <span class="tx-field-label">課税価格<span class="help-tip" tabindex="0">?<span class="help-text"><code>正の財産の合計 − 負の財産の合計</code>。生命保険金・死亡退職金は非課税枠を控除した後の金額で加算されています。</span></span></span>
+                <span class="tx-field-label">課税価格<span class="help-tip" tabindex="0">?<span class="help-text"><code>正の財産の合計 − 小規模宅地等の減額額 − 負の財産の合計</code>。生命保険金・死亡退職金は非課税枠を控除した後の金額で加算されています。</span></span></span>
                 <span class="tx-field-value" id="txTaxableEstate">-</span>
               </div>
               <div class="tx-field-row is-auto">
@@ -555,11 +600,19 @@
                 <span class="tx-field-value" id="txNetEstate">-</span>
               </div>
               <div class="tx-field-row is-auto">
-                <span class="tx-field-label">相続税の総額<span class="help-tip" tabindex="0">?<span class="help-text">課税遺産総額を法定相続分で按分し、各人の取得金額に相続税の速算表を適用して算出した税額の合計です。配偶者の税額軽減や未成年者控除等の税額控除は考慮していません。</span></span></span>
+                <span class="tx-field-label">相続税の総額<span class="help-tip" tabindex="0">?<span class="help-text">課税遺産総額を法定相続分で按分し、各人の取得金額に相続税の速算表を適用して算出した税額の合計です(税額控除の適用前)。</span></span></span>
                 <span class="tx-field-value" id="txEstateTaxTotal">-</span>
               </div>
               <div class="tx-field-row is-auto">
-                <span class="tx-field-label">実効税率(相続税の総額 ÷ 課税価格)</span>
+                <span class="tx-field-label">配偶者の税額軽減額<span class="help-tip" tabindex="0">?<span class="help-text"><code>相続税の総額 × min(配偶者の取得額, 軽減の上限額) ÷ 課税価格</code></span></span></span>
+                <span class="tx-field-value" id="txSpouseCredit">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">納付税額(税額控除後)</span>
+                <span class="tx-field-value" id="txEstateTaxPayable">-</span>
+              </div>
+              <div class="tx-field-row is-auto">
+                <span class="tx-field-label">実効税率(納付税額 ÷ 課税価格)</span>
                 <span class="tx-field-value" id="txEstateEffectiveRate">-</span>
               </div>
               <div class="tx-field-row is-auto">
@@ -577,16 +630,20 @@
                 <dd>相続税の計算上、法定相続人の数に算入できる養子は <code>実子がいる場合1人まで / 実子がいない場合2人まで</code> です。</dd>
                 <dt>法定相続分</dt>
                 <dd><code>配偶者と子 → 配偶者1/2・子1/2を均分</code>、<code>配偶者と直系尊属 → 配偶者2/3・直系尊属1/3を均分</code>、<code>配偶者と兄弟姉妹 → 配偶者3/4・兄弟姉妹1/4を均分</code>、<code>配偶者のみ → 全部</code>、<code>血族のみ → 均分</code></dd>
+                <dt>小規模宅地等の特例</dt>
+                <dd>減額額 = <code>対象宅地の評価額 × (min(限度面積, 面積) ÷ 面積) × 減額率</code>。限度面積と減額率は <code>特定居住用330㎡・80% / 特定事業用400㎡・80% / 貸付事業用200㎡・50%</code> です。減額額は課税価格から差し引きます。</dd>
                 <dt>課税価格</dt>
-                <dd><code>(土地 ＋ 建物 ＋ 有価証券 ＋ 現金預貯金 ＋ その他 ＋ 生命保険金の課税部分 ＋ 死亡退職金の課税部分) − 債務 − 葬式費用</code></dd>
+                <dd><code>(土地 ＋ 建物 ＋ 有価証券 ＋ 現金預貯金 ＋ その他 ＋ 生命保険金の課税部分 ＋ 死亡退職金の課税部分) − 小規模宅地等の減額額 − 債務 − 葬式費用</code></dd>
                 <dt>基礎控除・課税遺産総額</dt>
                 <dd>基礎控除 = <code>3,000万円 ＋ 600万円 × 法定相続人の数</code>、課税遺産総額 = <code>max(0, 課税価格 − 基礎控除)</code></dd>
                 <dt>相続税の総額</dt>
                 <dd>課税遺産総額を法定相続分で按分し、各人の取得金額ごとに速算表を適用して合算します。<code>1,000万円以下10% / 3,000万円以下15%(−50万) / 5,000万円以下20%(−200万) / 1億円以下30%(−700万) / 2億円以下40%(−1,700万) / 3億円以下45%(−2,700万) / 6億円以下50%(−4,200万) / 6億円超55%(−7,200万)</code></dd>
+                <dt>配偶者の税額軽減</dt>
+                <dd>軽減の上限額 = <code>max(1億6,000万円, 課税価格 × 配偶者の法定相続分)</code><br />軽減額 = <code>相続税の総額 × min(配偶者の取得額, 軽減の上限額) ÷ 課税価格</code><br />納付税額 = <code>相続税の総額 − 配偶者の税額軽減額</code>。配偶者の取得割合を未入力にした場合は法定相続分で取得したものとして計算します。</dd>
                 <dt>非課税枠による軽減額</dt>
-                <dd>生命保険金・死亡退職金・弔慰金の非課税枠を<strong>使わなかった場合</strong>の相続税の総額と、<strong>使った場合</strong>の相続税の総額を両方計算し、その差額を軽減額とします(限界税率による概算ではありません)。</dd>
+                <dd>生命保険金・死亡退職金・弔慰金の非課税枠を<strong>使わなかった場合</strong>の納付税額と、<strong>使った場合</strong>の納付税額を両方計算し、その差額を軽減額とします(限界税率による概算ではありません)。小規模宅地等の特例と配偶者の税額軽減はどちらの場合にも適用して比較します。</dd>
               </dl>
-              <p class="calc-logic-note">配偶者の税額軽減(1億6,000万円または法定相続分まで非課税)、未成年者控除、障害者控除、相続時精算課税、小規模宅地等の特例の自動適用は行っていません。実際の申告額は税理士等の専門家による算定が必要です。</p>
+              <p class="calc-logic-note">未成年者控除・障害者控除・相次相続控除・贈与税額控除、相続時精算課税、2割加算(孫・兄弟姉妹等)は考慮していません。小規模宅地等の特例は1区分のみ選択でき、複数区分の併用(限度面積の調整計算)には対応していません。実際の申告額は税理士等の専門家による算定が必要です。</p>
             </div>
           </div>
         </div>
@@ -773,7 +830,7 @@
 
 <script src="js/menu.js?v=20260724a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/tax-exemption-calc.js?v=20260724a"></script>
-<script src="js/tax-exemption.js?v=20260724d"></script>
+<script src="js/tax-exemption-calc.js?v=20260724b"></script>
+<script src="js/tax-exemption.js?v=20260724e"></script>
 </body>
 </html>
