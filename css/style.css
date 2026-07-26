@@ -1248,6 +1248,17 @@ img {
   display: none;
 }
 
+/* 自社株×生命保険: STEP1の資本金・会社規模・Lの割合は簡易入力/TDB・TSR経由でのみ表示
+   (詳細入力ではSTEP4で会社規模を別途自動判定するため非表示) */
+.hide-simple-fields .ss-simple-only {
+  display: none;
+}
+
+/* 自社株×生命保険: 株主の状況の「グループ」列は詳細入力(同族株主等の判定用)でのみ表示 */
+.hide-group-col .ss-group-col {
+  display: none;
+}
+
 /* 自社株×生命保険(詳細入力から): 自社株評価の時価総額は詳細入力の結果からすべて
    自動入力されるため、入力欄の見た目をやめて計算結果と同じ表示にする */
 .detail-readonly-eval .ss-eval {

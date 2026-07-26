@@ -49,6 +49,14 @@ document.addEventListener('DOMContentLoaded', function () {
         sstep2El.classList.add('detail-readonly-eval');
         sstep2El.querySelectorAll('.ss-eval').forEach(function (el) { el.readOnly = true; });
       }
+      // 資本金・会社規模・Lの割合(簡易入力専用)は非表示にし、額面は直接編集できるようにする
+      if (sstep1) {
+        sstep1.classList.add('hide-simple-fields');
+        var parEl = document.getElementById('ssParValue');
+        if (parEl) parEl.readOnly = false;
+      }
+      // 株主の状況の「グループ」列は同族株主等の判定に使うため表示する
+      if (sstep3) sstep3.classList.remove('hide-group-col');
     } else {
       var sstep2 = document.getElementById('sstep2');
       var calcErrorArea = document.getElementById('calcErrorArea');
@@ -56,6 +64,13 @@ document.addEventListener('DOMContentLoaded', function () {
         sstep2.classList.remove('detail-readonly-eval');
         sstep2.querySelectorAll('.ss-eval').forEach(function (el) { el.readOnly = false; });
       }
+      if (sstep1) {
+        sstep1.classList.remove('hide-simple-fields');
+        var parEl2 = document.getElementById('ssParValue');
+        if (parEl2) parEl2.readOnly = true;
+        if (window.bplUpdateParFromCapital) window.bplUpdateParFromCapital();
+      }
+      if (sstep3) sstep3.classList.add('hide-group-col');
       if (sstep1 && sstep2 && sstep1.nextElementSibling !== sstep2) {
         sstep2.parentElement.insertBefore(sstep1, sstep2);
       }

@@ -3,6 +3,13 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!form || !document.getElementById('ssHolderBody')) return;
 
   var STORAGE_KEY = 'bpl_stock_valuation_v1';
+  var SIZE_CONFIG = {
+    large: { l: 1.00, label: '大会社' },
+    'mid-large': { l: 0.90, label: '中会社（大）' },
+    'mid-mid': { l: 0.75, label: '中会社（中）' },
+    'mid-small': { l: 0.60, label: '中会社（小）' },
+    small: { l: 0.50, label: '小会社' },
+  };
   var EVAL_KEYS = ['saizoku', 'ruiji', 'junsisan', 'heiyo', 'houjin', 'haito'];
 
   var num = function (v) { return window.numClean ? window.numClean(v) : parseFloat(String(v == null ? '' : v).replace(/,/g, '')); };
@@ -16,7 +23,26 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isNaN(v) || isNaN(shares) || shares <= 0) return NaN;
     return v / shares;
   }
+  // 詳細入力中は額面を直接編集させるため、資本金からの自動計算は行わない
+  function updateParFromCapital() {
+    var detailArea = document.getElementById('detailArea');
+    var inDetail = detailArea && !detailArea.classList.contains('hidden');
+    if (inDetail) return;
+    var capitalEl = document.getElementById('ssCapital');
+    var parEl = document.getElementById('ssParValue');
+    if (!capitalEl || !parEl) return;
+    var capital = num(capitalEl.value);
+    var shares = num(document.getElementById('ssShares').value);
+    if (!isNaN(capital) && !isNaN(shares) && shares > 0) {
+      parEl.value = String(Math.round(capital / shares));
+    } else {
+      parEl.value = '';
+    }
+  }
+  window.bplUpdateParFromCapital = updateParFromCapital;
+
   function recalcEval() {
+    updateParFromCapital();
     var shares = num(document.getElementById('ssShares').value);
     var par = num(document.getElementById('ssParValue').value);
     EVAL_KEYS.forEach(function (key) {
@@ -24,6 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
       setTxt('ssPer_' + key, isNaN(per) ? '-' : fmt(per) + ' 円');
       setTxt('ssMult_' + key, (isNaN(per) || isNaN(par) || par <= 0) ? '-' : (per / par).toFixed(2) + ' 倍');
     });
+    var sz = SIZE_CONFIG[(document.getElementById('ssSize') || {}).value] || SIZE_CONFIG['mid-mid'];
+    var lEl = document.getElementById('ssL');
+    if (lEl) lEl.value = sz.l.toFixed(2);
   }
 
   // ===== 株主一覧 =====
@@ -34,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tr.className = 'border-b border-gray-100 ss-holder';
     tr.innerHTML =
       '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" value="' + (d.name || '') + '" placeholder="氏名・法人名" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="hg form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:7rem" value="' + (d.group || '') + '" placeholder="(株主名と同じ)" /></td>' +
+      '<td class="px-1 py-1 ss-group-col"><input type="text" class="hg form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:7rem" value="' + (d.group || '') + '" placeholder="(株主名と同じ)" /></td>' +
       '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
       '<td class="px-2 py-2 text-right hr-display">-</td>' +
       '<td class="px-2 py-2 text-right hreka ss-eval-col">-</td>' +
@@ -96,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
       tr.className = 'border-b border-gray-100 text-gray-500 italic';
       tr.innerHTML =
         '<td class="px-2 py-2">その他株主</td>' +
-        '<td class="px-2 py-2">(自動計算)</td>' +
+        '<td class="px-2 py-2 ss-group-col">(自動計算)</td>' +
         '<td class="px-2 py-2 text-right">' + fmt(otherShares) + '</td>' +
         '<td class="px-2 py-2 text-right">' + otherRatio.toFixed(2) + '%</td>' +
         '<td class="px-2 py-2 text-right ss-eval-col">' + (isNaN(otherReka) ? '-' : fmt(otherReka)) + '</td>' +
@@ -128,6 +157,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function collect() {
     var shares = num(document.getElementById('ssShares').value);
     var data = {
+      companySize: (document.getElementById('ssSize') || {}).value,
+      ss_capital: (document.getElementById('ssCapital') || {}).value,
       sharesOutstanding: String(isNaN(shares) ? '' : shares),
       ss_parValue: document.getElementById('ssParValue').value,
     };
@@ -157,6 +188,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function restore() {
     var s = loadStored();
     if (!s) return false;
+    if (s.companySize && document.getElementById('ssSize')) document.getElementById('ssSize').value = s.companySize;
+    if (s.ss_capital && document.getElementById('ssCapital')) document.getElementById('ssCapital').value = s.ss_capital;
     if (s.sharesOutstanding) document.getElementById('ssShares').value = s.sharesOutstanding;
     if (s.ss_parValue) document.getElementById('ssParValue').value = s.ss_parValue;
     EVAL_KEYS.forEach(function (key) {
@@ -237,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 初期化 =====
   var restored = restore();
   if (!restored) { seedEval(); seedHolders(); }
-  resyncAllHolderRows();
   recalcAll();
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');
@@ -246,7 +278,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 詳細入力・TDB/TSR側から計算後に呼び出し、共有データを画面に反映する =====
   window.bplRefreshSimpleFromShared = function () {
     restore();
-    resyncAllHolderRows();
     recalcAll();
     if (window.numReformatAll) window.numReformatAll();
   };
