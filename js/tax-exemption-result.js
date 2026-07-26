@@ -81,15 +81,25 @@ document.addEventListener('DOMContentLoaded', function () {
   function drawSaveChart(svg, parts, unitFmt, maxTotal, opt) {
     const o = opt || {};
     const W = 560, BAR_X = 8, BAR_W = 544, BAR_Y = 4, BAR_H = o.slim ? 36 : 78;
+    const RX = Math.min(BAR_H / 2, o.slim ? 10 : 16);
     const used = parts.reduce((s2, p) => s2 + Math.max(0, p.value), 0);
     const cap = Math.max(maxTotal, used);
     const pid = svg.id + 'Stripe';
-    let out = `<defs><pattern id="${pid}" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">`
-      + `<rect width="14" height="14" fill="#eef1f4"/><rect width="6" height="14" fill="#dfe5ee"/></pattern></defs>`;
-    out += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="10" fill="#eef1f4"/>`;
+    const cid = svg.id + 'Clip';
+    const gid = svg.id + 'Gloss';
+    // 帯全体を角丸でクリップしてから中身を描くことで、区分の境目が段差にならず端だけがなめらかに丸くなる
+    let defs = `<pattern id="${pid}" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">`
+      + `<rect width="18" height="18" fill="#eff2f6"/><rect width="7" height="18" fill="#e4e9f0"/></pattern>`
+      + `<clipPath id="${cid}"><rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="${RX}"/></clipPath>`
+      + `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
+      + `<stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>`
+      + `<stop offset="0.55" stop-color="#ffffff" stop-opacity="0.02"/>`
+      + `<stop offset="1" stop-color="#000000" stop-opacity="0.07"/></linearGradient>`;
     if (cap <= 0) {
-      out += `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 8}" font-size="20" fill="#9ca3af" text-anchor="middle">軽減額なし</text>`;
-      svg.innerHTML = out;
+      const out0 = `<defs>${defs}</defs>`
+        + `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="${RX}" fill="#eff2f6"/>`
+        + `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 8}" font-size="20" fill="#9ca3af" text-anchor="middle">軽減額なし</text>`;
+      svg.innerHTML = out0;
       return;
     }
     // 帯に入れる文字の必要幅を文字数から見積もる(半角0.55em・全角1em)
@@ -99,29 +109,32 @@ document.addEventListener('DOMContentLoaded', function () {
       return need;
     };
     const usedW = (used / cap) * BAR_W;
-    // 残り(使い残している枠)は斜線で示すだけにし、金額はカード上部のリード文で伝える
     const room = Math.max(0, cap - used);
+
+    // --- 帯(クリップ内) ---
+    let bars = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="#eff2f6"/>`;
     if (room > 0) {
-      out += `<rect x="${(BAR_X + usedW).toFixed(1)}" y="${BAR_Y}" width="${(BAR_W - usedW).toFixed(1)}" height="${BAR_H}" rx="10" fill="url(#${pid})"/>`;
+      bars += `<rect x="${(BAR_X + usedW).toFixed(1)}" y="${BAR_Y}" width="${(BAR_W - usedW).toFixed(1)}" height="${BAR_H}" fill="url(#${pid})"/>`;
     }
-    // 現状の内訳を区分ごとに積み上げる
-    const drawn = parts;
+    // --- 帯の中の金額(クリップ外に描いて欠けないようにする) ---
+    let labels = '';
     let x = BAR_X;
-    drawn.forEach(function (p, i) {
+    parts.forEach(function (p) {
       const v = Math.max(0, p.value);
       if (v <= 0) return;
       const w = (v / cap) * BAR_W;
-      const isFirst = x === BAR_X;
-      const isLast = room <= 0 && (i === drawn.length - 1 || drawn.slice(i + 1).every((q) => Math.max(0, q.value) <= 0));
-      const rx = (isFirst || isLast) ? 10 : 0;
-      out += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${w.toFixed(1)}" height="${BAR_H}" rx="${rx}" fill="${p.color}"/>`;
+      // 区分の境目に髪の毛一本分だけ重ねて、拡大時に隙間が出ないようにする
+      bars += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${(w + 0.6).toFixed(1)}" height="${BAR_H}" fill="${p.color}"/>`;
       const label = unitFmt(v);
       const fs = o.slim ? 16 : 20;
       if (w > widthOf(label, fs)) {
-        out += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + (o.slim ? 5 : 7)}" font-weight="bold" fill="#fff" text-anchor="middle">${svgAmount(label, fs)}</text>`;
+        labels += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + (o.slim ? 5 : 7)}" font-weight="bold" fill="#fff" text-anchor="middle">${svgAmount(label, fs)}</text>`;
       }
       x += w;
     });
+    bars += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="url(#${gid})"/>`;
+
+    let out = `<defs>${defs}</defs><g clip-path="url(#${cid})">${bars}</g>${labels}`;
     if (o.slim) { svg.innerHTML = out; return; }
     out += `<text x="${BAR_X}" y="${BAR_Y + BAR_H + 24}" font-weight="bold" fill="${o.base || '#0f2a4a'}">`
       + `<tspan font-size="13" font-weight="normal" fill="#6b7280">現状 </tspan>${svgAmount(unitFmt(used), 20)}</text>`;
