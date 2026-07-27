@@ -836,15 +836,15 @@ input[type="number"] {
 }
 
 /* 準備中ページのヒーロー帯: 黄色に光る「COMING SOON」装飾テキスト */
-/* ヒーロー帯の入力/結果バッジ。COMING SOONと同じ発光デザインだが、
-   帯の高さを変えないようタイトルと同じ行に置く */
+/* ヒーロー帯の入力/結果バッジ。COMING SOONと同じ発光デザインで、タイトルの下に置く。
+   1行増えるぶんは section 側の上下paddingを詰めて帯の高さを保っている */
 .hero-io-badge {
-  margin-left: 0.75rem;
-  font-size: 1.25rem;
+  margin-top: 0.3rem;
+  font-size: 1.125rem;
   line-height: 1;
 }
 @media (min-width: 640px) {
-  .hero-io-badge { font-size: 1.5rem; }
+  .hero-io-badge { font-size: 1.25rem; }
 }
 
 .coming-soon-glow {
