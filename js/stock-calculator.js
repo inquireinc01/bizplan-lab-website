@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
     manda: 'M&A評価',
   };
   const BASE_COLORS = {
-    saizoku: { light: '#6d7f92', dark: '#3f4c5c' },
-    houjin: { light: '#7c8f7a', dark: '#4f5f4d' },
+    saizoku: { light: '#6d7f92', dark: '#2f4fa8' },
+    houjin: { light: '#7c8f7a', dark: '#5ca63c' },
     // 類似業種比準・純資産は参考指標のため、区別せず薄灰/濃灰に統一(重要な指標=相続税評価・法人税法上の評価を目立たせる)
     ruiji: { light: '#b3b8bd', dark: '#6b7075' },
     junsisan: { light: '#b3b8bd', dark: '#6b7075' },
