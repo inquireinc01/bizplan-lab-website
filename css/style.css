@@ -3151,3 +3151,14 @@ svg {
 .rb-loss-verdict:empty {
   display: none;
 }
+
+/* 繰延法人税トグル(退職金×生命保険)。棒の色#B7628Dに合わせたアクセント */
+.overlay-toggle-plum {
+  --accent: #B7628D;
+  --lamp-rgb: 245, 200, 40;
+}
+.rb-acc-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.4rem 0 0.6rem;
+}

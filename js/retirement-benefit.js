@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
      同じ原資を「役員報酬として受け取って個人で積み立てる(A)」場合と
      「法人が生命保険料として払い込む(B)」場合で、残高がどう開いていくかを見せる。
      Aは所得税・住民税・社会保険料が引かれた手取りしか積み立てられないのが差の源泉 ===== */
-  const ACC_LINE_COLOR = '#a83d3d';
+  const ACC_DEFER_COLOR = '#B7628D'; // 繰り延べられる法人税の棒の色
   // 積み立て方の4パターン。同時に表示できるのは2つまで(自社株の評価額グラフと同じ)
   const ACC_SCN = {
     persCash: { label: 'A. 給与で受取り個人で積立', short: 'A. 個人で積立', color: '#8b98a8' },
@@ -138,6 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   // 既定は「A. 給与で受取り個人で積立」のみ表示
   let accSelected = ['persCash'];
+  // 繰延法人税の棒の表示。4つの積み立て方(2つまで)とは別ルールの専用トグル。既定は非表示
+  let accShowDefer = false;
   let accSeries = null;
   let accLayout = null;
   let accAgeBase = 0;   // グラフ横軸の起点(契約年齢)
@@ -361,45 +363,38 @@ document.addEventListener('DOMContentLoaded', function () {
   function drawAccChart(series) {
     const svg = $('rbAccChart');
     if (!svg) return;
-    // 右側に法人税の繰延累計の目盛りを置くため、右の余白を広めに取る
-    const W = 800, H = 320, padL = 78, padR = 78, padT = 20, padB = 40, SVG_W = 830;
+    const W = 800, H = 320, padL = 78, padR = 24, padT = 20, padB = 40, SVG_W = 830;
     const plotW = W - padL - padR;
     const plotH = H - padT - padB;
     const yBottom = H - padB;
     const xRight = W - padR;
 
+    // 繰延法人税の棒は4つの積み立て方とは別に、専用トグルで表示を選べる(左目盛りで統一)
+    const showDefer = accShowDefer;
+    const barKeys = accSelected.slice();
+    if (showDefer) barKeys.push('defer');
     const activeKeys = accSelected;
-    const rawMax = Math.max.apply(null, series.flatMap((p) => activeKeys.map((k) => p[k])).concat([1]));
+    const rawMax = Math.max.apply(null, series.flatMap((p) => barKeys.map((k) => p[k])).concat([1]));
     const maxV = rawMax * 1.08;
     const y = (v) => yBottom - (v / (maxV || 1)) * plotH;
 
-    // 法人の保険を表示しているときだけ、法人税の繰延累計の折れ線と右目盛りを出す
-    const showDefer = activeKeys.indexOf('corpIns') >= 0;
-    const rawMaxD = Math.max.apply(null, series.map((p) => p.defer).concat([1]));
-    const maxD = rawMaxD * 1.08;
-    const yD = (v) => yBottom - (v / (maxD || 1)) * plotH;
-
     const slotWidth = plotW / series.length;
 
-    // 左目盛り(積立額)と右目盛り(法人税の繰延累計)
     let gridLines = '';
     for (let i = 0; i <= 4; i += 1) {
       const gy = y((maxV * i) / 4);
       gridLines += `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${xRight}" y2="${gy.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
       gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round((maxV * i) / 4).toLocaleString('ja-JP')}</text>`;
-      if (showDefer) {
-        gridLines += `<text x="${xRight + 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="${ACC_LINE_COLOR}" fill-opacity="0.75" text-anchor="start">${Math.round((maxD * i) / 4).toLocaleString('ja-JP')}</text>`;
-      }
     }
 
     // 自社株の推移グラフと同じ「少しずらして重ねる」グループ棒。
     // 透過色で重ねることで、ボリュームの差が塗りの濃さとしても見えるようにする
     const barWidth = slotWidth * 0.68;
     const overlapOffset = barWidth / 3;
-    const groupWidth = activeKeys.length === 1 ? barWidth : barWidth + overlapOffset;
+    const groupWidth = barWidth + overlapOffset * (barKeys.length - 1);
     let bars = '';
-    activeKeys.forEach(function (key, si) {
-      const color = ACC_SCN[key].color;
+    barKeys.forEach(function (key, si) {
+      const color = key === 'defer' ? ACC_DEFER_COLOR : ACC_SCN[key].color;
       series.forEach(function (p, i) {
         const barY = y(p[key]);
         const barH = Math.max(0, yBottom - barY);
@@ -411,20 +406,6 @@ document.addEventListener('DOMContentLoaded', function () {
           + ` fill="${color}" fill-opacity="0.5" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1" rx="1.5" style="animation-delay:${delay}ms"/>`;
       });
     });
-
-    // 繰り延べられる法人税の累計(右目盛りの折れ線)
-    let line = '';
-    if (showDefer && rawMaxD > 0) {
-      const pts = series.map(function (p, i) {
-        return `${(padL + i * slotWidth + slotWidth / 2).toFixed(1)},${yD(p.defer).toFixed(1)}`;
-      }).join(' ');
-      const lastP = series[series.length - 1];
-      const x0 = padL + slotWidth / 2;
-      const x1 = padL + (series.length - 1) * slotWidth + slotWidth / 2;
-      line = `<polygon points="${x0.toFixed(1)},${yBottom} ${pts} ${x1.toFixed(1)},${yBottom}" fill="${ACC_LINE_COLOR}" fill-opacity="0.08"/>`
-        + `<polyline points="${pts}" fill="none" stroke="${ACC_LINE_COLOR}" stroke-width="2.2" stroke-opacity="0.85" stroke-linejoin="round" stroke-linecap="round"/>`
-        + `<circle cx="${x1.toFixed(1)}" cy="${yD(lastP.defer).toFixed(1)}" r="3.5" fill="${ACC_LINE_COLOR}"/>`;
-    }
 
     // 横軸は年齢で表示する(契約年齢〜退職年齢)
     let xLabels = '';
@@ -462,9 +443,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     svg.innerHTML = `${gridLines}`
       + `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
-      + `<line x1="${xRight}" y1="${padT}" x2="${xRight}" y2="${yBottom}" stroke="${ACC_LINE_COLOR}" stroke-opacity="0.25" stroke-width="1"/>`
       + `<line x1="${padL}" y1="${yBottom}" x2="${xRight}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
-      + `${xLabels}${bars}${line}${insMark}${nowMark}`;
+      + `${xLabels}${bars}${insMark}${nowMark}`;
 
     accLayout = { W: SVG_W, padL: padL, slotWidth: slotWidth, count: series.length };
   }
@@ -486,8 +466,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let rows = accSelected.map(function (key) {
       return `<p class="flex justify-between gap-3"><span class="text-gray-500">${ACC_SCN[key].short}</span><span class="font-bold">${withUnit(man(p[key]))}</span></p>`;
     }).join('');
-    if (accSelected.indexOf('corpIns') >= 0) {
-      rows += `<p class="flex justify-between gap-3"><span class="text-gray-500">法人税の繰延累計</span><span class="font-bold text-[#a83d3d]">${withUnit(man(p.defer))}</span></p>`;
+    if (accShowDefer) {
+      rows += `<p class="flex justify-between gap-3"><span class="text-gray-500">法人税の繰延累計</span><span class="font-bold" style="color:#B7628D">${withUnit(man(p.defer))}</span></p>`;
     }
     if (accSelected.length === 2) {
       const d = p[accSelected[1]] - p[accSelected[0]];
@@ -529,12 +509,22 @@ document.addEventListener('DOMContentLoaded', function () {
       let html = accSelected.map(function (key) {
         return `<span class="rb-legend-item"><i class="rb-sw" style="background:${ACC_SCN[key].color}"></i>${ACC_SCN[key].label}</span>`;
       }).join('');
-      if (accSelected.indexOf('corpIns') >= 0) {
-        html += `<span class="rb-legend-item"><i class="rb-sw rb-sw-line"></i>繰り延べられる法人税の累計(右目盛り)</span>`;
+      if (accShowDefer) {
+        html += `<span class="rb-legend-item"><i class="rb-sw" style="background:${ACC_DEFER_COLOR}"></i>繰り延べられる法人税の累計</span>`;
       }
       html += `<span class="rb-legend-note">目盛りは万円</span>`;
       legend.innerHTML = html;
     }
+  }
+  // 繰延法人税トグル(積み立て方の選択とは独立)
+  const deferToggleBtn = $('rbDeferToggleBtn');
+  if (deferToggleBtn) {
+    deferToggleBtn.classList.toggle('is-on', accShowDefer);
+    deferToggleBtn.addEventListener('click', function () {
+      accShowDefer = !accShowDefer;
+      deferToggleBtn.classList.toggle('is-on', accShowDefer);
+      render();
+    });
   }
   if (accPicker) {
     accPicker.addEventListener('click', function (e) {
