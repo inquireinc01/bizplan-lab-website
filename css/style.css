@@ -836,6 +836,17 @@ input[type="number"] {
 }
 
 /* 準備中ページのヒーロー帯: 黄色に光る「COMING SOON」装飾テキスト */
+/* ヒーロー帯の入力/結果バッジ。COMING SOONと同じ発光デザインだが、
+   帯の高さを変えないようタイトルと同じ行に置く */
+.hero-io-badge {
+  margin-left: 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+@media (min-width: 640px) {
+  .hero-io-badge { font-size: 1.5rem; }
+}
+
 .coming-soon-glow {
   color: #ffd23f;
   animation: comingSoonGlow 2.2s ease-in-out infinite alternate;
