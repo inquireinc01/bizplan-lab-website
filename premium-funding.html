@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072732" />
+<link rel="stylesheet" href="css/style.css?v=2026072742" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -107,13 +107,13 @@
 <main>
 
   <!-- ===== ページヒーロー ===== -->
-  <section class="hero-pattern relative py-4 sm:py-5">
+  <section class="hero-pattern relative py-1 sm:py-2">
     <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
         <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1">PREMIUM FUNDING</p>
         <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">原資創出モデル<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
-        <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-2xl sm:text-3xl mt-1">COMING SOON</p>
-        <p class="hero-info-text hidden">役員報酬の支給形態や各種経費を見直すことで、無理なく生み出せるキャッシュフローを科目ごとに積み上げ、新たな生命保険料の原資として活用できる金額を試算します。「決算書情報」で入力済みのデータがあれば、各科目の現況額に自動反映されます。</p>
+        <p class="hero-io-badge font-brand-en coming-soon-glow font-black tracking-[0.15em]">INPUT / OUTPUT</p>
+        <p class="hero-info-text hidden">他社既契約保険の見直しや役員報酬・経費の適正化など、法人・個人それぞれで「痛みなく」社長の経営判断だけで生み出せるキャッシュを項目ごとに積み上げ、新たな生命保険料の原資として活用できる金額を試算します。「決算書情報」で入力済みのデータがあれば、各科目の現況額に自動反映されます。</p>
       </div>
       <div class="hero-actions" data-backup-keys="bpl_premium_funding_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
@@ -142,104 +142,156 @@
     </div>
   </section>
 
-  <section class="py-16 sm:py-20">
-    <div class="max-w-4xl mx-auto px-5">
-      <form id="pfForm" class="space-y-8">
+  <!-- レイアウトは退職金×生命保険で確立した共通クラス(rb-*)を再利用している(CSS追加なし) -->
+  <section class="py-5 sm:py-7">
+    <div id="pfTool" class="max-w-5xl mx-auto px-5 space-y-5">
 
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">1. 役員報酬(事前確定届出給与による社会保険料削減)</h3>
-          <p class="text-xs text-gray-500 mb-5">定期同額給与の一部を事前確定届出給与(賞与)に振り替えることで、社会保険料の算定基礎を圧縮できる場合があります。</p>
-          <div class="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="execCompCurrent">現況役員報酬(万円/年)</label>
-              <input type="number" id="execCompCurrent" value="1200" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="execCompShift">事前確定届出給与への振替額(万円/年)</label>
-              <input type="number" id="execCompShift" value="200" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="socialInsRate">社会保険料率(会社負担・%)</label>
-              <input type="number" id="socialInsRate" value="15" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
-            </div>
-          </div>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>社会保険料の削減額</dt><dd><code>役員報酬の振替額 × 社会保険料率</code></dd><dt>考え方</dt><dd>役員報酬の一部を保険等に振り替えることで、その分の社会保険料（会社負担分＋本人負担分）が発生しなくなります。その削減額を保険料の原資と捉えます。</dd></dl>
-            <p class="calc-logic-note">役員報酬の現況額は、決算書情報を入力済みの場合そこから自動反映されます。</p>
-          </div>
-</div>
+      <!-- ===== 先頭: 痛みなく創出できるキャッシュの積み上げ ===== -->
+      <div class="rb-main">
+        <p class="rb-headline-lead">社長の経営判断だけで、痛みなく創出できるキャッシュが<span class="help-tip" tabindex="0">?<span class="help-text">売上を増やしたり人件費を切り詰めたりしなくても、既契約保険の見直し・役員報酬の支給形態・経費の適正化といった「経営判断だけでできる見直し」から生まれる年間キャッシュフローの合計です。この金額がそのまま、新たな生命保険料に充当できる原資になります。</span></span></p>
+        <p class="rb-headline-num" id="pfTotal">-</p>
+        <p class="rb-headline-tail">年間で生まれ、新たな保険料の原資になります</p>
 
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">2. 各経費科目の適正化</h3>
-          <p class="text-xs text-gray-500 mb-5">科目ごとに現況額(万円/年)と、無理なく削減・適正化できる割合(%)を入力してください。</p>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm border-collapse min-w-[560px]">
-              <thead>
-                <tr class="bg-[#0f2a4a] text-white">
-                  <th class="text-left font-bold px-3 py-2 rounded-tl-lg">科目</th>
-                  <th class="text-right font-bold px-3 py-2 w-32">現況額(万円/年)</th>
-                  <th class="text-right font-bold px-3 py-2 w-28">適正化率(%)</th>
-                  <th class="text-right font-bold px-3 py-2 w-32 rounded-tr-lg">創出額(万円/年)</th>
-                </tr>
-              </thead>
-              <tbody id="pfItemsBody">
-              </tbody>
-            </table>
+        <div class="rb-bars">
+          <div class="rb-bar-row">
+            <p class="rb-bar-head">
+              <span class="rb-bar-name"><span class="rb-chip">法人</span>法人で創出</span>
+              <span class="rb-bar-net"><span class="rb-bar-net-label">年間</span><span id="pfTotalCorp">-</span></span>
+            </p>
+            <svg id="pfBarCorp" class="rb-chart" viewBox="0 0 560 44"></svg>
           </div>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>科目ごとの創出額</dt><dd><code>その科目の年間金額 × 適正化率</code></dd><dt>適正化率とは</dt><dd>その科目のうち見直し・削減が可能と見込む割合です。初期値は科目の性質に応じた目安（交際費・旅費交通費・福利厚生費10%、地代家賃・法定福利費5%、生命保険料・損害保険料15%）を設定しています。</dd><dt>経費削減額の合計</dt><dd>全科目の創出額を合算します。</dd></dl>
-            <p class="calc-logic-note">各科目の年間金額は、決算書情報を入力済みの場合そこから自動反映されます（円→万円に換算）。</p>
+          <div class="rb-bar-row">
+            <p class="rb-bar-head">
+              <span class="rb-bar-name"><span class="rb-chip is-corp">個人</span>個人で創出</span>
+              <span class="rb-bar-net"><span class="rb-bar-net-label">年間</span><span id="pfTotalPers">-</span></span>
+            </p>
+            <svg id="pfBarPers" class="rb-chart" viewBox="0 0 560 44"></svg>
           </div>
-</div>
-
-        <div id="pfErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
-
-        <div class="flex flex-col sm:flex-row gap-4">
-          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">創出額を試算する</button>
-          <button type="button" id="pfFieldClearBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
         </div>
-      </form>
 
+        <p class="rb-legend">
+          <span class="rb-legend-item"><i class="rb-sw" style="background:#3b6ea5"></i>1. 他社既契約保険の見直し</span>
+          <span class="rb-legend-item"><i class="rb-sw" style="background:#2d5580"></i>2. 役員報酬の見直し</span>
+          <span class="rb-legend-item"><i class="rb-sw" style="background:#7a9cc0"></i>3. 経費科目の適正化</span>
+          <span class="rb-legend-note">月換算 <span id="pfMonthly">-</span></span>
+        </p>
+      </div>
 
-      <!-- 結果表示 -->
-      <div id="pfResultArea" class="hidden mt-10 space-y-8">
+      <!-- ===== 1. 他社既契約保険の見直し ===== -->
+      <div class="rb-card" data-clear-scope>
+        <div class="rb-card-head">
+          <h2 class="rb-card-title">1. 他社既契約保険の見直し<span class="help-tip" tabindex="0">?<span class="help-text">他社で契約中の保険を解約・払済・減額などで見直すと、いま払っている保険料がそのまま新たな保険料の原資に振り替えられます。法人契約と個人契約それぞれで入力してください。保障の空白が生じないよう、実際の見直しは新契約の成立後に行うのが原則です。</span></span></h2>
+          <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
+        </div>
 
-        <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">科目別の創出額</h4>
-          <dl id="pfBreakdownList" class="space-y-2 text-sm"></dl>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>創出額の合計</dt><dd><code>役員報酬による社会保険料削減額 ＋ 各経費科目の創出額の合計</code></dd><dt>月額換算</dt><dd><code>年間の合計創出額 ÷ 12</code></dd></dl>
-            <p class="calc-logic-note">ここで算出した金額が、新たな保険料に充当できる原資の目安となります。</p>
+        <div class="rb-cols">
+          <div>
+            <p class="rb-sub">法人契約</p>
+            <div class="rb-field">
+              <label for="pfInsCorpAmount">他社で契約中の年間保険料<span class="rb-field-unit">万円/年</span></label>
+              <input type="number" id="pfInsCorpAmount" value="300" class="form-input num-input" placeholder="例: 300" />
+            </div>
+            <div class="rb-field">
+              <label for="pfInsCorpRate">原資化できる割合<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">見直しの対象にできる割合です。全部を振り替えるなら100％、保障の一部を残すなら残す分を差し引いた割合を入れてください。</span></span></label>
+              <input type="number" id="pfInsCorpRate" value="100" step="1" class="form-input num-input" placeholder="例: 100" />
+            </div>
+            <dl class="rb-mini"><div class="is-total"><dt>法人の創出額(年)</dt><dd id="pfInsCorpResult">-</dd></div></dl>
           </div>
-</div>
-
-        <!-- サマリー -->
-        <div class="calc-result-card p-6 sm:p-10">
-          <h3 class="font-black text-xl mb-2">創出可能な年間キャッシュフロー</h3>
-          <p class="text-white/70 text-sm mb-6">痛みなく積み上げられる、新たな生命保険料の原資イメージです。</p>
-          <p id="pfTotal" class="text-4xl font-black mb-8">-</p>
-          <div class="grid sm:grid-cols-3 gap-6 border-t border-white/20 pt-6">
-            <div>
-              <p class="text-xs text-white/70 mb-1">役員報酬(社会保険料削減分)</p>
-              <p id="pfSumExec" class="text-lg font-black"></p>
+          <div>
+            <p class="rb-sub">個人契約</p>
+            <div class="rb-field">
+              <label for="pfInsPersAmount">他社で契約中の年間保険料<span class="rb-field-unit">万円/年</span></label>
+              <input type="number" id="pfInsPersAmount" value="100" class="form-input num-input" placeholder="例: 100" />
             </div>
-            <div>
-              <p class="text-xs text-white/70 mb-1">経費科目 適正化合計</p>
-              <p id="pfSumExpense" class="text-lg font-black"></p>
+            <div class="rb-field">
+              <label for="pfInsPersRate">原資化できる割合<span class="rb-field-unit">％</span></label>
+              <input type="number" id="pfInsPersRate" value="100" step="1" class="form-input num-input" placeholder="例: 100" />
             </div>
-            <div>
-              <p class="text-xs text-white/70 mb-1">月換算</p>
-              <p id="pfMonthly" class="text-lg font-black"></p>
-            </div>
+            <dl class="rb-mini"><div class="is-total"><dt>個人の創出額(年)</dt><dd id="pfInsPersResult">-</dd></div></dl>
           </div>
+        </div>
+
+        <div class="calc-logic">
+          <p class="calc-logic-title">計算ロジック</p>
+          <dl><dt>創出額</dt><dd><code>他社で契約中の年間保険料 × 原資化できる割合</code>(法人・個人それぞれ)</dd><dt>考え方</dt><dd>すでに払っている保険料の振り替えなので、新たなキャッシュアウトは発生しません。保障内容の重複や不足を点検したうえで、当社契約への置き換え原資と捉えます。</dd></dl>
         </div>
       </div>
+
+      <!-- ===== 2. 役員報酬の見直し(事前確定届出給与による社会保険料削減) ===== -->
+      <div class="rb-card" data-clear-scope>
+        <div class="rb-card-head">
+          <h2 class="rb-card-title">2. 役員報酬の見直し<span class="rb-chip">社会保険料の削減</span><span class="help-tip" tabindex="0">?<span class="help-text">定期同額給与の一部を事前確定届出給与(賞与)に振り替えると、社会保険料の算定基礎を圧縮できる場合があります。賞与の標準賞与額には上限(健康保険は年573万円・厚生年金は月150万円)があるため、上限を超える部分には社会保険料がかからないことを利用した方法です。会社負担分の削減は法人の創出額、本人負担分の削減は個人の創出額になります。</span></span></h2>
+          <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
+        </div>
+
+        <div class="rb-cols">
+          <div>
+            <div class="rb-field">
+              <label for="execCompCurrent">現況役員報酬<span class="rb-field-unit">万円/年</span><span class="help-tip" tabindex="0">?<span class="help-text">決算書情報を入力済みの場合、直前期の役員報酬が自動で入ります。</span></span></label>
+              <input type="number" id="execCompCurrent" value="1200" class="form-input num-input" placeholder="例: 1,200" />
+            </div>
+            <div class="rb-field">
+              <label for="execCompShift">事前確定届出給与への振替額<span class="rb-field-unit">万円/年</span></label>
+              <input type="number" id="execCompShift" value="200" class="form-input num-input" placeholder="例: 200" />
+            </div>
+          </div>
+          <div>
+            <div class="rb-field">
+              <label for="socialInsRate">社会保険料率(会社負担)<span class="rb-field-unit">％</span></label>
+              <input type="number" id="socialInsRate" value="15" step="0.1" class="form-input num-input" placeholder="例: 15" />
+            </div>
+            <div class="rb-field">
+              <label for="pfSocialRateSelf">社会保険料率(本人負担)<span class="rb-field-unit">％</span></label>
+              <input type="number" id="pfSocialRateSelf" value="15" step="0.1" class="form-input num-input" placeholder="例: 15" />
+            </div>
+          </div>
+        </div>
+
+        <dl class="rb-mini">
+          <div class="is-total"><dt>法人の創出額(年) = 会社負担分の削減</dt><dd id="pfExecCorpResult">-</dd></div>
+          <div class="is-total"><dt>個人の創出額(年) = 本人負担分の削減</dt><dd id="pfExecPersResult">-</dd></div>
+        </dl>
+
+        <div class="calc-logic">
+          <p class="calc-logic-title">計算ロジック</p>
+          <dl><dt>法人の創出額</dt><dd><code>振替額 × 社会保険料率(会社負担)</code></dd><dt>個人の創出額</dt><dd><code>振替額 × 社会保険料率(本人負担)</code></dd><dt>考え方</dt><dd>振り替えた部分の社会保険料が会社負担・本人負担の双方で発生しなくなり、その削減額を保険料の原資と捉えます。事前確定届出給与は税務署への届出と届出どおりの支給が要件です。</dd></dl>
+          <p class="calc-logic-note">役員報酬の現況額は、決算書情報を入力済みの場合そこから自動反映されます。</p>
+        </div>
+      </div>
+
+      <!-- ===== 3. 経費科目の適正化(法人) ===== -->
+      <div class="rb-card" data-clear-scope>
+        <div class="rb-card-head">
+          <h2 class="rb-card-title">3. 経費科目の適正化<span class="rb-chip">法人</span><span class="help-tip" tabindex="0">?<span class="help-text">科目ごとに現況額(万円/年)と、無理なく削減・適正化できる割合(%)を入力してください。適正化率の初期値は科目の性質に応じた目安(交際費・旅費交通費・福利厚生費10%、地代家賃・法定福利費5%、生命保険料・損害保険料15%)です。決算書情報を入力済みの場合、現況額は自動反映されます(円→万円換算)。</span></span></h2>
+          <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-[#0f2a4a] text-white">
+                <th class="text-left font-bold px-3 py-2 rounded-tl-lg">科目</th>
+                <th class="text-right font-bold px-3 py-2 w-32">現況額<span class="rb-field-unit" style="color:rgba(255,255,255,.7)">万円/年</span></th>
+                <th class="text-right font-bold px-3 py-2 w-28">適正化率<span class="rb-field-unit" style="color:rgba(255,255,255,.7)">％</span></th>
+                <th class="text-right font-bold px-3 py-2 w-32 rounded-tr-lg">創出額<span class="rb-field-unit" style="color:rgba(255,255,255,.7)">万円/年</span></th>
+              </tr>
+            </thead>
+            <tbody id="pfItemsBody">
+            </tbody>
+          </table>
+        </div>
+
+        <dl class="rb-mini">
+          <div class="is-total"><dt>法人の創出額(年) = 全科目の合計</dt><dd id="pfExpenseResult">-</dd></div>
+        </dl>
+
+        <div class="calc-logic">
+          <p class="calc-logic-title">計算ロジック</p>
+          <dl><dt>科目ごとの創出額</dt><dd><code>その科目の年間金額 × 適正化率</code></dd><dt>経費削減額の合計</dt><dd>全科目の創出額を合算し、法人の創出額として積み上げます。</dd></dl>
+          <p class="calc-logic-note">各科目の年間金額は、決算書情報を入力済みの場合そこから自動反映されます(円→万円に換算)。</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -276,20 +328,20 @@
     <div class="print-meta">作成日: <span id="pDate"></span></div>
   </div>
 
-  <div class="print-sec">科目別の創出額</div>
+  <div class="print-sec">項目別の創出額</div>
   <table class="print-table" id="pBreakdownTable">
-    <thead><tr><th class="lbl">科目</th><th>現況額</th><th>創出額</th></tr></thead>
+    <thead><tr><th class="lbl">項目</th><th>法人</th><th>個人</th><th>合計</th></tr></thead>
     <tbody id="pBreakdownBody"></tbody>
   </table>
 
   <div class="print-stats">
     <div>
-      <div class="k">役員報酬(社会保険料削減分)</div>
-      <div class="v" id="pSumExec"></div>
+      <div class="k">法人で創出(年)</div>
+      <div class="v" id="pTotalCorp"></div>
     </div>
     <div>
-      <div class="k">経費科目 適正化合計</div>
-      <div class="v" id="pSumExpense"></div>
+      <div class="k">個人で創出(年)</div>
+      <div class="v" id="pTotalPers"></div>
     </div>
     <div>
       <div class="k">創出可能な年間キャッシュフロー</div>
@@ -307,6 +359,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/premium-funding.js?v=20260723c"></script>
+<script src="js/premium-funding.js?v=20260727a"></script>
 </body>
 </html>

@@ -1,12 +1,125 @@
+/* ============================================================
+   原資創出モデル(積み上げ式)
+   - 法人・個人それぞれで「痛みなく」創出できるキャッシュを項目ごとに積み上げ、
+     合計を先頭に大きく表示する。それがそのまま新たな保険料の原資になる
+   - 項目1: 他社既契約保険の見直し(法人/個人)
+     項目2: 役員報酬の見直し(社会保険料削減。会社負担=法人/本人負担=個人)
+     項目3: 経費科目の適正化(法人)
+   - 入力の確定(change)で即時再計算する(全体ルール)
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('pfForm');
-  if (!form) return;
+  const root = document.getElementById('pfTool');
+  if (!root) return;
 
-  const resultArea = document.getElementById('pfResultArea');
-  const errorArea = document.getElementById('pfErrorArea');
-  let suppressScroll = false;
-  let lastResult = null;
+  const $ = (id) => document.getElementById(id);
 
+  /* ===== ？ツールチップ: タップでも開けるようにする ===== */
+  document.querySelectorAll('.help-tip').forEach(function (tip) {
+    tip.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      const wasOpen = tip.classList.contains('open');
+      document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
+      if (!wasOpen) tip.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
+  });
+
+  /* ===== 数字と単位(万円等は数字より小さく表示する全体ルール) ===== */
+  const UNIT_RE = /([0-9][0-9,.]*)\s*(万円\s*\/\s*年|万円\s*\/\s*月|万円|円|％|%)/g;
+  const withUnit = (txt) => String(txt).replace(UNIT_RE, '$1<span class="unit">$2</span>');
+  const svgAmount = (txt, size) => String(txt).replace(UNIT_RE, function (m, n, u) {
+    return `<tspan font-size="${size}">${n}</tspan><tspan font-size="${Math.round(size * 0.68)}"> ${u}</tspan>`;
+  });
+  const fmt = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
+  const man = (n) => fmt(n) + ' 万円';
+
+  /* ===== 項目の配色(先頭の積み上げバーと凡例で共通) ===== */
+  const C_ITEM = ['#3b6ea5', '#2d5580', '#7a9cc0'];
+
+  /* ===== 数値のカウントアップ ===== */
+  const countState = {};
+  const COUNT_MS = 800;
+  function countUp(id, to, format) {
+    const el = $(id);
+    if (!el) return;
+    const from = countState[id] === undefined ? 0 : countState[id];
+    countState[id] = to;
+    if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
+    clearTimeout(el._countTimer);
+    if (from === to) { el.innerHTML = withUnit(format(to)); return; }
+    const start = performance.now();
+    const step = function (now) {
+      const p = Math.min(1, (now - start) / COUNT_MS);
+      const e = 1 - Math.pow(1 - p, 3); // ease-out
+      el.innerHTML = withUnit(format(from + (to - from) * e));
+      if (p < 1) el._countRaf = requestAnimationFrame(step);
+      else el._countRaf = null;
+    };
+    el._countRaf = requestAnimationFrame(step);
+    // 非表示タブ等でrequestAnimationFrameが止まっても最終値は必ず表示する
+    el._countTimer = setTimeout(function () {
+      if (el._countRaf) { cancelAnimationFrame(el._countRaf); el._countRaf = null; }
+      el.innerHTML = withUnit(format(to));
+    }, COUNT_MS + 250);
+  }
+
+  /* ===== 積み上げバー =====
+     法人・個人の2本。共通のスケール(大きい方の合計)で描き、項目ごとに色分けする。
+     角丸は帯全体をclipPathで抜き、区分の境目が段差にならないようにする ===== */
+  function drawStack(svg, parts, cap) {
+    if (!svg) return;
+    const W = 560, BAR_X = 2, BAR_W = 556, BAR_Y = 4, BAR_H = 36;
+    const RX = BAR_H / 2;
+    const cid = svg.id + 'Clip';
+    const gid = svg.id + 'Gloss';
+    const defs = `<clipPath id="${cid}"><rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="${RX}"/></clipPath>`
+      + `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
+      + `<stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>`
+      + `<stop offset="0.55" stop-color="#ffffff" stop-opacity="0.02"/>`
+      + `<stop offset="1" stop-color="#000000" stop-opacity="0.07"/></linearGradient>`;
+
+    if (!(cap > 0)) {
+      svg.innerHTML = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="${RX}" fill="#eff2f6"/>`
+        + `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="16" fill="#9ca3af" text-anchor="middle">金額を入力してください</text>`;
+      return;
+    }
+
+    // 帯に入れる文字の必要幅を文字数から見積もる(半角0.55em・全角1em)
+    const widthOf = (label, size) => {
+      let need = size * 1.4;
+      for (let k = 0; k < label.length; k += 1) need += /[0-9,.\s%]/.test(label[k]) ? size * 0.55 : size;
+      return need;
+    };
+
+    let bars = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="#eff2f6"/>`;
+    let labels = '';
+    let x = BAR_X;
+    parts.forEach(function (p) {
+      const v = Math.max(0, p.value);
+      const w = (v / cap) * BAR_W;
+      if (w <= 0) return;
+      // 区分の継ぎ目に隙間が出ないよう0.6だけ重ねて描く
+      bars += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${(w + 0.6).toFixed(1)}" height="${BAR_H}" fill="${p.color}"/>`;
+      const text = man(v);
+      // 細い区分は収まる範囲でフォントを段階的に落として表示する
+      let size = 0;
+      for (let s = 15; s >= 10; s -= 1) {
+        if (w >= widthOf(text, s)) { size = s; break; }
+      }
+      if (size) {
+        labels += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + size * 0.35}" fill="#ffffff" text-anchor="middle" font-weight="700">`
+          + svgAmount(text, size) + `</text>`;
+      }
+      x += w;
+    });
+    bars += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="url(#${gid})"/>`;
+
+    svg.innerHTML = `<defs>${defs}</defs><g clip-path="url(#${cid})">${bars}</g>${labels}`;
+  }
+
+  /* ===== 経費科目テーブル(決算書情報から現況額を自動反映) ===== */
   const ITEMS = [
     { id: 'entertainment', label: '交際費', fsField: 'sga_entertainmentExpenses_1', defaultAmount: 120, defaultRate: 10 },
     { id: 'travel', label: '旅費交通費', fsField: 'sga_travelExpenses_1', defaultAmount: 80, defaultRate: 10 },
@@ -33,14 +146,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // 役員報酬の現況額も決算書情報から自動反映
   const execFromFs = loadFsValue('sga_executiveCompensation_1');
-  if (execFromFs !== null) {
-    document.getElementById('execCompCurrent').value = execFromFs;
-  }
+  if (execFromFs !== null) $('execCompCurrent').value = execFromFs;
 
-  // テーブル行を動的に生成
-  const tbody = document.getElementById('pfItemsBody');
+  const tbody = $('pfItemsBody');
   ITEMS.forEach((item) => {
     const fsAmount = loadFsValue(item.fsField);
     const amount = fsAmount !== null ? fsAmount : item.defaultAmount;
@@ -48,164 +157,149 @@ document.addEventListener('DOMContentLoaded', function () {
     tr.className = 'border-b border-gray-100';
     tr.innerHTML = `
       <td class="px-3 py-1.5 text-gray-800">${item.label}</td>
-      <td class="px-1 py-1"><input type="number" id="pf_${item.id}_amount" value="${amount}" class="pf-amount form-input w-full rounded px-2 py-1.5 text-right text-sm" /></td>
-      <td class="px-1 py-1"><input type="number" id="pf_${item.id}_rate" value="${item.defaultRate}" step="1" class="pf-rate form-input w-full rounded px-2 py-1.5 text-right text-sm" /></td>
+      <td class="px-1 py-1"><input type="number" id="pf_${item.id}_amount" value="${amount}" class="form-input num-input w-full rounded px-2 py-1.5 text-right text-sm" /></td>
+      <td class="px-1 py-1"><input type="number" id="pf_${item.id}_rate" value="${item.defaultRate}" step="1" class="form-input num-input w-full rounded px-2 py-1.5 text-right text-sm" /></td>
       <td class="px-3 py-1.5 text-right font-bold text-[#0f2a4a]" id="pf_${item.id}_result">-</td>
     `;
     tbody.appendChild(tr);
   });
 
-  const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
+  /* ===== 入力の読み取り(未入力・不正値は0として計算を止めない) ===== */
+  const MAX_MAN = 999999, MAX_RATE = 1000;
+  function readVal(id, maxAbs) {
+    const el = $(id);
+    if (!el) return 0;
+    const raw = String(el.value || '').replace(/,/g, '').trim();
+    const v = raw === '' ? NaN : parseFloat(raw);
+    if (isNaN(v)) return 0;
+    const cap = maxAbs || MAX_MAN;
+    return Math.max(-cap, Math.min(cap, v));
+  }
 
-  const showError = (msg) => {
-    errorArea.textContent = msg;
-    errorArea.classList.remove('hidden');
-    resultArea.classList.add('hidden');
-  };
-  const clearError = () => {
-    errorArea.classList.add('hidden');
-    errorArea.textContent = '';
-  };
-
-  // ===== 入力内容のブラウザ内保存(サーバーには送信しない。ファイル保存/読込・入力データクリアの対象) =====
-  // 決算書情報とは別のキーで、当ページ固有の入力(役員報酬振替額・科目ごとの金額/率)のみを保存する
+  /* ===== 入力内容のブラウザ内保存(サーバーには送信しない) ===== */
   const STORAGE_KEY = 'bpl_premium_funding_v1';
+  const allInputs = () => root.querySelectorAll('input[id]');
   function loadSavedValues() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const data = JSON.parse(raw);
-      form.querySelectorAll('input[id]').forEach(function (el) {
+      allInputs().forEach(function (el) {
         if (data[el.id] !== undefined) el.value = data[el.id];
       });
     } catch (e) {}
   }
   function saveCurrentValues() {
     const data = {};
-    form.querySelectorAll('input[id]').forEach(function (el) {
-      if (el.value !== '') data[el.id] = el.value;
-    });
+    allInputs().forEach(function (el) { if (el.value !== '') data[el.id] = el.value; });
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
   }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    clearError();
+  /* ===== 再計算と描画 ===== */
+  let lastResult = null;
+  function render() {
+    const setHtml = (id, txt) => { const el = $(id); if (el) el.innerHTML = withUnit(txt); };
 
-    const MAX_MAN = 999999; // 万円(金額)の上限
-    const MAX_RATE = 1000; // %(率)の上限
+    // 1. 他社既契約保険の見直し(法人/個人)
+    const insCorp = readVal('pfInsCorpAmount') * readVal('pfInsCorpRate', MAX_RATE) / 100;
+    const insPers = readVal('pfInsPersAmount') * readVal('pfInsPersRate', MAX_RATE) / 100;
+    setHtml('pfInsCorpResult', man(insCorp));
+    setHtml('pfInsPersResult', man(insPers));
 
-    const pnum = (v) => (window.numClean ? window.numClean(v) : parseFloat(v));
-    const execCompShift = pnum(document.getElementById('execCompShift').value);
-    const socialInsRate = pnum(document.getElementById('socialInsRate').value);
-    if (isNaN(execCompShift) || isNaN(socialInsRate)) {
-      showError('すべての項目を入力してください。');
-      return;
-    }
-    if (Math.abs(execCompShift) > MAX_MAN) {
-      showError(`金額は ${MAX_MAN.toLocaleString('ja-JP')} 万円以内で入力してください。`);
-      document.getElementById('execCompShift').focus();
-      return;
-    }
-    if (Math.abs(socialInsRate) > MAX_RATE) {
-      showError(`率は ${MAX_RATE.toLocaleString('ja-JP')}% 以内で入力してください。`);
-      document.getElementById('socialInsRate').focus();
-      return;
-    }
+    // 2. 役員報酬の見直し(会社負担=法人/本人負担=個人)
+    const execShift = readVal('execCompShift');
+    const execCorp = execShift * readVal('socialInsRate', MAX_RATE) / 100;
+    const execPers = execShift * readVal('pfSocialRateSelf', MAX_RATE) / 100;
+    setHtml('pfExecCorpResult', man(execCorp));
+    setHtml('pfExecPersResult', man(execPers));
 
-    const execSaving = execCompShift * socialInsRate / 100;
-
+    // 3. 経費科目の適正化(法人)
     let expenseTotal = 0;
-    const breakdownList = document.getElementById('pfBreakdownList');
-    breakdownList.innerHTML = '';
-    const pBreakdownBody = document.getElementById('pBreakdownBody');
-    pBreakdownBody.innerHTML = '';
-
-    const addBreakdownRow = (label, amountText, resultText) => {
-      const dt = document.createElement('div');
-      dt.className = 'flex justify-between';
-      dt.innerHTML = `<dt class="text-gray-500">${label}</dt><dd class="font-bold text-[#0f2a4a]">${resultText}</dd>`;
-      breakdownList.appendChild(dt);
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="lbl">${label}</td><td>${amountText}</td><td>${resultText}</td>`;
-      pBreakdownBody.appendChild(tr);
-    };
-
-    addBreakdownRow('役員報酬(社会保険料削減分)', man(execCompShift) + ' 振替', man(execSaving));
-
-    for (const item of ITEMS) {
-      const amountEl = document.getElementById(`pf_${item.id}_amount`);
-      const rateEl = document.getElementById(`pf_${item.id}_rate`);
-      const amount = pnum(amountEl.value);
-      const rate = pnum(rateEl.value);
-      if (isNaN(amount) || isNaN(rate)) {
-        showError('すべての項目を入力してください。');
-        amountEl.focus();
-        return;
-      }
-      if (Math.abs(amount) > MAX_MAN || Math.abs(rate) > MAX_RATE) {
-        showError('入力値が上限を超えています。金額・率をご確認ください。');
-        (Math.abs(amount) > MAX_MAN ? amountEl : rateEl).focus();
-        return;
-      }
-      const saving = amount * rate / 100;
+    const expenseRows = [];
+    ITEMS.forEach(function (item) {
+      const amount = readVal(`pf_${item.id}_amount`);
+      const saving = amount * readVal(`pf_${item.id}_rate`, MAX_RATE) / 100;
       expenseTotal += saving;
-      document.getElementById(`pf_${item.id}_result`).textContent = man(saving);
-      addBreakdownRow(item.label, man(amount), man(saving));
-    }
+      expenseRows.push({ label: item.label, amount: amount, saving: saving });
+      setHtml(`pf_${item.id}_result`, man(saving));
+    });
+    setHtml('pfExpenseResult', man(expenseTotal));
 
-    const total = execSaving + expenseTotal;
+    // 積み上げ(先頭のバーと合計)
+    const corpTotal = insCorp + execCorp + expenseTotal;
+    const persTotal = insPers + execPers;
+    const total = corpTotal + persTotal;
+    const cap = Math.max(corpTotal, persTotal);
 
-    document.getElementById('pfSumExec').textContent = man(execSaving);
-    document.getElementById('pfSumExpense').textContent = man(expenseTotal);
-    document.getElementById('pfTotal').textContent = man(total) + ' / 年';
-    document.getElementById('pfMonthly').textContent = man(total / 12) + ' / 月';
+    drawStack($('pfBarCorp'), [
+      { value: insCorp, color: C_ITEM[0] },
+      { value: execCorp, color: C_ITEM[1] },
+      { value: expenseTotal, color: C_ITEM[2] },
+    ], cap);
+    drawStack($('pfBarPers'), [
+      { value: insPers, color: C_ITEM[0] },
+      { value: execPers, color: C_ITEM[1] },
+    ], cap);
 
-    lastResult = { total };
+    countUp('pfTotal', total, man);
+    countUp('pfTotalCorp', corpTotal, man);
+    countUp('pfTotalPers', persTotal, man);
+    setHtml('pfMonthly', man(total / 12));
 
-    resultArea.classList.remove('hidden');
-    if (!suppressScroll) {
-      resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    lastResult = {
+      insCorp: insCorp, insPers: insPers,
+      execCorp: execCorp, execPers: execPers,
+      expenseTotal: expenseTotal, expenseRows: expenseRows,
+      corpTotal: corpTotal, persTotal: persTotal, total: total,
+    };
     saveCurrentValues();
+  }
+
+  /* ===== 入力の確定(change)で再計算する。テーブルの動的行も拾えるよう委譲する ===== */
+  root.addEventListener('change', function (e) {
+    if (e.target && e.target.matches('input')) render();
   });
 
-  // ===== 入力データクリア(保存データも含めて完全に消去。誤操作防止のため必ず確認する) =====
-  function doClearFields() {
-    form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
+  /* ===== データクリア =====
+     セクション単位の「データクリア」はmenu.jsが対象欄を空にしてchangeを発火する。
+     ヒーローの「全データクリア」だけここで受け持つ ===== */
+  function doClearAll() {
+    allInputs().forEach(function (el) { el.value = ''; });
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    resultArea.classList.add('hidden');
-    clearError();
+    render();
   }
-  const clearBtn = document.getElementById('pfClearBtn');
-  if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
-  const fieldClearBtn = document.getElementById('pfFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-      doClearFields();
-    });
-  }
+  if (window.armHeroClearBtn) window.armHeroClearBtn($('pfClearBtn'), doClearAll);
 
-  // ===== PDF出力 =====
+  /* ===== PDF出力 ===== */
   function doPrint() {
-    if (!lastResult) {
-      showError('先に「創出額を試算する」を押して結果を表示してください。');
-      return;
-    }
+    if (!lastResult) return;
+    const r = lastResult;
     const now = new Date();
-    document.getElementById('pDate').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
-    document.getElementById('pSumExec').textContent = document.getElementById('pfSumExec').textContent;
-    document.getElementById('pSumExpense').textContent = document.getElementById('pfSumExpense').textContent;
-    document.getElementById('pTotal').textContent = document.getElementById('pfTotal').textContent;
+    $('pDate').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+
+    const body = $('pBreakdownBody');
+    body.innerHTML = '';
+    const addRow = (label, corp, pers) => {
+      const tr = document.createElement('tr');
+      const sum = (corp || 0) + (pers || 0);
+      tr.innerHTML = `<td class="lbl">${label}</td>`
+        + `<td>${corp === null ? '-' : man(corp)}</td>`
+        + `<td>${pers === null ? '-' : man(pers)}</td>`
+        + `<td>${man(sum)}</td>`;
+      body.appendChild(tr);
+    };
+    addRow('1. 他社既契約保険の見直し', r.insCorp, r.insPers);
+    addRow('2. 役員報酬の見直し(社会保険料削減)', r.execCorp, r.execPers);
+    addRow('3. 経費科目の適正化', r.expenseTotal, null);
+
+    $('pTotalCorp').textContent = man(r.corpTotal);
+    $('pTotalPers').textContent = man(r.persTotal);
+    $('pTotal').textContent = man(r.total) + ' / 年';
     window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
-  // ===== 初期表示: 保存済みデータがあれば復元し、自動試算(スクロールは抑制) =====
+  /* ===== 初期表示: 保存済みデータがあれば復元して試算する ===== */
   loadSavedValues();
-  suppressScroll = true;
-  form.requestSubmit();
-  suppressScroll = false;
+  render();
 });
