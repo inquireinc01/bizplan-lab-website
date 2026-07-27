@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072737" />
+<link rel="stylesheet" href="css/style.css?v=2026072739" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -261,35 +261,37 @@
               <input type="number" id="rbAccCorpTax" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
             </div>
 
-            <p class="rb-sub">損金割合(Dに反映)<span class="help-tip" tabindex="0">?<span class="help-text">保険料のうち損金に算入できる割合です。最高解約返戻率の水準により、全損(100％)・6割損(ピーク70％以下)・半損・4割損(ピーク85％超)などに分かれます。1割損は全員加入の養老保険・年金保険で用いる区分です。選んだ割合が下の設計書の「損金算入額」に自動で入ります。</span></span></p>
-            <div class="rb-seg" id="rbAccLossSeg">
-              <button type="button" class="rb-seg-btn is-active" data-loss="100">全損</button>
-              <button type="button" class="rb-seg-btn" data-loss="60" title="最高解約返戻率70％以下">6割損</button>
-              <button type="button" class="rb-seg-btn" data-loss="50">半損</button>
-              <button type="button" class="rb-seg-btn" data-loss="40">4割損</button>
-              <button type="button" class="rb-seg-btn" data-loss="10" title="全員加入の年金保険等">1割損</button>
-              <button type="button" class="rb-seg-btn" data-loss="0">全額資産計上</button>
-              <button type="button" class="rb-seg-btn is-manual" id="rbAccLossManual">手入力</button>
+            <div class="rb-field">
+              <label for="rbAccLossSelect">損金割合(Dに反映)<span class="help-tip" tabindex="0">?<span class="help-text">保険料のうち損金に算入できる割合です。最高解約返戻率の水準により、全損(100％)・6割損(ピーク70％以下)・半損・4割損(ピーク85％超)などに分かれます。1割損は全員加入の養老保険・年金保険で用いる区分です。選んだ割合が下の設計書の「損金算入額」に自動で入ります。ボタンにない割合を使いたいときは「手入力」を選ぶと右の％欄に直接入力できます。</span></span></label>
+              <select id="rbAccLossSelect" class="form-input rb-loss-select">
+                <option value="100" selected>全損 100％</option>
+                <option value="60">6割損 60％</option>
+                <option value="50">半損 50％</option>
+                <option value="40">4割損 40％</option>
+                <option value="10">1割損 10％</option>
+                <option value="0">全額資産計上 0％</option>
+                <option value="manual">手入力</option>
+              </select>
             </div>
             <div class="rb-field">
-              <label for="rbAccLossRate">損金割合<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">通常はボタンで選ぶため入力できません。ボタンにない割合を使いたいときは「手入力」を押すと直接入力できるようになります。</span></span></label>
+              <label for="rbAccLossRate">損金割合<span class="rb-field-unit">％</span></label>
               <input type="number" id="rbAccLossRate" value="100" step="1" class="form-input num-input" placeholder="例: 100" disabled />
             </div>
           </div>
         </div>
 
-        <p class="rb-sub">生命保険の設計書<span class="help-tip" tabindex="0">?<span class="help-text">入力するのは<strong>解約返戻金だけ</strong>です。お手元の設計書の返戻金をそのまま書き写してください。保険料累計は拠出年額×経過年数、損金算入額は拠出年額×損金割合、返戻率は返戻金÷保険料累計、法人税軽減額累計は損金算入額の累計×法人税率で、すべて自動計算されます。返戻金はD(法人で保険で積立)のグラフにそのまま反映されます。</span></span><span class="rb-sub-val" id="rbSheetHint">入力は解約返戻金のみ</span></p>
+        <p class="rb-sub">生命保険の設計書<span class="help-tip" tabindex="0">?<span class="help-text">入力するのは<strong>解約返戻金だけ</strong>です。お手元の設計書の返戻金をそのまま書き写してください。あらかじめ入っている数値は定期保険をイメージしたダミーで、途中でピークを迎えたあと高齢になるほど返戻金が下がるカーブにしています。保険料累計は拠出年額×経過年数、損金算入額は拠出年額×損金割合、返戻率は返戻金÷保険料累計、法人税軽減額累計は損金算入額の累計×法人税率で、すべて自動計算されます。返戻金はD(法人で保険で積立)のグラフにそのまま反映されます。</span></span><span class="rb-sub-val" id="rbSheetHint">入力は解約返戻金のみ</span></p>
         <div class="rb-sheet-wrap">
           <table class="rb-sheet">
             <thead>
               <tr>
                 <th>経過年数</th>
                 <th>年齢</th>
-                <th>保険料累計<span class="rb-th-unit">自動</span></th>
-                <th>解約返戻金<span class="rb-th-unit">万円・入力</span></th>
-                <th>解約返戻率<span class="rb-th-unit">自動</span></th>
-                <th>損金算入額<span class="rb-th-unit">自動</span></th>
-                <th>法人税軽減額累計<span class="rb-th-unit">自動</span></th>
+                <th>保険料累計</th>
+                <th>解約返戻金</th>
+                <th>解約返戻率</th>
+                <th>損金算入額</th>
+                <th>法人税軽減額累計</th>
               </tr>
             </thead>
             <tbody id="rbSheetBody"></tbody>
@@ -518,6 +520,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/retirement-benefit.js?v=20260727g"></script>
+<script src="js/retirement-benefit.js?v=20260727j"></script>
 </body>
 </html>

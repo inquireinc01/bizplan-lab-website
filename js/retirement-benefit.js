@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const $ = (id) => document.getElementById(id);
   const errorArea = $('rbErrorArea');
-  const inputs = Array.prototype.slice.call(root.querySelectorAll('input[id]'));
+  const inputs = Array.prototype.slice.call(root.querySelectorAll('input[id], select[id]'));
 
   /* ===== ？ツールチップ: タップでも開けるようにする ===== */
   document.querySelectorAll('.help-tip').forEach(function (tip) {
@@ -147,6 +147,22 @@ document.addEventListener('DOMContentLoaded', function () {
      埋めるが設計書に合わせて上書き可能。解約返戻金を入れると返戻率と
      法人税軽減額累計が自動計算され、そのままグラフのDと折れ線になる ===== */
   const sheetBody = $('rbSheetBody');
+  // 解約返戻金のダミー値: 定期保険らしいカーブにする。
+  // 序盤は返戻率が低く、6割経過あたりで85%程度のピークを迎え、
+  // その後は高齢になるほど返戻金が下がっていく(満期に向けてゼロに近づく)
+  function defaultSurr(t, years, annual) {
+    if (years <= 0) return 0;
+    const tPeak = Math.max(1, Math.round(years * 0.6));
+    let rate;
+    if (t <= tPeak) {
+      rate = 35 + 50 * (t / tPeak);                        // 35% → 85%
+    } else if (years === tPeak) {
+      rate = 85;
+    } else {
+      rate = 85 - 75 * ((t - tPeak) / (years - tPeak));    // 85% → 10%
+    }
+    return Math.round(annual * t * rate / 100);
+  }
   // 入力するのは解約返戻金だけ。それ以外の列はすべて自動計算で埋める。
   // 上書きした返戻金セルは自動再入力しない(dirtyフラグ)。空に戻すと自動値に戻る
   function buildSheet(years, ageNow, annual) {
@@ -156,11 +172,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (needRebuild) {
       let html = '';
       for (let t = 1; t <= years; t += 1) {
+        const def = defaultSurr(t, years, annual);
         html += `<tr>`
           + `<td class="is-auto">${t}年</td>`
           + `<td class="is-auto" id="rbShAge_${t}">${ageNow + t}歳</td>`
           + `<td class="is-auto" id="rbShCum_${t}">-</td>`
-          + `<td><input type="number" id="rbShSurr_${t}" data-def="${Math.round(annual * t)}" class="rb-sheet-in" value="${Math.round(annual * t)}" /></td>`
+          + `<td><input type="number" id="rbShSurr_${t}" data-def="${def}" class="rb-sheet-in" value="${def}" /></td>`
           + `<td class="is-auto" id="rbShRate_${t}">-</td>`
           + `<td class="is-auto" id="rbShDed_${t}">-</td>`
           + `<td class="is-auto" id="rbShDefer_${t}">-</td>`
@@ -181,8 +198,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (ageEl) ageEl.textContent = (ageNow + t) + '歳';
         const surrEl = $('rbShSurr_' + t);
         if (surrEl) {
-          surrEl.dataset.def = Math.round(annual * t);
-          if (surrEl.dataset.dirty !== '1') surrEl.value = Math.round(annual * t);
+          const def = defaultSurr(t, years, annual);
+          surrEl.dataset.def = def;
+          if (surrEl.dataset.dirty !== '1') surrEl.value = def;
         }
       }
     }
@@ -423,37 +441,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ===== 損金割合の切替 =====
-     通常はボタンで選ぶ(数値欄はグレーアウトして入力不可)。
-     ボタンにない割合を使いたいときだけ「手入力」で直接入力できるようにする ===== */
-  const lossSeg = $('rbAccLossSeg');
+     プルダウンで選ぶ(数値欄はグレーアウトして入力不可)。
+     選択肢にない割合を使いたいときだけ「手入力」で直接入力できるようにする ===== */
+  const lossSelect = $('rbAccLossSelect');
   const lossInput = $('rbAccLossRate');
-  const lossManualBtn = $('rbAccLossManual');
-  let lossManual = false;
   function syncLossSeg() {
-    if (!lossSeg || !lossInput) return;
-    let cur = String(lossInput.value || '').replace(/,/g, '').trim();
-    // ボタン選択中に空になった場合(データクリア等)は既定の全損に戻す
-    if (!lossManual && cur === '') { lossInput.value = '100'; cur = '100'; }
-    lossInput.disabled = !lossManual;
-    lossSeg.querySelectorAll('.rb-seg-btn').forEach(function (btn) {
-      if (btn === lossManualBtn) btn.classList.toggle('is-active', lossManual);
-      else btn.classList.toggle('is-active', !lossManual && btn.dataset.loss === cur);
-    });
+    if (!lossSelect || !lossInput) return;
+    // データクリア等で選択が空になった場合は既定の全損に戻す
+    if (lossSelect.value === '') lossSelect.value = '100';
+    const manual = lossSelect.value === 'manual';
+    lossInput.disabled = !manual;
+    if (!manual) {
+      lossInput.value = lossSelect.value;
+    } else if (String(lossInput.value || '').trim() === '') {
+      // 手入力に切り替えた直後は直前の割合を初期値にする
+      lossInput.value = '100';
+    }
   }
-  if (lossSeg && lossInput) {
-    lossSeg.addEventListener('click', function (e) {
-      const btn = e.target.closest('.rb-seg-btn');
-      if (!btn) return;
-      if (btn === lossManualBtn) {
-        lossManual = true;
-        syncLossSeg();
+  if (lossSelect && lossInput) {
+    lossSelect.addEventListener('change', function () {
+      const manual = lossSelect.value === 'manual';
+      syncLossSeg();
+      if (manual) {
         lossInput.focus();
         lossInput.select();
-        return;
       }
-      lossManual = false;
-      lossInput.value = btn.dataset.loss;
-      syncLossSeg();
+      // render()はselectのchangeで共通ハンドラからも呼ばれるが、
+      // 値の同期を先に済ませるためここでも明示的に呼ぶ
       render();
     });
   }
@@ -753,12 +767,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ===== 初期表示: 保存済みデータがあれば復元して試算する ===== */
   loadSavedValues();
-  // 保存されている損金割合がボタンのどれにも当てはまらない場合は、手入力で設定した値とみなす
-  if (lossSeg && lossInput) {
-    const saved = String(lossInput.value || '').replace(/,/g, '').trim();
-    const presets = Array.prototype.map.call(
-      lossSeg.querySelectorAll('.rb-seg-btn[data-loss]'), (b) => b.dataset.loss);
-    if (saved !== '' && presets.indexOf(saved) === -1) lossManual = true;
-  }
+  // 復元した選択が無効な場合(旧バージョンの保存データ等)は既定の全損に戻す。
+  // 「手入力」で保存されていた場合は数値欄の値をそのまま使う
+  if (lossSelect && lossSelect.value === '') lossSelect.value = '100';
   render();
 });
