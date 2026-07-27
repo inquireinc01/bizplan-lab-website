@@ -2932,7 +2932,7 @@ svg {
   margin-bottom: 1rem;
 }
 @media (min-width: 640px) {
-  .rb-acc-tiles { grid-template-columns: 1.3fr 1fr 1fr; }
+  .rb-acc-tiles { grid-template-columns: 1fr 1fr; }
 }
 .rb-acc-tile {
   border: 1.5px solid var(--color-gray-200);

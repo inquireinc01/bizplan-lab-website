@@ -131,10 +131,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const ACC_DEFER_COLOR = '#B7628D'; // 繰り延べられる法人税の棒の色
   // 積み立て方の4パターン。同時に表示できるのは2つまで(自社株の評価額グラフと同じ)
   const ACC_SCN = {
-    persCash: { label: 'A. 給与で受取り個人で積立', short: 'A. 個人で積立', color: '#8b98a8' },
-    persIns: { label: 'B. 給与で受取り個人で保険積立', short: 'B. 個人で保険積立', color: '#55677d' },
-    corpCash: { label: 'C. 法人で現金で積立', short: 'C. 法人で現金', color: '#3b6ea5' },
-    corpIns: { label: 'D. 法人で保険で積立', short: 'D. 法人で保険', color: '#0f2a4a' },
+    persCash: { label: 'A.【個人】現金', short: 'A.【個人】現金', color: '#8b98a8' },
+    persIns: { label: 'B.【個人】保険', short: 'B.【個人】保険', color: '#55677d' },
+    corpCash: { label: 'C.【法人】現金', short: 'C.【法人】現金', color: '#3b6ea5' },
+    corpIns: { label: 'D.【法人】保険', short: 'D.【法人】保険', color: '#0f2a4a' },
   };
   // 既定は「A. 給与で受取り個人で積立」のみ表示
   let accSelected = ['persCash'];
@@ -617,7 +617,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 積立比較
     rbAccAnnual: 999999, rbAccAgeContract: 120, rbAccAgeNow: 120, rbAccAgeRetire: 120,
     rbAccTerm: 100, rbAccInsAmt: 9999999,
-    rbAccOutflowRate: 100, rbAccCorpTax: 100, rbAccLossRate: 100,
+    rbAccOutflowRate: 100, rbAccSocialRate: 100, rbAccCorpTax: 100, rbAccLossRate: 100,
   };
   function readValue(id) {
     const el = $(id);
@@ -802,23 +802,11 @@ document.addEventListener('DOMContentLoaded', function () {
     Object.keys(ACC_SCN).forEach(function (key) {
       setHtml('rbAccVal_' + key, man(accLast[key]));
     });
-    // メインの数字: 2つ選んでいれば差、1つなら退職時の積立額
-    const diffLabelEl = $('rbAccDiffLabel');
-    if (accSelected.length === 2) {
-      const dv = Math.abs(accLast[accSelected[1]] - accLast[accSelected[0]]);
-      if (diffLabelEl) diffLabelEl.innerHTML = '退職時(<span id="rbAccYearsLabel">' + accYears + '</span>年後)の積立額の差';
-      countUp('rbAccDiff', dv, man);
-    } else {
-      if (diffLabelEl) diffLabelEl.innerHTML = '退職時(<span id="rbAccYearsLabel">' + accYears + '</span>年後)の積立額';
-      countUp('rbAccDiff', accLast[accSelected[0]], man);
-    }
-    // 役員報酬で受け取ると毎年出ていく税・社会保険料の累計(法人経由ならそもそも発生しない)
-    const taxSavedTotal = accAnnual * (outflowRate / 100) * accYears;
-    // 損金算入により繰り延べられる法人税の累計(＝実質的な保険料の減額)
-    const premiumSavedTotal = accLast.defer;
-
-    countUp('rbAccTaxSaved', taxSavedTotal, man);
-    countUp('rbAccPremiumSaved', premiumSavedTotal, man);
+    // カードは2枚: 役員報酬で受け取ると毎年出ていく所得税・住民税と、
+    // 労使合計の社会保険料の累計(法人に置いたまま積み立てればどちらも発生しない)
+    const socialRate = Math.min(100, readValue('rbAccSocialRate'));
+    countUp('rbAccTaxSaved', accAnnual * (outflowRate / 100) * accYears, man);
+    countUp('rbAccSocialSaved', accAnnual * (socialRate / 100) * accYears, man);
     setHtml('rbAccNetAnnual', man(accAnnual * (1 - outflowRate / 100)));
     setHtml('rbAccCorpNetAnnual', man(accAnnual * (1 - accCorpTax / 100)));
     setHtml('rbAccPremiumAnnual', man(accAnnual));

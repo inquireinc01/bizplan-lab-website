@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072741" />
+<link rel="stylesheet" href="css/style.css?v=2026072742" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -183,22 +183,22 @@
         <p class="rb-acc-title">同じ原資を積み立てるなら、法人の生命保険で積み立てる方が有利<span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ってから個人で積み立てると、所得税・住民税・社会保険料が引かれた「手取り」しか積み立てられません。法人で生命保険を使えば、原資の全額を保険料に回したうえ、損金算入分だけ法人税も軽くなります。積み上がった解約返戻金を最後に退職金として受け取れば、上の比較のとおり個人側の税負担も大きく抑えられます。</span></span></p>
 
         <!-- 積み立て方の選択(自社株の評価額タイルと同じく、同時表示は2つまで) -->
-        <p class="rb-sub">積み立て方を選ぶ<span class="help-tip" tabindex="0">?<span class="help-text">ランプが点いているものがグラフに表示されます。比べやすいよう同時に表示できるのは2つまでで、3つ目を選ぶと先に選んでいたものが外れます。</span></span><span class="rb-sub-val" id="rbAccPickHint">2つまで</span></p>
+        <p class="rb-sub">積み立て方を選ぶ<span class="help-tip" tabindex="0">?<span class="help-text">ランプが点いているものがグラフに表示されます。比べやすいよう同時に表示できるのは2つまでで、3つ目を選ぶと先に選んでいたものが外れます。</span></span></p>
         <div class="rb-acc-picker" id="rbAccPicker">
           <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="persCash" data-color="#8b98a8"><span class="tile-lamp"></span>
-            <p class="tile-label text-[11px] mb-0.5 leading-tight">A. 給与で受取り<br />個人で積立</p>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">A.【個人】現金</p>
             <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_persCash">-</p>
           </button>
           <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="persIns" data-color="#55677d"><span class="tile-lamp"></span>
-            <p class="tile-label text-[11px] mb-0.5 leading-tight">B. 給与で受取り<br />個人で保険積立</p>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">B.【個人】保険</p>
             <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_persIns">-</p>
           </button>
           <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="corpCash" data-color="#3b6ea5"><span class="tile-lamp"></span>
-            <p class="tile-label text-[11px] mb-0.5 leading-tight">C. 法人で現金で<br />積立</p>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">C.【法人】現金</p>
             <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_corpCash">-</p>
           </button>
           <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="corpIns" data-color="#0f2a4a"><span class="tile-lamp"></span>
-            <p class="tile-label text-[11px] mb-0.5 leading-tight">D. 法人で保険で<br />積立</p>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">D.【法人】保険</p>
             <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_corpIns">-</p>
           </button>
         </div>
@@ -211,17 +211,13 @@
         </div>
 
         <div class="rb-acc-tiles">
-          <div class="rb-acc-tile is-main">
-            <p class="rb-acc-tile-label" id="rbAccDiffLabel">退職時(<span id="rbAccYearsLabel">40</span>年後)の積立額</p>
-            <p class="rb-acc-tile-num" id="rbAccDiff">-</p>
-          </div>
           <div class="rb-acc-tile">
-            <p class="rb-acc-tile-label">所得税・住民税・社会保険料の削減総額<span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ると毎年かかる所得税・住民税・社会保険料の累計です。法人の保険で積み立てれば、この流出がそもそも発生しません。</span></span></p>
+            <p class="rb-acc-tile-label">所得税・住民税軽減額<span class="help-tip" tabindex="0">?<span class="help-text"><code>拠出年額 × 所得税・住民税率 × 積立年数</code>。役員報酬として受け取ると毎年かかる所得税・住民税の累計です。法人に置いたまま積み立てれば、この流出がそもそも発生しません。</span></span></p>
             <p class="rb-acc-tile-num" id="rbAccTaxSaved">-</p>
           </div>
           <div class="rb-acc-tile">
-            <p class="rb-acc-tile-label">保険料削減総額(損金による法人税の軽減)<span class="help-tip" tabindex="0">?<span class="help-text"><code>年間保険料 × 損金割合 × 法人税率 × 年数</code>。損金に算入できる分だけ法人税が軽くなるため、実質的な保険料の負担がこの金額だけ軽くなります。法人税率は下の「退職金の原資」カードの入力を使っています。</span></span></p>
-            <p class="rb-acc-tile-num" id="rbAccPremiumSaved">-</p>
+            <p class="rb-acc-tile-label">社会保険料削減額<span class="help-tip" tabindex="0">?<span class="help-text"><code>拠出年額 × 社会保険料率(労使合計) × 積立年数</code>。役員報酬として支給すると、本人負担と会社負担を合わせておよそ30％の社会保険料が毎年かかります。法人に置いたまま積み立てれば、この負担がそもそも発生しません(標準報酬月額の上限により実効率は下がる場合があります)。</span></span></p>
+            <p class="rb-acc-tile-num" id="rbAccSocialSaved">-</p>
           </div>
         </div>
 
@@ -272,8 +268,12 @@
           <div>
             <p class="rb-sub">税率と流出率</p>
             <div class="rb-field">
-              <label for="rbAccOutflowRate">流出率(A・Bに反映)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ったときに、所得税・住民税・社会保険料として手元から出ていく割合の合計です。A・Bはこの率を引いた手取りしか積み立てられません。</span></span></label>
+              <label for="rbAccOutflowRate">所得税・住民税率(A・Bに反映)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ったときに、所得税・住民税として手元から出ていく割合です。A・Bはこの率を引いた手取りしか積み立てられません。上の「所得税・住民税軽減額」カードもこの率で計算します。</span></span></label>
               <input type="number" id="rbAccOutflowRate" value="50" step="0.1" class="form-input num-input" placeholder="例: 50" />
+            </div>
+            <div class="rb-field">
+              <label for="rbAccSocialRate">社会保険料率(労使合計)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">健康保険・厚生年金の本人負担と会社負担を合わせた率で、およそ30％が目安です。上の「社会保険料削減額」カードの計算に使います(標準報酬月額の上限があるため、報酬が高い場合の実効率は下がります)。</span></span></label>
+              <input type="number" id="rbAccSocialRate" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
             </div>
             <div class="rb-field">
               <label for="rbAccCorpTax">法人税率(C・Dに反映)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">Cは税引後のキャッシュしか積み立てられないため、この率を引いた金額で積み上がります。Dでは損金算入額に法人税率を掛けた金額が繰り延べられる法人税になります。実効税率を入れてください。</span></span></label>
@@ -541,6 +541,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/retirement-benefit.js?v=20260727n"></script>
+<script src="js/retirement-benefit.js?v=20260727p"></script>
 </body>
 </html>
