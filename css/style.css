@@ -3139,3 +3139,15 @@ svg {
   font-weight: 700;
   flex-shrink: 0;
 }
+
+/* 損金割合の自動判定結果(セレクトの下の1行) */
+.rb-loss-verdict {
+  text-align: right;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-blue-dark);
+  padding: 0.3rem 0 0.1rem;
+}
+.rb-loss-verdict:empty {
+  display: none;
+}

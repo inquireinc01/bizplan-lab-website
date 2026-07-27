@@ -140,7 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
   let accSelected = ['persCash'];
   let accSeries = null;
   let accLayout = null;
-  let accAgeNow = 0;
+  let accAgeBase = 0;   // グラフ横軸の起点(契約年齢)
+  let accNowYear = 0;   // 契約から現在までの経過年数(「現在」マーカー用)
+  let accInsAmt = 0;    // 保険金額(保障ライン用)
 
   /* ===== 生命保険の設計書テーブル =====
      経過年数・年齢は自動、保険料累計と損金算入額は拠出年額・損金割合から自動で
@@ -148,31 +150,105 @@ document.addEventListener('DOMContentLoaded', function () {
      法人税軽減額累計が自動計算され、そのままグラフのDと折れ線になる ===== */
   const sheetBody = $('rbSheetBody');
   // 解約返戻金のダミー値: 定期保険らしいカーブにする。
-  // 序盤は返戻率が低く、6割経過あたりで85%程度のピークを迎え、
-  // その後は高齢になるほど返戻金が下がっていく(満期に向けてゼロに近づく)
-  function defaultSurr(t, years, annual) {
-    if (years <= 0) return 0;
-    const tPeak = Math.max(1, Math.round(years * 0.6));
+  // 序盤は返戻率が低く、保険期間の6割経過あたりで85%程度のピークを迎え、
+  // その後は高齢になるほど返戻金が下がっていく(保険期間満了に向けてゼロに近づく)。
+  // カーブの形は積立年数ではなく「保険期間」で決まる
+  function defaultSurr(t, term, annual) {
+    if (term <= 0 || t > term) return 0;
+    const tPeak = Math.max(1, Math.round(term * 0.6));
     let rate;
     if (t <= tPeak) {
       rate = 35 + 50 * (t / tPeak);                        // 35% → 85%
-    } else if (years === tPeak) {
+    } else if (term === tPeak) {
       rate = 85;
     } else {
-      rate = 85 - 75 * ((t - tPeak) / (years - tPeak));    // 85% → 10%
+      rate = 85 - 75 * ((t - tPeak) / (term - tPeak));     // 85% → 10%
     }
     return Math.round(annual * t * rate / 100);
   }
+
+  /* ===== 損金算入額の自動判定 =====
+     定期保険・第三分野保険の税務(法人税基本通達9-3-5・9-3-5の2)。
+     保険期間と最高解約返戻率から、年ごとの損金算入額を計算する。
+     - 最高解約返戻率50%以下: 全額損金
+     - 50%超70%以下: 当初4割期間は保険料の40%を資産計上(60%損金)。
+       ただし年換算保険料30万円以下の被保険者は全額損金
+     - 70%超85%以下: 当初4割期間は保険料の60%を資産計上(40%損金)
+     - 85%超: 当初10年は「保険料×最高返戻率×90%」を資産計上、
+       11年目以降最高返戻率年までは同70%を資産計上。
+       資産計上期間は最低5年(保険期間10年未満はその半分)
+     資産計上した分は、85%超は解約返戻金が最高額となる年の翌年から、
+     それ以外は保険期間の75%経過後から、保険期間満了まで均等に取り崩して損金に戻す ===== */
+  function dedScheduleAuto(term, P, maxRate, tRateMax, tAmtMax, years) {
+    const ded = [0];
+    const N = Math.max(1, term);
+    let mode, assetRatio = 0, verdict = '';
+    const ratePct = (Math.round(maxRate * 1000) / 10).toLocaleString('ja-JP');
+    if (maxRate <= 0.5) {
+      mode = 'full';
+      verdict = `最高解約返戻率${ratePct}％(50％以下) → 全額損金`;
+    } else if (maxRate <= 0.7) {
+      if (P <= 30) {
+        mode = 'full';
+        verdict = `最高解約返戻率${ratePct}％・年換算保険料30万円以下 → 全額損金`;
+      } else {
+        mode = 'part'; assetRatio = 0.4;
+        verdict = `最高解約返戻率${ratePct}％(50％超70％以下) → 当初4割期間は60％損金`;
+      }
+    } else if (maxRate <= 0.85) {
+      mode = 'part'; assetRatio = 0.6;
+      verdict = `最高解約返戻率${ratePct}％(70％超85％以下) → 当初4割期間は40％損金`;
+    } else {
+      mode = 'high';
+      verdict = `最高解約返戻率${ratePct}％(85％超) → 当初10年は${Math.round((1 - maxRate * 0.9) * 100)}％損金`;
+    }
+
+    if (mode === 'full') {
+      for (let t = 1; t <= years; t += 1) ded.push(t <= N ? P : 0);
+      return { ded: ded, verdict: verdict };
+    }
+
+    if (mode === 'part') {
+      const a = Math.max(1, Math.round(N * 0.4));  // 資産計上期間(当初4割)
+      const b = Math.round(N * 0.75);              // 取り崩し開始(75%経過後)
+      const assetTotal = P * assetRatio * a;
+      const rel = b < N ? assetTotal / (N - b) : assetTotal;
+      for (let t = 1; t <= years; t += 1) {
+        if (t > N) ded.push(0);
+        else if (t <= a) ded.push(P * (1 - assetRatio));
+        else if (t <= b) ded.push(P);
+        else ded.push(P + rel);
+      }
+      return { ded: ded, verdict: verdict };
+    }
+
+    // mode === 'high' (最高解約返戻率85%超)
+    let tAsset = Math.max(1, tRateMax || 1);
+    const minAsset = N < 10 ? Math.round(N / 2) : 5;
+    tAsset = Math.min(N, Math.max(tAsset, minAsset));
+    let assetTotal = 0;
+    const assetOf = (t) => (t <= Math.min(10, tAsset) ? P * maxRate * 0.9 : (t <= tAsset ? P * maxRate * 0.7 : 0));
+    for (let t = 1; t <= tAsset; t += 1) assetTotal += assetOf(t);
+    const ts = Math.min(N, Math.max(tAsset, tAmtMax || tAsset)); // 取り崩し開始(返戻金最高額の年)
+    const rel = ts < N ? assetTotal / (N - ts) : assetTotal;
+    for (let t = 1; t <= years; t += 1) {
+      if (t > N) ded.push(0);
+      else if (t <= tAsset) ded.push(P - assetOf(t));
+      else if (t <= ts) ded.push(P);
+      else ded.push(P + rel);
+    }
+    return { ded: ded, verdict: verdict };
+  }
   // 入力するのは解約返戻金だけ。それ以外の列はすべて自動計算で埋める。
   // 上書きした返戻金セルは自動再入力しない(dirtyフラグ)。空に戻すと自動値に戻る
-  function buildSheet(years, ageNow, annual) {
+  function buildSheet(years, ageNow, annual, term) {
     if (!sheetBody) return;
     const rows = sheetBody.querySelectorAll('tr');
     const needRebuild = rows.length !== years;
     if (needRebuild) {
       let html = '';
       for (let t = 1; t <= years; t += 1) {
-        const def = defaultSurr(t, years, annual);
+        const def = defaultSurr(t, term, annual);
         html += `<tr>`
           + `<td class="is-auto">${t}年</td>`
           + `<td class="is-auto" id="rbShAge_${t}">${ageNow + t}歳</td>`
@@ -198,36 +274,55 @@ document.addEventListener('DOMContentLoaded', function () {
         if (ageEl) ageEl.textContent = (ageNow + t) + '歳';
         const surrEl = $('rbShSurr_' + t);
         if (surrEl) {
-          const def = defaultSurr(t, years, annual);
+          const def = defaultSurr(t, term, annual);
           surrEl.dataset.def = def;
           if (surrEl.dataset.dirty !== '1') surrEl.value = def;
         }
       }
     }
   }
-  // 解約返戻金(入力)以外を自動計算して表に反映し、グラフ用の系列を返す
-  function collectSheet(years, annual, lossRate, corpTaxRate) {
-    const cum = [0], surr = [0], rate = [0], deferCum = [0];
-    const dedAnnual = annual * lossRate / 100;
+  // 解約返戻金(入力)以外を自動計算して表に反映し、グラフ用の系列を返す。
+  // 損金算入額は「自動判定」なら税務ルールで年ごとに、それ以外は一律割合で計算する
+  function collectSheet(years, annual, term, lossMode, lossRate, corpTaxRate) {
+    const cum = [0], surr = [0], rate = [0];
+    let maxRate = 0, tRateMax = 0, maxAmt = 0, tAmtMax = 0;
+    // 1周目: 返戻金を読み取り、返戻率と最高解約返戻率(とその年)を求める
     for (let t = 1; t <= years; t += 1) {
       const c = annual * t;                      // 保険料累計(自動)
       const surrEl = $('rbShSurr_' + t);
       const sv = surrEl ? (window.numClean ? window.numClean(surrEl.value) : parseFloat(surrEl.value)) : NaN;
       const s = isNaN(sv) ? 0 : sv;
-      const dc = dedAnnual * t * corpTaxRate / 100; // 法人税軽減額累計(自動)
-      cum.push(c);
-      surr.push(s);
-      rate.push(c > 0 ? s / c : 0);
-      deferCum.push(dc);
-      const cumEl = $('rbShCum_' + t);
-      if (cumEl) cumEl.innerHTML = withUnit(fmt(c) + '万円');
-      const rateEl = $('rbShRate_' + t);
-      if (rateEl) rateEl.innerHTML = c > 0 ? withUnit((Math.round(s / c * 1000) / 10).toLocaleString('ja-JP') + '％') : '-';
-      const dedEl = $('rbShDed_' + t);
-      if (dedEl) dedEl.innerHTML = withUnit(fmt(dedAnnual) + '万円');
-      const deferEl = $('rbShDefer_' + t);
-      if (deferEl) deferEl.innerHTML = withUnit(fmt(dc) + '万円');
+      const r = c > 0 ? s / c : 0;
+      cum.push(c); surr.push(s); rate.push(r);
+      if (r > maxRate) { maxRate = r; tRateMax = t; }
+      if (s > maxAmt) { maxAmt = s; tAmtMax = t; }
     }
+    // 2周目: 損金算入額(年ごと)と法人税軽減額累計
+    let dedArr, verdict = '';
+    if (lossMode === 'auto') {
+      const res = dedScheduleAuto(term, annual, maxRate, tRateMax, tAmtMax, years);
+      dedArr = res.ded;
+      verdict = res.verdict;
+    } else {
+      dedArr = [0];
+      for (let t = 1; t <= years; t += 1) dedArr.push(annual * lossRate / 100);
+    }
+    const deferCum = [0];
+    let dedSum = 0;
+    for (let t = 1; t <= years; t += 1) {
+      dedSum += dedArr[t];
+      deferCum.push(dedSum * corpTaxRate / 100);
+      const cumEl = $('rbShCum_' + t);
+      if (cumEl) cumEl.innerHTML = withUnit(fmt(cum[t]) + '万円');
+      const rateEl = $('rbShRate_' + t);
+      if (rateEl) rateEl.innerHTML = cum[t] > 0 ? withUnit((Math.round(rate[t] * 1000) / 10).toLocaleString('ja-JP') + '％') : '-';
+      const dedEl = $('rbShDed_' + t);
+      if (dedEl) dedEl.innerHTML = withUnit(fmt(Math.round(dedArr[t])) + '万円');
+      const deferEl = $('rbShDefer_' + t);
+      if (deferEl) deferEl.innerHTML = withUnit(fmt(Math.round(deferCum[t])) + '万円');
+    }
+    const verdictEl = $('rbAccLossVerdict');
+    if (verdictEl) verdictEl.innerHTML = lossMode === 'auto' ? withUnit(verdict) : '';
     return { cum: cum, surr: surr, rate: rate, deferCum: deferCum };
   }
   // 設計書のセルの変更で再計算。空に戻したセルは自動値に戻す
@@ -331,11 +426,11 @@ document.addEventListener('DOMContentLoaded', function () {
         + `<circle cx="${x1.toFixed(1)}" cy="${yD(lastP.defer).toFixed(1)}" r="3.5" fill="${ACC_LINE_COLOR}"/>`;
     }
 
-    // 横軸は年齢で表示する(現在の年齢〜退職年齢)
+    // 横軸は年齢で表示する(契約年齢〜退職年齢)
     let xLabels = '';
     const last = series.length - 1;
     const stepYear = last > 45 ? 10 : 5;
-    const ageLabel = (yr) => (accAgeNow > 0 ? (accAgeNow + yr) + '歳' : (yr === 0 ? '現在' : yr + '年'));
+    const ageLabel = (yr) => (accAgeBase > 0 ? (accAgeBase + yr) + '歳' : (yr === 0 ? '契約時' : yr + '年'));
     for (let yr = 0; yr <= last; yr += stepYear) {
       if (last % stepYear !== 0 && yr > last - stepYear * 0.6) break; // 端のラベルと重なるものは省く
       const gx = padL + yr * slotWidth + slotWidth / 2;
@@ -348,11 +443,28 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // 「現在」の位置(契約年齢<現在の年齢<退職年齢のとき): 破線の縦ラインとフラッグ
+    let nowMark = '';
+    if (accNowYear > 0 && accNowYear <= last) {
+      const gx = padL + accNowYear * slotWidth + slotWidth / 2;
+      nowMark = `<line x1="${gx.toFixed(1)}" y1="${padT}" x2="${gx.toFixed(1)}" y2="${yBottom}" stroke="#55677d" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.7"/>`
+        + `<rect x="${(gx - 22).toFixed(1)}" y="${padT}" width="44" height="16" rx="8" fill="#55677d"/>`
+        + `<text x="${gx.toFixed(1)}" y="${padT + 11.5}" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">現在</text>`;
+    }
+
+    // 保険金額の保障ライン(Dを表示しているときだけ)。スケールには含めず、上限を超えたら天井に張り付く
+    let insMark = '';
+    if (accInsAmt > 0 && activeKeys.indexOf('corpIns') >= 0) {
+      const yIns = Math.max(padT, y(accInsAmt));
+      insMark = `<line x1="${padL}" y1="${yIns.toFixed(1)}" x2="${xRight}" y2="${yIns.toFixed(1)}" stroke="rgba(131,47,47,0.75)" stroke-width="1.4" stroke-dasharray="6 4"/>`
+        + `<text x="${padL + 6}" y="${(yIns - 6).toFixed(1)}" font-size="11" fill="rgba(131,47,47,0.9)" font-weight="700">死亡保険金 ${fmt(accInsAmt)}万円</text>`;
+    }
+
     svg.innerHTML = `${gridLines}`
       + `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
       + `<line x1="${xRight}" y1="${padT}" x2="${xRight}" y2="${yBottom}" stroke="${ACC_LINE_COLOR}" stroke-opacity="0.25" stroke-width="1"/>`
       + `<line x1="${padL}" y1="${yBottom}" x2="${xRight}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
-      + `${xLabels}${bars}${line}`;
+      + `${xLabels}${bars}${line}${insMark}${nowMark}`;
 
     accLayout = { W: SVG_W, padL: padL, slotWidth: slotWidth, count: series.length };
   }
@@ -370,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const idx = Math.floor((xViewbox - accLayout.padL) / accLayout.slotWidth);
     if (idx < 0 || idx >= accLayout.count) { accTooltip.classList.add('hidden'); return; }
     const p = accSeries[idx];
-    const head = accAgeNow > 0 ? (accAgeNow + p.year) + '歳' + (p.year === 0 ? '(現在)' : '') : (p.year === 0 ? '現在' : p.year + '年後');
+    const head = accAgeBase > 0 ? (accAgeBase + p.year) + '歳' + (p.year === 0 ? '(契約時)' : '') : (p.year === 0 ? '契約時' : p.year + '年後');
     let rows = accSelected.map(function (key) {
       return `<p class="flex justify-between gap-3"><span class="text-gray-500">${ACC_SCN[key].short}</span><span class="font-bold">${withUnit(man(p[key]))}</span></p>`;
     }).join('');
@@ -447,14 +559,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const lossInput = $('rbAccLossRate');
   function syncLossSeg() {
     if (!lossSelect || !lossInput) return;
-    // データクリア等で選択が空になった場合は既定の全損に戻す
-    if (lossSelect.value === '') lossSelect.value = '100';
-    const manual = lossSelect.value === 'manual';
-    lossInput.disabled = !manual;
-    if (!manual) {
-      lossInput.value = lossSelect.value;
+    // データクリア等で選択が空になった場合は既定の自動判定に戻す
+    if (lossSelect.value === '') lossSelect.value = 'auto';
+    const mode = lossSelect.value;
+    lossInput.disabled = mode !== 'manual';
+    if (mode === 'auto') {
+      // 自動判定では%欄は使わない(判定結果は下の1行に表示)
+      lossInput.value = '';
+      lossInput.classList.remove('input-error');
+    } else if (mode !== 'manual') {
+      lossInput.value = mode;
     } else if (String(lossInput.value || '').trim() === '') {
-      // 手入力に切り替えた直後は直前の割合を初期値にする
+      // 手入力に切り替えた直後の初期値
       lossInput.value = '100';
     }
   }
@@ -509,7 +625,8 @@ document.addEventListener('DOMContentLoaded', function () {
     yearsOfService: 100, meritMultiplier: 100,
     meritAddRate: 1000, corpTaxRateRb: 1000,
     // 積立比較
-    rbAccAnnual: 999999, rbAccAgeNow: 120, rbAccAgeRetire: 120,
+    rbAccAnnual: 999999, rbAccAgeContract: 120, rbAccAgeNow: 120, rbAccAgeRetire: 120,
+    rbAccTerm: 100, rbAccInsAmt: 9999999,
     rbAccOutflowRate: 100, rbAccCorpTax: 100, rbAccLossRate: 100,
   };
   function readValue(id) {
@@ -664,22 +781,28 @@ document.addEventListener('DOMContentLoaded', function () {
     setHtml('bResidentTax', man(bRt));
     setHtml('bNet', man(bNet));
 
-    // --- 4. 積立比較(現在の年齢〜退職年齢) ---
+    // --- 4. 積立比較(契約年齢〜退職年齢) ---
     const accAnnual = readValue('rbAccAnnual');
+    const ageContract = Math.max(0, Math.round(readValue('rbAccAgeContract')));
     const ageNow = Math.max(0, Math.round(readValue('rbAccAgeNow')));
     const ageRetire = Math.max(0, Math.round(readValue('rbAccAgeRetire')));
-    const accYears = Math.max(0, Math.min(60, ageRetire - ageNow));
-    accAgeNow = ageNow;
+    const accYears = Math.max(0, Math.min(60, ageRetire - ageContract));
+    const accTerm = Math.max(1, Math.round(readValue('rbAccTerm')));
+    accAgeBase = ageContract;
+    accNowYear = ageNow - ageContract; // 契約からの経過年数(範囲外ならマーカー非表示)
+    accInsAmt = Math.max(0, readValue('rbAccInsAmt'));
     const yearsRoomEl = $('rbAccYearsRoom');
     if (yearsRoomEl) yearsRoomEl.innerHTML = withUnit('積立期間 ' + accYears + '年');
     const accCorpTax = readValue('rbAccCorpTax');
     syncLossSeg();
-    const accLossRate = readValue('rbAccLossRate');
+    const lossMode = lossSelect ? lossSelect.value : 'manual';
+    const accLossRate = lossMode === 'auto' ? 0
+      : (lossMode === 'manual' ? readValue('rbAccLossRate') : parseFloat(lossMode));
     const outflowRate = Math.min(100, readValue('rbAccOutflowRate'));
 
     // 設計書を組み立ててから読み取り、A〜Dの系列を作る
-    buildSheet(accYears, ageNow, accAnnual);
-    const sheet = collectSheet(accYears, accAnnual, accLossRate, accCorpTax);
+    buildSheet(accYears, ageContract, accAnnual, accTerm);
+    const sheet = collectSheet(accYears, accAnnual, accTerm, lossMode, accLossRate, accCorpTax);
     accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accCorpTax, sheet);
     renderAccPicker();
     drawAccChart(accSeries);
@@ -767,8 +890,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ===== 初期表示: 保存済みデータがあれば復元して試算する ===== */
   loadSavedValues();
-  // 復元した選択が無効な場合(旧バージョンの保存データ等)は既定の全損に戻す。
+  // 復元した選択が無効な場合(旧バージョンの保存データ等)は既定の自動判定に戻す。
   // 「手入力」で保存されていた場合は数値欄の値をそのまま使う
-  if (lossSelect && lossSelect.value === '') lossSelect.value = '100';
+  if (lossSelect && lossSelect.value === '') lossSelect.value = 'auto';
   render();
 });
