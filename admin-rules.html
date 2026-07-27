@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Claude Code 指示ルール一覧</title>
+<style>
+  :root {
+    --paper: #f4f6f8; --card: #ffffff; --ink: #1c2229; --ink-soft: #5b6672; --ink-faint: #8b959f;
+    --line: #dde3e9; --navy: #0f2a4a; --navy-soft: #eef2f7; --red: #a83d3d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 0 4rem; background: var(--paper); color: var(--ink);
+    font-family: "BIZ UDPGothic", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 14px; line-height: 1.8;
+  }
+  .head { background: var(--navy); color: #fff; padding: 1.1rem 1.4rem; }
+  .head h1 { margin: 0; font-size: 1.05rem; font-weight: 900; }
+  .head p { margin: .3rem 0 0; font-size: .75rem; color: rgba(255,255,255,.72); }
+  .back {
+    position: fixed; top: 10px; right: 12px; z-index: 10; padding: .3rem .85rem; border-radius: 999px;
+    background: var(--red); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,.2);
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 1.2rem 1.4rem; }
+  .notice {
+    border: 2px solid var(--red); background: #f9ecec; color: #5f2020;
+    border-radius: .7rem; padding: .7rem .9rem; font-size: .75rem; line-height: 1.7; margin-bottom: 1.2rem;
+  }
+  .toc { background: var(--card); border: 1px solid var(--line); border-radius: .7rem; padding: .9rem 1.1rem; margin-bottom: 1.4rem; }
+  .toc-title { margin: 0 0 .4rem; font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--ink-faint); }
+  .toc ol { margin: 0; padding-left: 1.2rem; }
+  .toc li { font-size: .8rem; margin: .15rem 0; }
+  .toc a { color: var(--navy); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .rule {
+    background: var(--card); border: 1px solid var(--line); border-radius: .7rem;
+    padding: 1.1rem 1.3rem; margin-bottom: 1rem; scroll-margin-top: 1rem;
+  }
+  .rule-name { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; color: var(--ink-faint); }
+  .rule h2 { margin: .15rem 0 .5rem; font-size: 1rem; font-weight: 900; color: var(--navy); line-height: 1.5; }
+  .rule-meta { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .7rem; }
+  .rule-tag { background: var(--navy-soft); color: var(--navy); border-radius: .3rem; padding: .1rem .5rem; font-size: .68rem; font-weight: 700; }
+  .rule-date { font-size: .68rem; color: var(--ink-faint); }
+  .rule-body p { margin: 0 0 .6rem; }
+  .rule-body ul { margin: 0 0 .6rem; padding-left: 1.2rem; }
+  .rule-body li { margin: .15rem 0; }
+  .rule-body h3, .rule-body h4 { margin: .8rem 0 .3rem; font-size: .85rem; color: var(--navy); }
+  .rule-body code {
+    background: #eef1f4; border-radius: .25rem; padding: .05rem .35rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78em;
+  }
+  .rule-body strong { color: #0b2038; }
+  .rule-body a { color: var(--navy); }
+  .rule-ref-plain { color: var(--ink-faint); }
+  .foot { max-width: 900px; margin: 1.5rem auto 0; padding: 0 1.4rem; font-size: .7rem; color: var(--ink-faint); }
+</style>
+</head>
+<body>
+<a class="back" href="admin.html">&larr; 管理者用ページ</a>
+<div class="head">
+  <h1>Claude Code 指示ルール一覧</h1>
+  <p>このサイト(bizplan-lab-website)の制作でClaude Codeに指定したルール 13 件 ／ 生成日時 2026年07月27日 12:41</p>
+</div>
+<div class="wrap">
+  <div class="notice">
+    このページはGitHub Pagesで公開されているため、URLを直接叩けば誰でも閲覧できます。掲載しているのはこのサイトの制作ルールのみで、他プロジェクトのメモは含めていません。
+  </div>
+  <nav class="toc">
+    <p class="toc-title">目次</p>
+    <ol><li><a href="#trigger-button-design-rule">bizplan-lab-websiteの「試算する/実行する/比較する」等トリガーボタンの全体デザインルール(2026-07-23確定)</a></li><li><a href="#clear-button-design-pattern">bizplan-lab-websiteのヒーロー帯ボタン列と「データクリア」系ボタンの命名・配色・配置ルール(2026-07-23確定)</a></li><li><a href="#header-nav-simplification">bizplan-lab-websiteのグローバルヘッダーは2メニューのみ・右寄せ(2026-07-23確定)</a></li><li><a href="#unit-smaller-than-number-rule">数値に付く単位(万円・％・年など)は数字より小さく表示する全ページ共通ルール</a></li><li><a href="#comma-format-numbers-everywhere">金額・数量は必ず3桁カンマ区切り。プレースホルダーの例示数値も含む</a></li><li><a href="#hide-explanations-behind-help-tip">基本解説やロジックの説明は画面に直書きせず「?」ツールチップ(.help-tip)で隠す</a></li><li><a href="#recalc-on-commit-not-while-typing">再計算は入力中(input)ではなく入力確定時(change)に走らせる。入力中のリアルタイム変化は不要</a></li><li><a href="#avoid-window-confirm-for-inline-actions">bizplan-lab-websiteで軽量な確認操作にwindow.confirm()を使わない理由と代替パターン(2026-07-23)</a></li><li><a href="#scope-font-fixes-narrowly">フォント修正依頼は指摘された箇所だけに絞る。body全体やGoogle Fonts優先順位のような全体方針を勝手に変えない</a></li><li><a href="#arial-bold-to-bahnschrift-rule">【廃止済み】数字の太字はBahnschriftではなくArialのまま使う(2026-07-23に差し戻し)</a></li><li><a href="#tk-company-logo-spec">TK&amp;Company Inc.ロゴの確定仕様(フォント・配置アンカー・生成スクリプト場所)</a></li><li><a href="#bizplan-push-every-change">bizplan-lab-website(GitHub Pages)への変更は都度push、確認待ちしない</a></li><li><a href="#reduce-token-heavy-browser-debugging">ブラウザ検証・デバッグはスクリーンショット/往復回数を絞ってトークン消費を抑える</a></li></ol>
+  </nav>
+
+<article class="rule" id="trigger-button-design-rule">
+  <p class="rule-name">trigger-button-design-rule</p>
+  <h2>bizplan-lab-websiteの「試算する/実行する/比較する」等トリガーボタンの全体デザインルール(2026-07-23確定)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-22</span></div>
+  <div class="rule-body"><p>サイト内の「試算する」「実行する」「比較する」「保存する」など、フォームを送信・計算実行する主操作ボタン(<code>.btn-primary</code>、type="submit"のメインボタン)は、他のピル型ボタン(<code>.btn-accent</code>/<code>.btn-outline</code>/ナビ等)と視覚的に区別する専用デザインを持つ。ユーザーの明示的な全体ルール指定。</p>
+<p><strong>Why:</strong> 「試算する、実行する、比較するなどのトリガーボタンは□にして、視覚的にもわかりやすくしてほしい。色はネイビーで良いが、ボタンを触った時のエフェクトは特別なものにしてほしい。これは全体ルールに入れる」との指示。他のボタンと同じ丸ピル+スライドイン塗りだと「主操作」であることが埋もれるため。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>実装は<code>css/style.css</code>の<code>.btn-primary</code>ルールに集約(HTML側の<code>rounded-full</code>等インラインクラスは変更不要、CSSが後勝ちで上書きする)。</li><li>角丸: <code>border-radius: 0.75rem</code>(ピルではなく□寄り)。</li><li>色: 常にネイビー(<code>var(--color-navy)</code>)固定。入力充足状況による色の出し分け(青=ready/赤=not-ready、旧<code>#stockCalcForm</code>等の<code>.btn-ready</code>/<code>.btn-not-ready</code>)は廃止済み。今後もトリガーボタンに条件付き配色を追加しない。</li><li>ホバー演出: 他ボタン(<code>button</code>, <code>.btn-accent</code>, <code>.btn-outline</code>等)と共有する一般リフト(<code>translateY(-2px)</code>)やスライドイン塗り(<code>::before</code>)には<strong>含めない</strong>。<code>.btn-primary</code>専用に、斜めの光が走るシャインエフェクト(<code>::after</code>のグラデーションが左から右へ移動)＋やや強めのリフト(<code>translateY(-3px)</code>)と影を用いる。</li><li>新しいトリガーボタンを追加するときは、既存の<code>.btn-primary</code>クラスをそのまま使えばこのルールが自動適用される。個別に<code>rounded-full</code>を強調したり、色を変えたりしない。</li><li>「今後の一貫性」を明示的に求められているので、新規ページ追加時もこの<code>.btn-primary</code>定義をそのまま使うこと。</li></ul>
+<p>関連: <a href="#clear-button-design-pattern">clear-button-design-pattern</a></p></div>
+</article>
+
+<article class="rule" id="clear-button-design-pattern">
+  <p class="rule-name">clear-button-design-pattern</p>
+  <h2>bizplan-lab-websiteのヒーロー帯ボタン列と「データクリア」系ボタンの命名・配色・配置ルール(2026-07-23確定)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-26</span></div>
+  <div class="rule-body"><p><strong>ヒーロー帯ボタン列(最終形、2026-07-23確定・.hero-util-btn方式):</strong> 各ページのヒーロー(ネイビー帯)のボタン列は共通CSSクラス<code>.hero-actions</code>(ラッパー)+<code>.hero-util-btn</code>(各ボタン、<code>css/style.css</code>に定義)を使う。長いTailwindユーティリティ文字列を毎回書く旧方式(pill形・可変幅)は廃止し、アイコン+短いラベルの<strong>同じ幅の□ボタン</strong>に統一した。構成: トップ(ホームアイコン)・インポート(旧ファイルから読込む、アップロードアイコン)・保存(旧ファイルに保存、フロッピーアイコン)・PDF(旧PDFに出力する、アイコンは既存のものを維持)・<strong>全データクリア</strong>(ゴミ箱アイコン、<code>.hero-util-danger</code>クラスで列の末尾に間隔を空けて配置)。スマホ幅(<code>&lt;640px</code>)ではラベルを隠しアイコンのみの正方形になり1列に収まる。ホバーは色反転ではなく、白いふちがふわっと発光する演出(<code>box-shadow</code>のグロー)。基本情報入力ボタンはヒーローから削除済み(トップページのカードに一本化、→index.htmlの<code>.tool-tabs</code>)。TOP MENUは自ページ(index.html)には出さない。ヘッダー側のTOP MENU・基本情報入力リンクは廃止済み(→<a href="#header-nav-simplification">header-nav-simplification</a>)。</p>
+<p>各ツールページのヒーローにある「入力データクリア」ボタンは<strong>「全データクリア」</strong>という名称で、配色は赤系ではなく白系に統一する。加えて、そのページの各入力エリア(前提条件カードや各フォームの送信ボタン横、またはSTEPセクションの見出し右)に、そのエリアだけをクリアする小さい「データクリア」ボタンを個別に配置する。</p>
+<p><strong>Why:</strong> ヒーローの赤いボタンは「一体何が消えるのか分かりにくい」とユーザーから指摘された。ページ全体を消す操作であることを明示するため「全」を付けて白色に統一し、逆に「このフォームだけクリアしたい」というニーズには、入力している場所のすぐ近くに小さいボタンを置くことで応える、という役割分担にした。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>ヒーロー全消しボタン: ラベル「全入力データクリア」、class は他の白ボタンと同一 (<code>border-white/40 text-white hover:bg-white hover:text-[#0f2a4a]</code>)。単一ドメインのページでも全ページ一律でこの名称・配色にする。</li><li>各入力エリア用の小ボタン: ラベルは<strong>「データクリア」</strong>(2026-07-27にユーザーが「入力データクリアではなくデータクリア。他のページもそうなってるでしょ」と指摘。<code>.section-clear-btn</code>を使うbasic-info.html等の既存ページに合わせる)。フォーム送信ボタンがある場合はその隣に<code>btn-outline</code>スタイルで配置(例: stock-valuation.htmlのcalcResetBtn/dtResetBtn/tbResetBtn、future-liability.htmlのflFieldClearBtn等)。送信ボタンがなくリアルタイム計算のページ(treasury-stock.html)では、入力エリアの見出し行の右端に小さいテキストリンク「クリア」を配置する(tsFieldClearBtn)。</li><li>実装は「confirm確認→対象input(必要ならselectも)を空欄化→該当localStorageキーをremoveItem→再計算/非表示化」を1つの関数にまとめ、ヒーロー用ボタンと小ボタンの両方から同じ関数を呼ぶ(JSファイルの重複を避ける)。</li><li>既にstock-valuation.html(3タブ)・basic-info.html(fsResetBtn)のように独立入力エリアごとの個別クリアボタンが元々あるページはそのまま流用し、改めて追加しない。</li><li>CSS/JS変更時はキャッシュバージョン(style.css?v=, 各js?v=)を該当ファイルを参照する全ページで一括更新すること。</li></ul>
+<p>関連: <a href="#arial-bold-to-bahnschrift-rule">arial-bold-to-bahnschrift-rule</a>, <a href="#header-nav-simplification">header-nav-simplification</a>, <a href="#avoid-window-confirm-for-inline-actions">avoid-window-confirm-for-inline-actions</a></p></div>
+</article>
+
+<article class="rule" id="header-nav-simplification">
+  <p class="rule-name">header-nav-simplification</p>
+  <h2>bizplan-lab-websiteのグローバルヘッダーは2メニューのみ・右寄せ(2026-07-23確定)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-23</span></div>
+  <div class="rule-body"><p>グローバルヘッダー(全ページ共通)から「TOP MENU」リンクと「基本情報入力」の四角ボタンを削除し、<code>&lt;nav&gt;</code>は「生命保険ツール」「ディスカッションシート」の2つのメガメニューだけにして<code>ml-auto</code>で右寄せ(ハンバーガーボタンのすぐ左に隣接)にする。TOP MENU・基本情報入力はヒーロー帯のピルボタン列に移動した(<a href="#clear-button-design-pattern">clear-button-design-pattern</a>参照)。</p>
+<p><strong>Why:</strong> ユーザーが「右上の基本情報入力とTOPMENUはヒーロー帯に格納」「ヘッダーの3つのメニューは右寄せしてTOPMENUは削除、生命保険ツールとディスカッションシートのみにする」と明示指定。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>2つのメガメニューのラベルは常に固定文言にする: 1つ目は「生命保険ツール」、2つ目は「ディスカッションシート」。以前は現在地の個別ツール名(例:「金庫株×生命保険」)や個別DS名(例:「ベンチャー企業×DS」)を出していたが、2026-07-23にどちらも汎用ラベルへ統一した。デスクトップの<code>.mega-trigger-label</code>とモバイルの<code>.mobile-accordion-trigger-label</code>両方を揃えること。</li><li>自己参照リンク除外ルール: TOP MENU(→index.html)はindex.html自身には出さない。基本情報入力(→basic-info.html)はbasic-info.html自身には出さない。この2ページでは元々<code>class</code>に<code> active</code>が付いた特別なリンクが残っていたため、通常の文字列一致だけで一括削除すると見落とす。新しくこの手のヘッダー要素を消す/変えるときは、必ずactiveページ用のバリアントも個別に確認すること。</li><li>ヘッダーの<code>&lt;div class="header-row ..."&gt;</code>は<code>justify-between</code>のまま、<code>&lt;nav&gt;</code>に<code>ml-auto</code>を足すことで「ロゴ左・nav+ハンバーガー右」の配置になる(header-row自体の再構成は不要)。</li></ul>
+<p>関連: <a href="#clear-button-design-pattern">clear-button-design-pattern</a></p></div>
+</article>
+
+<article class="rule" id="unit-smaller-than-number-rule">
+  <p class="rule-name">unit-smaller-than-number-rule</p>
+  <h2>数値に付く単位(万円・％・年など)は数字より小さく表示する全ページ共通ルール</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span></div>
+  <div class="rule-body"><p>金融ツールサイト(bizplan-lab-website)の全ページで、数値に付く<strong>単位(万円・％・年 など)は数字本体より一回り小さく・控えめに</strong>表示する。</p>
+<p><strong>Why:</strong> 数字を主役として際立たせ、洗練・誠実な金融機関向けの見た目にするため。ユーザーが「単位の方が数字より小さくあるべき、これはすべてのページに共通するルール」と明示。</p>
+<p><strong>How to apply:</strong> <code>css/style.css</code> に <code>.unit { font-size:0.72em; font-weight:600; opacity:0.72; margin-left:0.12em; }</code> を追加済み。JS出力では末尾の単位を <code>&lt;span class="unit"&gt;…&lt;/span&gt;</code> で包み <code>innerHTML</code> でセットする(値は内部生成で安全)。treasury-stock.js では <code>unitize()</code> ヘルパーで実装済み。<strong>他ページ(retirement-benefit / premium-funding / reduced-new-contract / 各DSページ 等)は未適用</strong> — 順次ロールアウトが必要。適用時は該当ページの <code>style.css?v=</code> を bump すること。</p>
+<p>関連: <span class="rule-ref-plain">hp-building-playbook</span></p></div>
+</article>
+
+<article class="rule" id="comma-format-numbers-everywhere">
+  <p class="rule-name">comma-format-numbers-everywhere</p>
+  <h2>金額・数量は必ず3桁カンマ区切り。プレースホルダーの例示数値も含む</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-26</span></div>
+  <div class="rule-body"><p>bizplan-lab-websiteで金額・数量を表示するときは、必ず3桁カンマ区切りにする。<strong>入力欄の<code>placeholder</code>に書く例示数値も対象</strong>。</p>
+<p><strong>Why:</strong> 入力値・計算結果は<code>number-format.js</code>が自動でカンマ整形するが、<code>placeholder</code>属性は対象外で素の数字のままだった。2026-07-24にユーザーから「数字はカンマ必須だってば。資本金の例：200000ってさ。200,000でしょうよ。全体ルールに入ってないかな？」と指摘。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li><code>placeholder="例: 20000000"</code> ではなく <code>placeholder="例: 20,000,000"</code> と書く。</li><li><strong>カンマを付けないもの</strong>: 年(2005/2031)、電話番号(03-1234-5678)、郵便番号(123-4567)、法人番号(1234567890123)、登録番号(第12345号)、および3桁以下の数値・率(30/0.75など)。</li><li>入力欄の<code>value</code>や計算結果のtextContentは<code>number-format.js</code>(<code>window.numFmt</code>)が整形するので個別対応は不要。新規の数値表示を書くときは<code>window.numFmt()</code>を通す。</li><li>単位の見せ方は<a href="#unit-smaller-than-number-rule">unit-smaller-than-number-rule</a>も併せて守る。</li></ul></div>
+</article>
+
+<article class="rule" id="hide-explanations-behind-help-tip">
+  <p class="rule-name">hide-explanations-behind-help-tip</p>
+  <h2>基本解説やロジックの説明は画面に直書きせず「?」ツールチップ(.help-tip)で隠す</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-26</span></div>
+  <div class="rule-body"><p>bizplan-lab-websiteでは、項目の基本解説・計算ロジックの説明を画面に直接テキストで書かない。必ず<code>.help-tip</code>の「?」アイコンに格納し、クリック/フォーカスで開く形にする。</p>
+<p><strong>Why:</strong> 2026-07-24のセッションで、額面欄のラベル横に「(資本金から自動計算)」とインラインで注記したところ、ラベルが2行に折り返してグリッドのレイアウトが崩れた。ユーザーから「資本金から自動計算は？で隠す。今後も基本解説やロジックは？で隠すをルールにして」と全体ルールとして指示された。インライン注記はレイアウトを壊しやすく、画面のノイズにもなる。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>マークアップは既存パターンに合わせる:</li></ul>
+<p><code>&lt;label class="flex items-center text-sm font-medium mb-1.5" for="xxx"&gt;ラベル&lt;span class="help-tip" tabindex="0"&gt;?&lt;span class="help-text"&gt;説明文&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;</code></p>
+<ul><li>ラベルは<code>block</code>ではなく<code>flex items-center</code>にする(「?」が縦位置で揃う)。</li><li>「(自動計算)」「(単位: 千円)」等の補足も、短いものを除き原則<code>.help-text</code>の中に書く。</li><li>開閉のJSは既存の<code>.help-tip</code>共通ハンドラ(stock-detail.js等)が拾うため、個別実装は不要。</li><li>新規ページ・新規項目を追加するときも最初からこの形で書く。</li></ul>
+<p>関連: <a href="#trigger-button-design-rule">trigger-button-design-rule</a></p></div>
+</article>
+
+<article class="rule" id="recalc-on-commit-not-while-typing">
+  <p class="rule-name">recalc-on-commit-not-while-typing</p>
+  <h2>再計算は入力中(input)ではなく入力確定時(change)に走らせる。入力中のリアルタイム変化は不要</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-26</span></div>
+  <div class="rule-body"><p>bizplan-lab-websiteの計算・グラフ・判定の再描画は、キー入力の途中(<code>input</code>イベント)では走らせない。入力が確定したタイミング(<code>change</code>イベント = テキスト欄はblur時、select/checkboxは選択時)に反映する。</p>
+<p><strong>Why:</strong> 2026-07-24にユーザーから「全体として、入力中はリアルタイム変化はいらない。入力が確定したらリアルタイムで変わる全体ルールにしてくれ」と指示。1文字ごとに数値が飛んだり、桁数不足の中間状態でグラフが跳ねたり、範囲外チェックが入力途中の値を勝手に補正する(例: 30上限の欄で「45」と打つ途中の「4」で確定扱い)といった挙動が煩わしいため。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>再計算・再描画・判定・localStorage保存のリスナーは<code>change</code>に付ける。<code>input</code>は使わない。</li><li><code>change</code>はバブリングするので<code>form.addEventListener('change', recalcAll)</code>のようにコンテナ1箇所で拾える。</li><li><strong>例外(<code>input</code>のまま維持するもの)</strong>: <code>number-format.js</code>の入力サニタイズ(全角→半角・不正文字除去)、文字数カウンタ、テキストエリアの貼り付けプレビュー、エラー赤枠の解除。いずれも「計算」ではなく即時フィードバックが必要なもの。</li><li>2026-07-24時点で適用済み: stock-simple.js / stock-detail.js / stock-stepper.js / stock-tdb.js / future-liability.js / treasury-stock.js / stock-calculator.js。</li></ul>
+<p><strong>バリデーションの見せ方(同時に確定したルール):</strong> 未入力・不正で先に進めない場合は、(1)エラーメッセージを表示し、(2)該当入力欄に<code>.input-error</code>(薄い赤背景+赤枠)を付け、(3)その欄へスクロール+フォーカスして入力を促す。値を入れ直したら赤は自動で解除する。</p>
+<p>関連: <a href="#hide-explanations-behind-help-tip">hide-explanations-behind-help-tip</a></p></div>
+</article>
+
+<article class="rule" id="avoid-window-confirm-for-inline-actions">
+  <p class="rule-name">avoid-window-confirm-for-inline-actions</p>
+  <h2>bizplan-lab-websiteで軽量な確認操作にwindow.confirm()を使わない理由と代替パターン(2026-07-23)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-23</span></div>
+  <div class="rule-body"><p>セクション単位の「データクリア」ボタン(<code>.section-clear-btn</code>)で<code>window.confirm()</code>を使ったところ、ユーザーから「押しても反応しない」と報告された。ローカル・本番どちらでもクリックハンドラ自体は正常に動作しており(自動テストでは確認ダイアログのsuppress警告が出て動作を確認できた)、原因はLINE等のアプリ内ブラウザ/一部モバイル環境で<code>window.confirm()</code>が表示されない・無反応になることが疑われる。<code>window.confirm()</code>をやめ、ボタン自身が1回目クリックで警告色に切り替わり(例:「本当にクリア？」赤字)、4秒以内の2回目クリックで実行する「トグル確認」方式に変更して解決した。</p>
+<p><strong>Why:</strong> 業務ツールサイトのユーザーは社内共有やLINE経由でリンクを開くことが多く、アプリ内ブラウザでのネイティブダイアログの信頼性が低い。「反応しない」というバグ報告のうち、コード自体は正しいのに環境依存でダイアログが機能しないケースがあり得る。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>サイト内の確認が必要な操作(1セクションだけの入力クリア、ヒーローの「全データクリア」を含む)は<code>window.confirm()</code>を使わず、ボタン自身のトグル確認(1回目クリックで警告表示に変化→一定時間内の2回目クリックで実行、タイムアウトで自動的に元に戻る)を使う。2026-07-23にヒーローの「全データクリア」(localStorageを実際に削除する操作)も同じ方式に統一済み。</li><li>実装は<code>js/menu.js</code>に集約: <code>.section-clear-btn</code>(セクション単位)は無名ハンドラで直接処理。ヒーローの「全データクリア」系ボタン(tsClearBtn/flClearBtn/rbClearBtn/txClearBtn/pfClearBtn/rncClearBtn/biAllClearBtn/dsResetBtn/svAllClearBtn/eiClearBtn)は共通ヘルパー<code>window.armHeroClearBtn(btn, doAction)</code>(menu.js先頭、DOMContentLoaded外で定義)を各ページのJSから呼び出す形にしている。新しく同様のボタンを追加するときもこのヘルパーを使うこと。</li><li>視覚状態は<code>css/style.css</code>の<code>.section-clear-btn.is-confirming</code>(セクション用)と<code>.hero-util-btn.hero-util-danger.is-confirming</code>(ヒーロー用、モバイルでラベルが隠れても分かるよう背景・枠にも警告色を入れている)を参照。</li><li>フォーム内の小さい個別クリアボタン(例: tsFieldClearBtn等、<code>.section-clear-btn</code>ではなく個別idで実装されたもの)は今回のスコープ外とし、引き続き<code>window.confirm()</code>のままにしている箇所がある。同様の「反応しない」報告が来たら同じトグル確認方式に寄せることを検討する。</li></ul>
+<p>関連: <a href="#clear-button-design-pattern">clear-button-design-pattern</a></p></div>
+</article>
+
+<article class="rule" id="scope-font-fixes-narrowly">
+  <p class="rule-name">scope-font-fixes-narrowly</p>
+  <h2>フォント修正依頼は指摘された箇所だけに絞る。body全体やGoogle Fonts優先順位のような全体方針を勝手に変えない</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-22</span></div>
+  <div class="rule-body"><p>「Arialのボールドがポップに見える」という指摘は、実際には金庫株ページ(treasury-stock.html)のサマリー数値・計算表数値という<strong>特定の太字数字だけ</strong>を指していた。にもかかわらず、bodyのfont-family(サイト全体の和文フォント)や.unit、.tile-num、ナビの装飾フォント(Opus見出し等)まで含めて広範囲に「Noto Sans JP優先」へ変更してしまい、結果的にOpusの書体や日本語全体の見た目まで意図せず変わってしまった。ユーザーから「いろいろ勝手に変えないでくれ。ボールドの数字以外は元に戻して！」と強く指摘され、該当コミット(cc741e3, 11e5bf1)を<code>git revert</code>で完全に取り消した。</p>
+<p><strong>Why:</strong> ユーザーは「ここだけを解決してほしかった」と明言。フォントのような全ページ共通CSS(body, .unit等)を触ると影響範囲が非常に広く、指摘されていない箇所(Opusの見出し等)まで見た目が変わってしまうため、ユーザーの信頼を損なった。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>フォント・配色などサイト全体に波及するCSS変更を求められたとき、指摘の対象が「特定の要素」なのか「サイト全体の方針」なのかを本文から慎重に見極める。曖昧なら、影響範囲(何ページ・どの要素が変わるか)を一言確認してから着手する。</li><li>対象が特定要素(例: 金庫株ページの太字数値)に見える場合は、body等の共通ルールを書き換えるのではなく、その要素だけに効くスコープの狭いクラス(例: 個別のfont-familyを持つクラスをその要素にだけ追加)で対応する。</li><li>「Windows/Macで一貫させたい」等の技術的理由を汲み取っても、それを理由にサイト全体のデフォルトフォントを変えるのは飛躍。まずは指摘された要素だけに最小限の変更を適用し、他に広げるかはユーザーに確認する。</li><li>数字はArialのままで良いというのが最終合意。今後「太字がポップ」等の見た目指摘が来ても、Arial自体を置き換える提案を勝手に広げないこと。</li></ul>
+<p><strong>実際の根本原因と解決策(2026-07-23判明):</strong> 「ポップに見える」の正体はフォント種類ではなく<strong>font-weight</strong>だった。ArialはネイティブにRegular(400)とBold(700)の書体しか持たず、Tailwindの<code>font-black</code>(900)を指定すると、Arialに存在しない900書体をブラウザ/OSが疑似的に太らせて描画する「合成ボールド(synthetic bold)」になる。この合成処理の結果がWindows/Macや環境によって異なり、丸みを帯びた見た目になっていた。treasury-stock.htmlの<code>sumS1Total</code>/<code>sumS2Total</code>/<code>sumDiff</code>/<code>s1BalTotal</code>/<code>s2BalTotal</code>を<code>font-black</code>→<code>font-bold</code>(700)に変更し、Arial本来のBold書体を使うようにしたところ解決した(コミット34d03f8)。今後「特定の太字要素だけポップ/丸く見える」という指摘が来たら、まずfont-familyではなくfont-weightがそのフォントのネイティブ書体(通常400/700まで)を超えていないか(=合成ボールドになっていないか)を疑うこと。</p>
+<p>関連: <a href="#arial-bold-to-bahnschrift-rule">arial-bold-to-bahnschrift-rule</a></p></div>
+</article>
+
+<article class="rule" id="arial-bold-to-bahnschrift-rule">
+  <p class="rule-name">arial-bold-to-bahnschrift-rule</p>
+  <h2>【廃止済み】数字の太字はBahnschriftではなくArialのまま使う(2026-07-23に差し戻し)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-22</span></div>
+  <div class="rule-body"><p><strong>この全体ルールは2026-07-23に廃止・差し戻しされた。</strong> 数字の太字フォントはBahnschrift SemiLight Condensedではなく、通常通りArial Boldを使う。</p>
+<p><strong>経緯:</strong> 2026-07-22に「Arialを太字にする場合はBahnschriftを採用する」というルールを新設し、<code>.tile-num</code>(stock-valuation-result.html)と金庫株ページ(treasury-stock.html)のサマリー数値・計算表数値に適用したが、翌日ユーザーから「数字の太字フォントをArialに戻す（全体ルールの差し戻し→すべてのページに反映）」と明示的な取り消し指示があった。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>数字(金額・パーセント等)を太字にする箇所は、Arial, Helvetica, sans-serif + font-weight:700 を使う。<code>.font-brand-en</code>は付与しない。</li><li>ただし<code>.font-brand-en</code>自体は廃止されていない。装飾的な英語見出し(TOP MENU、TREASURY STOCK &amp; INSURANCEのようなアイキャッチ、パターンA/Bのサブタイトルチップなど)への使用は引き続き有効。数字専用の適用のみが差し戻し対象。</li><li>今後同種の「Arial太字→Bahnschrift」提案をする際は、このルールが一度差し戻された経緯があることを踏まえ、ユーザーに再度明示確認してから適用すること。</li></ul>
+<p>関連: <a href="#unit-smaller-than-number-rule">unit-smaller-than-number-rule</a></p></div>
+</article>
+
+<article class="rule" id="tk-company-logo-spec">
+  <p class="rule-name">tk-company-logo-spec</p>
+  <h2>TK&amp;Company Inc.ロゴの確定仕様(フォント・配置アンカー・生成スクリプト場所)</h2>
+  <div class="rule-meta"><span class="rule-tag">プロジェクト</span><span class="rule-date">更新 2026-07-24</span></div>
+  <div class="rule-body"><p>TK&amp;Company Inc.ロゴ(白文字・透明背景PNG)の確定仕様(2026-07-24 ユーザー承認済み):</p>
+<ul><li>タイトル「TK&amp;Company Inc.」: Malgun Gothic <strong>Semilight</strong>(malgunsl.ttf)。Regularは太すぎてNG</li><li>サブ「HIGHER STANDARDS」: Segoe UI Semibold(seguisb.ttf)、サイズはタイトルの38%、白の透過68%(alpha 175)</li><li><strong>配置アンカー(最重要)</strong>: 「H」の開始=タイトル「T|K」境界、最後の「S」の終了=「In|c」境界。この2点間に収めて文字間を逆算 → 結果的にセンタリングに見える。目分量の比率合わせは3回やり直しになった</li><li>行間: タイトルbbox下端+22px(タイトル100px時)</li><li>4倍スーパーサンプリング後LANCZOS縮小で精細化</li><li>成果物: <code>80_Claude/tk_company_logo_white_transparent.png</code>(795×184)</li><li>生成スクリプトはセッションのscratchpad(消える)。再生成時はこの仕様から書き直す</li><li>python3コマンドはWindowsApps版が壊れているので <code>C:\Users\inqui\AppData\Local\Programs\Python\Python312\python</code> をフルパスで使う</li></ul>
+<p>関連: <a href="#bizplan-push-every-change">bizplan-push-every-change</a>(同ブランドのサイト)</p></div>
+</article>
+
+<article class="rule" id="bizplan-push-every-change">
+  <p class="rule-name">bizplan-push-every-change</p>
+  <h2>bizplan-lab-website(GitHub Pages)への変更は都度push、確認待ちしない</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-23</span></div>
+  <div class="rule-body"><p>bizplan-lab-website の変更は、コミット後に確認を待たず毎回 <code>git push</code> してよい(以前は都度「プッシュしますか？」と確認していたが、この運用は不要になった)。</p>
+<p><strong>Why:</strong> ユーザーが2026-07-23に「変更は都度プッシュしてサイト上でも確認できるようにして」と明示的に指示。ユーザー自身がライブサイト(bizplanlabo.com)上で都度確認したいため。</p>
+<p><strong>How to apply:</strong> future-liability.html等このリポジトリでの変更をコミットしたら、その場で <code>git push</code> まで実行する。他の作業指示なしに単発でpushの許可を毎回尋ねる必要はない。ただし force push 等の破壊的操作は引き続き別途確認する。<span class="rule-ref-plain">furaiki-project-links</span> 等の他プロジェクトには適用しない(bizplan-lab-website固有のルール)。</p></div>
+</article>
+
+<article class="rule" id="reduce-token-heavy-browser-debugging">
+  <p class="rule-name">reduce-token-heavy-browser-debugging</p>
+  <h2>ブラウザ検証・デバッグはスクリーンショット/往復回数を絞ってトークン消費を抑える</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-23</span></div>
+  <div class="rule-body"><p>ブラウザでの検証・デバッグ作業は、スクリーンショットの多用と細切れな<code>javascript_tool</code>往復でトークンを浪費しやすい。</p>
+<p><strong>Why:</strong> 2026-07-24のセッションでユーザーから「トークン消費が激しい、デバッグが過剰では」と指摘。実際、future-liability.htmlの<code>bs-l3-t0</code>診断で6回以上の細切れなjavascript_exec呼び出し+複数回のスクリーンショットを行ったが、結局原因は自分のテストスクリプトの入力漏れ(コード側のバグではなかった)で、もっと早く単純な原因を疑うべきだった。画像(スクリーンショット)はテキストより遥かにトークンコストが高い。</p>
+<p><strong>How to apply:</strong></p>
+<ul><li>画面確認はまず <code>read_page</code> / <code>get_page_text</code> などテキストベースの手段で済ませ、スクリーンショットは「見た目そのものの判断が必要な最後の1回」に絞る</li><li>ブラウザ診断(<code>javascript_tool</code>など)は複数の確認項目を1つのスクリプトにまとめて一括取得し、往復回数を減らす</li><li>異常値に遭遇したら、まず「テストデータ・入力条件が揃っているか」など単純な原因から疑ってから低レベルなDOM調査に進む</li><li>診断用JSONは<code>JSON.stringify(x, null, 2)</code>のような整形をせず、素の文字列で返す</li></ul>
+<p>bizplan-lab-website固有ではなく、ブラウザでの検証・デバッグ作業全般に適用する。</p></div>
+</article>
+</div>
+<p class="foot">このページは <code>tools/build-admin-rules.py</code> で Claude Code のメモリから自動生成しています。ルールを追加・変更したら再生成してください。</p>
+</body>
+</html>
