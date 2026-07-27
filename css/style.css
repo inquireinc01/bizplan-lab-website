@@ -836,6 +836,27 @@ input[type="number"] {
 }
 
 /* 準備中ページのヒーロー帯: 黄色に光る「COMING SOON」装飾テキスト */
+/* 管理者用ページへの入口ボタン。Ctrl+Shift+Dで表示され、通常は隠れている */
+.admin-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  background-color: var(--color-red, #b3382f);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.admin-entry-btn:hover {
+  background-color: #8f2b24;
+  box-shadow: 0 4px 12px rgba(179, 56, 47, 0.35);
+}
+.admin-entry-btn.hidden {
+  display: none;
+}
+
 /* ヒーロー帯の入力/結果バッジ。COMING SOONと同じ発光デザインで、タイトルの下に置く。
    1行増えるぶんは section 側の上下paddingを詰めて帯の高さを保っている */
 .hero-io-badge {
