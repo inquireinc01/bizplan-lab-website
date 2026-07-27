@@ -836,6 +836,29 @@ input[type="number"] {
 }
 
 /* 準備中ページのヒーロー帯: 黄色に光る「COMING SOON」装飾テキスト */
+/* 管理者用ページの注意書き(このページはアクセス制限されていない旨) */
+.admin-warning {
+  border: 2px solid var(--color-red, #a83d3d);
+  border-radius: 0.75rem;
+  background-color: var(--color-red-soft, #f6e9e9);
+  padding: 0.9rem 1.1rem;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: #5f2020;
+}
+.admin-warning-title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-red-dark, #832f2f);
+  margin-bottom: 0.2rem;
+}
+.admin-warning code {
+  background-color: #fff;
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.75rem;
+}
+
 /* 管理者用ページへの入口ボタン。Ctrl+Shift+Dで表示され、通常は隠れている */
 .admin-entry-btn {
   display: inline-flex;
