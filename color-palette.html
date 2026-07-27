@@ -505,6 +505,9 @@
   #palette .combo-codes .mono { font-size: 11px; }
 
   .swatch-family { margin-bottom: 26px; }
+  /* 基準トーンの行: ここが統一トーン展開の基準であることを囲み線で示す */
+  .swatch-family.is-base { border: 1.5px solid var(--ink); border-radius: 12px; padding: 12px 14px 14px; }
+  .swatch-family.is-base .family-label::after { content: "基準"; display: inline-block; margin-left: 8px; padding: 1px 9px; border: 1px solid currentColor; border-radius: 999px; font-size: 10px; font-weight: 700; vertical-align: 1px; }
   .family-label { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); margin: 0 0 8px; }
   .swatch-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .swatch { width: 56px; height: 56px; border-radius: 10px; border: 1px solid rgba(0,0,0,.08); cursor: pointer; padding: 0; transition: transform .15s ease, box-shadow .15s ease; }
@@ -622,7 +625,7 @@ main { max-width: 1100px; margin: 0 auto; }
           </div>
         </div>
 
-        <div class="swatch-family">
+        <div class="swatch-family is-base">
           <p class="family-label">統一トーン展開（#3B6EA5と同じ彩度・明度）</p>
           <div class="swatch-row">
             <button class="swatch" style="background:#A53B3B" data-hex="#A53B3B" data-name="スモーキーレッド" title="スモーキーレッド #A53B3B"></button>
@@ -635,6 +638,70 @@ main { max-width: 1100px; margin: 0 auto; }
             <button class="swatch" style="background:#A53B70" data-hex="#A53B70" data-name="スモーキーピンク" title="スモーキーピンク #A53B70"></button>
             <button class="swatch" style="background:#A5673B" data-hex="#A5673B" data-name="スモーキーブラウン" title="スモーキーブラウン #A5673B"></button>
             <button class="swatch" style="background:#677079" data-hex="#677079" data-name="スモーキーグレー" title="スモーキーグレー #677079"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +20%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#842F2F" data-hex="#842F2F" data-name="スモーキーレッド 黒20%" title="スモーキーレッド 黒20% #842F2F"></button>
+            <button class="swatch" style="background:#845A2F" data-hex="#845A2F" data-name="スモーキーオレンジ 黒20%" title="スモーキーオレンジ 黒20% #845A2F"></button>
+            <button class="swatch" style="background:#84762F" data-hex="#84762F" data-name="スモーキーイエロー 黒20%" title="スモーキーイエロー 黒20% #84762F"></button>
+            <button class="swatch" style="background:#2F842F" data-hex="#2F842F" data-name="スモーキーグリーン 黒20%" title="スモーキーグリーン 黒20% #2F842F"></button>
+            <button class="swatch" style="background:#2F847D" data-hex="#2F847D" data-name="スモーキーティール 黒20%" title="スモーキーティール 黒20% #2F847D"></button>
+            <button class="swatch" style="background:#2F5884" data-hex="#2F5884" data-name="スチールブルー 黒20%" title="スチールブルー 黒20% #2F5884"></button>
+            <button class="swatch" style="background:#582F84" data-hex="#582F84" data-name="スモーキーパープル 黒20%" title="スモーキーパープル 黒20% #582F84"></button>
+            <button class="swatch" style="background:#842F5A" data-hex="#842F5A" data-name="スモーキーピンク 黒20%" title="スモーキーピンク 黒20% #842F5A"></button>
+            <button class="swatch" style="background:#84522F" data-hex="#84522F" data-name="スモーキーブラウン 黒20%" title="スモーキーブラウン 黒20% #84522F"></button>
+            <button class="swatch" style="background:#525A61" data-hex="#525A61" data-name="スモーキーグレー 黒20%" title="スモーキーグレー 黒20% #525A61"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +40%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#632323" data-hex="#632323" data-name="スモーキーレッド 黒40%" title="スモーキーレッド 黒40% #632323"></button>
+            <button class="swatch" style="background:#634323" data-hex="#634323" data-name="スモーキーオレンジ 黒40%" title="スモーキーオレンジ 黒40% #634323"></button>
+            <button class="swatch" style="background:#635823" data-hex="#635823" data-name="スモーキーイエロー 黒40%" title="スモーキーイエロー 黒40% #635823"></button>
+            <button class="swatch" style="background:#236323" data-hex="#236323" data-name="スモーキーグリーン 黒40%" title="スモーキーグリーン 黒40% #236323"></button>
+            <button class="swatch" style="background:#23635E" data-hex="#23635E" data-name="スモーキーティール 黒40%" title="スモーキーティール 黒40% #23635E"></button>
+            <button class="swatch" style="background:#234263" data-hex="#234263" data-name="スチールブルー 黒40%" title="スチールブルー 黒40% #234263"></button>
+            <button class="swatch" style="background:#422363" data-hex="#422363" data-name="スモーキーパープル 黒40%" title="スモーキーパープル 黒40% #422363"></button>
+            <button class="swatch" style="background:#632343" data-hex="#632343" data-name="スモーキーピンク 黒40%" title="スモーキーピンク 黒40% #632343"></button>
+            <button class="swatch" style="background:#633E23" data-hex="#633E23" data-name="スモーキーブラウン 黒40%" title="スモーキーブラウン 黒40% #633E23"></button>
+            <button class="swatch" style="background:#3E4349" data-hex="#3E4349" data-name="スモーキーグレー 黒40%" title="スモーキーグレー 黒40% #3E4349"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +60%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#421818" data-hex="#421818" data-name="スモーキーレッド 黒60%" title="スモーキーレッド 黒60% #421818"></button>
+            <button class="swatch" style="background:#422D18" data-hex="#422D18" data-name="スモーキーオレンジ 黒60%" title="スモーキーオレンジ 黒60% #422D18"></button>
+            <button class="swatch" style="background:#423B18" data-hex="#423B18" data-name="スモーキーイエロー 黒60%" title="スモーキーイエロー 黒60% #423B18"></button>
+            <button class="swatch" style="background:#184218" data-hex="#184218" data-name="スモーキーグリーン 黒60%" title="スモーキーグリーン 黒60% #184218"></button>
+            <button class="swatch" style="background:#18423E" data-hex="#18423E" data-name="スモーキーティール 黒60%" title="スモーキーティール 黒60% #18423E"></button>
+            <button class="swatch" style="background:#182C42" data-hex="#182C42" data-name="スチールブルー 黒60%" title="スチールブルー 黒60% #182C42"></button>
+            <button class="swatch" style="background:#2C1842" data-hex="#2C1842" data-name="スモーキーパープル 黒60%" title="スモーキーパープル 黒60% #2C1842"></button>
+            <button class="swatch" style="background:#42182D" data-hex="#42182D" data-name="スモーキーピンク 黒60%" title="スモーキーピンク 黒60% #42182D"></button>
+            <button class="swatch" style="background:#422918" data-hex="#422918" data-name="スモーキーブラウン 黒60%" title="スモーキーブラウン 黒60% #422918"></button>
+            <button class="swatch" style="background:#292D30" data-hex="#292D30" data-name="スモーキーグレー 黒60%" title="スモーキーグレー 黒60% #292D30"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +80%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#210C0C" data-hex="#210C0C" data-name="スモーキーレッド 黒80%" title="スモーキーレッド 黒80% #210C0C"></button>
+            <button class="swatch" style="background:#21160C" data-hex="#21160C" data-name="スモーキーオレンジ 黒80%" title="スモーキーオレンジ 黒80% #21160C"></button>
+            <button class="swatch" style="background:#211D0C" data-hex="#211D0C" data-name="スモーキーイエロー 黒80%" title="スモーキーイエロー 黒80% #211D0C"></button>
+            <button class="swatch" style="background:#0C210C" data-hex="#0C210C" data-name="スモーキーグリーン 黒80%" title="スモーキーグリーン 黒80% #0C210C"></button>
+            <button class="swatch" style="background:#0C211F" data-hex="#0C211F" data-name="スモーキーティール 黒80%" title="スモーキーティール 黒80% #0C211F"></button>
+            <button class="swatch" style="background:#0C1621" data-hex="#0C1621" data-name="スチールブルー 黒80%" title="スチールブルー 黒80% #0C1621"></button>
+            <button class="swatch" style="background:#160C21" data-hex="#160C21" data-name="スモーキーパープル 黒80%" title="スモーキーパープル 黒80% #160C21"></button>
+            <button class="swatch" style="background:#210C16" data-hex="#210C16" data-name="スモーキーピンク 黒80%" title="スモーキーピンク 黒80% #210C16"></button>
+            <button class="swatch" style="background:#21150C" data-hex="#21150C" data-name="スモーキーブラウン 黒80%" title="スモーキーブラウン 黒80% #21150C"></button>
+            <button class="swatch" style="background:#151618" data-hex="#151618" data-name="スモーキーグレー 黒80%" title="スモーキーグレー 黒80% #151618"></button>
           </div>
         </div>
 
@@ -2111,7 +2178,7 @@ main { max-width: 1100px; margin: 0 auto; }
           </div>
         </div>
 
-        <div class="swatch-family">
+        <div class="swatch-family is-base">
           <p class="family-label">統一トーン展開（#3B6EA5と同じ彩度・明度）</p>
           <div class="swatch-row">
             <button class="swatch" style="background:#A53B3B" data-hex="#A53B3B" data-name="スモーキーレッド" title="スモーキーレッド #A53B3B"></button>
@@ -2124,6 +2191,70 @@ main { max-width: 1100px; margin: 0 auto; }
             <button class="swatch" style="background:#A53B70" data-hex="#A53B70" data-name="スモーキーピンク" title="スモーキーピンク #A53B70"></button>
             <button class="swatch" style="background:#A5673B" data-hex="#A5673B" data-name="スモーキーブラウン" title="スモーキーブラウン #A5673B"></button>
             <button class="swatch" style="background:#677079" data-hex="#677079" data-name="スモーキーグレー" title="スモーキーグレー #677079"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +20%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#842F2F" data-hex="#842F2F" data-name="スモーキーレッド 黒20%" title="スモーキーレッド 黒20% #842F2F"></button>
+            <button class="swatch" style="background:#845A2F" data-hex="#845A2F" data-name="スモーキーオレンジ 黒20%" title="スモーキーオレンジ 黒20% #845A2F"></button>
+            <button class="swatch" style="background:#84762F" data-hex="#84762F" data-name="スモーキーイエロー 黒20%" title="スモーキーイエロー 黒20% #84762F"></button>
+            <button class="swatch" style="background:#2F842F" data-hex="#2F842F" data-name="スモーキーグリーン 黒20%" title="スモーキーグリーン 黒20% #2F842F"></button>
+            <button class="swatch" style="background:#2F847D" data-hex="#2F847D" data-name="スモーキーティール 黒20%" title="スモーキーティール 黒20% #2F847D"></button>
+            <button class="swatch" style="background:#2F5884" data-hex="#2F5884" data-name="スチールブルー 黒20%" title="スチールブルー 黒20% #2F5884"></button>
+            <button class="swatch" style="background:#582F84" data-hex="#582F84" data-name="スモーキーパープル 黒20%" title="スモーキーパープル 黒20% #582F84"></button>
+            <button class="swatch" style="background:#842F5A" data-hex="#842F5A" data-name="スモーキーピンク 黒20%" title="スモーキーピンク 黒20% #842F5A"></button>
+            <button class="swatch" style="background:#84522F" data-hex="#84522F" data-name="スモーキーブラウン 黒20%" title="スモーキーブラウン 黒20% #84522F"></button>
+            <button class="swatch" style="background:#525A61" data-hex="#525A61" data-name="スモーキーグレー 黒20%" title="スモーキーグレー 黒20% #525A61"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +40%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#632323" data-hex="#632323" data-name="スモーキーレッド 黒40%" title="スモーキーレッド 黒40% #632323"></button>
+            <button class="swatch" style="background:#634323" data-hex="#634323" data-name="スモーキーオレンジ 黒40%" title="スモーキーオレンジ 黒40% #634323"></button>
+            <button class="swatch" style="background:#635823" data-hex="#635823" data-name="スモーキーイエロー 黒40%" title="スモーキーイエロー 黒40% #635823"></button>
+            <button class="swatch" style="background:#236323" data-hex="#236323" data-name="スモーキーグリーン 黒40%" title="スモーキーグリーン 黒40% #236323"></button>
+            <button class="swatch" style="background:#23635E" data-hex="#23635E" data-name="スモーキーティール 黒40%" title="スモーキーティール 黒40% #23635E"></button>
+            <button class="swatch" style="background:#234263" data-hex="#234263" data-name="スチールブルー 黒40%" title="スチールブルー 黒40% #234263"></button>
+            <button class="swatch" style="background:#422363" data-hex="#422363" data-name="スモーキーパープル 黒40%" title="スモーキーパープル 黒40% #422363"></button>
+            <button class="swatch" style="background:#632343" data-hex="#632343" data-name="スモーキーピンク 黒40%" title="スモーキーピンク 黒40% #632343"></button>
+            <button class="swatch" style="background:#633E23" data-hex="#633E23" data-name="スモーキーブラウン 黒40%" title="スモーキーブラウン 黒40% #633E23"></button>
+            <button class="swatch" style="background:#3E4349" data-hex="#3E4349" data-name="スモーキーグレー 黒40%" title="スモーキーグレー 黒40% #3E4349"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +60%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#421818" data-hex="#421818" data-name="スモーキーレッド 黒60%" title="スモーキーレッド 黒60% #421818"></button>
+            <button class="swatch" style="background:#422D18" data-hex="#422D18" data-name="スモーキーオレンジ 黒60%" title="スモーキーオレンジ 黒60% #422D18"></button>
+            <button class="swatch" style="background:#423B18" data-hex="#423B18" data-name="スモーキーイエロー 黒60%" title="スモーキーイエロー 黒60% #423B18"></button>
+            <button class="swatch" style="background:#184218" data-hex="#184218" data-name="スモーキーグリーン 黒60%" title="スモーキーグリーン 黒60% #184218"></button>
+            <button class="swatch" style="background:#18423E" data-hex="#18423E" data-name="スモーキーティール 黒60%" title="スモーキーティール 黒60% #18423E"></button>
+            <button class="swatch" style="background:#182C42" data-hex="#182C42" data-name="スチールブルー 黒60%" title="スチールブルー 黒60% #182C42"></button>
+            <button class="swatch" style="background:#2C1842" data-hex="#2C1842" data-name="スモーキーパープル 黒60%" title="スモーキーパープル 黒60% #2C1842"></button>
+            <button class="swatch" style="background:#42182D" data-hex="#42182D" data-name="スモーキーピンク 黒60%" title="スモーキーピンク 黒60% #42182D"></button>
+            <button class="swatch" style="background:#422918" data-hex="#422918" data-name="スモーキーブラウン 黒60%" title="スモーキーブラウン 黒60% #422918"></button>
+            <button class="swatch" style="background:#292D30" data-hex="#292D30" data-name="スモーキーグレー 黒60%" title="スモーキーグレー 黒60% #292D30"></button>
+          </div>
+        </div>
+
+        <div class="swatch-family">
+          <p class="family-label">統一トーン展開 +80%ブラック</p>
+          <div class="swatch-row">
+            <button class="swatch" style="background:#210C0C" data-hex="#210C0C" data-name="スモーキーレッド 黒80%" title="スモーキーレッド 黒80% #210C0C"></button>
+            <button class="swatch" style="background:#21160C" data-hex="#21160C" data-name="スモーキーオレンジ 黒80%" title="スモーキーオレンジ 黒80% #21160C"></button>
+            <button class="swatch" style="background:#211D0C" data-hex="#211D0C" data-name="スモーキーイエロー 黒80%" title="スモーキーイエロー 黒80% #211D0C"></button>
+            <button class="swatch" style="background:#0C210C" data-hex="#0C210C" data-name="スモーキーグリーン 黒80%" title="スモーキーグリーン 黒80% #0C210C"></button>
+            <button class="swatch" style="background:#0C211F" data-hex="#0C211F" data-name="スモーキーティール 黒80%" title="スモーキーティール 黒80% #0C211F"></button>
+            <button class="swatch" style="background:#0C1621" data-hex="#0C1621" data-name="スチールブルー 黒80%" title="スチールブルー 黒80% #0C1621"></button>
+            <button class="swatch" style="background:#160C21" data-hex="#160C21" data-name="スモーキーパープル 黒80%" title="スモーキーパープル 黒80% #160C21"></button>
+            <button class="swatch" style="background:#210C16" data-hex="#210C16" data-name="スモーキーピンク 黒80%" title="スモーキーピンク 黒80% #210C16"></button>
+            <button class="swatch" style="background:#21150C" data-hex="#21150C" data-name="スモーキーブラウン 黒80%" title="スモーキーブラウン 黒80% #21150C"></button>
+            <button class="swatch" style="background:#151618" data-hex="#151618" data-name="スモーキーグレー 黒80%" title="スモーキーグレー 黒80% #151618"></button>
           </div>
         </div>
 
