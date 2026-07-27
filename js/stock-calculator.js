@@ -586,7 +586,9 @@ document.addEventListener('DOMContentLoaded', function () {
     livePanel.addEventListener('change', function (e) {
       const id = e.target && e.target.id;
       if (!id || !PROJECTION_IDS.includes(id)) return;
-      const parsed = parseFloat((e.target.value || '').replace(/,/g, ''));
+      // 空欄は0として扱う(データクリアで空にしたときもグラフ・表が入力どおりになる)
+      const raw = (e.target.value || '').replace(/,/g, '').trim();
+      const parsed = raw === '' ? 0 : parseFloat(raw);
       currentValues[id] = isNaN(parsed) ? currentValues[id] : parsed;
       clearTimeout(liveTimer);
       liveTimer = setTimeout(function () {
