@@ -147,11 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
      埋めるが設計書に合わせて上書き可能。解約返戻金を入れると返戻率と
      法人税軽減額累計が自動計算され、そのままグラフのDと折れ線になる ===== */
   const sheetBody = $('rbSheetBody');
-  // ユーザーが上書きしたセルは自動再入力しない(dirtyフラグ)。値が空に戻されたら自動に戻す
-  function sheetCell(id, def) {
-    return `<input type="number" id="${id}" data-def="${def}" class="rb-sheet-in" value="${def}" />`;
-  }
-  function buildSheet(years, ageNow, annual, lossRate) {
+  // 入力するのは解約返戻金だけ。それ以外の列はすべて自動計算で埋める。
+  // 上書きした返戻金セルは自動再入力しない(dirtyフラグ)。空に戻すと自動値に戻る
+  function buildSheet(years, ageNow, annual) {
     if (!sheetBody) return;
     const rows = sheetBody.querySelectorAll('tr');
     const needRebuild = rows.length !== years;
@@ -161,10 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
         html += `<tr>`
           + `<td class="is-auto">${t}年</td>`
           + `<td class="is-auto" id="rbShAge_${t}">${ageNow + t}歳</td>`
-          + `<td>${sheetCell('rbShCum_' + t, Math.round(annual * t))}</td>`
-          + `<td>${sheetCell('rbShSurr_' + t, Math.round(annual * t))}</td>`
+          + `<td class="is-auto" id="rbShCum_${t}">-</td>`
+          + `<td><input type="number" id="rbShSurr_${t}" data-def="${Math.round(annual * t)}" class="rb-sheet-in" value="${Math.round(annual * t)}" /></td>`
           + `<td class="is-auto" id="rbShRate_${t}">-</td>`
-          + `<td>${sheetCell('rbShDed_' + t, Math.round(annual * lossRate / 100))}</td>`
+          + `<td class="is-auto" id="rbShDed_${t}">-</td>`
           + `<td class="is-auto" id="rbShDefer_${t}">-</td>`
           + `</tr>`;
       }
@@ -177,41 +175,40 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     } else {
-      // 行数が同じときは、年齢と「上書きされていないセル」の自動値だけ更新する
+      // 行数が同じときは、年齢と「上書きされていない返戻金」の自動値だけ更新する
       for (let t = 1; t <= years; t += 1) {
         const ageEl = $('rbShAge_' + t);
         if (ageEl) ageEl.textContent = (ageNow + t) + '歳';
-        [['rbShCum_' + t, Math.round(annual * t)],
-         ['rbShSurr_' + t, Math.round(annual * t)],
-         ['rbShDed_' + t, Math.round(annual * lossRate / 100)]].forEach(function (pair) {
-          const el = $(pair[0]);
-          if (!el) return;
-          el.dataset.def = pair[1];
-          if (el.dataset.dirty !== '1') el.value = pair[1];
-        });
+        const surrEl = $('rbShSurr_' + t);
+        if (surrEl) {
+          surrEl.dataset.def = Math.round(annual * t);
+          if (surrEl.dataset.dirty !== '1') surrEl.value = Math.round(annual * t);
+        }
       }
     }
   }
-  // 設計書の入力(上書き)を読み取り、返戻率・法人税軽減額累計を再計算して返す
-  function collectSheet(years, corpTaxRate) {
+  // 解約返戻金(入力)以外を自動計算して表に反映し、グラフ用の系列を返す
+  function collectSheet(years, annual, lossRate, corpTaxRate) {
     const cum = [0], surr = [0], rate = [0], deferCum = [0];
-    let dedSum = 0;
+    const dedAnnual = annual * lossRate / 100;
     for (let t = 1; t <= years; t += 1) {
-      const cumEl = $('rbShCum_' + t), surrEl = $('rbShSurr_' + t), dedEl = $('rbShDed_' + t);
-      const cv = cumEl ? (window.numClean ? window.numClean(cumEl.value) : parseFloat(cumEl.value)) : NaN;
+      const c = annual * t;                      // 保険料累計(自動)
+      const surrEl = $('rbShSurr_' + t);
       const sv = surrEl ? (window.numClean ? window.numClean(surrEl.value) : parseFloat(surrEl.value)) : NaN;
-      const dv = dedEl ? (window.numClean ? window.numClean(dedEl.value) : parseFloat(dedEl.value)) : NaN;
-      const c = isNaN(cv) ? 0 : cv;
       const s = isNaN(sv) ? 0 : sv;
-      dedSum += isNaN(dv) ? 0 : dv;
+      const dc = dedAnnual * t * corpTaxRate / 100; // 法人税軽減額累計(自動)
       cum.push(c);
       surr.push(s);
       rate.push(c > 0 ? s / c : 0);
-      deferCum.push(dedSum * corpTaxRate / 100);
+      deferCum.push(dc);
+      const cumEl = $('rbShCum_' + t);
+      if (cumEl) cumEl.innerHTML = withUnit(fmt(c) + '万円');
       const rateEl = $('rbShRate_' + t);
       if (rateEl) rateEl.innerHTML = c > 0 ? withUnit((Math.round(s / c * 1000) / 10).toLocaleString('ja-JP') + '％') : '-';
+      const dedEl = $('rbShDed_' + t);
+      if (dedEl) dedEl.innerHTML = withUnit(fmt(dedAnnual) + '万円');
       const deferEl = $('rbShDefer_' + t);
-      if (deferEl) deferEl.innerHTML = withUnit(fmt(dedSum * corpTaxRate / 100) + '万円');
+      if (deferEl) deferEl.innerHTML = withUnit(fmt(dc) + '万円');
     }
     return { cum: cum, surr: surr, rate: rate, deferCum: deferCum };
   }
@@ -667,8 +664,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const outflowRate = Math.min(100, readValue('rbAccOutflowRate'));
 
     // 設計書を組み立ててから読み取り、A〜Dの系列を作る
-    buildSheet(accYears, ageNow, accAnnual, accLossRate);
-    const sheet = collectSheet(accYears, accCorpTax);
+    buildSheet(accYears, ageNow, accAnnual);
+    const sheet = collectSheet(accYears, accAnnual, accLossRate, accCorpTax);
     accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accCorpTax, sheet);
     renderAccPicker();
     drawAccChart(accSeries);

@@ -278,17 +278,17 @@
           </div>
         </div>
 
-        <p class="rb-sub">生命保険の設計書<span class="help-tip" tabindex="0">?<span class="help-text">お手元の設計書の数値をそのまま入力するための表です。保険料累計と損金算入額は拠出年額と損金割合から自動で入りますが、設計書に合わせて上書きできます。解約返戻金を入力すると返戻率は自動計算され、D(法人で保険で積立)のグラフにそのまま反映されます。法人税軽減額累計は損金算入額の累計に法人税率を掛けた自動計算です。</span></span><span class="rb-sub-val" id="rbSheetHint"></span></p>
+        <p class="rb-sub">生命保険の設計書<span class="help-tip" tabindex="0">?<span class="help-text">入力するのは<strong>解約返戻金だけ</strong>です。お手元の設計書の返戻金をそのまま書き写してください。保険料累計は拠出年額×経過年数、損金算入額は拠出年額×損金割合、返戻率は返戻金÷保険料累計、法人税軽減額累計は損金算入額の累計×法人税率で、すべて自動計算されます。返戻金はD(法人で保険で積立)のグラフにそのまま反映されます。</span></span><span class="rb-sub-val" id="rbSheetHint">入力は解約返戻金のみ</span></p>
         <div class="rb-sheet-wrap">
           <table class="rb-sheet">
             <thead>
               <tr>
                 <th>経過年数</th>
                 <th>年齢</th>
-                <th>保険料累計<span class="rb-th-unit">万円</span></th>
-                <th>解約返戻金<span class="rb-th-unit">万円</span></th>
+                <th>保険料累計<span class="rb-th-unit">自動</span></th>
+                <th>解約返戻金<span class="rb-th-unit">万円・入力</span></th>
                 <th>解約返戻率<span class="rb-th-unit">自動</span></th>
-                <th>損金算入額<span class="rb-th-unit">万円/年</span></th>
+                <th>損金算入額<span class="rb-th-unit">自動</span></th>
                 <th>法人税軽減額累計<span class="rb-th-unit">自動</span></th>
               </tr>
             </thead>
@@ -518,6 +518,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/retirement-benefit.js?v=20260727f"></script>
+<script src="js/retirement-benefit.js?v=20260727g"></script>
 </body>
 </html>
