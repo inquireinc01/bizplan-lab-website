@@ -2629,3 +2629,286 @@ svg {
     padding-bottom: 0.6rem;
   }
 }
+
+/* ========== 退職金×生命保険(1ページ完結) ==========
+   このページの肝は「給与で受け取る場合と退職金で受け取る場合の手取り差」。
+   最上部に比較グラフを置き、下の入力を変えると即座に動く構成にしている。
+   クラスはすべて .rb- 接頭辞でこのページ専用に閉じる */
+.rb-main {
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 1rem;
+  padding: 1.4rem 1.3rem 1.1rem;
+  box-shadow: 0 8px 24px rgba(15, 42, 74, 0.06);
+  text-align: center;
+}
+.rb-headline-lead {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-slate);
+  letter-spacing: 0.02em;
+}
+.rb-headline-num {
+  font-size: 2.6rem;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--color-navy);
+  margin: 0.1rem 0;
+  white-space: nowrap;
+}
+.rb-headline-tail {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  margin-bottom: 1.1rem;
+}
+@media (min-width: 640px) {
+  .rb-main { padding: 1.8rem 2rem 1.3rem; }
+  .rb-headline-num { font-size: 3.4rem; }
+  .rb-headline-lead { font-size: 0.85rem; }
+}
+
+/* --- 比較の帯グラフ(A:給与 / B:退職金) --- */
+.rb-bars {
+  text-align: left;
+}
+.rb-bar-row + .rb-bar-row {
+  margin-top: 0.8rem;
+}
+.rb-bar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+.rb-bar-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--color-gray-800);
+}
+.rb-bar-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 9999px;
+  background: var(--color-slate-light);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.rb-bar-tag.is-b {
+  background: var(--color-navy);
+}
+.rb-bar-note {
+  background: var(--color-blue-soft);
+  color: var(--color-blue-dark);
+  border-radius: 0.3rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+.rb-bar-net {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+.rb-bar-net-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-slate-light);
+  margin-right: 0.35rem;
+}
+.rb-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- 凡例 --- */
+.rb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.9rem;
+  margin-top: 0.85rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--color-gray-100);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-slate);
+}
+.rb-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.rb-sw {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 0.18rem;
+  flex-shrink: 0;
+}
+.rb-sw-1 { background: #0f2a4a; }
+.rb-sw-2 { background: #a83d3d; }
+.rb-sw-3 { background: #d79c9c; }
+.rb-legend-note {
+  margin-left: auto;
+  color: var(--color-gray-400);
+  font-weight: 700;
+}
+
+/* --- 入力・明細カード --- */
+.rb-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+@media (min-width: 768px) {
+  .rb-grid { grid-template-columns: 1fr 1fr; }
+}
+.rb-card {
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 1rem;
+  padding: 1.1rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+.rb-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--color-navy);
+  margin-bottom: 0.5rem;
+}
+.rb-card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.98rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  line-height: 1.4;
+}
+.rb-chip {
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: 0.3rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+.rb-chip.is-corp {
+  background: var(--color-blue-dark);
+}
+
+/* 1項目1行(左=項目名 / 右=入力欄) */
+.rb-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px dashed var(--color-gray-100);
+}
+.rb-field label {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-gray-600);
+}
+.rb-field-unit {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  margin-left: 0.3rem;
+}
+.rb-field input {
+  width: 8.5rem;
+  max-width: 45%;
+  text-align: right;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.rb-field input:disabled {
+  background: var(--color-gray-100);
+  color: var(--color-gray-400);
+}
+
+/* 入力カードの下端に出す小計 */
+.rb-sum {
+  margin-top: auto;
+  padding-top: 0.7rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-gray-200);
+}
+.rb-sum-label {
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: var(--color-slate);
+}
+.rb-sum-num {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+/* 明細の2列リスト */
+.rb-mini {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+}
+.rb-mini > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.32rem 0;
+}
+.rb-mini dt {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  color: var(--color-gray-600);
+}
+.rb-mini dd {
+  font-weight: 900;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+}
+.rb-mini dd.is-tax {
+  color: var(--color-red);
+}
+.rb-mini > div.is-total {
+  margin-top: 0.25rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--color-gray-200);
+}
+.rb-mini > div.is-total dt {
+  color: var(--color-gray-800);
+  font-weight: 900;
+}
+.rb-mini > div.is-total dd {
+  font-size: 1.15rem;
+  color: var(--color-navy);
+}

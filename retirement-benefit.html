@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072732" />
+<link rel="stylesheet" href="css/style.css?v=2026072733" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -107,12 +107,12 @@
 <main>
 
   <!-- ===== ページヒーロー ===== -->
-  <section class="hero-pattern relative py-4 sm:py-5">
+  <section class="hero-pattern relative py-1 sm:py-2">
     <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
         <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1">RETIREMENT &amp; INSURANCE</p>
         <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">退職金×生命保険<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
-        <p class="font-brand-en coming-soon-glow font-black tracking-[0.15em] text-2xl sm:text-3xl mt-1">COMING SOON</p>
+        <p class="hero-io-badge font-brand-en coming-soon-glow font-black tracking-[0.15em]">INPUT / OUTPUT</p>
         <p class="hero-info-text hidden">同じ金額を「給与として一括で受け取る場合」と「生命保険の解約返戻金を原資に退職金として一括受給する場合」とで、所得税・住民税の負担がどれだけ変わるかを比較します。退職所得は退職所得控除と1/2課税により税負担が大きく軽減される仕組みです。</p>
       </div>
       <div class="hero-actions" data-backup-keys="bpl_retirement_benefit_v1">
@@ -142,173 +142,151 @@
     </div>
   </section>
 
-  <section class="py-16 sm:py-20">
-    <div class="max-w-4xl mx-auto px-5">
-      <form id="retirementForm" class="space-y-10">
+  <section class="py-5 sm:py-7">
+    <div id="rbTool" class="max-w-5xl mx-auto px-5 space-y-5">
 
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">1. 退職金額の算定(功績倍率法)</h3>
-          <p class="text-xs text-gray-500 mb-5">役員退職金の適正額の目安を、実務でよく用いられる功績倍率法で算定します。</p>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="finalMonthlySalary">最終報酬月額(万円)</label>
-              <input type="number" id="finalMonthlySalary" value="150" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 150" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="yearsOfService">役員在任年数(年)</label>
-              <input type="number" id="yearsOfService" value="25" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 25" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="meritMultiplier">功績倍率</label>
-              <input type="number" id="meritMultiplier" value="3.0" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 3.0" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="meritAddRate">功労加算率(%)</label>
-              <input type="number" id="meritAddRate" value="0" step="1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
-            </div>
-          </div>
-          <details class="mt-4 text-xs text-gray-500">
-            <summary class="cursor-pointer font-medium text-gray-600">功績倍率の目安を見る</summary>
-            <p class="mt-2 leading-relaxed">
-              功績倍率は役職により異なり、代表取締役はおおむね3.0倍程度、専務・常務クラスは2.2〜2.4倍程度が実務上の目安とされています。功労加算は特別な功労があった場合に上乗せするもので、一般に30%程度が上限の目安とされています。実際の適正額は会社の規模や同業他社の水準等を踏まえて個別に判断する必要があります。
+      <!-- ===== このページの主役: 給与で受け取る場合と退職金で受け取る場合の手取り差 ===== -->
+      <div class="rb-main">
+        <p class="rb-headline-lead">同じ金額を退職金として受け取ると、手取りが<span class="help-tip" tabindex="0">?<span class="help-text">退職所得は「退職所得控除」を差し引いた残りの2分の1だけが課税対象になり、他の所得と分離して課税されます。そのため同じ支給額でも、給与として一括で受け取る場合に比べて所得税・住民税の負担が大きく軽くなります。</span></span></p>
+        <p class="rb-headline-num" id="sumDiff">-</p>
+        <p class="rb-headline-tail" id="rbDiffTail">多く残ります</p>
+
+        <div class="rb-bars">
+          <div class="rb-bar-row">
+            <p class="rb-bar-head">
+              <span class="rb-bar-name"><span class="rb-bar-tag">A</span>給与として受給</span>
+              <span class="rb-bar-net"><span class="rb-bar-net-label">手取り</span><span id="sumA">-</span></span>
             </p>
-          </details>
-          <div class="notice-box text-sm rounded-lg p-4 mt-5 leading-relaxed">
-            算定される退職金額(万円): <span id="retirementAmountDisplay" class="font-black text-base">-</span>
+            <svg id="rbChartA" class="rb-chart" viewBox="0 0 560 44"></svg>
           </div>
-        
+          <div class="rb-bar-row">
+            <p class="rb-bar-head">
+              <span class="rb-bar-name"><span class="rb-bar-tag is-b">B</span>退職金として受給<span class="rb-bar-note">生命保険を活用</span></span>
+              <span class="rb-bar-net"><span class="rb-bar-net-label">手取り</span><span id="sumB">-</span></span>
+            </p>
+            <svg id="rbChartB" class="rb-chart" viewBox="0 0 560 44"></svg>
+          </div>
+        </div>
+
+        <p class="rb-legend">
+          <span class="rb-legend-item"><i class="rb-sw rb-sw-1"></i>手取り</span>
+          <span class="rb-legend-item"><i class="rb-sw rb-sw-2"></i>所得税</span>
+          <span class="rb-legend-item"><i class="rb-sw rb-sw-3"></i>住民税</span>
+          <span class="rb-legend-note">どちらも支給額 <span id="rbPayout">-</span> で比較</span>
+        </p>
+      </div>
+
+      <!-- ===== 入力(変更するとグラフが動く) ===== -->
+      <div class="rb-grid">
+
+        <div class="rb-card" data-clear-scope>
+          <div class="rb-card-head">
+            <h2 class="rb-card-title">退職金額の算定<span class="rb-chip">功績倍率法</span><span class="help-tip" tabindex="0">?<span class="help-text">役員退職金の適正額の目安を、実務でよく用いられる功績倍率法で算定します。功績倍率は代表取締役でおおむね3.0倍程度、専務・常務クラスで2.2〜2.4倍程度が目安。功労加算は特別な功労があった場合の上乗せで、一般に30%程度が上限の目安とされています。過大と判断されると損金算入が否認されるリスクがあります。</span></span></h2>
+            <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
+          </div>
+
+          <div class="rb-field">
+            <label for="finalMonthlySalary">最終報酬月額<span class="rb-field-unit">万円</span></label>
+            <input type="number" id="finalMonthlySalary" value="150" class="form-input num-input" placeholder="例: 150" />
+          </div>
+          <div class="rb-field">
+            <label for="yearsOfService">役員在任年数<span class="rb-field-unit">年</span><span class="help-tip" tabindex="0">?<span class="help-text">退職所得控除額の計算にも使います。20年以下は1年あたり40万円、20年超の部分は1年あたり70万円で控除枠が増えます。</span></span></label>
+            <input type="number" id="yearsOfService" value="25" class="form-input num-input" placeholder="例: 25" />
+          </div>
+          <div class="rb-field">
+            <label for="meritMultiplier">功績倍率<span class="rb-field-unit">倍</span></label>
+            <input type="number" id="meritMultiplier" value="3.0" step="0.1" class="form-input num-input" placeholder="例: 3.0" />
+          </div>
+          <div class="rb-field">
+            <label for="meritAddRate">功労加算率<span class="rb-field-unit">％</span></label>
+            <input type="number" id="meritAddRate" value="0" step="1" class="form-input num-input" placeholder="例: 0" />
+          </div>
+
+          <p class="rb-sum"><span class="rb-sum-label">支給する退職金額</span><span class="rb-sum-num" id="retirementAmountDisplay">-</span></p>
+
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl><dt>功績倍率法による退職金額</dt><dd><code>最終月額報酬 × 勤続年数 × 功績倍率 × (1 ＋ 功績加算率 ÷ 100)</code></dd><dt>功績倍率の目安</dt><dd>役職に応じた倍率を用います（社長3.0倍程度が一般的な目安）。過大と判断されると損金算入が否認されるリスクがあります。</dd></dl>
             <p class="calc-logic-note">功績加算率は特別功労金等の上乗せ割合です。金額は万円単位です。</p>
           </div>
-</div>
-
-        <div class="calc-section bg-white p-6 sm:p-8">
-          <h3 class="font-bold text-base mb-1">2. 生命保険(退職金原資)の情報</h3>
-          <p class="text-xs text-gray-500 mb-5">退職時に解約し、退職金の原資とする生命保険の解約返戻金の情報を入力してください。</p>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="surrenderValue">解約返戻金見込額(万円)</label>
-              <input type="number" id="surrenderValue" value="4500" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 4,500" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="bookValue">資産計上額(万円)</label>
-              <input type="number" id="bookValue" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5" for="corpTaxRateRb">法人税率(%)</label>
-              <input type="number" id="corpTaxRateRb" value="30" step="0.1" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
-            </div>
-          </div>
-        
-          <div class="calc-logic">
-            <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>保険差益（益金算入額）</dt><dd><code>max(0, 解約返戻金 − 資産計上額（簿価）)</code></dd><dt>位置づけ</dt><dd>退職金の原資として保険を解約する場合、返戻金のうち簿価を超える部分が法人の益金となります。この益金を退職金の損金で相殺する設計が基本になります。</dd></dl>
-            
-          </div>
-</div>
-
-        <div id="rbErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
-
-        <div class="flex flex-col sm:flex-row gap-4">
-          <button type="submit" class="btn-primary flex-1 py-3.5 rounded-full font-bold">比較する</button>
-          <button type="button" id="rbFieldClearBtn" class="btn-outline py-3.5 px-8 rounded-full font-bold">入力データクリア</button>
         </div>
-      </form>
 
+        <div class="rb-card" data-clear-scope>
+          <div class="rb-card-head">
+            <h2 class="rb-card-title">退職金の原資<span class="rb-chip is-corp">法人契約の生命保険</span><span class="help-tip" tabindex="0">?<span class="help-text">退職時に解約し、退職金の原資とする生命保険の情報です。解約返戻金のうち資産計上額(簿価)を超える部分が法人の益金になり、この益金を退職金の損金で相殺する設計が基本になります。</span></span></h2>
+            <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
+          </div>
 
-      <!-- 結果表示 -->
-      <div id="rbResultArea" class="hidden mt-10 space-y-8">
+          <div class="rb-field">
+            <label for="surrenderValue">解約返戻金見込額<span class="rb-field-unit">万円</span></label>
+            <input type="number" id="surrenderValue" value="4500" class="form-input num-input" placeholder="例: 4,500" />
+          </div>
+          <div class="rb-field">
+            <label for="bookValue">資産計上額<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">解約時点の保険積立金の簿価です。全額損金タイプの保険であれば0になります。</span></span></label>
+            <input type="number" id="bookValue" value="0" class="form-input num-input" placeholder="例: 0" />
+          </div>
+          <div class="rb-field">
+            <label for="corpTaxRateRb">法人税率<span class="rb-field-unit">％</span></label>
+            <input type="number" id="corpTaxRateRb" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
+          </div>
 
-        <div class="calc-section bg-white p-6">
-          <h4 class="font-bold text-sm mb-4">法人側への影響(参考)</h4>
-          <dl class="space-y-2 text-sm">
-            <div class="flex justify-between"><dt class="text-gray-500">退職金の損金算入額</dt><dd id="rbCorpDeduction" class="font-bold text-[#a83d3d]"></dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">保険差益(益金算入額)</dt><dd id="rbCorpGain" class="font-bold"></dd></div>
-            <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">法人税への影響額</dt><dd id="rbCorpTaxImpact" class="font-black text-[#2d5580]"></dd></div>
+          <dl class="rb-mini">
+            <div><dt>保険差益(益金算入額)</dt><dd id="rbCorpGain">-</dd></div>
+            <div><dt>退職金の損金算入額</dt><dd id="rbCorpDeduction">-</dd></div>
+            <div class="is-total"><dt>法人税への影響額<span class="help-tip" tabindex="0">?<span class="help-text">△(マイナス)なら法人税の軽減、プラスなら追加の税負担が生じる試算結果です。<code>(保険差益 − 退職金の損金) × 法人税率</code>で計算しています。</span></span></dt><dd id="rbCorpTaxImpact">-</dd></div>
           </dl>
-        
+
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>退職金の損金算入額</dt><dd>上記で算定した退職金額をそのまま損金として計上します。</dd><dt>法人税への影響</dt><dd><code>(保険差益 − 退職金の損金) × 法人税率</code></dd><dt>符号の意味</dt><dd>マイナスなら法人税の軽減（節税）、プラスなら追加の税負担が生じる試算結果です。</dd></dl>
-            
+            <dl><dt>保険差益（益金算入額）</dt><dd><code>max(0, 解約返戻金 − 資産計上額（簿価）)</code></dd><dt>退職金の損金算入額</dt><dd>左で算定した退職金額をそのまま損金として計上します。</dd><dt>法人税への影響</dt><dd><code>(保険差益 − 退職金の損金) × 法人税率</code></dd><dt>符号の意味</dt><dd>△(マイナス)なら法人税の軽減（節税）、プラスなら追加の税負担が生じる試算結果です。</dd></dl>
           </div>
-</div>
+        </div>
+      </div>
 
-        <div class="grid sm:grid-cols-2 gap-6">
-          <!-- シナリオA -->
-          <div class="calc-section bg-white p-6">
-            <h4 class="font-bold text-sm mb-4">A. 給与として一括受給</h4>
-            <dl class="space-y-2 text-sm">
-              <div class="flex justify-between"><dt class="text-gray-500">支給額</dt><dd id="aIncome" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">給与所得控除額</dt><dd id="aDeduction" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">課税所得(基礎控除後)</dt><dd id="aTaxable" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">所得税</dt><dd id="aIncomeTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">住民税(10%)</dt><dd id="aResidentTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">手取り額</dt><dd id="aNet" class="font-black text-[#2d5580]"></dd></div>
-            </dl>
-          
+      <!-- ===== 明細 ===== -->
+      <div class="rb-grid">
+
+        <div class="rb-card">
+          <div class="rb-card-head">
+            <h2 class="rb-card-title"><span class="rb-bar-tag">A</span>給与として一括受給</h2>
+          </div>
+          <dl class="rb-mini">
+            <div><dt>支給額</dt><dd id="aIncome">-</dd></div>
+            <div><dt>給与所得控除額</dt><dd id="aDeduction">-</dd></div>
+            <div><dt>課税所得(基礎控除後)</dt><dd id="aTaxable">-</dd></div>
+            <div><dt>所得税</dt><dd id="aIncomeTax" class="is-tax">-</dd></div>
+            <div><dt>住民税(10％)</dt><dd id="aResidentTax" class="is-tax">-</dd></div>
+            <div class="is-total"><dt>手取り額</dt><dd id="aNet">-</dd></div>
+          </dl>
+
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl><dt>給与所得控除額</dt><dd>2020年分以降の規定で計算します。<code>162.5万円以下→55万円 / 180万円以下→収入×40%−10万円 / 360万円以下→収入×30%＋8万円 / 660万円以下→収入×20%＋44万円 / 850万円以下→収入×10%＋110万円 / 850万円超→195万円（上限）</code></dd><dt>課税所得</dt><dd><code>max(0, 収入 − 給与所得控除 − 基礎控除48万円)</code></dd><dt>所得税</dt><dd>超過累進税率で計算します。<code>195万円以下5% / 330万円以下10%(−9.75万円) / 695万円以下20%(−42.75万円) / 900万円以下23%(−63.6万円) / 1,800万円以下33%(−153.6万円) / 4,000万円以下40%(−279.6万円) / 4,000万円超45%(−479.6万円)</code></dd><dt>住民税</dt><dd><code>課税所得 × 10%</code></dd><dt>手残り</dt><dd><code>収入 − 所得税 − 住民税</code></dd></dl>
-            
           </div>
-</div>
+        </div>
 
-          <!-- シナリオB -->
-          <div class="calc-section bg-white p-6">
-            <h4 class="font-bold text-sm mb-4">B. 退職金として一括受給(生命保険活用)</h4>
-            <dl class="space-y-2 text-sm">
-              <div class="flex justify-between"><dt class="text-gray-500">支給額</dt><dd id="bIncome" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">退職所得控除額</dt><dd id="bDeduction" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">退職所得(1/2後)</dt><dd id="bTaxable" class="font-bold"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">所得税</dt><dd id="bIncomeTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between"><dt class="text-gray-500">住民税(10%)</dt><dd id="bResidentTax" class="font-bold text-[#a83d3d]"></dd></div>
-              <div class="flex justify-between pt-2 border-t border-gray-200"><dt class="font-bold">手取り額</dt><dd id="bNet" class="font-black text-[#2d5580]"></dd></div>
-            </dl>
-          
+        <div class="rb-card">
+          <div class="rb-card-head">
+            <h2 class="rb-card-title"><span class="rb-bar-tag is-b">B</span>退職金として一括受給</h2>
+          </div>
+          <dl class="rb-mini">
+            <div><dt>支給額</dt><dd id="bIncome">-</dd></div>
+            <div><dt>退職所得控除額<span class="help-tip" tabindex="0">?<span class="help-text">勤続20年以下は<code>勤続年数×40万円</code>、20年超は<code>800万円＋(勤続年数−20)×70万円</code>です。在任年数が長いほど枠が大きくなります。</span></span></dt><dd id="bDeduction">-</dd></div>
+            <div><dt>退職所得(1/2後)</dt><dd id="bTaxable">-</dd></div>
+            <div><dt>所得税</dt><dd id="bIncomeTax" class="is-tax">-</dd></div>
+            <div><dt>住民税(10％)</dt><dd id="bResidentTax" class="is-tax">-</dd></div>
+            <div class="is-total"><dt>手取り額</dt><dd id="bNet">-</dd></div>
+          </dl>
+
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl><dt>退職所得控除額</dt><dd><code>勤続20年以下 → 勤続年数 × 40万円</code>、<code>勤続20年超 → 800万円 ＋ (勤続年数 − 20) × 70万円</code></dd><dt>課税退職所得</dt><dd><code>(収入 − 退職所得控除) × 1/2</code>（2分の1課税）</dd><dt>所得税・住民税</dt><dd>所得税はAと同じ超過累進税率、住民税は <code>課税退職所得 × 10%</code>。退職所得は他の所得と分離して課税されます。</dd><dt>手残り</dt><dd><code>収入 − 所得税 − 住民税</code></dd><dt>AとBの差額</dt><dd><code>Bの手残り − Aの手残り</code>。退職所得控除と2分の1課税により、同額でも退職金として受け取る方が手残りが多くなります。</dd></dl>
             <p class="calc-logic-note">復興特別所得税、社会保険料、各種所得控除（配偶者控除等）は考慮していません。</p>
           </div>
-</div>
-        </div>
-
-        <!-- 比較サマリー -->
-        <div class="calc-result-card p-6 sm:p-10">
-          <h3 class="font-black text-xl mb-6">手取り額の比較</h3>
-          <div class="mb-8">
-            <div class="flex justify-between text-xs text-white/70 mb-1">
-              <span>A. 給与として受給</span>
-              <span>B. 退職金として受給</span>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div id="barA" class="h-full bg-white rounded-full" style="width:0%"></div>
-              </div>
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div id="barB" class="h-full bg-[#7bb0dc] rounded-full" style="width:0%"></div>
-              </div>
-            </div>
-          </div>
-          <div class="grid sm:grid-cols-3 gap-6">
-            <div>
-              <p class="text-xs text-white/70 mb-1">A. 給与で受給した場合の手取り</p>
-              <p id="sumA" class="text-xl font-black"></p>
-            </div>
-            <div>
-              <p class="text-xs text-white/70 mb-1">B. 退職金で受給した場合の手取り</p>
-              <p id="sumB" class="text-xl font-black"></p>
-            </div>
-            <div>
-              <p class="text-xs text-white/70 mb-1">差額(B-A)</p>
-              <p id="sumDiff" class="text-xl font-black"></p>
-            </div>
-          </div>
         </div>
       </div>
+
+      <div id="rbErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4"></div>
     </div>
   </section>
 
@@ -406,6 +384,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/retirement-benefit.js?v=20260723c"></script>
+<script src="js/retirement-benefit.js?v=20260727a"></script>
 </body>
 </html>
