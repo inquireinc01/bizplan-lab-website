@@ -136,7 +136,7 @@
     <div class="max-w-7xl mx-auto px-5 sm:px-8">
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-        <a href="design-glossary.html" target="_blank" rel="noopener" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+        <a href="design-glossary.html" target="_blank" rel="noopener" data-open-window="designGlossary" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
           <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black opacity-10 pointer-events-none select-none" style="color:#a83d3d">DESIGN</span>
           <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#a83d3d"></span>
           <div class="mb-5">
@@ -146,7 +146,7 @@
           <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#a83d3d">Design Glossary</p>
           <h2 class="mb-3 leading-tight"><span class="font-black text-2xl text-[#0f2a4a]">デザイン用語集</span></h2>
           <p class="text-sm text-gray-600 leading-relaxed mb-5">Claudeへの指示に使うデザイン専門用語の早見表。配色パレット・OS標準フォント・ボタン配色の見本も収録しています。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">別タブで開く <span aria-hidden="true">&rarr;</span></span>
+          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">別ウインドウで開く <span aria-hidden="true">&rarr;</span></span>
         </a>
 
         <div class="relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden opacity-60">
@@ -240,5 +240,25 @@
 
 <script src="js/menu.js?v=20260727a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
+<script>
+  // data-open-window付きのリンクは、タブではなく別ウインドウで開く。
+  // 他の作業と並べて見られるよう、画面の右半分に寄せたサイズで開く。
+  // 同じ名前を使うので、2回目以降は既に開いているウインドウを前面に出すだけ。
+  document.querySelectorAll('[data-open-window]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      // 作業画面と並べられるよう、横幅は画面の45%程度(最大1100px)に収める
+      var w = Math.max(560, Math.min(1100, Math.round(screen.availWidth * 0.45)));
+      var h = Math.max(480, screen.availHeight - 80);
+      var left = Math.max(0, screen.availWidth - w - 20);
+      var feat = 'popup=yes,width=' + w + ',height=' + h + ',left=' + left
+        + ',top=20,resizable=yes,scrollbars=yes';
+      var win = window.open(link.href, link.dataset.openWindow, feat);
+      // ポップアップがブロックされた場合は通常の遷移(別タブ)にフォールバックする
+      if (!win) { window.open(link.href, '_blank', 'noopener'); return; }
+      win.focus();
+    });
+  });
+</script>
 </body>
 </html>
