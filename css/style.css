@@ -3028,3 +3028,44 @@ svg {
   border-color: var(--color-navy);
   color: #fff;
 }
+
+/* 積立比較グラフ: 折れ線(法人税の繰延累計)の凡例 */
+.rb-sw-line {
+  height: 0.2rem;
+  width: 0.9rem;
+  border-radius: 999px;
+  background: #a83d3d;
+}
+/* 損金割合の「手入力」だけは他のボタンと区別できるよう枠線を破線にする */
+.rb-seg-btn.is-manual {
+  border-style: dashed;
+  flex: 0 0 auto;
+}
+
+/* 積み立て方の選択タイル(自社株の評価額タイルと同じランプ式・2つまで) */
+.rb-acc-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0.35rem 0 0.9rem;
+  text-align: left;
+}
+@media (min-width: 768px) {
+  .rb-acc-picker { grid-template-columns: repeat(4, 1fr); }
+}
+.rb-acc-pick {
+  padding-left: 1.6rem !important;
+}
+.rb-acc-pick .tile-lamp {
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* 積立期間の自動表示(退職年齢の右) */
+.rb-plan-room {
+  display: inline;
+  margin-left: 0.5em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2d5580;
+  white-space: nowrap;
+}

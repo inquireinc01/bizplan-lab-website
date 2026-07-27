@@ -128,20 +128,37 @@ document.addEventListener('DOMContentLoaded', function () {
      同じ原資を「役員報酬として受け取って個人で積み立てる(A)」場合と
      「法人が生命保険料として払い込む(B)」場合で、残高がどう開いていくかを見せる。
      Aは所得税・住民税・社会保険料が引かれた手取りしか積み立てられないのが差の源泉 ===== */
-  const ACC_A_COLOR = '#8b98a8';
-  const ACC_B_COLOR = '#0f2a4a';
+  const ACC_LINE_COLOR = '#a83d3d';
+  // 積み立て方の4パターン。同時に表示できるのは2つまで(自社株の評価額グラフと同じ)
+  const ACC_SCN = {
+    persCash: { label: '給与で受け取り、個人で貯蓄', short: '個人で貯蓄', color: '#8b98a8' },
+    persIns: { label: '給与で受け取り、手取り全額を個人の保険で積立', short: '個人の保険', color: '#55677d' },
+    corpCash: { label: '法人で税引後のキャッシュを積立', short: '法人のキャッシュ', color: '#3b6ea5' },
+    corpIns: { label: '法人の生命保険で積立', short: '法人の保険', color: '#0f2a4a' },
+  };
+  // 既定は「給与で払い、個人で積み立てる」のみ表示
+  let accSelected = ['persCash'];
   let accSeries = null;
   let accLayout = null;
+  let accAgeNow = 0;
 
-  function buildAccSeries(annual, years, outflowRate, yieldSelf, yieldIns) {
-    const netAnnual = annual * (1 - outflowRate / 100);
-    const series = [{ year: 0, a: 0, b: 0, netAnnual: netAnnual }];
-    let a = 0, b = 0;
+  // defer: 損金算入により繰り延べられる法人税の累計(法人の保険を選んだときだけ意味を持つ)
+  function buildAccSeries(annual, years, outflowRate, surrenderRate, lossRate, corpTaxRate) {
+    const netAnnual = annual * (1 - outflowRate / 100);        // 個人の手取り
+    const corpNetAnnual = annual * (1 - corpTaxRate / 100);    // 法人の税引後
+    const sr = surrenderRate / 100;
+    const deferAnnual = annual * (lossRate / 100) * (corpTaxRate / 100);
+    const series = [{ year: 0, persCash: 0, persIns: 0, corpCash: 0, corpIns: 0, paid: 0, defer: 0 }];
     for (let t = 1; t <= years; t += 1) {
-      // 期首払い(年初に払い込み、その年の運用がつく)
-      a = (a + netAnnual) * (1 + yieldSelf / 100);
-      b = (b + annual) * (1 + yieldIns / 100);
-      series.push({ year: t, a: a, b: b });
+      series.push({
+        year: t,
+        persCash: netAnnual * t,
+        persIns: netAnnual * t * sr,
+        corpCash: corpNetAnnual * t,
+        corpIns: annual * t * sr,
+        paid: annual * t,
+        defer: deferAnnual * t,
+      });
     }
     return series;
   }
@@ -149,59 +166,93 @@ document.addEventListener('DOMContentLoaded', function () {
   function drawAccChart(series) {
     const svg = $('rbAccChart');
     if (!svg) return;
-    const W = 800, H = 320, padL = 80, padR = 20, padT = 20, padB = 40, SVG_W = 830;
+    // 右側に法人税の繰延累計の目盛りを置くため、右の余白を広めに取る
+    const W = 800, H = 320, padL = 78, padR = 78, padT = 20, padB = 40, SVG_W = 830;
     const plotW = W - padL - padR;
     const plotH = H - padT - padB;
     const yBottom = H - padB;
+    const xRight = W - padR;
 
-    const rawMax = Math.max.apply(null, series.map((p) => Math.max(p.a, p.b)).concat([1]));
+    const activeKeys = accSelected;
+    const rawMax = Math.max.apply(null, series.flatMap((p) => activeKeys.map((k) => p[k])).concat([1]));
     const maxV = rawMax * 1.08;
     const y = (v) => yBottom - (v / (maxV || 1)) * plotH;
+
+    // 法人の保険を表示しているときだけ、法人税の繰延累計の折れ線と右目盛りを出す
+    const showDefer = activeKeys.indexOf('corpIns') >= 0;
+    const rawMaxD = Math.max.apply(null, series.map((p) => p.defer).concat([1]));
+    const maxD = rawMaxD * 1.08;
+    const yD = (v) => yBottom - (v / (maxD || 1)) * plotH;
+
     const slotWidth = plotW / series.length;
 
+    // 左目盛り(積立額)と右目盛り(法人税の繰延累計)
     let gridLines = '';
     for (let i = 0; i <= 4; i += 1) {
-      const gv = (maxV * i) / 4;
-      const gy = y(gv);
-      gridLines += `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${W - padR}" y2="${gy.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
-      gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round(gv).toLocaleString('ja-JP')}</text>`;
+      const gy = y((maxV * i) / 4);
+      gridLines += `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${xRight}" y2="${gy.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
+      gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round((maxV * i) / 4).toLocaleString('ja-JP')}</text>`;
+      if (showDefer) {
+        gridLines += `<text x="${xRight + 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="${ACC_LINE_COLOR}" fill-opacity="0.75" text-anchor="start">${Math.round((maxD * i) / 4).toLocaleString('ja-JP')}</text>`;
+      }
     }
 
-    // A・Bはどちらも高さを読み取れることが大事なので、重ねずに横に並べる
-    const barWidth = slotWidth * 0.36;
-    const gap = slotWidth * 0.06;
-    const groupWidth = barWidth * 2 + gap;
+    // 自社株の推移グラフと同じ「少しずらして重ねる」グループ棒。
+    // 透過色で重ねることで、ボリュームの差が塗りの濃さとしても見えるようにする
+    const barWidth = slotWidth * 0.68;
+    const overlapOffset = barWidth / 3;
+    const groupWidth = activeKeys.length === 1 ? barWidth : barWidth + overlapOffset;
     let bars = '';
-    [{ key: 'a', color: ACC_A_COLOR, op: 0.65 }, { key: 'b', color: ACC_B_COLOR, op: 0.92 }]
-      .forEach(function (s, si) {
-        series.forEach(function (p, i) {
-          const barY = y(p[s.key]);
-          const barH = Math.max(0, yBottom - barY);
-          if (barH <= 0) return;
-          const groupStart = padL + i * slotWidth + (slotWidth - groupWidth) / 2;
-          const barX = groupStart + si * (barWidth + gap);
-          const delay = (i * 20 + si * 15).toFixed(0);
-          bars += `<rect class="chart-bar" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}"`
-            + ` fill="${s.color}" fill-opacity="${s.op}" rx="1.2" style="animation-delay:${delay}ms"/>`;
-        });
+    activeKeys.forEach(function (key, si) {
+      const color = ACC_SCN[key].color;
+      series.forEach(function (p, i) {
+        const barY = y(p[key]);
+        const barH = Math.max(0, yBottom - barY);
+        if (barH <= 0) return;
+        const groupStart = padL + i * slotWidth + (slotWidth - groupWidth) / 2;
+        const barX = groupStart + si * overlapOffset;
+        const delay = (i * 20 + si * 15).toFixed(0);
+        bars += `<rect class="chart-bar" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}"`
+          + ` fill="${color}" fill-opacity="0.5" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1" rx="1.5" style="animation-delay:${delay}ms"/>`;
       });
+    });
 
+    // 繰り延べられる法人税の累計(右目盛りの折れ線)
+    let line = '';
+    if (showDefer && rawMaxD > 0) {
+      const pts = series.map(function (p, i) {
+        return `${(padL + i * slotWidth + slotWidth / 2).toFixed(1)},${yD(p.defer).toFixed(1)}`;
+      }).join(' ');
+      const lastP = series[series.length - 1];
+      const x0 = padL + slotWidth / 2;
+      const x1 = padL + (series.length - 1) * slotWidth + slotWidth / 2;
+      line = `<polygon points="${x0.toFixed(1)},${yBottom} ${pts} ${x1.toFixed(1)},${yBottom}" fill="${ACC_LINE_COLOR}" fill-opacity="0.08"/>`
+        + `<polyline points="${pts}" fill="none" stroke="${ACC_LINE_COLOR}" stroke-width="2.2" stroke-opacity="0.85" stroke-linejoin="round" stroke-linecap="round"/>`
+        + `<circle cx="${x1.toFixed(1)}" cy="${yD(lastP.defer).toFixed(1)}" r="3.5" fill="${ACC_LINE_COLOR}"/>`;
+    }
+
+    // 横軸は年齢で表示する(現在の年齢〜退職年齢)
     let xLabels = '';
     const last = series.length - 1;
     const stepYear = last > 45 ? 10 : 5;
+    const ageLabel = (yr) => (accAgeNow > 0 ? (accAgeNow + yr) + '歳' : (yr === 0 ? '現在' : yr + '年'));
     for (let yr = 0; yr <= last; yr += stepYear) {
+      if (last % stepYear !== 0 && yr > last - stepYear * 0.6) break; // 端のラベルと重なるものは省く
       const gx = padL + yr * slotWidth + slotWidth / 2;
-      xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yr === 0 ? '現在' : yr + '年'}</text>`;
+      xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${ageLabel(yr)}</text>`;
     }
-    if (last % stepYear !== 0) {
+    if (last > 0) {
       const gx = padL + last * slotWidth + slotWidth / 2;
-      xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${last}年</text>`;
+      if (last % stepYear !== 0) {
+        xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${ageLabel(last)}</text>`;
+      }
     }
 
     svg.innerHTML = `${gridLines}`
       + `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
-      + `<line x1="${padL}" y1="${yBottom}" x2="${W - padR}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
-      + `${xLabels}${bars}`;
+      + `<line x1="${xRight}" y1="${padT}" x2="${xRight}" y2="${yBottom}" stroke="${ACC_LINE_COLOR}" stroke-opacity="0.25" stroke-width="1"/>`
+      + `<line x1="${padL}" y1="${yBottom}" x2="${xRight}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
+      + `${xLabels}${bars}${line}`;
 
     accLayout = { W: SVG_W, padL: padL, slotWidth: slotWidth, count: series.length };
   }
@@ -219,10 +270,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const idx = Math.floor((xViewbox - accLayout.padL) / accLayout.slotWidth);
     if (idx < 0 || idx >= accLayout.count) { accTooltip.classList.add('hidden'); return; }
     const p = accSeries[idx];
-    accTooltip.innerHTML = `<p class="font-black mb-1">${p.year === 0 ? '現在' : p.year + '年後'}</p>`
-      + `<p class="flex justify-between gap-3"><span class="text-gray-500">A. 個人で積立</span><span class="font-bold">${withUnit(man(p.a))}</span></p>`
-      + `<p class="flex justify-between gap-3"><span class="text-gray-500">B. 法人の保険</span><span class="font-bold">${withUnit(man(p.b))}</span></p>`
-      + `<p class="flex justify-between gap-3 mt-1 pt-1 border-t border-gray-200"><span class="text-gray-500">差</span><span class="font-black text-[#0f2a4a]">${withUnit(man(p.b - p.a))}</span></p>`;
+    const head = accAgeNow > 0 ? (accAgeNow + p.year) + '歳' + (p.year === 0 ? '(現在)' : '') : (p.year === 0 ? '現在' : p.year + '年後');
+    let rows = accSelected.map(function (key) {
+      return `<p class="flex justify-between gap-3"><span class="text-gray-500">${ACC_SCN[key].short}</span><span class="font-bold">${withUnit(man(p[key]))}</span></p>`;
+    }).join('');
+    if (accSelected.indexOf('corpIns') >= 0) {
+      rows += `<p class="flex justify-between gap-3"><span class="text-gray-500">法人税の繰延累計</span><span class="font-bold text-[#a83d3d]">${withUnit(man(p.defer))}</span></p>`;
+    }
+    if (accSelected.length === 2) {
+      const d = p[accSelected[1]] - p[accSelected[0]];
+      rows += `<p class="flex justify-between gap-3 mt-1 pt-1 border-t border-gray-200"><span class="text-gray-500">差</span><span class="font-black text-[#0f2a4a]">${withUnit(man(Math.abs(d)))}</span></p>`;
+    }
+    accTooltip.innerHTML = `<p class="font-black mb-1">${head}</p>` + rows;
     accTooltip.classList.remove('hidden');
     const wrapRect = accWrap.getBoundingClientRect();
     const tw = accTooltip.offsetWidth;
@@ -238,20 +297,79 @@ document.addEventListener('DOMContentLoaded', function () {
     accSvg.addEventListener('touchmove', function (e) { onAccMove(e); e.preventDefault(); }, { passive: false });
   }
 
-  /* ===== 損金割合のセグメント切替(全損/半損/4割損/全額資産計上) ===== */
+  /* ===== 積み立て方のタイル選択 =====
+     自社株の評価額タイルと同じ: ランプ点灯で選択を示し、同時表示は2つまで。
+     3つ目を選ぶと先に選んでいたものが外れる ===== */
+  const accPicker = $('rbAccPicker');
+  function renderAccPicker() {
+    if (!accPicker) return;
+    accPicker.querySelectorAll('.rb-acc-pick').forEach(function (btn) {
+      const key = btn.dataset.scn;
+      const selected = accSelected.indexOf(key) >= 0;
+      const lamp = btn.querySelector('.tile-lamp');
+      if (lamp) lamp.classList.toggle('is-lit', selected);
+      btn.classList.toggle('tile-selected', selected);
+      btn.style.backgroundColor = selected ? btn.dataset.color : '';
+      btn.style.borderColor = selected ? btn.dataset.color : '';
+    });
+    const legend = $('rbAccLegend');
+    if (legend) {
+      let html = accSelected.map(function (key) {
+        return `<span class="rb-legend-item"><i class="rb-sw" style="background:${ACC_SCN[key].color}"></i>${ACC_SCN[key].label}</span>`;
+      }).join('');
+      if (accSelected.indexOf('corpIns') >= 0) {
+        html += `<span class="rb-legend-item"><i class="rb-sw rb-sw-line"></i>繰り延べられる法人税の累計(右目盛り)</span>`;
+      }
+      html += `<span class="rb-legend-note">目盛りは万円</span>`;
+      legend.innerHTML = html;
+    }
+  }
+  if (accPicker) {
+    accPicker.addEventListener('click', function (e) {
+      const btn = e.target.closest('.rb-acc-pick');
+      if (!btn) return;
+      const key = btn.dataset.scn;
+      const idx = accSelected.indexOf(key);
+      if (idx >= 0) {
+        if (accSelected.length > 1) accSelected.splice(idx, 1); // 最後の1つは外せない
+      } else {
+        if (accSelected.length >= 2) accSelected.shift();
+        accSelected.push(key);
+      }
+      render();
+    });
+  }
+
+  /* ===== 損金割合の切替 =====
+     通常はボタンで選ぶ(数値欄はグレーアウトして入力不可)。
+     ボタンにない割合を使いたいときだけ「手入力」で直接入力できるようにする ===== */
   const lossSeg = $('rbAccLossSeg');
   const lossInput = $('rbAccLossRate');
+  const lossManualBtn = $('rbAccLossManual');
+  let lossManual = false;
   function syncLossSeg() {
     if (!lossSeg || !lossInput) return;
-    const cur = String(lossInput.value || '').replace(/,/g, '').trim();
+    let cur = String(lossInput.value || '').replace(/,/g, '').trim();
+    // ボタン選択中に空になった場合(データクリア等)は既定の全損に戻す
+    if (!lossManual && cur === '') { lossInput.value = '100'; cur = '100'; }
+    lossInput.disabled = !lossManual;
     lossSeg.querySelectorAll('.rb-seg-btn').forEach(function (btn) {
-      btn.classList.toggle('is-active', btn.dataset.loss === cur);
+      if (btn === lossManualBtn) btn.classList.toggle('is-active', lossManual);
+      else btn.classList.toggle('is-active', !lossManual && btn.dataset.loss === cur);
     });
   }
   if (lossSeg && lossInput) {
     lossSeg.addEventListener('click', function (e) {
       const btn = e.target.closest('.rb-seg-btn');
       if (!btn) return;
+      if (btn === lossManualBtn) {
+        lossManual = true;
+        syncLossSeg();
+        lossInput.focus();
+        lossInput.select();
+        return;
+      }
+      lossManual = false;
       lossInput.value = btn.dataset.loss;
       syncLossSeg();
       render();
@@ -295,8 +413,9 @@ document.addEventListener('DOMContentLoaded', function () {
     yearsOfService: 100, meritMultiplier: 100,
     meritAddRate: 1000, corpTaxRateRb: 1000,
     // 積立比較
-    rbAccAnnual: 999999, rbAccYears: 60, rbAccTaxRate: 100, rbAccSocial: 100,
-    rbAccYieldSelf: 30, rbAccYieldIns: 30, rbAccLossRate: 100,
+    rbAccAnnual: 999999, rbAccAgeNow: 120, rbAccAgeRetire: 120,
+    rbAccTaxRate: 100, rbAccSocial: 100,
+    rbAccCorpTax: 100, rbAccSurrenderRate: 300, rbAccLossRate: 100,
   };
   function readValue(id) {
     const el = $(id);
@@ -432,36 +551,55 @@ document.addEventListener('DOMContentLoaded', function () {
     setHtml('bResidentTax', man(bRt));
     setHtml('bNet', man(bNet));
 
-    // --- 4. 積立比較(40年) ---
+    // --- 4. 積立比較(現在の年齢〜退職年齢) ---
     const accAnnual = readValue('rbAccAnnual');
-    const accYears = Math.max(0, Math.round(readValue('rbAccYears')));
+    const ageNow = Math.max(0, Math.round(readValue('rbAccAgeNow')));
+    const ageRetire = Math.max(0, Math.round(readValue('rbAccAgeRetire')));
+    const accYears = Math.max(0, Math.min(60, ageRetire - ageNow));
+    accAgeNow = ageNow;
+    const yearsRoomEl = $('rbAccYearsRoom');
+    if (yearsRoomEl) yearsRoomEl.innerHTML = withUnit('積立期間 ' + accYears + '年');
     const accTaxRate = readValue('rbAccTaxRate');
     const accSocial = readValue('rbAccSocial');
-    const accYieldSelf = readValue('rbAccYieldSelf');
-    const accYieldIns = readValue('rbAccYieldIns');
+    const accCorpTax = readValue('rbAccCorpTax');
+    const accSurrenderRate = readValue('rbAccSurrenderRate');
+    syncLossSeg();
     const accLossRate = readValue('rbAccLossRate');
     const outflowRate = Math.min(100, accTaxRate + accSocial);
 
-    accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accYieldSelf, accYieldIns);
+    accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accSurrenderRate, accLossRate, accCorpTax);
+    renderAccPicker();
     drawAccChart(accSeries);
-    syncLossSeg();
 
     const accLast = accSeries[accSeries.length - 1];
-    const accDiff = accLast.b - accLast.a;
-    // 役員報酬で受け取ると毎年出ていく税・社会保険料の累計(法人の保険ならそもそも発生しない)
+    // タイルには退職時点の積立額を表示
+    Object.keys(ACC_SCN).forEach(function (key) {
+      setHtml('rbAccVal_' + key, man(accLast[key]));
+    });
+    // メインの数字: 2つ選んでいれば差、1つなら退職時の積立額
+    const diffLabelEl = $('rbAccDiffLabel');
+    if (accSelected.length === 2) {
+      const dv = Math.abs(accLast[accSelected[1]] - accLast[accSelected[0]]);
+      if (diffLabelEl) diffLabelEl.innerHTML = '退職時(<span id="rbAccYearsLabel">' + accYears + '</span>年後)の積立額の差';
+      countUp('rbAccDiff', dv, man);
+    } else {
+      if (diffLabelEl) diffLabelEl.innerHTML = '退職時(<span id="rbAccYearsLabel">' + accYears + '</span>年後)の積立額';
+      countUp('rbAccDiff', accLast[accSelected[0]], man);
+    }
+    // 役員報酬で受け取ると毎年出ていく税・社会保険料の累計(法人経由ならそもそも発生しない)
     const taxSavedTotal = accAnnual * (outflowRate / 100) * accYears;
-    // 損金算入により軽くなる法人税の累計(＝実質的な保険料の減額)
-    const premiumSavedTotal = accAnnual * (accLossRate / 100) * (corpTaxRateRb / 100) * accYears;
+    // 損金算入により繰り延べられる法人税の累計(＝実質的な保険料の減額)
+    const premiumSavedTotal = accLast.defer;
 
-    countUp('rbAccDiff', accDiff, man);
     countUp('rbAccTaxSaved', taxSavedTotal, man);
     countUp('rbAccPremiumSaved', premiumSavedTotal, man);
     const outflowEl = $('rbAccOutflow');
     if (outflowEl) outflowEl.innerHTML = withUnit('合計 ' + (Math.round(outflowRate * 10) / 10) + '％');
     setHtml('rbAccNetAnnual', man(accAnnual * (1 - outflowRate / 100)));
+    setHtml('rbAccCorpNetAnnual', man(accAnnual * (1 - accCorpTax / 100)));
     setHtml('rbAccPremiumAnnual', man(accAnnual));
-    setHtml('rbAccFinals', man(accLast.a) + ' / ' + man(accLast.b));
-    [['rbAccYearsLabel', accYears], ['rbAccYearsLabel2', accYears]].forEach(function (pair) {
+    setHtml('rbAccDeferTotal', man(accLast.defer));
+    [['rbAccYearsLabel2', accYears], ['rbAccYearsLabel3', accYears]].forEach(function (pair) {
       const el = $(pair[0]);
       if (el) el.textContent = pair[1];
     });
@@ -510,5 +648,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ===== 初期表示: 保存済みデータがあれば復元して試算する ===== */
   loadSavedValues();
+  // 保存されている損金割合がボタンのどれにも当てはまらない場合は、手入力で設定した値とみなす
+  if (lossSeg && lossInput) {
+    const saved = String(lossInput.value || '').replace(/,/g, '').trim();
+    const presets = Array.prototype.map.call(
+      lossSeg.querySelectorAll('.rb-seg-btn[data-loss]'), (b) => b.dataset.loss);
+    if (saved !== '' && presets.indexOf(saved) === -1) lossManual = true;
+  }
   render();
 });

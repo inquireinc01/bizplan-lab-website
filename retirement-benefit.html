@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072734" />
+<link rel="stylesheet" href="css/style.css?v=2026072736" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -182,9 +182,30 @@
       <div class="rb-main rb-accum">
         <p class="rb-acc-title">同じ原資を積み立てるなら、法人の生命保険で積み立てる方が有利<span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ってから個人で積み立てると、所得税・住民税・社会保険料が引かれた「手取り」しか積み立てられません。法人で生命保険を使えば、原資の全額を保険料に回したうえ、損金算入分だけ法人税も軽くなります。積み上がった解約返戻金を最後に退職金として受け取れば、上の比較のとおり個人側の税負担も大きく抑えられます。</span></span></p>
 
+        <!-- 積み立て方の選択(自社株の評価額タイルと同じく、同時表示は2つまで) -->
+        <p class="rb-sub">積み立て方を選ぶ<span class="help-tip" tabindex="0">?<span class="help-text">ランプが点いているものがグラフに表示されます。比べやすいよう同時に表示できるのは2つまでで、3つ目を選ぶと先に選んでいたものが外れます。</span></span><span class="rb-sub-val" id="rbAccPickHint">2つまで</span></p>
+        <div class="rb-acc-picker" id="rbAccPicker">
+          <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="persCash" data-color="#8b98a8"><span class="tile-lamp"></span>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">給与で受け取り<br />個人で貯蓄</p>
+            <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_persCash">-</p>
+          </button>
+          <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="persIns" data-color="#55677d"><span class="tile-lamp"></span>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">給与で受け取り<br />手取り全額を個人の保険で積立</p>
+            <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_persIns">-</p>
+          </button>
+          <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="corpCash" data-color="#3b6ea5"><span class="tile-lamp"></span>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">法人で税引後の<br />キャッシュを積立</p>
+            <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_corpCash">-</p>
+          </button>
+          <button type="button" class="metric-tile rb-acc-pick text-left rounded-lg px-3 py-1.5" data-scn="corpIns" data-color="#0f2a4a"><span class="tile-lamp"></span>
+            <p class="tile-label text-[11px] mb-0.5 leading-tight">法人の生命保険で<br />積立</p>
+            <p class="tile-value text-sm font-bold leading-tight" id="rbAccVal_corpIns">-</p>
+          </button>
+        </div>
+
         <div class="rb-acc-tiles">
           <div class="rb-acc-tile is-main">
-            <p class="rb-acc-tile-label"><span id="rbAccYearsLabel">40</span>年後の積立額の差</p>
+            <p class="rb-acc-tile-label" id="rbAccDiffLabel">退職時(<span id="rbAccYearsLabel">40</span>年後)の積立額</p>
             <p class="rb-acc-tile-num" id="rbAccDiff">-</p>
           </div>
           <div class="rb-acc-tile">
@@ -202,11 +223,7 @@
           <div id="rbAccTooltip" class="hidden absolute z-10 pointer-events-none bg-white border border-gray-300 rounded-lg shadow-lg p-3 text-xs" style="min-width:200px"></div>
         </div>
 
-        <p class="rb-legend">
-          <span class="rb-legend-item"><i class="rb-sw rb-sw-a"></i>A. 役員報酬で受け取って個人で積立</span>
-          <span class="rb-legend-item"><i class="rb-sw rb-sw-b"></i>B. 法人の生命保険で積立(解約返戻金)</span>
-          <span class="rb-legend-note">縦軸は万円</span>
-        </p>
+        <p class="rb-legend" id="rbAccLegend"></p>
       </div>
 
       <!-- ===== 積み立ての前提 ===== -->
@@ -218,16 +235,30 @@
 
         <div class="rb-cols">
           <div>
-            <p class="rb-sub">原資と期間</p>
+            <p class="rb-sub">保険料と期間</p>
             <div class="rb-field">
-              <label for="rbAccAnnual">年間の原資額<span class="rb-field-unit">万円</span></label>
+              <label for="rbAccAnnual">年払保険料<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">法人が毎年払い込む保険料です。Aは同じ金額を役員報酬として支給する前提なので、AとBで会社が負担する原資は同額になります。</span></span></label>
               <input type="number" id="rbAccAnnual" value="500" class="form-input num-input" placeholder="例: 500" />
             </div>
             <div class="rb-field">
-              <label for="rbAccYears">積立年数<span class="rb-field-unit">年</span></label>
-              <input type="number" id="rbAccYears" value="40" class="form-input num-input" placeholder="例: 40" />
+              <label for="rbAccAgeNow">現在の年齢<span class="rb-field-unit">歳</span></label>
+              <input type="number" id="rbAccAgeNow" value="45" class="form-input num-input" placeholder="例: 45" />
             </div>
+            <div class="rb-field">
+              <label for="rbAccAgeRetire">退職年齢<span class="rb-field-unit">歳</span><span class="help-tip" tabindex="0">?<span class="help-text">退職年齢までの年数が積立年数になります。グラフの横軸もこの年齢の範囲で表示します。</span></span><span class="rb-plan-room" id="rbAccYearsRoom"></span></label>
+              <input type="number" id="rbAccAgeRetire" value="65" class="form-input num-input" placeholder="例: 65" />
+            </div>
+            <div class="rb-field">
+              <label for="rbAccCorpTax">法人税率<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">損金算入による法人税の軽減額と、繰り延べられる法人税の総額の計算に使います。実効税率(法人税・地方法人税・住民税・事業税の合計)を入れてください。</span></span></label>
+              <input type="number" id="rbAccCorpTax" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
+            </div>
+            <div class="rb-field">
+              <label for="rbAccSurrenderRate">解約返戻率<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">解約時に戻ってくる金額の、累計払込保険料に対する割合です。設計書のピーク時返戻率や解約予定年の返戻率を入れてください。実際の返戻率は経過年数により変動し、契約初期は大きく下回ります。</span></span></label>
+              <input type="number" id="rbAccSurrenderRate" value="100" step="0.1" class="form-input num-input" placeholder="例: 100" />
+            </div>
+          </div>
 
+          <div>
             <p class="rb-sub">流出率<span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ったときに手元から出ていく割合です。所得税・住民税は課税所得の水準により、社会保険料は標準報酬月額の上限により実効率が変わります。合計が個人の積立に回せない部分になります。</span></span><span class="rb-sub-val" id="rbAccOutflow">-</span></p>
             <div class="rb-field">
               <label for="rbAccTaxRate">所得税・住民税<span class="rb-field-unit">％</span></label>
@@ -237,43 +268,35 @@
               <label for="rbAccSocial">社会保険料<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">本人負担分の実効率です。標準報酬月額には上限があるため、報酬が高いほど実効率は下がります。会社負担分を含めて考える場合は率を上げてください。</span></span></label>
               <input type="number" id="rbAccSocial" value="7" step="0.1" class="form-input num-input" placeholder="例: 7" />
             </div>
-          </div>
 
-          <div>
-            <p class="rb-sub">運用利回り</p>
-            <div class="rb-field">
-              <label for="rbAccYieldSelf">個人の積立利回り<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">手取りを預金で積み立てる前提なら0％です。個人でも同じ利回りで運用する前提に揃えたい場合は、保険と同じ数値を入れてください。</span></span></label>
-              <input type="number" id="rbAccYieldSelf" value="0" step="0.1" class="form-input num-input" placeholder="例: 0" />
-            </div>
-            <div class="rb-field">
-              <label for="rbAccYieldIns">保険の運用利回り<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">変額保険や外貨建て保険で想定する年複利の利回りです。実際の解約返戻金は商品・経過年数・為替により変動し、元本を下回ることもあります。</span></span></label>
-              <input type="number" id="rbAccYieldIns" value="3" step="0.1" class="form-input num-input" placeholder="例: 3.0" />
-            </div>
-
-            <p class="rb-sub">損金割合<span class="help-tip" tabindex="0">?<span class="help-text">保険料のうち損金に算入できる割合です。最高解約返戻率により全損(100％)・半損(50％)・4割損(40％)・全額資産計上(0％)に分かれます。損金割合が高いほど法人税の軽減額が大きくなります。</span></span></p>
+            <p class="rb-sub">損金割合<span class="help-tip" tabindex="0">?<span class="help-text">保険料のうち損金に算入できる割合です。最高解約返戻率の水準により、全損(100％)・6割損(ピーク70％以下)・半損・4割損(ピーク85％超)などに分かれます。1割損は全員加入の養老保険・年金保険で用いる区分です。損金割合が高いほど法人税の繰延べ効果が大きくなります。</span></span></p>
             <div class="rb-seg" id="rbAccLossSeg">
               <button type="button" class="rb-seg-btn is-active" data-loss="100">全損</button>
+              <button type="button" class="rb-seg-btn" data-loss="60" title="最高解約返戻率70％以下">6割損</button>
               <button type="button" class="rb-seg-btn" data-loss="50">半損</button>
               <button type="button" class="rb-seg-btn" data-loss="40">4割損</button>
+              <button type="button" class="rb-seg-btn" data-loss="10" title="全員加入の年金保険等">1割損</button>
               <button type="button" class="rb-seg-btn" data-loss="0">全額資産計上</button>
+              <button type="button" class="rb-seg-btn is-manual" id="rbAccLossManual">手入力</button>
             </div>
             <div class="rb-field">
-              <label for="rbAccLossRate">損金割合<span class="rb-field-unit">％</span></label>
-              <input type="number" id="rbAccLossRate" value="100" step="1" class="form-input num-input" placeholder="例: 100" />
+              <label for="rbAccLossRate">損金割合<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">通常はボタンで選ぶため入力できません。ボタンにない割合を使いたいときは「手入力」を押すと直接入力できるようになります。</span></span></label>
+              <input type="number" id="rbAccLossRate" value="100" step="1" class="form-input num-input" placeholder="例: 100" disabled />
             </div>
           </div>
         </div>
 
         <dl class="rb-mini">
-          <div><dt>A. 個人が積み立てられる額(年)</dt><dd id="rbAccNetAnnual">-</dd></div>
-          <div><dt>B. 保険料として払い込む額(年)</dt><dd id="rbAccPremiumAnnual">-</dd></div>
-          <div class="is-total"><dt><span id="rbAccYearsLabel2">40</span>年後の積立額(A / B)</dt><dd id="rbAccFinals">-</dd></div>
+          <div><dt>個人が積み立てに回せる額(年)</dt><dd id="rbAccNetAnnual">-</dd></div>
+          <div><dt>法人が税引後に残せる額(年)</dt><dd id="rbAccCorpNetAnnual">-</dd></div>
+          <div><dt>保険料として払い込む額(年)</dt><dd id="rbAccPremiumAnnual">-</dd></div>
+          <div class="is-total"><dt><span id="rbAccYearsLabel3">40</span>年間で繰り延べられる法人税の総額</dt><dd id="rbAccDeferTotal">-</dd></div>
         </dl>
 
         <div class="calc-logic">
           <p class="calc-logic-title">計算ロジック</p>
-          <dl><dt>A. 役員報酬で受け取って個人で積立</dt><dd>毎年<code>年間の原資額 × (1 − 流出率)</code>を積み立て、個人の積立利回りで年複利運用します（期首払い）。</dd><dt>B. 法人の生命保険で積立</dt><dd>毎年<code>年間の原資額</code>の全額を保険料として払い込み、保険の運用利回りで年複利運用した解約返戻金として積み上げます（期首払い）。</dd><dt>所得税・住民税・社会保険料の削減総額</dt><dd><code>年間の原資額 × 流出率 × 年数</code></dd><dt>保険料削減総額</dt><dd><code>年間の原資額 × 損金割合 × 法人税率 × 年数</code></dd></dl>
-          <p class="calc-logic-note">解約返戻金は利回りによる複利で単純化しており、実際の返戻率カーブ(初期の低返戻・ピーク後の低下)は反映していません。Bの積立額は法人に残る資産で、個人が受け取るには退職金等として支給する必要があります。</p>
+          <dl><dt>給与で受け取り、個人で貯蓄</dt><dd><code>年払保険料 × (1 − 流出率) × 経過年数</code>。所得税・住民税・社会保険料が引かれた手取りをそのまま貯蓄する前提です。</dd><dt>給与で受け取り、手取り全額を個人の保険で積立</dt><dd><code>年払保険料 × (1 − 流出率) × 経過年数 × 解約返戻率</code>。個人契約のため損金算入による法人税の軽減はありません。</dd><dt>法人で税引後のキャッシュを積立</dt><dd><code>年払保険料 × (1 − 法人税率) × 経過年数</code>。保険を使わず利益として残す場合、法人税を払った後の金額しか内部留保できません。</dd><dt>法人の生命保険で積立</dt><dd><code>年払保険料 × 経過年数 × 解約返戻率</code>。課税前の全額を保険料に回せるうえ、損金算入分の法人税が繰り延べられます。</dd><dt>所得税・住民税・社会保険料の削減総額</dt><dd><code>年払保険料 × 流出率 × 年数</code></dd><dt>保険料削減総額 / 繰り延べられる法人税の総額</dt><dd><code>年払保険料 × 損金割合 × 法人税率 × 年数</code></dd></dl>
+          <p class="calc-logic-note">解約返戻率は全期間一律として単純化しており、実際の返戻率カーブ(契約初期の低返戻・ピーク後の低下)は反映していません。法人で積み立てた資金を個人が受け取るには退職金等として支給する必要があります。また解約時には資産計上額を超える部分が益金となるため、法人税は免除ではなく繰延べです。</p>
         </div>
       </div>
 
@@ -485,6 +508,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/retirement-benefit.js?v=20260727c"></script>
+<script src="js/retirement-benefit.js?v=20260727e"></script>
 </body>
 </html>
