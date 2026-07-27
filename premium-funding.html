@@ -146,37 +146,22 @@
   <section class="py-5 sm:py-7">
     <div id="pfTool" class="max-w-5xl mx-auto px-5 space-y-5">
 
-      <!-- ===== 先頭: 痛みなく創出できるキャッシュの積み上げ ===== -->
+      <!-- ===== 先頭: 痛みなく創出できるキャッシュの積み上げ(縦棒。下の入力に連動して積み上がる) ===== -->
       <div class="rb-main">
-        <p class="rb-headline-lead">社長の経営判断だけで、痛みなく創出できるキャッシュが<span class="help-tip" tabindex="0">?<span class="help-text">売上を増やしたり人件費を切り詰めたりしなくても、既契約保険の見直し・役員報酬の支給形態・経費の適正化といった「経営判断だけでできる見直し」から生まれる年間キャッシュフローです。法人と個人は財布が別なので合算せず、それぞれの金額がそのまま法人契約・個人契約の新たな保険料の原資になります。</span></span></p>
-        <div class="flex flex-wrap justify-center items-start gap-x-12 gap-y-1">
-          <div>
-            <p class="text-xs font-black text-gray-500">法人</p>
-            <p class="rb-headline-num" id="pfCorpBig">-</p>
-            <p class="text-xs font-bold text-gray-400">月換算 <span id="pfCorpMonthly">-</span></p>
-          </div>
-          <div>
-            <p class="text-xs font-black text-gray-500">個人</p>
-            <p class="rb-headline-num" id="pfPersBig">-</p>
-            <p class="text-xs font-bold text-gray-400">月換算 <span id="pfPersMonthly">-</span></p>
-          </div>
-        </div>
-        <p class="rb-headline-tail">が年間で生まれ、それぞれ新たな保険料の原資になります</p>
+        <p class="rb-headline-lead">社長の経営判断だけで、痛みなく創出できるキャッシュ(年間)<span class="help-tip" tabindex="0">?<span class="help-text">売上を増やしたり人件費を切り詰めたりしなくても、既契約保険の見直し・役員報酬の支給形態・経費の適正化といった「経営判断だけでできる見直し」から生まれる年間キャッシュフローです。法人と個人は財布が別なので合算せず、それぞれの金額がそのまま法人契約・個人契約の新たな保険料の原資になります。下の入力を変えると、棒と数字がリアルタイムで積み上がります。</span></span></p>
 
-        <div class="rb-bars">
-          <div class="rb-bar-row">
-            <p class="rb-bar-head">
-              <span class="rb-bar-name"><span class="rb-chip">法人</span>法人で創出</span>
-              <span class="rb-bar-net"><span class="rb-bar-net-label">年間</span><span id="pfTotalCorp">-</span></span>
-            </p>
-            <svg id="pfBarCorp" class="rb-chart" viewBox="0 0 560 44"></svg>
+        <div class="flex justify-center items-end gap-10 sm:gap-20 mt-3">
+          <div class="text-center">
+            <p class="rb-headline-num" id="pfCorpBig" style="font-size:2rem">-</p>
+            <p class="text-xs font-bold text-gray-400 mb-2">月換算 <span id="pfCorpMonthly">-</span></p>
+            <div id="pfColCorp" class="mx-auto flex flex-col-reverse rounded-xl overflow-hidden bg-[#eff2f6]" style="width:7.5rem;height:15rem"></div>
+            <p class="mt-2"><span class="rb-chip">法人</span></p>
           </div>
-          <div class="rb-bar-row">
-            <p class="rb-bar-head">
-              <span class="rb-bar-name"><span class="rb-chip is-corp">個人</span>個人で創出</span>
-              <span class="rb-bar-net"><span class="rb-bar-net-label">年間</span><span id="pfTotalPers">-</span></span>
-            </p>
-            <svg id="pfBarPers" class="rb-chart" viewBox="0 0 560 44"></svg>
+          <div class="text-center">
+            <p class="rb-headline-num" id="pfPersBig" style="font-size:2rem">-</p>
+            <p class="text-xs font-bold text-gray-400 mb-2">月換算 <span id="pfPersMonthly">-</span></p>
+            <div id="pfColPers" class="mx-auto flex flex-col-reverse rounded-xl overflow-hidden bg-[#eff2f6]" style="width:7.5rem;height:15rem"></div>
+            <p class="mt-2"><span class="rb-chip is-corp">個人</span></p>
           </div>
         </div>
 
@@ -184,6 +169,7 @@
           <span class="rb-legend-item"><i class="rb-sw" style="background:#3b6ea5"></i>1. 他社既契約保険の見直し</span>
           <span class="rb-legend-item"><i class="rb-sw" style="background:#2d5580"></i>2. 役員報酬の見直し</span>
           <span class="rb-legend-item"><i class="rb-sw" style="background:#7a9cc0"></i>3. 経費科目の適正化</span>
+          <span class="rb-legend-note">この金額がそのまま、新たな保険料の原資になります</span>
         </p>
       </div>
 
@@ -365,6 +351,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/premium-funding.js?v=20260727b"></script>
+<script src="js/premium-funding.js?v=20260727c"></script>
 </body>
 </html>

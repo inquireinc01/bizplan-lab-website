@@ -29,9 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ===== 数字と単位(万円等は数字より小さく表示する全体ルール) ===== */
   const UNIT_RE = /([0-9][0-9,.]*)\s*(万円\s*\/\s*年|万円\s*\/\s*月|万円|円|％|%)/g;
   const withUnit = (txt) => String(txt).replace(UNIT_RE, '$1<span class="unit">$2</span>');
-  const svgAmount = (txt, size) => String(txt).replace(UNIT_RE, function (m, n, u) {
-    return `<tspan font-size="${size}">${n}</tspan><tspan font-size="${Math.round(size * 0.68)}"> ${u}</tspan>`;
-  });
   const fmt = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
   const man = (n) => fmt(n) + ' 万円';
 
@@ -65,58 +62,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }, COUNT_MS + 250);
   }
 
-  /* ===== 積み上げバー =====
+  /* ===== 縦の積み上げ棒 =====
      法人・個人の2本。共通のスケール(大きい方の合計)で描き、項目ごとに色分けする。
-     角丸は帯全体をclipPathで抜き、区分の境目が段差にならないようにする ===== */
-  function drawStack(svg, parts, cap) {
-    if (!svg) return;
-    const W = 560, BAR_X = 2, BAR_W = 556, BAR_Y = 4, BAR_H = 36;
-    const RX = BAR_H / 2;
-    const cid = svg.id + 'Clip';
-    const gid = svg.id + 'Gloss';
-    const defs = `<clipPath id="${cid}"><rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="${RX}"/></clipPath>`
-      + `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
-      + `<stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>`
-      + `<stop offset="0.55" stop-color="#ffffff" stop-opacity="0.02"/>`
-      + `<stop offset="1" stop-color="#000000" stop-opacity="0.07"/></linearGradient>`;
-
-    if (!(cap > 0)) {
-      svg.innerHTML = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" rx="${RX}" fill="#eff2f6"/>`
-        + `<text x="${W / 2}" y="${BAR_Y + BAR_H / 2 + 6}" font-size="16" fill="#9ca3af" text-anchor="middle">金額を入力してください</text>`;
-      return;
+     セグメントはdivの高さをCSSトランジションで変化させ、入力のたびに
+     下から積み上がっていく演出にする(flex-col-reverseで先頭の項目が一番下) ===== */
+  function drawColumn(el, parts, cap) {
+    if (!el) return;
+    // 初回だけセグメントdivを生成し、以降は高さだけ更新してアニメーションさせる
+    if (el.childElementCount !== parts.length) {
+      el.innerHTML = '';
+      parts.forEach(function (p) {
+        const d = document.createElement('div');
+        d.style.height = '0%';
+        d.style.background = p.color;
+        d.style.transition = 'height 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
+        d.style.display = 'flex';
+        d.style.alignItems = 'center';
+        d.style.justifyContent = 'center';
+        d.style.color = '#fff';
+        d.style.fontWeight = '700';
+        d.style.fontSize = '13px';
+        d.style.overflow = 'hidden';
+        d.style.flexShrink = '0';
+        el.appendChild(d);
+      });
     }
-
-    // 帯に入れる文字の必要幅を文字数から見積もる(半角0.55em・全角1em)
-    const widthOf = (label, size) => {
-      let need = size * 1.4;
-      for (let k = 0; k < label.length; k += 1) need += /[0-9,.\s%]/.test(label[k]) ? size * 0.55 : size;
-      return need;
-    };
-
-    let bars = `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="#eff2f6"/>`;
-    let labels = '';
-    let x = BAR_X;
-    parts.forEach(function (p) {
-      const v = Math.max(0, p.value);
-      const w = (v / cap) * BAR_W;
-      if (w <= 0) return;
-      // 区分の継ぎ目に隙間が出ないよう0.6だけ重ねて描く
-      bars += `<rect x="${x.toFixed(1)}" y="${BAR_Y}" width="${(w + 0.6).toFixed(1)}" height="${BAR_H}" fill="${p.color}"/>`;
-      const text = man(v);
-      // 細い区分は収まる範囲でフォントを段階的に落として表示する
-      let size = 0;
-      for (let s = 15; s >= 10; s -= 1) {
-        if (w >= widthOf(text, s)) { size = s; break; }
-      }
-      if (size) {
-        labels += `<text x="${(x + w / 2).toFixed(1)}" y="${BAR_Y + BAR_H / 2 + size * 0.35}" fill="#ffffff" text-anchor="middle" font-weight="700">`
-          + svgAmount(text, size) + `</text>`;
-      }
-      x += w;
+    const H = el.clientHeight || 240;
+    Array.prototype.forEach.call(el.children, function (d, i) {
+      const v = Math.max(0, parts[i].value);
+      const pct = cap > 0 ? (v / cap) * 100 : 0;
+      d.style.height = pct + '%';
+      // 高さが確保できるセグメントだけ金額を入れる
+      d.innerHTML = (v > 0 && (pct / 100) * H >= 26) ? withUnit(man(v)) : '';
     });
-    bars += `<rect x="${BAR_X}" y="${BAR_Y}" width="${BAR_W}" height="${BAR_H}" fill="url(#${gid})"/>`;
-
-    svg.innerHTML = `<defs>${defs}</defs><g clip-path="url(#${cid})">${bars}</g>${labels}`;
   }
 
   /* ===== 経費科目テーブル(決算書情報から現況額を自動反映) ===== */
@@ -225,25 +203,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     setHtml('pfExpenseResult', man(expenseTotal));
 
-    // 積み上げ(先頭のバーと法人・個人それぞれの合計。法人と個人は財布が別なので合算しない)
+    // 積み上げ(縦棒と法人・個人それぞれの合計。法人と個人は財布が別なので合算しない)
     const corpTotal = insCorp + execCorp + expenseTotal;
     const persTotal = insPers + execPers;
     const cap = Math.max(corpTotal, persTotal);
 
-    drawStack($('pfBarCorp'), [
+    drawColumn($('pfColCorp'), [
       { value: insCorp, color: C_ITEM[0] },
       { value: execCorp, color: C_ITEM[1] },
       { value: expenseTotal, color: C_ITEM[2] },
     ], cap);
-    drawStack($('pfBarPers'), [
+    drawColumn($('pfColPers'), [
       { value: insPers, color: C_ITEM[0] },
       { value: execPers, color: C_ITEM[1] },
     ], cap);
 
     countUp('pfCorpBig', corpTotal, man);
     countUp('pfPersBig', persTotal, man);
-    countUp('pfTotalCorp', corpTotal, man);
-    countUp('pfTotalPers', persTotal, man);
     setHtml('pfCorpMonthly', man(corpTotal / 12));
     setHtml('pfPersMonthly', man(persTotal / 12));
 
