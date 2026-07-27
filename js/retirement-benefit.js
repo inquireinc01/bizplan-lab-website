@@ -124,6 +124,140 @@ document.addEventListener('DOMContentLoaded', function () {
     svg.innerHTML = `<defs>${defs}</defs><g clip-path="url(#${cid})">${bars}</g>${labels}`;
   }
 
+  /* ===== 積立比較(40年) =====
+     同じ原資を「役員報酬として受け取って個人で積み立てる(A)」場合と
+     「法人が生命保険料として払い込む(B)」場合で、残高がどう開いていくかを見せる。
+     Aは所得税・住民税・社会保険料が引かれた手取りしか積み立てられないのが差の源泉 ===== */
+  const ACC_A_COLOR = '#8b98a8';
+  const ACC_B_COLOR = '#0f2a4a';
+  let accSeries = null;
+  let accLayout = null;
+
+  function buildAccSeries(annual, years, outflowRate, yieldSelf, yieldIns) {
+    const netAnnual = annual * (1 - outflowRate / 100);
+    const series = [{ year: 0, a: 0, b: 0, netAnnual: netAnnual }];
+    let a = 0, b = 0;
+    for (let t = 1; t <= years; t += 1) {
+      // 期首払い(年初に払い込み、その年の運用がつく)
+      a = (a + netAnnual) * (1 + yieldSelf / 100);
+      b = (b + annual) * (1 + yieldIns / 100);
+      series.push({ year: t, a: a, b: b });
+    }
+    return series;
+  }
+
+  function drawAccChart(series) {
+    const svg = $('rbAccChart');
+    if (!svg) return;
+    const W = 800, H = 320, padL = 80, padR = 20, padT = 20, padB = 40, SVG_W = 830;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+    const yBottom = H - padB;
+
+    const rawMax = Math.max.apply(null, series.map((p) => Math.max(p.a, p.b)).concat([1]));
+    const maxV = rawMax * 1.08;
+    const y = (v) => yBottom - (v / (maxV || 1)) * plotH;
+    const slotWidth = plotW / series.length;
+
+    let gridLines = '';
+    for (let i = 0; i <= 4; i += 1) {
+      const gv = (maxV * i) / 4;
+      const gy = y(gv);
+      gridLines += `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${W - padR}" y2="${gy.toFixed(1)}" stroke="#e3e6ea" stroke-width="1"/>`;
+      gridLines += `<text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#9aa1ab" text-anchor="end">${Math.round(gv).toLocaleString('ja-JP')}</text>`;
+    }
+
+    // A・Bはどちらも高さを読み取れることが大事なので、重ねずに横に並べる
+    const barWidth = slotWidth * 0.36;
+    const gap = slotWidth * 0.06;
+    const groupWidth = barWidth * 2 + gap;
+    let bars = '';
+    [{ key: 'a', color: ACC_A_COLOR, op: 0.65 }, { key: 'b', color: ACC_B_COLOR, op: 0.92 }]
+      .forEach(function (s, si) {
+        series.forEach(function (p, i) {
+          const barY = y(p[s.key]);
+          const barH = Math.max(0, yBottom - barY);
+          if (barH <= 0) return;
+          const groupStart = padL + i * slotWidth + (slotWidth - groupWidth) / 2;
+          const barX = groupStart + si * (barWidth + gap);
+          const delay = (i * 20 + si * 15).toFixed(0);
+          bars += `<rect class="chart-bar" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}"`
+            + ` fill="${s.color}" fill-opacity="${s.op}" rx="1.2" style="animation-delay:${delay}ms"/>`;
+        });
+      });
+
+    let xLabels = '';
+    const last = series.length - 1;
+    const stepYear = last > 45 ? 10 : 5;
+    for (let yr = 0; yr <= last; yr += stepYear) {
+      const gx = padL + yr * slotWidth + slotWidth / 2;
+      xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yr === 0 ? '現在' : yr + '年'}</text>`;
+    }
+    if (last % stepYear !== 0) {
+      const gx = padL + last * slotWidth + slotWidth / 2;
+      xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${last}年</text>`;
+    }
+
+    svg.innerHTML = `${gridLines}`
+      + `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
+      + `<line x1="${padL}" y1="${yBottom}" x2="${W - padR}" y2="${yBottom}" stroke="#e3e6ea" stroke-width="1"/>`
+      + `${xLabels}${bars}`;
+
+    accLayout = { W: SVG_W, padL: padL, slotWidth: slotWidth, count: series.length };
+  }
+
+  /* ===== 積立グラフのツールチップ(年次の内訳を出す) ===== */
+  const accTooltip = $('rbAccTooltip');
+  const accWrap = $('rbAccWrap');
+  const accSvg = $('rbAccChart');
+  function onAccMove(e) {
+    if (!accSeries || !accLayout || !accTooltip) return;
+    const rect = accSvg.getBoundingClientRect();
+    const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
+    const xViewbox = ((clientX - rect.left) / rect.width) * accLayout.W;
+    const idx = Math.floor((xViewbox - accLayout.padL) / accLayout.slotWidth);
+    if (idx < 0 || idx >= accLayout.count) { accTooltip.classList.add('hidden'); return; }
+    const p = accSeries[idx];
+    accTooltip.innerHTML = `<p class="font-black mb-1">${p.year === 0 ? '現在' : p.year + '年後'}</p>`
+      + `<p class="flex justify-between gap-3"><span class="text-gray-500">A. 個人で積立</span><span class="font-bold">${withUnit(man(p.a))}</span></p>`
+      + `<p class="flex justify-between gap-3"><span class="text-gray-500">B. 法人の保険</span><span class="font-bold">${withUnit(man(p.b))}</span></p>`
+      + `<p class="flex justify-between gap-3 mt-1 pt-1 border-t border-gray-200"><span class="text-gray-500">差</span><span class="font-black text-[#0f2a4a]">${withUnit(man(p.b - p.a))}</span></p>`;
+    accTooltip.classList.remove('hidden');
+    const wrapRect = accWrap.getBoundingClientRect();
+    const tw = accTooltip.offsetWidth;
+    let left = clientX - wrapRect.left + 14;
+    if (left + tw > wrapRect.width) left = clientX - wrapRect.left - tw - 14;
+    accTooltip.style.left = Math.max(0, left) + 'px';
+    accTooltip.style.top = Math.max(0, clientY - wrapRect.top - 10) + 'px';
+  }
+  if (accSvg) {
+    accSvg.addEventListener('mousemove', onAccMove);
+    accSvg.addEventListener('mouseleave', function () { accTooltip.classList.add('hidden'); });
+    accSvg.addEventListener('touchstart', onAccMove);
+    accSvg.addEventListener('touchmove', function (e) { onAccMove(e); e.preventDefault(); }, { passive: false });
+  }
+
+  /* ===== 損金割合のセグメント切替(全損/半損/4割損/全額資産計上) ===== */
+  const lossSeg = $('rbAccLossSeg');
+  const lossInput = $('rbAccLossRate');
+  function syncLossSeg() {
+    if (!lossSeg || !lossInput) return;
+    const cur = String(lossInput.value || '').replace(/,/g, '').trim();
+    lossSeg.querySelectorAll('.rb-seg-btn').forEach(function (btn) {
+      btn.classList.toggle('is-active', btn.dataset.loss === cur);
+    });
+  }
+  if (lossSeg && lossInput) {
+    lossSeg.addEventListener('click', function (e) {
+      const btn = e.target.closest('.rb-seg-btn');
+      if (!btn) return;
+      lossInput.value = btn.dataset.loss;
+      syncLossSeg();
+      render();
+    });
+  }
+
   /* ===== 税額の計算 ===== */
   // 2024年分 所得税速算表(円ベース)
   function incomeTaxJP(taxableIncomeYen) {
@@ -160,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function () {
     finalMonthlySalary: 999999, surrenderValue: 999999, bookValue: 999999,
     yearsOfService: 100, meritMultiplier: 100,
     meritAddRate: 1000, corpTaxRateRb: 1000,
+    // 積立比較
+    rbAccAnnual: 999999, rbAccYears: 60, rbAccTaxRate: 100, rbAccSocial: 100,
+    rbAccYieldSelf: 30, rbAccYieldIns: 30, rbAccLossRate: 100,
   };
   function readValue(id) {
     const el = $(id);
@@ -294,6 +431,40 @@ document.addEventListener('DOMContentLoaded', function () {
     setHtml('bIncomeTax', man(bIt));
     setHtml('bResidentTax', man(bRt));
     setHtml('bNet', man(bNet));
+
+    // --- 4. 積立比較(40年) ---
+    const accAnnual = readValue('rbAccAnnual');
+    const accYears = Math.max(0, Math.round(readValue('rbAccYears')));
+    const accTaxRate = readValue('rbAccTaxRate');
+    const accSocial = readValue('rbAccSocial');
+    const accYieldSelf = readValue('rbAccYieldSelf');
+    const accYieldIns = readValue('rbAccYieldIns');
+    const accLossRate = readValue('rbAccLossRate');
+    const outflowRate = Math.min(100, accTaxRate + accSocial);
+
+    accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accYieldSelf, accYieldIns);
+    drawAccChart(accSeries);
+    syncLossSeg();
+
+    const accLast = accSeries[accSeries.length - 1];
+    const accDiff = accLast.b - accLast.a;
+    // 役員報酬で受け取ると毎年出ていく税・社会保険料の累計(法人の保険ならそもそも発生しない)
+    const taxSavedTotal = accAnnual * (outflowRate / 100) * accYears;
+    // 損金算入により軽くなる法人税の累計(＝実質的な保険料の減額)
+    const premiumSavedTotal = accAnnual * (accLossRate / 100) * (corpTaxRateRb / 100) * accYears;
+
+    countUp('rbAccDiff', accDiff, man);
+    countUp('rbAccTaxSaved', taxSavedTotal, man);
+    countUp('rbAccPremiumSaved', premiumSavedTotal, man);
+    const outflowEl = $('rbAccOutflow');
+    if (outflowEl) outflowEl.innerHTML = withUnit('合計 ' + (Math.round(outflowRate * 10) / 10) + '％');
+    setHtml('rbAccNetAnnual', man(accAnnual * (1 - outflowRate / 100)));
+    setHtml('rbAccPremiumAnnual', man(accAnnual));
+    setHtml('rbAccFinals', man(accLast.a) + ' / ' + man(accLast.b));
+    [['rbAccYearsLabel', accYears], ['rbAccYearsLabel2', accYears]].forEach(function (pair) {
+      const el = $(pair[0]);
+      if (el) el.textContent = pair[1];
+    });
 
     lastResult = { diff };
     if (errorArea) { errorArea.classList.add('hidden'); errorArea.textContent = ''; }

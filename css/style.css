@@ -2912,3 +2912,119 @@ svg {
   font-size: 1.15rem;
   color: var(--color-navy);
 }
+
+/* --- 積立比較(40年) --- */
+.rb-accum {
+  text-align: left;
+}
+.rb-acc-title {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+  margin-bottom: 0.9rem;
+}
+.rb-acc-tiles {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+@media (min-width: 640px) {
+  .rb-acc-tiles { grid-template-columns: 1.3fr 1fr 1fr; }
+}
+.rb-acc-tile {
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--color-off-white);
+}
+.rb-acc-tile.is-main {
+  border-color: var(--color-navy);
+  background: var(--color-navy);
+}
+.rb-acc-tile-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--color-slate);
+  line-height: 1.45;
+}
+.rb-acc-tile.is-main .rb-acc-tile-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+.rb-acc-tile-num {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  white-space: nowrap;
+  margin-top: 0.1rem;
+}
+.rb-acc-tile.is-main .rb-acc-tile-num {
+  color: #fff;
+  font-size: 1.75rem;
+}
+@media (min-width: 640px) {
+  .rb-acc-tile.is-main .rb-acc-tile-num { font-size: 2.1rem; }
+}
+.rb-sw-a { background: #8b98a8; }
+.rb-sw-b { background: #0f2a4a; }
+
+/* 積立前提の2列レイアウトと小見出し */
+.rb-cols {
+  display: grid;
+  gap: 0 1.6rem;
+}
+@media (min-width: 640px) {
+  .rb-cols { grid-template-columns: 1fr 1fr; }
+}
+.rb-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.1rem;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--color-slate-light);
+}
+.rb-sub-val {
+  margin-left: auto;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  letter-spacing: 0;
+}
+
+/* 損金割合のセグメント切替 */
+.rb-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.35rem 0 0.2rem;
+}
+.rb-seg-btn {
+  flex: 1 1 auto;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--color-slate);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.rb-seg-btn:hover {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+.rb-seg-btn.is-active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #fff;
+}
