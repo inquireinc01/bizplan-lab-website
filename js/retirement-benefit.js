@@ -131,33 +131,118 @@ document.addEventListener('DOMContentLoaded', function () {
   const ACC_LINE_COLOR = '#a83d3d';
   // 積み立て方の4パターン。同時に表示できるのは2つまで(自社株の評価額グラフと同じ)
   const ACC_SCN = {
-    persCash: { label: '給与で受け取り、個人で貯蓄', short: '個人で貯蓄', color: '#8b98a8' },
-    persIns: { label: '給与で受け取り、手取り全額を個人の保険で積立', short: '個人の保険', color: '#55677d' },
-    corpCash: { label: '法人で税引後のキャッシュを積立', short: '法人のキャッシュ', color: '#3b6ea5' },
-    corpIns: { label: '法人の生命保険で積立', short: '法人の保険', color: '#0f2a4a' },
+    persCash: { label: 'A. 給与で受取り個人で積立', short: 'A. 個人で積立', color: '#8b98a8' },
+    persIns: { label: 'B. 給与で受取り個人で保険積立', short: 'B. 個人で保険積立', color: '#55677d' },
+    corpCash: { label: 'C. 法人で現金で積立', short: 'C. 法人で現金', color: '#3b6ea5' },
+    corpIns: { label: 'D. 法人で保険で積立', short: 'D. 法人で保険', color: '#0f2a4a' },
   };
-  // 既定は「給与で払い、個人で積み立てる」のみ表示
+  // 既定は「A. 給与で受取り個人で積立」のみ表示
   let accSelected = ['persCash'];
   let accSeries = null;
   let accLayout = null;
   let accAgeNow = 0;
 
-  // defer: 損金算入により繰り延べられる法人税の累計(法人の保険を選んだときだけ意味を持つ)
-  function buildAccSeries(annual, years, outflowRate, surrenderRate, lossRate, corpTaxRate) {
+  /* ===== 生命保険の設計書テーブル =====
+     経過年数・年齢は自動、保険料累計と損金算入額は拠出年額・損金割合から自動で
+     埋めるが設計書に合わせて上書き可能。解約返戻金を入れると返戻率と
+     法人税軽減額累計が自動計算され、そのままグラフのDと折れ線になる ===== */
+  const sheetBody = $('rbSheetBody');
+  // ユーザーが上書きしたセルは自動再入力しない(dirtyフラグ)。値が空に戻されたら自動に戻す
+  function sheetCell(id, def) {
+    return `<input type="number" id="${id}" data-def="${def}" class="rb-sheet-in" value="${def}" />`;
+  }
+  function buildSheet(years, ageNow, annual, lossRate) {
+    if (!sheetBody) return;
+    const rows = sheetBody.querySelectorAll('tr');
+    const needRebuild = rows.length !== years;
+    if (needRebuild) {
+      let html = '';
+      for (let t = 1; t <= years; t += 1) {
+        html += `<tr>`
+          + `<td class="is-auto">${t}年</td>`
+          + `<td class="is-auto" id="rbShAge_${t}">${ageNow + t}歳</td>`
+          + `<td>${sheetCell('rbShCum_' + t, Math.round(annual * t))}</td>`
+          + `<td>${sheetCell('rbShSurr_' + t, Math.round(annual * t))}</td>`
+          + `<td class="is-auto" id="rbShRate_${t}">-</td>`
+          + `<td>${sheetCell('rbShDed_' + t, Math.round(annual * lossRate / 100))}</td>`
+          + `<td class="is-auto" id="rbShDefer_${t}">-</td>`
+          + `</tr>`;
+      }
+      sheetBody.innerHTML = html;
+      // 保存済みの上書き値があれば復元(保存されているセル=ユーザーが上書きしたセル)
+      sheetBody.querySelectorAll('.rb-sheet-in').forEach(function (el) {
+        if (savedSheet[el.id] !== undefined) {
+          el.value = savedSheet[el.id];
+          el.dataset.dirty = '1';
+        }
+      });
+    } else {
+      // 行数が同じときは、年齢と「上書きされていないセル」の自動値だけ更新する
+      for (let t = 1; t <= years; t += 1) {
+        const ageEl = $('rbShAge_' + t);
+        if (ageEl) ageEl.textContent = (ageNow + t) + '歳';
+        [['rbShCum_' + t, Math.round(annual * t)],
+         ['rbShSurr_' + t, Math.round(annual * t)],
+         ['rbShDed_' + t, Math.round(annual * lossRate / 100)]].forEach(function (pair) {
+          const el = $(pair[0]);
+          if (!el) return;
+          el.dataset.def = pair[1];
+          if (el.dataset.dirty !== '1') el.value = pair[1];
+        });
+      }
+    }
+  }
+  // 設計書の入力(上書き)を読み取り、返戻率・法人税軽減額累計を再計算して返す
+  function collectSheet(years, corpTaxRate) {
+    const cum = [0], surr = [0], rate = [0], deferCum = [0];
+    let dedSum = 0;
+    for (let t = 1; t <= years; t += 1) {
+      const cumEl = $('rbShCum_' + t), surrEl = $('rbShSurr_' + t), dedEl = $('rbShDed_' + t);
+      const cv = cumEl ? (window.numClean ? window.numClean(cumEl.value) : parseFloat(cumEl.value)) : NaN;
+      const sv = surrEl ? (window.numClean ? window.numClean(surrEl.value) : parseFloat(surrEl.value)) : NaN;
+      const dv = dedEl ? (window.numClean ? window.numClean(dedEl.value) : parseFloat(dedEl.value)) : NaN;
+      const c = isNaN(cv) ? 0 : cv;
+      const s = isNaN(sv) ? 0 : sv;
+      dedSum += isNaN(dv) ? 0 : dv;
+      cum.push(c);
+      surr.push(s);
+      rate.push(c > 0 ? s / c : 0);
+      deferCum.push(dedSum * corpTaxRate / 100);
+      const rateEl = $('rbShRate_' + t);
+      if (rateEl) rateEl.innerHTML = c > 0 ? withUnit((Math.round(s / c * 1000) / 10).toLocaleString('ja-JP') + '％') : '-';
+      const deferEl = $('rbShDefer_' + t);
+      if (deferEl) deferEl.innerHTML = withUnit(fmt(dedSum * corpTaxRate / 100) + '万円');
+    }
+    return { cum: cum, surr: surr, rate: rate, deferCum: deferCum };
+  }
+  // 設計書のセルの変更で再計算。空に戻したセルは自動値に戻す
+  if (sheetBody) {
+    sheetBody.addEventListener('change', function (e) {
+      const el = e.target.closest('.rb-sheet-in');
+      if (!el) return;
+      if (String(el.value).trim() === '') {
+        delete el.dataset.dirty;
+        el.value = el.dataset.def;
+      } else {
+        el.dataset.dirty = '1';
+      }
+      render();
+    });
+  }
+
+  // A・Bは流出率、Cは法人税率、Dは設計書(解約返戻金・損金算入額×法人税率)を反映する
+  function buildAccSeries(annual, years, outflowRate, corpTaxRate, sheet) {
     const netAnnual = annual * (1 - outflowRate / 100);        // 個人の手取り
     const corpNetAnnual = annual * (1 - corpTaxRate / 100);    // 法人の税引後
-    const sr = surrenderRate / 100;
-    const deferAnnual = annual * (lossRate / 100) * (corpTaxRate / 100);
-    const series = [{ year: 0, persCash: 0, persIns: 0, corpCash: 0, corpIns: 0, paid: 0, defer: 0 }];
+    const series = [{ year: 0, persCash: 0, persIns: 0, corpCash: 0, corpIns: 0, defer: 0 }];
     for (let t = 1; t <= years; t += 1) {
       series.push({
         year: t,
         persCash: netAnnual * t,
-        persIns: netAnnual * t * sr,
+        persIns: netAnnual * t * sheet.rate[t], // 個人契約でも返戻率カーブは設計書と同じ前提
         corpCash: corpNetAnnual * t,
-        corpIns: annual * t * sr,
-        paid: annual * t,
-        defer: deferAnnual * t,
+        corpIns: sheet.surr[t],                 // 設計書の解約返戻金そのもの
+        defer: sheet.deferCum[t],
       });
     }
     return series;
@@ -414,8 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
     meritAddRate: 1000, corpTaxRateRb: 1000,
     // 積立比較
     rbAccAnnual: 999999, rbAccAgeNow: 120, rbAccAgeRetire: 120,
-    rbAccTaxRate: 100, rbAccSocial: 100,
-    rbAccCorpTax: 100, rbAccSurrenderRate: 300, rbAccLossRate: 100,
+    rbAccOutflowRate: 100, rbAccCorpTax: 100, rbAccLossRate: 100,
   };
   function readValue(id) {
     const el = $(id);
@@ -436,6 +520,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ===== 入力内容のブラウザ内保存(サーバーには送信しない) ===== */
   const STORAGE_KEY = 'bpl_retirement_benefit_v1';
+  // 設計書のセルは「ユーザーが上書きした値」だけを保存する(自動値は毎回計算し直せるため)。
+  // 保存データのうち rbSh で始まるキーが上書きセルにあたる
+  var savedSheet = {};
+  try {
+    const raw0 = localStorage.getItem(STORAGE_KEY);
+    if (raw0) {
+      const data0 = JSON.parse(raw0);
+      Object.keys(data0).forEach(function (k) {
+        if (k.indexOf('rbSh') === 0) savedSheet[k] = data0[k];
+      });
+    }
+  } catch (e) {}
   function loadSavedValues() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -449,6 +545,12 @@ document.addEventListener('DOMContentLoaded', function () {
   function saveCurrentValues() {
     const data = {};
     inputs.forEach(function (el) { if (el.value !== '') data[el.id] = el.value; });
+    // 設計書の上書きセル(dirty)だけ追加で保存する
+    if (sheetBody) {
+      sheetBody.querySelectorAll('.rb-sheet-in').forEach(function (el) {
+        if (el.dataset.dirty === '1' && el.value !== '') data[el.id] = el.value;
+      });
+    }
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
   }
 
@@ -559,15 +661,15 @@ document.addEventListener('DOMContentLoaded', function () {
     accAgeNow = ageNow;
     const yearsRoomEl = $('rbAccYearsRoom');
     if (yearsRoomEl) yearsRoomEl.innerHTML = withUnit('積立期間 ' + accYears + '年');
-    const accTaxRate = readValue('rbAccTaxRate');
-    const accSocial = readValue('rbAccSocial');
     const accCorpTax = readValue('rbAccCorpTax');
-    const accSurrenderRate = readValue('rbAccSurrenderRate');
     syncLossSeg();
     const accLossRate = readValue('rbAccLossRate');
-    const outflowRate = Math.min(100, accTaxRate + accSocial);
+    const outflowRate = Math.min(100, readValue('rbAccOutflowRate'));
 
-    accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accSurrenderRate, accLossRate, accCorpTax);
+    // 設計書を組み立ててから読み取り、A〜Dの系列を作る
+    buildSheet(accYears, ageNow, accAnnual, accLossRate);
+    const sheet = collectSheet(accYears, accCorpTax);
+    accSeries = buildAccSeries(accAnnual, accYears, outflowRate, accCorpTax, sheet);
     renderAccPicker();
     drawAccChart(accSeries);
 
@@ -593,8 +695,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     countUp('rbAccTaxSaved', taxSavedTotal, man);
     countUp('rbAccPremiumSaved', premiumSavedTotal, man);
-    const outflowEl = $('rbAccOutflow');
-    if (outflowEl) outflowEl.innerHTML = withUnit('合計 ' + (Math.round(outflowRate * 10) / 10) + '％');
     setHtml('rbAccNetAnnual', man(accAnnual * (1 - outflowRate / 100)));
     setHtml('rbAccCorpNetAnnual', man(accAnnual * (1 - accCorpTax / 100)));
     setHtml('rbAccPremiumAnnual', man(accAnnual));
@@ -619,6 +719,14 @@ document.addEventListener('DOMContentLoaded', function () {
      ここでは何もしなくてよい。ヒーローの「全データクリア」だけ受け持つ ===== */
   function doClearAll() {
     inputs.forEach(function (el) { el.value = ''; el.classList.remove('input-error'); });
+    // 設計書の上書きも消して自動値に戻す
+    savedSheet = {};
+    if (sheetBody) {
+      sheetBody.querySelectorAll('.rb-sheet-in').forEach(function (el) {
+        delete el.dataset.dirty;
+        el.value = el.dataset.def;
+      });
+    }
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     render();
   }

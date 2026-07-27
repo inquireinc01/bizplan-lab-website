@@ -3069,3 +3069,68 @@ svg {
   color: #2d5580;
   white-space: nowrap;
 }
+
+/* 生命保険の設計書テーブル(退職金×生命保険) */
+.rb-sheet-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.6rem;
+  margin: 0.4rem 0 0.9rem;
+  max-height: 21rem;
+  overflow-y: auto;
+}
+.rb-sheet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+.rb-sheet th {
+  position: sticky;
+  top: 0;
+  background: var(--color-navy);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.68rem;
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+  z-index: 1;
+}
+.rb-th-unit {
+  display: block;
+  font-size: 0.58rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.rb-sheet td {
+  border-top: 1px solid var(--color-gray-100);
+  padding: 0.18rem 0.4rem;
+  text-align: right;
+}
+.rb-sheet td.is-auto {
+  color: var(--color-slate);
+  font-weight: 700;
+  background: var(--color-off-white);
+}
+.rb-sheet tbody tr:nth-child(5n) td {
+  border-bottom: 1.5px solid var(--color-gray-200);
+}
+.rb-sheet-in {
+  width: 6.2rem;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.74rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.35rem;
+  background: #fff;
+}
+.rb-sheet-in:focus {
+  outline: none;
+  border-color: var(--color-blue);
+}
+/* 上書きされたセルは自動値と区別できるよう薄い青地にする */
+.rb-sheet-in[data-dirty="1"] {
+  background: var(--color-blue-soft);
+  border-color: var(--color-blue);
+}
