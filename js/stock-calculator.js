@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   let selectedMetrics = ['saizoku_A'];
   let showInsurance = false; // 死亡保険金額をグラフ背景に表示するかどうか(ボタンでトグル)
-  let showInsuranceNet = true; // 死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示するかどうか(ボタンでトグル)
-  let showRetirement = true; // 退職金マーカーをグラフに表示するかどうか(ボタンでトグル、既定は表示)
+  let showInsuranceNet = false; // 死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示するかどうか(既定はOFF・ボタンでトグル)
+  let showRetirement = false; // 退職金マーカーをグラフに表示するかどうか(既定はOFF・ボタンでトグル)
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
   let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
   let dsYear = 30; // 自社株評価・株主の状況テーブルの表示年数(入力欄でリアルタイムに変更可能)
@@ -626,6 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 死亡保険金額の表示トグル =====
   const insuranceToggleBtn = document.getElementById('insuranceToggleBtn');
   if (insuranceToggleBtn) {
+    insuranceToggleBtn.classList.toggle('is-on', showInsurance);
     insuranceToggleBtn.addEventListener('click', function () {
       showInsurance = !showInsurance;
       insuranceToggleBtn.classList.toggle('is-on', showInsurance);
@@ -683,6 +684,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== 退職金マーカーの表示トグル =====
   const retirementToggleBtn = document.getElementById('retirementToggleBtn');
   if (retirementToggleBtn) {
+    retirementToggleBtn.classList.toggle('is-on', showRetirement);
     retirementToggleBtn.addEventListener('click', function () {
       showRetirement = !showRetirement;
       retirementToggleBtn.classList.toggle('is-on', showRetirement);
@@ -696,6 +698,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== その他特別損失マーカーの表示トグル =====
   const specialLossToggleBtn = document.getElementById('specialLossToggleBtn');
   if (specialLossToggleBtn) {
+    specialLossToggleBtn.classList.toggle('is-on', showSpecialLoss);
     specialLossToggleBtn.addEventListener('click', function () {
       showSpecialLoss = !showSpecialLoss;
       specialLossToggleBtn.classList.toggle('is-on', showSpecialLoss);
