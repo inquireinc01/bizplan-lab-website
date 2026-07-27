@@ -225,10 +225,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     setHtml('pfExpenseResult', man(expenseTotal));
 
-    // 積み上げ(先頭のバーと合計)
+    // 積み上げ(先頭のバーと法人・個人それぞれの合計。法人と個人は財布が別なので合算しない)
     const corpTotal = insCorp + execCorp + expenseTotal;
     const persTotal = insPers + execPers;
-    const total = corpTotal + persTotal;
     const cap = Math.max(corpTotal, persTotal);
 
     drawStack($('pfBarCorp'), [
@@ -241,16 +240,18 @@ document.addEventListener('DOMContentLoaded', function () {
       { value: execPers, color: C_ITEM[1] },
     ], cap);
 
-    countUp('pfTotal', total, man);
+    countUp('pfCorpBig', corpTotal, man);
+    countUp('pfPersBig', persTotal, man);
     countUp('pfTotalCorp', corpTotal, man);
     countUp('pfTotalPers', persTotal, man);
-    setHtml('pfMonthly', man(total / 12));
+    setHtml('pfCorpMonthly', man(corpTotal / 12));
+    setHtml('pfPersMonthly', man(persTotal / 12));
 
     lastResult = {
       insCorp: insCorp, insPers: insPers,
       execCorp: execCorp, execPers: execPers,
       expenseTotal: expenseTotal, expenseRows: expenseRows,
-      corpTotal: corpTotal, persTotal: persTotal, total: total,
+      corpTotal: corpTotal, persTotal: persTotal,
     };
     saveCurrentValues();
   }
@@ -281,20 +282,17 @@ document.addEventListener('DOMContentLoaded', function () {
     body.innerHTML = '';
     const addRow = (label, corp, pers) => {
       const tr = document.createElement('tr');
-      const sum = (corp || 0) + (pers || 0);
       tr.innerHTML = `<td class="lbl">${label}</td>`
         + `<td>${corp === null ? '-' : man(corp)}</td>`
-        + `<td>${pers === null ? '-' : man(pers)}</td>`
-        + `<td>${man(sum)}</td>`;
+        + `<td>${pers === null ? '-' : man(pers)}</td>`;
       body.appendChild(tr);
     };
     addRow('1. 他社既契約保険の見直し', r.insCorp, r.insPers);
     addRow('2. 役員報酬の見直し(社会保険料削減)', r.execCorp, r.execPers);
     addRow('3. 経費科目の適正化', r.expenseTotal, null);
 
-    $('pTotalCorp').textContent = man(r.corpTotal);
-    $('pTotalPers').textContent = man(r.persTotal);
-    $('pTotal').textContent = man(r.total) + ' / 年';
+    $('pTotalCorp').textContent = man(r.corpTotal) + ' / 年';
+    $('pTotalPers').textContent = man(r.persTotal) + ' / 年';
     window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));

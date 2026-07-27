@@ -148,9 +148,20 @@
 
       <!-- ===== 先頭: 痛みなく創出できるキャッシュの積み上げ ===== -->
       <div class="rb-main">
-        <p class="rb-headline-lead">社長の経営判断だけで、痛みなく創出できるキャッシュが<span class="help-tip" tabindex="0">?<span class="help-text">売上を増やしたり人件費を切り詰めたりしなくても、既契約保険の見直し・役員報酬の支給形態・経費の適正化といった「経営判断だけでできる見直し」から生まれる年間キャッシュフローの合計です。この金額がそのまま、新たな生命保険料に充当できる原資になります。</span></span></p>
-        <p class="rb-headline-num" id="pfTotal">-</p>
-        <p class="rb-headline-tail">年間で生まれ、新たな保険料の原資になります</p>
+        <p class="rb-headline-lead">社長の経営判断だけで、痛みなく創出できるキャッシュが<span class="help-tip" tabindex="0">?<span class="help-text">売上を増やしたり人件費を切り詰めたりしなくても、既契約保険の見直し・役員報酬の支給形態・経費の適正化といった「経営判断だけでできる見直し」から生まれる年間キャッシュフローです。法人と個人は財布が別なので合算せず、それぞれの金額がそのまま法人契約・個人契約の新たな保険料の原資になります。</span></span></p>
+        <div class="flex flex-wrap justify-center items-start gap-x-12 gap-y-1">
+          <div>
+            <p class="text-xs font-black text-gray-500">法人</p>
+            <p class="rb-headline-num" id="pfCorpBig">-</p>
+            <p class="text-xs font-bold text-gray-400">月換算 <span id="pfCorpMonthly">-</span></p>
+          </div>
+          <div>
+            <p class="text-xs font-black text-gray-500">個人</p>
+            <p class="rb-headline-num" id="pfPersBig">-</p>
+            <p class="text-xs font-bold text-gray-400">月換算 <span id="pfPersMonthly">-</span></p>
+          </div>
+        </div>
+        <p class="rb-headline-tail">が年間で生まれ、それぞれ新たな保険料の原資になります</p>
 
         <div class="rb-bars">
           <div class="rb-bar-row">
@@ -173,7 +184,6 @@
           <span class="rb-legend-item"><i class="rb-sw" style="background:#3b6ea5"></i>1. 他社既契約保険の見直し</span>
           <span class="rb-legend-item"><i class="rb-sw" style="background:#2d5580"></i>2. 役員報酬の見直し</span>
           <span class="rb-legend-item"><i class="rb-sw" style="background:#7a9cc0"></i>3. 経費科目の適正化</span>
-          <span class="rb-legend-note">月換算 <span id="pfMonthly">-</span></span>
         </p>
       </div>
 
@@ -330,7 +340,7 @@
 
   <div class="print-sec">項目別の創出額</div>
   <table class="print-table" id="pBreakdownTable">
-    <thead><tr><th class="lbl">項目</th><th>法人</th><th>個人</th><th>合計</th></tr></thead>
+    <thead><tr><th class="lbl">項目</th><th>法人</th><th>個人</th></tr></thead>
     <tbody id="pBreakdownBody"></tbody>
   </table>
 
@@ -342,10 +352,6 @@
     <div>
       <div class="k">個人で創出(年)</div>
       <div class="v" id="pTotalPers"></div>
-    </div>
-    <div>
-      <div class="k">創出可能な年間キャッシュフロー</div>
-      <div class="v" id="pTotal"></div>
     </div>
   </div>
 
@@ -359,6 +365,6 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/premium-funding.js?v=20260727a"></script>
+<script src="js/premium-funding.js?v=20260727b"></script>
 </body>
 </html>
