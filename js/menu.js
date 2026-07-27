@@ -219,14 +219,16 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ===== 管理者用ボタン: Ctrl+Shift+D で表示/非表示を切り替える(全ページ共通) =====
-//       表示状態はlocalStorageに残すので、一度出せばページを移動しても出たままになる。
+//       表示状態は保存しない。ページを読み込み直すと必ず消えた状態に戻る。
 document.addEventListener('DOMContentLoaded', function () {
-  const KEY = 'bpl_admin_btn_visible';
   const header = document.getElementById('site-header');
   if (!header) return;
   const menuBtn = document.getElementById('menu-button');
   const slot = menuBtn ? menuBtn.parentNode : null;
   if (!slot) return;
+
+  // 以前のバージョンで保存していた表示状態が残っていれば消しておく
+  try { localStorage.removeItem('bpl_admin_btn_visible'); } catch (e) {}
 
   const link = document.createElement('a');
   link.href = 'admin.html';
@@ -235,20 +237,13 @@ document.addEventListener('DOMContentLoaded', function () {
   link.textContent = '管理者用';
   slot.insertBefore(link, menuBtn);
 
-  function apply(visible) {
-    link.classList.toggle('hidden', !visible);
-  }
   let visible = false;
-  try { visible = localStorage.getItem(KEY) === '1'; } catch (e) { visible = false; }
-  apply(visible);
-
   document.addEventListener('keydown', function (e) {
     // 「D」はレイアウトによってe.keyが変わることがあるのでe.codeで判定する
     if (!e.ctrlKey || !e.shiftKey || e.altKey) return;
     if (e.code !== 'KeyD') return;
     e.preventDefault();
     visible = !visible;
-    apply(visible);
-    try { localStorage.setItem(KEY, visible ? '1' : '0'); } catch (err) {}
+    link.classList.toggle('hidden', !visible);
   });
 });
