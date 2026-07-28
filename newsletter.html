@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <title>メールマガジンのご案内 | BizPlan Laboratory</title>
-<meta name="description" content="TK&Companyのメールマガジン(日刊ニュース・不動産・富裕層・銀行・保険ほか週9種類)の配信登録・配信停止のご案内です。" />
+<meta name="description" content="TK&Companyのメールマガジン(日刊ニュース・不動産・富裕層・銀行・医療・人材・宗教ほか週12種類)の配信登録・配信停止のご案内です。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
@@ -129,9 +129,10 @@
       </p>
       <p class="text-sm sm:text-[15px] leading-relaxed mb-10">
         マーケットの動き、税制改正の先読み、金利・不動産の定点観測など、<strong>公表情報の一次ソースにリンク付き</strong>でお読みいただけます。ご登録は無料です。
+        <strong>受け取りたいメルマガはご登録時にお選びいただけます</strong>(すべて受け取る・気になる誌だけ、どちらでも)。
       </p>
 
-      <h2 class="font-black text-lg sm:text-xl mb-5">配信ラインナップ(週9種類)</h2>
+      <h2 class="font-black text-lg sm:text-xl mb-5">配信ラインナップ(週12種類)</h2>
       <div class="grid sm:grid-cols-2 gap-3 mb-12">
 
         <div class="border border-gray-200 rounded-lg p-4">
@@ -168,10 +169,26 @@
 
         <div class="border border-gray-200 rounded-lg p-4">
           <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#4f5d1f] text-white text-xs font-bold rounded px-2 py-0.5">水</span>
+            <span class="font-bold text-sm">【人材】Human Resource Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">中小企業のための採用・定着・育成の最新情報と、福利厚生(企業型DC・団体保険・退職金制度)の実務。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
             <span class="inline-block bg-[#1c3560] text-white text-xs font-bold rounded px-2 py-0.5">木</span>
             <span class="font-bold text-sm">【銀行】Bank Digest</span>
           </div>
           <p class="text-xs text-gray-600 leading-relaxed">主要金利一覧と、メガバンク・地銀・信金・政府系の動向。融資制度・優遇金利の最新情報。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#34387b] text-white text-xs font-bold rounded px-2 py-0.5">木</span>
+            <span class="font-bold text-sm">【医療】Medical Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">診療報酬・医療制度の動きから医業承継・医療法人の税務、新薬・医療DXまで、医業経営に役立つ1週間の整理。</p>
         </div>
 
         <div class="border border-gray-200 rounded-lg p-4">
@@ -192,6 +209,14 @@
 
         <div class="border border-gray-200 rounded-lg p-4">
           <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#3a3733] text-white text-xs font-bold rounded px-2 py-0.5">土</span>
+            <span class="font-bold text-sm">【宗教】Religious Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">宗教法人の運営に関わる制度・税務と各宗派・神道・キリスト教の動き。事件情報は裁判所・行政の公的事実のみを扱います。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
             <span class="inline-block bg-[#0f2a4a] text-white text-xs font-bold rounded px-2 py-0.5">日</span>
             <span class="font-bold text-sm">【今週】Weekly Preview</span>
           </div>
@@ -203,12 +228,12 @@
       <div class="grid sm:grid-cols-2 gap-4 mb-8">
         <div class="border-2 border-[#0f2a4a] rounded-xl p-6 text-center">
           <h3 class="font-black text-base mb-2">配信を希望する</h3>
-          <p class="text-xs text-gray-600 leading-relaxed mb-4">メールアドレスとお名前をご登録ください。翌営業日の朝から配信を開始します。</p>
+          <p class="text-xs text-gray-600 leading-relaxed mb-4">メールアドレス・お名前と、受け取りたいメルマガをご登録ください。翌営業日の朝から配信を開始します。</p>
           <button type="button" id="btnRegister" class="btn-primary w-full py-3 rounded-full font-bold text-sm">配信登録へ進む</button>
         </div>
         <div class="border border-gray-300 rounded-xl p-6 text-center">
           <h3 class="font-black text-base mb-2">配信を停止する</h3>
-          <p class="text-xs text-gray-600 leading-relaxed mb-4">ご登録のメールアドレスをお知らせください。すみやかに配信を停止します。</p>
+          <p class="text-xs text-gray-600 leading-relaxed mb-4">ご登録のメールアドレスをお知らせください。すべてのメルマガの配信を停止します。<br />※受け取る誌を変更したい場合は、いったん停止のうえ、改めてご登録ください。</p>
           <button type="button" id="btnUnsubscribe" class="w-full py-3 rounded-full font-bold text-sm border-2 border-gray-400 text-gray-700 hover:bg-gray-100 transition-colors">配信停止の手続きへ</button>
         </div>
       </div>
