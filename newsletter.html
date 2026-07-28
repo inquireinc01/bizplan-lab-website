@@ -321,14 +321,14 @@
     card.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSample(); }
     });
-    // 飾り文字は常時ゆっくり流れ、ポインタを置いている間だけ5倍速にする。
+    // 飾り文字は常時ゆっくり流れ、ポインタを置いている間だけ15倍速にする。
     // CSSでdurationを切り替えると位置が飛ぶため、再生速度(playbackRate)だけを変える
     var wm = card.querySelector('.nl-wm');
     if (wm && wm.getAnimations) {
       var setRate = function (rate) {
         wm.getAnimations().forEach(function (a) { a.playbackRate = rate; });
       };
-      card.addEventListener('mouseenter', function () { setRate(5); });
+      card.addEventListener('mouseenter', function () { setRate(15); });
       card.addEventListener('mouseleave', function () { setRate(1); });
     }
   });
