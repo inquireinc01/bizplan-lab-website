@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>メールマガジンのご案内 | BizPlan Laboratory</title>
+<meta name="description" content="TK&Companyのメールマガジン(日刊ニュース・不動産・富裕層・銀行・保険ほか週9種類)の配信登録・配信停止のご案内です。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=2026072732" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="sim">
+            <span class="mega-trigger-label">生命保険ツール</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="stock-valuation.html" class="mega-panel-item"><span class="mega-num">1</span>自社株×生命保険</a>
+      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
+      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
+      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
+      <a href="tax-exemption.html" class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
+      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
+      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="ds">
+            <span class="mega-trigger-label">ディスカッションシート</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
+      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
+      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
+      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="stock-valuation.html" class="mobile-accordion-link"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a href="future-liability.html" class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a href="treasury-stock.html" class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a href="retirement-benefit.html" class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a href="tax-exemption.html" class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a href="premium-funding.html" class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a href="reduced-new-contract.html" class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="medical-ds.html" class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a href="religious-ds.html" class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a href="venture-ds.html" class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a href="asset-management-ds.html" class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a href="deficit-company-ds.html" class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a href="holdings-ds.html" class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <p class="font-brand-en text-white/70 font-bold tracking-[0.25em] text-[11px] mb-1.5">NEWSLETTER</p>
+        <h1 class="text-white font-black text-xl sm:text-2xl">メールマガジンのご案内</h1>
+      </div>
+      <div class="hero-actions">
+        <a href="index.html" class="hero-util-btn" title="トップページ">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
+          <span class="hero-util-label">トップ</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 紹介 ===== -->
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-5 sm:px-8">
+      <p class="text-sm sm:text-[15px] leading-relaxed mb-2">
+        TK＆Companyでは、経営者・オーナーの皆さまの意思決定に役立つ情報を、テーマ別のメールマガジンとして<strong>毎朝お届け</strong>しています。
+      </p>
+      <p class="text-sm sm:text-[15px] leading-relaxed mb-10">
+        マーケットの動き、税制改正の先読み、金利・不動産の定点観測など、<strong>公表情報の一次ソースにリンク付き</strong>でお読みいただけます。ご登録は無料です。
+      </p>
+
+      <h2 class="font-black text-lg sm:text-xl mb-5">配信ラインナップ(週9種類)</h2>
+      <div class="grid sm:grid-cols-2 gap-3 mb-12">
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#0f2a4a] text-white text-xs font-bold rounded px-2 py-0.5">月〜金</span>
+            <span class="font-bold text-sm">【日刊】デイリーレポート</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">マーケットサマリー・その日の主要ニュースを、財務・キャッシュフロー・自社株・必要保障の4つの観点で毎朝コンパクトに。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#6b5618] text-white text-xs font-bold rounded px-2 py-0.5">月</span>
+            <span class="font-bold text-sm">【顧客開拓】マーケティング情報</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">法人・富裕層マーケットの動きと、集客・セミナー・提携のトレンド。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#5a2230] text-white text-xs font-bold rounded px-2 py-0.5">火</span>
+            <span class="font-bold text-sm">【不動産】Estate Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">路線価・マンション価格・オフィス市況などの指数定点観測と、不動産×税制(評価ルール改正)の先読み。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#1f4d43] text-white text-xs font-bold rounded px-2 py-0.5">水</span>
+            <span class="font-bold text-sm">【富裕層】Wealth Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">オーナー経営者・富裕層のための節税・資産防衛・事業承継・ライフスタイル情報。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#1c3560] text-white text-xs font-bold rounded px-2 py-0.5">木</span>
+            <span class="font-bold text-sm">【銀行】Bank Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">主要金利一覧と、メガバンク・地銀・信金・政府系の動向。融資制度・優遇金利の最新情報。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#1f4a5e] text-white text-xs font-bold rounded px-2 py-0.5">金</span>
+            <span class="font-bold text-sm">【保険】Insurance Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">生保・損保・代理店業界の1週間と、金融庁など当局の発信を体系的に整理。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#0f2a4a] text-white text-xs font-bold rounded px-2 py-0.5">土</span>
+            <span class="font-bold text-sm">【週刊】Weekly Report ＋【運用】Asset Digest</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">今週の総括(テーマ別詳細)と、運用環境・12指数の騰落・保険商品の利率動向。</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-block bg-[#0f2a4a] text-white text-xs font-bold rounded px-2 py-0.5">日</span>
+            <span class="font-bold text-sm">【今週】Weekly Preview</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">政治・経済・マーケット・税務の「来週の予定」を先取りするカレンダー。</p>
+        </div>
+      </div>
+
+      <!-- ===== 登録・停止 ===== -->
+      <div class="grid sm:grid-cols-2 gap-4 mb-8">
+        <div class="border-2 border-[#0f2a4a] rounded-xl p-6 text-center">
+          <h3 class="font-black text-base mb-2">配信を希望する</h3>
+          <p class="text-xs text-gray-600 leading-relaxed mb-4">メールアドレスとお名前をご登録ください。翌営業日の朝から配信を開始します。</p>
+          <button type="button" id="btnRegister" class="btn-primary w-full py-3 rounded-full font-bold text-sm">配信登録へ進む</button>
+        </div>
+        <div class="border border-gray-300 rounded-xl p-6 text-center">
+          <h3 class="font-black text-base mb-2">配信を停止する</h3>
+          <p class="text-xs text-gray-600 leading-relaxed mb-4">ご登録のメールアドレスをお知らせください。すみやかに配信を停止します。</p>
+          <button type="button" id="btnUnsubscribe" class="w-full py-3 rounded-full font-bold text-sm border-2 border-gray-400 text-gray-700 hover:bg-gray-100 transition-colors">配信停止の手続きへ</button>
+        </div>
+      </div>
+
+      <div id="nlNotice" class="hidden bg-gray-100 text-gray-700 text-sm rounded-lg p-4 mb-8"></div>
+
+      <div class="notice-box text-xs rounded-lg p-4 leading-relaxed">
+        ご登録いただいたメールアドレス・お名前は、メールマガジンの配信および配信に関するご連絡のみに使用し、他の目的には使用しません。配信はいつでも停止できます(各メールの末尾からもお手続きいただけます)。
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 flex flex-wrap gap-3">
+      <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">メールマガジンのご案内</a>
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <div class="max-w-3xl space-y-3 mb-6">
+      <p class="text-xs text-gray-500 leading-relaxed">
+        メールマガジンは公開情報をもとに編集したものであり、情報の正確性・完全性・最新性を保証するものではありません。実務上の判断にあたっては、必ず原典をご確認のうえ、税理士等の専門家にご相談ください。
+      </p>
+    </div>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260727b"></script>
+<script>
+  // ===== 受け口の設定 =====
+  // Googleフォームが用意できたら、以下の2つのURLを設定する(空のままの場合はメール方式で動作する)
+  const FORM_REGISTER_URL = '';   // 配信登録フォームのURL(https://forms.gle/...)
+  const FORM_UNSUBSCRIBE_URL = ''; // 配信停止フォームのURL(https://forms.gle/...)
+  const NEWSLETTER_TO = 'taku_matsuda@bizplanlabo.com';
+
+  function openOrMail(formUrl, subject, bodyLines) {
+    if (formUrl) {
+      window.open(formUrl, '_blank', 'noopener');
+      return;
+    }
+    const mailtoUrl = `mailto:${NEWSLETTER_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
+    window.location.href = mailtoUrl;
+    const notice = document.getElementById('nlNotice');
+    notice.textContent = 'メールソフトが起動しない場合は、お手数ですが ' + NEWSLETTER_TO + ' 宛に直接ご連絡ください。';
+    notice.classList.remove('hidden');
+    notice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  document.getElementById('btnRegister').addEventListener('click', function () {
+    openOrMail(FORM_REGISTER_URL, '【メルマガ配信希望】', [
+      'メールマガジンの配信を希望します。',
+      '',
+      '配信先メールアドレス: (ご記入ください)',
+      'お名前: (ご記入ください)',
+      '会社名(任意): ',
+    ]);
+  });
+
+  document.getElementById('btnUnsubscribe').addEventListener('click', function () {
+    openOrMail(FORM_UNSUBSCRIBE_URL, '【メルマガ配信停止】', [
+      'メールマガジンの配信停止を希望します。',
+      '',
+      '登録中のメールアドレス: (ご記入ください)',
+    ]);
+  });
+</script>
+</body>
+</html>
