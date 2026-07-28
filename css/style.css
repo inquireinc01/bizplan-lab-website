@@ -3163,21 +3163,6 @@ svg {
   margin: -0.4rem 0 0.6rem;
 }
 
-/* ========== メルマガ案内: カード背景の飾り文字をゆっくり左右に流す ==========
-   transformだけをアニメーションさせるためGPU合成のみで動き、
-   レイアウト計算・再描画は毎フレーム発生しない(PC・スマホとも負荷は実質無視できる)。
-   左から右へ流れ、端まで行くとゆっくり戻る(ループの瞬間ジャンプを避けるためalternate) */
-@keyframes nlWmFlow {
-  from { transform: translateX(-60%); }
-  to { transform: translateX(10%); }
-}
-.nl-lineup .nl-wm {
-  /* 常時ゆっくり(36s)流し、ポインタを置いたカードだけJS(playbackRate)で5倍速にする。
-     durationをCSSで切り替えると位置が飛ぶため、速度変更はWeb Animations APIで行う */
-  animation: nlWmFlow 36s linear infinite alternate;
-}
+/* ========== メルマガ案内: ラインナップカード ==========
+   カード全体がサンプルへのリンク。ホバー挙動はトップページのカード(lift-card)と共通 */
 .nl-lineup [data-sample] { cursor: pointer; }
-/* OSの設定で「視差効果・動きを減らす」を選んでいる人には動かさない */
-@media (prefers-reduced-motion: reduce) {
-  .nl-lineup .nl-wm { animation: none; }
-}
