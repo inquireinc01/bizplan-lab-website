@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026072744" />
+<link rel="stylesheet" href="css/style.css?v=2026072745" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -321,6 +321,16 @@
     card.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSample(); }
     });
+    // 飾り文字は常時ゆっくり流れ、ポインタを置いている間だけ5倍速にする。
+    // CSSでdurationを切り替えると位置が飛ぶため、再生速度(playbackRate)だけを変える
+    var wm = card.querySelector('.nl-wm');
+    if (wm && wm.getAnimations) {
+      var setRate = function (rate) {
+        wm.getAnimations().forEach(function (a) { a.playbackRate = rate; });
+      };
+      card.addEventListener('mouseenter', function () { setRate(5); });
+      card.addEventListener('mouseleave', function () { setRate(1); });
+    }
   });
 
   document.getElementById('btnRegister').addEventListener('click', function () {

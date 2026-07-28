@@ -3172,15 +3172,11 @@ svg {
   to { transform: translateX(10%); }
 }
 .nl-lineup .nl-wm {
-  /* ポインタを置いているカードだけ倍速(18s)で流し、それ以外は止めておく */
-  animation: nlWmFlow 18s linear infinite alternate;
-  animation-play-state: paused;
+  /* 常時ゆっくり(36s)流し、ポインタを置いたカードだけJS(playbackRate)で5倍速にする。
+     durationをCSSで切り替えると位置が飛ぶため、速度変更はWeb Animations APIで行う */
+  animation: nlWmFlow 36s linear infinite alternate;
 }
 .nl-lineup [data-sample] { cursor: pointer; }
-.nl-lineup [data-sample]:hover .nl-wm,
-.nl-lineup [data-sample]:focus-visible .nl-wm {
-  animation-play-state: running;
-}
 /* OSの設定で「視差効果・動きを減らす」を選んでいる人には動かさない */
 @media (prefers-reduced-motion: reduce) {
   .nl-lineup .nl-wm { animation: none; }
