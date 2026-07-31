@@ -24,38 +24,13 @@
         <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
       </a>
 
-      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
-        <div class="mega-item">
-          <button type="button" class="mega-trigger" data-mega="sim">
-            <span class="mega-trigger-label">生命保険ツール</span>
-            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="mega-panel">
-      <a href="stock-valuation.html" class="mega-panel-item"><span class="mega-num">1</span>自社株×生命保険</a>
-      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
-      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
-      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
-      <a href="tax-exemption.html" class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
-      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
-      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
-          </div>
+      <div class="flex-1 max-w-md ml-auto hidden sm:block">
+        <div class="relative">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+          <input id="portal-search" type="search" placeholder="ページ内検索（例: 退職金、事業承継、財務3表）" autocomplete="off"
+            class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
         </div>
-
-        <div class="mega-item">
-          <button type="button" class="mega-trigger" data-mega="ds">
-            <span class="mega-trigger-label">ディスカッションシート</span>
-            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="mega-panel">
-      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
-      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
-      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
-      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
-      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
-      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
-          </div>
-        </div>
-      </nav>
+      </div>
 
       <div class="flex items-center gap-3 shrink-0">
         <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
@@ -63,6 +38,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
+      </div>
+    </div>
+    <div class="sm:hidden pb-3">
+      <div class="relative">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+        <input id="portal-search-m" type="search" placeholder="ページ内検索" autocomplete="off"
+          class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
       </div>
     </div>
   </div>
@@ -105,21 +87,13 @@
 
 <main>
 
-<!-- ===== ヒーロー ===== -->
-  <section class="hero-pattern relative py-10 sm:py-14">
+<!-- ===== ヒーロー(ブランド帯) ===== -->
+  <section class="hero-pattern relative py-5 sm:py-6">
     <div class="relative z-10 max-w-4xl mx-auto px-5 sm:px-8 text-center">
-      <p class="font-brand-en text-white/60 font-bold tracking-[0.35em] text-[10px] sm:text-[11px] uppercase mb-2">Professional Portal</p>
-      <h1 class="font-brand-en text-white font-black text-3xl sm:text-4xl leading-tight tracking-tight mb-2">
+      <p class="font-brand-en text-white/60 font-bold tracking-[0.35em] text-[10px] sm:text-[11px] uppercase mb-1">Professional Portal</p>
+      <h1 class="font-brand-en text-white font-black text-2xl sm:text-3xl leading-tight tracking-tight">
         By TK&amp;Company
       </h1>
-      <p class="text-white/85 font-bold text-sm sm:text-base mb-1">生命保険プロフェッショナルのための総合ポータル</p>
-      <p class="font-brand-en text-white/60 font-bold tracking-[0.2em] text-[10px] sm:text-[11px] uppercase mb-5">
-        Tools &middot; Discussion &middot; Training &middot; News &middot; Seminars
-      </p>
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <a href="basic-info.html" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold border border-white/50 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">基本情報入力 <span aria-hidden="true">&rarr;</span></a>
-        <a href="newsletter.html" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold border border-white/50 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief 配信登録 <span aria-hidden="true">&rarr;</span></a>
-      </div>
     </div>
   </section>
 
@@ -175,6 +149,21 @@
         <h2 class="text-2xl sm:text-3xl font-black text-[#0f2a4a]">コンテンツ</h2>
       </div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <a href="basic-info.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-6 block shadow-sm overflow-hidden">
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#0f2a4a"></span>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="inline-flex items-center justify-center w-11 h-11 rounded-full shrink-0" style="background-color:#0f2a4a15">
+              <svg class="w-5 h-5" fill="none" stroke="#0f2a4a" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </span>
+            <div>
+              <h3 class="font-black text-lg text-[#0f2a4a] leading-tight">基本情報入力</h3>
+              <p class="font-brand-en text-[10px] font-bold tracking-[0.2em] uppercase" style="color:#0f2a4a">Basic Info Input</p>
+            </div>
+          </div>
+          <p class="text-[13px] text-gray-600 leading-relaxed mb-4">会社名・決算数値などを一度入力すれば、各試算ツールに自動反映。最初にここから始めるのがおすすめ。</p>
+          <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0f2a4a] group-hover:gap-2.5 transition-all">入力ページへ <span aria-hidden="true">&rarr;</span></span>
+        </a>
 
         <a href="newsletter.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-6 block shadow-sm overflow-hidden">
           <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#1E2D50"></span>
@@ -266,6 +255,11 @@
     </div>
   </section>
 
+  <!-- 検索0件メッセージ -->
+  <div id="searchEmpty" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <p class="text-sm text-gray-500">「<span id="searchEmptyWord" class="font-bold text-[#0f2a4a]"></span>」に該当するコンテンツはありません。</p>
+  </div>
+
 </main>
 
 <!-- ===== フッター ===== -->
@@ -288,5 +282,40 @@
 </footer>
 
 <script src="js/menu.js?v=20260727b"></script>
+<script>
+(function(){
+  "use strict";
+  var cards=Array.prototype.slice.call(document.querySelectorAll("main .grid > *"));
+  var secs=Array.prototype.slice.call(document.querySelectorAll("main section")).filter(function(s){return s.querySelector(".grid");});
+  var empty=document.getElementById("searchEmpty");
+  var emptyWord=document.getElementById("searchEmptyWord");
+  function norm(s){return (s||"").toLowerCase().replace(/\s+/g,"");}
+  function filter(q){
+    var nq=norm(q), hits=0;
+    cards.forEach(function(c){
+      var show=!nq||norm(c.textContent).indexOf(nq)>-1;
+      c.style.display=show?"":"none";
+      if(show)hits++;
+    });
+    secs.forEach(function(s){
+      var any=Array.prototype.some.call(s.querySelectorAll(".grid > *"),function(c){return c.style.display!=="none";});
+      s.style.display=any?"":"none";
+    });
+    if(empty){
+      empty.classList.toggle("hidden",!(nq&&hits===0));
+      if(emptyWord)emptyWord.textContent=q;
+    }
+  }
+  ["portal-search","portal-search-m"].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener("input",function(){
+      filter(el.value.trim());
+      var other=document.getElementById(id==="portal-search"?"portal-search-m":"portal-search");
+      if(other&&other.value!==el.value)other.value=el.value;
+    });
+  });
+})();
+</script>
 </body>
 </html>
