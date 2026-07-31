@@ -105,210 +105,53 @@
 
 <main>
 
-  <!-- ===== ヒーロー ===== -->
+<!-- ===== ヒーロー ===== -->
   <section class="hero-pattern relative py-7 sm:py-9">
     <div class="relative z-10 max-w-4xl mx-auto px-5 sm:px-8 text-center">
       <h1 class="text-white font-black text-xl sm:text-2xl leading-tight mb-1.5">
         生命保険の価値を<br class="sm:hidden" />最大化する試算ツール
       </h1>
-      <p class="font-brand-en text-white/75 font-bold tracking-[0.2em] text-[11px] sm:text-xs uppercase">
+      <p class="font-brand-en text-white/75 font-bold tracking-[0.2em] text-[11px] sm:text-xs uppercase mb-4">
         Maximize the Value of Life Insurance
       </p>
+      <a href="basic-info.html" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold border border-white/50 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">基本情報入力 <span aria-hidden="true">&rarr;</span></a>
     </div>
   </section>
 
-  <!-- ===== ツール一覧 ===== -->
+    <!-- ===== ポータル ===== -->
   <section class="py-16 sm:py-20 md:py-24">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      <div class="tool-tabs" role="tablist">
-        <button type="button" class="tool-tab-btn active" data-tab="life" role="tab" aria-selected="true" aria-controls="toolPanelLife">
-          <span class="tool-tab-jp">生命保険ツール</span>
-          <span class="font-brand-en tool-tab-en">LIFE INSURANCE (1&ndash;7)</span>
-        </button>
-        <button type="button" class="tool-tab-btn" data-tab="ds" role="tab" aria-selected="false" aria-controls="toolPanelDs">
-          <span class="tool-tab-jp">ディスカッションシート</span>
-          <span class="font-brand-en tool-tab-en">DISCUSSION SHEET (8&ndash;13)</span>
-        </button>
-        <a href="basic-info.html" class="tool-tab-btn">
-          <span class="tool-tab-jp">基本情報入力</span>
-          <span class="font-brand-en tool-tab-en">BASIC INFO INPUT</span>
-        </a>
-      </div>
-
-      <div id="toolPanelLife" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" data-tab-panel="life">
-
-        <a href="stock-valuation.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">STOCK</span>
+        <a href="tools.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-9 pt-10 block shadow-sm overflow-hidden">
+          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black opacity-10 pointer-events-none select-none" style="color:#3b6ea5">TOOLS</span>
           <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#3b6ea5">1</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Stock &amp; Insurance</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">自社株</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">生命保険の活用による損金創出が、自社株評価にどう影響するかを試算します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.25em] uppercase mb-3" style="color:#3b6ea5">Life Insurance Tools</p>
+          <h2 class="mb-1 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">生命保険ツール</span></h2>
+          <p class="font-brand-en text-xs font-bold tracking-[0.15em] text-gray-400 mb-4">OPUS.1&ndash;7</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-6">自社株・将来負債・金庫株・退職金・非課税・原資創出・減額充当。生命保険の活用価値を数字で見える化する7つの試算ツール。</p>
+          <span class="relative inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツール一覧へ <span aria-hidden="true">&rarr;</span></span>
         </a>
 
-        <a href="future-liability.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">LIABILITY</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#3b6ea5">2</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Liability &amp; Insurance</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">将来負債</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">退職金や事業承継資金など将来必ず発生する負債に、生命保険でどう備えられるかを見える化します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="treasury-stock.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">TREASURY</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#3b6ea5">3</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Treasury Stock &amp; Insurance</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">金庫株</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">生命保険を原資とした金庫株活用の資金効率を、給与で負担する場合と比較します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="retirement-benefit.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">RETIREMENT</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#3b6ea5">4</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Retirement &amp; Insurance</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">退職金</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">退職金を給与化する場合と生命保険を活用して一括支給する場合の、法人・個人トータルの税務メリットを比較します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="tax-exemption.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#3b6ea5] opacity-10 pointer-events-none select-none">TAX-FREE</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#3b6ea5"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#3b6ea5">5</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#3b6ea5"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#3b6ea5">Tax Exemption &amp; Insurance</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">非課税</span><span class="font-bold text-2xl text-gray-500 ml-1">×生命保険</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">生命保険料控除や相続税・弔慰金の非課税枠を整理し、控除枠・非課税枠の使い残しがないかを試算します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="premium-funding.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#5c8272] opacity-10 pointer-events-none select-none">FUNDING</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#5c8272"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#5c8272">6</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#5c8272"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#5c8272">Premium Funding</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">原資創出モデル</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">役員報酬や各種経費の適正化により、無理なく生命保険料の原資となるキャッシュフローを積み上げて試算します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="reduced-new-contract.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#5c8272] opacity-10 pointer-events-none select-none">REDUCTION</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#5c8272"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#5c8272">7</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#5c8272"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#5c8272">Reduction &amp; New Contract</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">減額充当モデル</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">既契約の保険金額を減額し、その解約返戻金を新契約の原資に充てることで生まれる法人税への影響を試算します。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-      </div>
-
-      <div id="toolPanelDs" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 hidden" data-tab-panel="ds">
-
-        <a href="medical-ds.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#826f5c] opacity-10 pointer-events-none select-none">MEDICAL</span>
+        <a href="discussion.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-9 pt-10 block shadow-sm overflow-hidden">
+          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black opacity-10 pointer-events-none select-none" style="color:#826f5c">DISCUSSION</span>
           <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#826f5c"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#826f5c">8</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#826f5c"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#826f5c">Medical Corporation DS</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">医療法人</span><span class="font-bold text-2xl text-gray-500 ml-1">×DS</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">医療法人の出資持分の状況・法人類型・資産運用や生命保険の活用状況を整理するディスカッションシートです。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.25em] uppercase mb-3" style="color:#826f5c">Discussion Sheets</p>
+          <h2 class="mb-1 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">ディスカッションシート</span></h2>
+          <p class="font-brand-en text-xs font-bold tracking-[0.15em] text-gray-400 mb-4">OPUS.8&ndash;13</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-6">医療法人・宗教法人・ベンチャー企業・資産管理会社・赤字会社・ホールディングス。お客様との対話を深める6つのシート。</p>
+          <span class="relative inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">シート一覧へ <span aria-hidden="true">&rarr;</span></span>
         </a>
 
-        <a href="religious-ds.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#826f5c] opacity-10 pointer-events-none select-none">RELIGIOUS</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#826f5c"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#826f5c">9</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#826f5c"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#826f5c">Religious Corporation DS</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">宗教法人</span><span class="font-bold text-2xl text-gray-500 ml-1">×DS</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">宗教法人の基本状況・事業承継(後継者)の論点・収益事業や生命保険の状況を整理するディスカッションシートです。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="venture-ds.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#826f5c] opacity-10 pointer-events-none select-none">VENTURE</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#826f5c"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#826f5c">10</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#826f5c"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#826f5c">Venture Company DS</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">ベンチャー企業</span><span class="font-bold text-2xl text-gray-500 ml-1">×DS</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">成長段階のベンチャー企業の自社株評価指標・資金調達状況・生命保険活用状況を整理するディスカッションシートです。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="asset-management-ds.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#826f5c] opacity-10 pointer-events-none select-none">ASSET</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#826f5c"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#826f5c">11</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#826f5c"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#826f5c">Asset Management Co. DS</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">資産管理会社</span><span class="font-bold text-2xl text-gray-500 ml-1">×DS</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">資産管理会社の基本状況・保有資産の内容・事業承継や生命保険の活用状況を整理するディスカッションシートです。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="deficit-company-ds.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#826f5c] opacity-10 pointer-events-none select-none">DEFICIT</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#826f5c"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#826f5c">12</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#826f5c"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#826f5c">Deficit Company DS</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">赤字会社</span><span class="font-bold text-2xl text-gray-500 ml-1">×DS</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">繰越欠損金の状況・黒字化の見通し・生命保険を活用した対策の検討状況を整理するディスカッションシートです。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
-        </a>
-
-        <a href="holdings-ds.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
-          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#826f5c] opacity-10 pointer-events-none select-none">HOLDINGS</span>
-          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#826f5c"></span>
-          <div class="mb-5">
-            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#826f5c">13</span></span>
-            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#826f5c"></div>
-          </div>
-          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#826f5c">Holdings DS</p>
-          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">ホールディングス</span><span class="font-bold text-2xl text-gray-500 ml-1">×DS</span></h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-5">持株会社化の検討状況・グループ構成・オーナー一族の持株や生命保険の活用状況を整理するディスカッションシートです。</p>
-          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">ツールを使う <span aria-hidden="true">&rarr;</span></span>
+        <a href="training.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-9 pt-10 block shadow-sm overflow-hidden">
+          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black opacity-10 pointer-events-none select-none" style="color:#5b4b8a">TRAINING</span>
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#5b4b8a"></span>
+          <span class="absolute top-4 right-4 text-[10px] font-black tracking-widest text-white px-2.5 py-1 rounded-full" style="background-color:#c2452d">NEW</span>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.25em] uppercase mb-3" style="color:#5b4b8a">Training Lab</p>
+          <h2 class="mb-1 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">トレーニング</span></h2>
+          <p class="font-brand-en text-xs font-bold tracking-[0.15em] text-gray-400 mb-4">OP.1&ndash;9</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-6">第1弾「財務3表マスター」公開中。PL・BS・CSのつながりをゲーム感覚で体得するトレーニングシリーズ。</p>
+          <span class="relative inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">トレーニングへ <span aria-hidden="true">&rarr;</span></span>
         </a>
 
       </div>
@@ -337,6 +180,5 @@
 </footer>
 
 <script src="js/menu.js?v=20260727b"></script>
-<script src="js/index-tabs.js?v=20260723a"></script>
 </body>
 </html>

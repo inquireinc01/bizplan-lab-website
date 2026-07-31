@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>財務3表マスター | TK&Company</title>
+<style>
+:root{
+  --navy:#1E2D50; --navy2:#2A3F6E; --ink:#222; --line:#C8CFD9;
+  --pl:#2E5F8F; --bs:#2E7D5B; --cs:#5B4B8A;
+  --plbg:#EAF1F8; --bsbg:#EAF5EF; --csbg:#EFECf7;
+  --red:#C0392B; --ok:#1E8E5A; --gold:#E8A33D;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color:var(--ink);background:#F4F6F9;padding-bottom:290px}
+header{background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+header h1{font-size:16px;letter-spacing:.05em;white-space:nowrap}
+header .score{margin-left:auto;font-size:13px;background:rgba(255,255,255,.12);padding:4px 12px;border-radius:14px;white-space:nowrap}
+header .score b{font-family:Arial;font-size:16px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+
+/* ---- home ---- */
+.home h2{font-size:18px;margin:18px 4px 12px;color:var(--navy)}
+.modes{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.mode-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.mode-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(30,45,80,.15)}
+.mode-card .no{font-family:Arial;font-weight:bold;font-size:13px;color:#fff;background:var(--navy);border-radius:10px;padding:2px 10px;display:inline-block}
+.mode-card h3{font-size:17px;margin:10px 0 6px;color:var(--navy)}
+.mode-card p{font-size:12.5px;color:#555;line-height:1.7}
+.mode-card .prog{font-size:11.5px;color:var(--ok);margin-top:8px;font-weight:bold}
+
+/* ---- game screen ---- */
+.gamebar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.gamebar .back{font-size:12.5px;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.gamebar .stage{font-size:13px;font-weight:bold;color:var(--navy)}
+.card-q{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:14px 18px;margin-bottom:12px;position:relative}
+.card-q .tag{position:absolute;top:-11px;left:14px;background:var(--navy);color:#fff;font-size:11px;padding:2px 12px;border-radius:10px;letter-spacing:.08em}
+.card-q h3{font-size:16px;color:var(--navy);line-height:1.5}
+.card-q h3 .num{font-family:Arial;font-weight:bold}
+.card-q .desc{font-size:12.5px;color:#555;margin-top:6px;line-height:1.7}
+.unit{font-size:.72em;color:#777}
+
+.help-tip{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#E3E8F0;color:var(--navy);font-size:12px;font-weight:bold;border:none;cursor:pointer;vertical-align:middle;margin-left:6px}
+.tip-pop{display:none;background:#FFFDF3;border:1px solid var(--gold);border-radius:10px;padding:10px 14px;font-size:12.5px;line-height:1.8;margin-top:8px;color:#444}
+.tip-pop.show{display:block}
+
+.checks{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.chk{font-size:11.5px;padding:4px 12px;border-radius:12px;background:#E9EDF3;color:#888;border:1px solid var(--line)}
+.chk.ok{background:#E3F4EB;color:var(--ok);border-color:var(--ok);font-weight:bold}
+.chk.ng{background:#FBEAE8;color:var(--red);border-color:#E5B4AE}
+
+/* ---- statements ---- */
+.sheets{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:12px;align-items:start}
+.sheet{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sheet .head{color:#fff;font-size:13.5px;font-weight:bold;padding:8px 12px;letter-spacing:.05em}
+.sheet.pl .head{background:var(--pl)} .sheet.bs .head{background:var(--bs)} .sheet.cs .head{background:var(--cs)}
+.rows{padding:4px 0}
+.row{display:flex;align-items:center;border-bottom:1px solid #EDF0F4;min-height:33px}
+.row:last-child{border-bottom:none}
+.row .lbl{flex:1.25;font-size:12px;padding:4px 8px;line-height:1.3}
+.row .lbl.red{color:var(--red);font-weight:bold}
+.row.sub{font-weight:bold}
+.sheet.pl .row.sub{background:var(--plbg)} .sheet.bs .row.sub{background:var(--bsbg)} .sheet.cs .row.sub{background:var(--csbg)}
+.row .divhead{flex:1;font-size:11px;font-weight:bold;color:#fff;padding:3px 8px}
+.cell{flex:1;font-family:Arial;font-size:13.5px;text-align:right;padding:5px 8px;margin:2px 6px 2px 0;border:1.5px solid #D9DEE7;border-radius:6px;background:#FBFCFE;min-width:74px;cursor:pointer;min-height:29px}
+.cell:empty::before{content:"";color:#bbb}
+.cell.active{border-color:var(--navy);background:#F0F5FF;box-shadow:0 0 0 2px rgba(42,63,110,.18)}
+.cell.wrong{border-color:var(--red);background:#FBEAE8;animation:shake .3s}
+.cell.right{border-color:var(--ok);background:#E3F4EB}
+.cell.glow{animation:glow 1.2s ease-in-out infinite}
+.cell.neg{color:var(--red)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 2px rgba(232,163,61,.4)}50%{box-shadow:0 0 12px rgba(232,163,61,.95);border-color:var(--gold)}}
+
+.linknote{font-size:11px;color:#888;padding:6px 10px;background:#F7F8FA;border-top:1px dashed var(--line)}
+
+/* ---- actions ---- */
+.actions{display:flex;gap:10px;margin:16px 0;align-items:center;flex-wrap:wrap}
+.btn-primary{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px 34px;font-size:15px;font-weight:bold;letter-spacing:.1em;cursor:pointer;position:relative;overflow:hidden;font-family:inherit}
+.btn-primary::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:none}
+.btn-primary:hover::after{left:130%;transition:left .6s ease}
+.btn-primary:disabled{background:#9AA5B8;cursor:default}
+.btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--line);border-radius:10px;padding:10px 18px;font-size:12.5px;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{background:#F0F3F8}
+
+.result{border-radius:12px;padding:14px 18px;font-size:14px;margin:10px 0;display:none;line-height:1.8}
+.result.show{display:block}
+.result.clear{background:#E3F4EB;border:2px solid var(--ok);color:#14603C}
+.result.miss{background:#FBEAE8;border:2px solid #E5B4AE;color:#8E2A1E}
+.result .big{font-size:18px;font-weight:bold}
+.result ul{margin:4px 0 0 20px;font-size:12.5px}
+
+/* ---- keypad ---- */
+.keypad{position:fixed;left:0;right:0;bottom:-320px;background:#fff;border-top:2px solid var(--navy);box-shadow:0 -6px 24px rgba(0,0,0,.18);transition:bottom .22s;z-index:100;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.keypad.show{bottom:0}
+.keypad .kp-target{font-size:12px;color:#555;text-align:center;margin-bottom:6px}
+.keypad .kp-target b{color:var(--navy)}
+.kp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:440px;margin:0 auto}
+.kp-grid button{font-family:Arial,"BIZ UDPGothic",sans-serif;font-size:19px;padding:12px 0;border-radius:10px;border:1px solid var(--line);background:#F7F8FA;cursor:pointer;font-weight:bold;color:var(--ink)}
+.kp-grid button:active{background:#E3E8F0}
+.kp-grid .kp-fn{background:#EDF0F5;font-size:15px;color:var(--navy)}
+.kp-grid .kp-ok{background:var(--navy);color:#fff;grid-row:span 2;font-size:16px;letter-spacing:.1em}
+.kp-grid .kp-neg{color:var(--red)}
+
+/* ---- mobile tabs ---- */
+.stabs{display:none;gap:6px;margin-bottom:10px}
+.stabs button{flex:1;padding:9px 0;font-size:13px;font-weight:bold;border-radius:9px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-family:inherit;color:#666}
+.stabs button.on.tpl{background:var(--pl);border-color:var(--pl);color:#fff}
+.stabs button.on.tbs{background:var(--bs);border-color:var(--bs);color:#fff}
+.stabs button.on.tcs{background:var(--cs);border-color:var(--cs);color:#fff}
+@media(max-width:960px){
+  .sheets{grid-template-columns:1fr}
+  .stabs{display:flex}
+  .sheet{display:none}
+  .sheet.mshow{display:block}
+  header h1{font-size:14px}
+}
+.overlay{position:fixed;inset:0;background:rgba(20,30,55,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.overlay.show{display:flex}
+.ov-box{background:#fff;border-radius:16px;padding:26px 24px;max-width:520px;width:100%;text-align:center}
+.ov-box h3{color:var(--navy);font-size:19px;margin-bottom:10px}
+.ov-box p{font-size:13px;line-height:1.9;color:#444;text-align:left}
+.ov-box .btn-primary{margin-top:16px}
+footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
+</style>
+</head>
+<body>
+<header>
+  <a href="../../training.html" style="color:#fff;opacity:.75;font-size:12px;text-decoration:none;white-space:nowrap">&larr; 一覧</a>
+  <h1>財務3表マスター</h1>
+  <span class="score">SCORE <b id="scoreDisp">0</b></span>
+</header>
+
+<div class="wrap">
+  <!-- ============ HOME ============ -->
+  <div id="home" class="home">
+    <h2>モードを選んでください</h2>
+    <div class="modes">
+      <div class="mode-card" onclick="startMode('basic')">
+        <span class="no">MODE 1</span>
+        <h3>ベーシック編</h3>
+        <p>資本金と創業融資で会社を立ち上げ、2期目の決算まで完走しよう。取引のたびにPL・BS・CSを自分の手で更新していく全16ステップ。</p>
+        <p class="prog" id="progBasic"></p>
+      </div>
+      <div class="mode-card" onclick="startMode('random')">
+        <span class="no">MODE 2</span>
+        <h3>ランダム経理処理</h3>
+        <p>次々に出てくる取引カードを3表に反映するスピード勝負。連続正解でボーナス。1取引ずつの影響だけを入力するシンプルルール。</p>
+        <p class="prog" id="progRandom"></p>
+      </div>
+      <div class="mode-card" onclick="startMode('insurance')">
+        <span class="no">MODE 3</span>
+        <h3>保険の経理処理</h3>
+        <p>全額損金・４割損金・全額資産計上、そして解約。生命保険の経理処理4パターンを3表で完全マスター。</p>
+        <p class="prog" id="progIns"></p>
+      </div>
+    </div>
+    <footer>TK&amp;Company Inc. All Rights Reserved.</footer>
+  </div>
+
+  <!-- ============ GAME ============ -->
+  <div id="game" style="display:none">
+    <div class="gamebar">
+      <button class="back" onclick="goHome()">← モード選択</button>
+      <span class="stage" id="stageDisp"></span>
+    </div>
+
+    <div class="card-q">
+      <span class="tag" id="cardTag">取引カード</span>
+      <h3 id="cardTitle"></h3>
+      <div class="desc" id="cardDesc"></div>
+      <button class="help-tip" id="cardHelpBtn" onclick="toggleTip()">？</button>
+      <div class="tip-pop" id="cardTip"></div>
+    </div>
+
+    <div class="checks">
+      <span class="chk" id="chkBS">BS: 資産合計 ＝ 負債＋純資産</span>
+      <span class="chk" id="chkCS1">CS: 増減 ＝ 営業＋投資＋財務</span>
+      <span class="chk" id="chkCS2">CS: 期末 ＝ 期首＋増減</span>
+      <span style="font-size:11px;color:#888;align-self:center">（単位:<span class="unit">万円</span> ／ マイナスは ± キー）</span>
+    </div>
+
+    <div class="stabs">
+      <button class="tpl on" onclick="showSheet(0,this)">PL</button>
+      <button class="tbs" onclick="showSheet(1,this)">BS</button>
+      <button class="tcs" onclick="showSheet(2,this)">CS</button>
+    </div>
+
+    <div class="sheets">
+      <div class="sheet pl mshow"><div class="head">PL 損益計算書</div><div class="rows" id="plRows"></div>
+        <div class="linknote">当期純利益 → BS 利益剰余金へ</div></div>
+      <div class="sheet bs"><div class="head">BS 貸借対照表</div><div class="rows" id="bsRows"></div>
+        <div class="linknote">現金 ＝ CS 期末の現金と一致</div></div>
+      <div class="sheet cs"><div class="head">CS キャッシュフロー</div><div class="rows" id="csRows"></div>
+        <div class="linknote">税引前利益 ← PLから転記してスタート</div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="judgeBtn" onclick="judge()">判定する</button>
+      <button class="btn-ghost" onclick="clearInputs()">入力データクリア</button>
+      <button class="btn-ghost" id="answerBtn" style="display:none" onclick="showAnswer()">答えを見る</button>
+    </div>
+
+    <div class="result" id="resultBox"></div>
+  </div>
+</div>
+
+<!-- keypad -->
+<div class="keypad" id="keypad">
+  <div class="kp-target" id="kpTarget">セルを選択</div>
+  <div class="kp-grid">
+    <button onclick="kp('7')">7</button><button onclick="kp('8')">8</button><button onclick="kp('9')">9</button>
+    <button class="kp-fn" onclick="kpDel()">⌫</button>
+    <button onclick="kp('4')">4</button><button onclick="kp('5')">5</button><button onclick="kp('6')">6</button>
+    <button class="kp-fn" onclick="kpClear()">C</button>
+    <button onclick="kp('1')">1</button><button onclick="kp('2')">2</button><button onclick="kp('3')">3</button>
+    <button class="kp-ok" onclick="kpOk()">OK</button>
+    <button class="kp-fn kp-neg" onclick="kpNeg()">±</button><button onclick="kp('0')">0</button><button onclick="kp('00')">00</button>
+  </div>
+</div>
+
+<!-- overlay -->
+<div class="overlay" id="overlay">
+  <div class="ov-box">
+    <h3 id="ovTitle"></h3>
+    <p id="ovBody"></p>
+    <button class="btn-primary" id="ovBtn">OK</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= 行定義 ================= */
+const PL_ROWS=[
+ ["sales","売上高"],["cogs","売上原価"],["gross","売上総利益","sub"],
+ ["labor","人件費"],["rent","地代家賃"],["ins","保険料","","red"],["dep","減価償却費"],
+ ["sga","販管費 計","sub"],["op","営業利益","sub"],["misc","雑収入","","red"],
+ ["ord","経常利益","sub"],["exg","特別利益"],["exl","特別損失"],
+ ["pretax","税引前利益","sub"],["tax","法人税等"],["net","当期純利益","sub"]];
+const BS_ROWS=[
+ ["_h1","【資産】","head"],
+ ["cash","現金"],["ar","売掛金"],["inv","在庫"],["fixed","固定資産"],
+ ["prepaid","前払保険料","","red"],["insasset","保険積立金","","red"],
+ ["assets","資産合計","sub"],
+ ["_h2","【負債・純資産】","head"],
+ ["debt","借入金"],["liab","負債合計","sub"],
+ ["capital","資本金"],["retained","利益剰余金"],
+ ["equity","純資産合計","sub"],["total","負債＋純資産","sub"]];
+const CS_ROWS=[
+ ["cs_pretax","税引前利益"],["cs_dep","減価償却費"],["cs_ar","売掛金 増減"],["cs_inv","在庫 増減"],
+ ["cs_tax","法人税 支払"],["cs_op","営業CF","sub"],
+ ["cs_capex","固定資産の取得"],["cs_other","保険など資産の増減","","red"],["cs_invcf","投資CF","sub"],
+ ["cs_finin","資本金・借入"],["cs_repay","元金の返済"],["cs_fin","財務CF","sub"],
+ ["cs_delta","現金の増減","sub"],["cs_open","期首の現金"],["cs_close","期末の現金","sub"]];
+const ALL_IDS=[...PL_ROWS,...BS_ROWS,...CS_ROWS].map(r=>r[0]).filter(id=>!id.startsWith("_"));
+
+/* ================= 問題データ（単位:万円） ================= */
+/* --- MODE1 ベーシック: 累計方式 --- */
+const BASIC=[
+ {t:"資本金<span class='num'>500</span>で会社を設立した",d:"自分のお金500万円を出資して会社の銀行口座に入金。",h:"現金が増え、その調達源泉は資本金。CSでは財務CF（資本金・借入）に+500。まだ商売はしていないのでPLは動かない。",
+  e:{cash:500,capital:500,equity:500,assets:500,total:500,cs_finin:500,cs_fin:500,cs_delta:500,cs_close:500}},
+ {t:"創業融資<span class='num'>300</span>を借り入れた",d:"日本政策金融公庫から創業融資300万円が入金された。",h:"現金+300、借入金+300。CSは資本金・借入の累計が800になる。負債合計も忘れずに。",
+  e:{cash:800,debt:300,liab:300,capital:500,equity:500,assets:800,total:800,cs_finin:800,cs_fin:800,cs_delta:800,cs_close:800}},
+ {t:"店舗の内装・設備を<span class='num'>400</span>で購入した",d:"現金400万円を払って内装工事と厨房設備を取得。",h:"現金→固定資産へ資産の形が変わるだけ。PLは動かない（費用になるのは減価償却のとき）。CSは投資CF（固定資産の取得）に▲400。",
+  e:{cash:400,fixed:400,capital:500,debt:300,liab:300,equity:500,assets:800,total:800,cs_finin:800,cs_fin:800,cs_capex:-400,cs_invcf:-400,cs_delta:400,cs_close:400}},
+ {t:"商品を現金<span class='num'>300</span>で仕入れた（未販売）",d:"売る前の商品は費用ではなく「在庫」という資産。",h:"現金▲300、在庫+300。まだ売っていないので売上原価にはならない。CSは在庫増減に▲300。",
+  e:{cash:100,inv:300,fixed:400,capital:500,debt:300,liab:300,equity:500,assets:800,total:800,cs_finin:800,cs_fin:800,cs_capex:-400,cs_invcf:-400,cs_inv:-300,cs_op:-300,cs_delta:100,cs_close:100}},
+ {t:"商品（原価<span class='num'>300</span>）を<span class='num'>800</span>で販売、うち現金<span class='num'>600</span>・掛け<span class='num'>200</span>",d:"初売上！ 代金の一部はツケ（売掛金）。",h:"PL: 売上800・原価300で利益500。BS: 現金+600、売掛金200、在庫は0に。利益500は利益剰余金へ。CS: 税引前500からスタートし、売掛の増加200はマイナス、在庫増減は仕入▲300と販売+300で差引0に戻る。",
+  e:{sales:800,cogs:300,gross:500,op:500,ord:500,pretax:500,net:500,
+     cash:700,ar:200,fixed:400,retained:500,capital:500,debt:300,liab:300,equity:1000,assets:1300,total:1300,
+     cs_pretax:500,cs_ar:-200,cs_op:300,cs_capex:-400,cs_invcf:-400,cs_finin:800,cs_fin:800,cs_delta:700,cs_close:700}},
+ {t:"給料<span class='num'>200</span>・家賃<span class='num'>100</span>を現金で支払った",d:"販管費の代表格、人件費と地代家賃。",h:"PLの販管費が300増えて利益が圧縮される。利益剰余金も500→200に。CSは税引前利益が変わることで自動的に反映される。",
+  e:{sales:800,cogs:300,gross:500,labor:200,rent:100,sga:300,op:200,ord:200,pretax:200,net:200,
+     cash:400,ar:200,fixed:400,retained:200,capital:500,debt:300,liab:300,equity:700,assets:1000,total:1000,
+     cs_pretax:200,cs_ar:-200,cs_op:0,cs_capex:-400,cs_invcf:-400,cs_finin:800,cs_fin:800,cs_delta:400,cs_close:400}},
+ {t:"【決算整理①】減価償却費<span class='num'>100</span>を計上",d:"設備400を4年で費用化（定額法）。今期はその1年分。",h:"お金は1円も出ていかないのに費用になる、それが減価償却。PLで費用100、BSの固定資産が100減る。CSでは税引前利益に+100を足し戻す（お金が出ていないから）。現金は動かない！",
+  e:{sales:800,cogs:300,gross:500,labor:200,rent:100,dep:100,sga:400,op:100,ord:100,pretax:100,net:100,
+     cash:400,ar:200,fixed:300,retained:100,capital:500,debt:300,liab:300,equity:600,assets:900,total:900,
+     cs_pretax:100,cs_dep:100,cs_ar:-200,cs_op:0,cs_capex:-400,cs_invcf:-400,cs_finin:800,cs_fin:800,cs_delta:400,cs_close:400}},
+ {t:"【決算整理②】法人税<span class='num'>30</span>（税率30%）を納付",d:"税引前利益100 × 30% = 30。現金で納付して第1期決算おわり！",h:"PLに法人税等30、当期純利益は70。現金▲30。CSは法人税支払に▲30。※実務では翌期納付だがゲームでは簡略化。",
+  e:{sales:800,cogs:300,gross:500,labor:200,rent:100,dep:100,sga:400,op:100,ord:100,pretax:100,tax:30,net:70,
+     cash:370,ar:200,fixed:300,retained:70,capital:500,debt:300,liab:300,equity:570,assets:870,total:870,
+     cs_pretax:100,cs_dep:100,cs_ar:-200,cs_tax:-30,cs_op:-30,cs_capex:-400,cs_invcf:-400,cs_finin:800,cs_fin:800,cs_delta:370,cs_close:370},
+  endPeriod:1},
+ /* ---- 第2期: PL/CSリセット、BS繰越、期首現金370 ---- */
+ {t:"【第2期】売掛金<span class='num'>200</span>を回収した",d:"前期のツケが入金された。第2期のPLとCSはゼロから、BSは前期末から続く。",h:"現金+200、売掛金は0に。売上はもう前期に計上済みなのでPLは動かない。CSは売掛金増減に+200（回収はプラス）。期首の現金370を忘れずに。",p2:true,
+  e:{cash:570,fixed:300,retained:70,capital:500,debt:300,liab:300,equity:570,assets:870,total:870,
+     cs_ar:200,cs_op:200,cs_delta:200,cs_open:370,cs_close:570}},
+ {t:"商品を現金<span class='num'>500</span>で仕入れた（未販売）",d:"第2期は仕入も強気に増やす。",h:"現金▲500、在庫+500。CSは在庫増減▲500で営業CFがマイナスに。",p2:true,
+  e:{cash:70,inv:500,fixed:300,retained:70,capital:500,debt:300,liab:300,equity:570,assets:870,total:870,
+     cs_ar:200,cs_inv:-500,cs_op:-300,cs_delta:-300,cs_open:370,cs_close:70}},
+ {t:"商品（原価<span class='num'>500</span>）を<span class='num'>1,400</span>で販売、うち現金<span class='num'>1,100</span>・掛け<span class='num'>300</span>",d:"売上は前期の1.75倍に成長！",h:"PL: 売上1,400・原価500で利益900。売掛金は期首200が回収済みで新たに300 → 残高300。CSの売掛金増減は累計で+200−300=▲100。在庫は仕入500・販売500で増減0に戻る。利益剰余金は前期70+今期900=970。",p2:true,
+  e:{sales:1400,cogs:500,gross:900,op:900,ord:900,pretax:900,net:900,
+     cash:1170,ar:300,fixed:300,retained:970,capital:500,debt:300,liab:300,equity:1470,assets:1770,total:1770,
+     cs_pretax:900,cs_ar:-100,cs_op:800,cs_delta:800,cs_open:370,cs_close:1170}},
+ {t:"給料<span class='num'>300</span>・家賃<span class='num'>100</span>を現金で支払った",d:"人を増やしたので人件費もアップ。",h:"販管費計400。PLの利益が900→500に。剰余金は70+500=570。",p2:true,
+  e:{sales:1400,cogs:500,gross:900,labor:300,rent:100,sga:400,op:500,ord:500,pretax:500,net:500,
+     cash:770,ar:300,fixed:300,retained:570,capital:500,debt:300,liab:300,equity:1070,assets:1370,total:1370,
+     cs_pretax:500,cs_ar:-100,cs_op:400,cs_delta:400,cs_open:370,cs_close:770}},
+ {t:"定期保険料<span class='num'>100</span>を支払った（最高返戻率50%以下・全額損金）",d:"社長に万一があったら会社が危ない。保障のための定期保険に加入。",h:"全額損金タイプなので保険料100はまるごとPLの費用。MODE 3でこの仲間たちを深掘りできる。",p2:true,
+  e:{sales:1400,cogs:500,gross:900,labor:300,rent:100,ins:100,sga:500,op:400,ord:400,pretax:400,net:400,
+     cash:670,ar:300,fixed:300,retained:470,capital:500,debt:300,liab:300,equity:970,assets:1270,total:1270,
+     cs_pretax:400,cs_ar:-100,cs_op:300,cs_delta:300,cs_open:370,cs_close:670}},
+ {t:"借入金の元金<span class='num'>60</span>を返済した",d:"約束どおり公庫に返済。※利息は簡略化のため省略。",h:"元金返済は費用ではない！ PLは動かず、BSの借入金と現金が減るだけ。CSは財務CF（元金の返済）に▲60。「利益が出ているのにお金がない」の正体のひとつ。",p2:true,
+  e:{sales:1400,cogs:500,gross:900,labor:300,rent:100,ins:100,sga:500,op:400,ord:400,pretax:400,net:400,
+     cash:610,ar:300,fixed:300,retained:470,capital:500,debt:240,liab:240,equity:970,assets:1210,total:1210,
+     cs_pretax:400,cs_ar:-100,cs_op:300,cs_repay:-60,cs_fin:-60,cs_delta:240,cs_open:370,cs_close:610}},
+ {t:"【決算整理①】減価償却費<span class='num'>100</span>を計上",d:"2年目の減価償却。固定資産はさらに100目減り。",h:"PL費用+100で税引前は400→300。固定資産300→200。CSは税引前300+償却100で営業CFは変わらない（現金が動いていないから）。",p2:true,
+  e:{sales:1400,cogs:500,gross:900,labor:300,rent:100,ins:100,dep:100,sga:600,op:300,ord:300,pretax:300,net:300,
+     cash:610,ar:300,fixed:200,retained:370,capital:500,debt:240,liab:240,equity:870,assets:1110,total:1110,
+     cs_pretax:300,cs_dep:100,cs_ar:-100,cs_op:300,cs_repay:-60,cs_fin:-60,cs_delta:240,cs_open:370,cs_close:610}},
+ {t:"【決算整理②】法人税<span class='num'>90</span>（税率30%）を納付",d:"税引前利益300 × 30% = 90。これにて2期目の決算も完了！",h:"当期純利益210。利益剰余金は前期70+今期210=280。2期でBSがどれだけ育ったか見てみよう。",p2:true,
+  e:{sales:1400,cogs:500,gross:900,labor:300,rent:100,ins:100,dep:100,sga:600,op:300,ord:300,pretax:300,tax:90,net:210,
+     cash:520,ar:300,fixed:200,retained:280,capital:500,debt:240,liab:240,equity:780,assets:1020,total:1020,
+     cs_pretax:300,cs_dep:100,cs_ar:-100,cs_tax:-90,cs_op:210,cs_repay:-60,cs_fin:-60,cs_delta:150,cs_open:370,cs_close:520},
+  endPeriod:2},
+];
+
+/* --- MODE2 ランダム: 1取引の影響だけ（ゼロから） --- */
+const RANDOM_CARDS=[
+ {t:"商品を現金<span class='num'>200</span>で仕入れた（未販売）",h:"在庫は資産。現金▲200と在庫+200で資産合計は変わらない。CSは在庫増減▲200。",
+  e:{cash:-200,inv:200,cs_inv:-200,cs_op:-200,cs_delta:-200,cs_close:-200}},
+ {t:"商品（原価<span class='num'>200</span>）を現金<span class='num'>500</span>で販売した",h:"PLは売上500・原価200で利益300。BSは現金+500・在庫▲200。CSは税引前300に在庫増減+200（在庫が減った分は現金化）で営業CF500。",
+  e:{sales:500,cogs:200,gross:300,op:300,ord:300,pretax:300,net:300,cash:500,inv:-200,retained:300,equity:300,assets:300,total:300,cs_pretax:300,cs_inv:200,cs_op:500,cs_delta:500,cs_close:500}},
+ {t:"給料<span class='num'>150</span>を現金で支給した",h:"人件費150で利益▲150。現金と利益剰余金がそれぞれ150減る。",
+  e:{labor:150,sga:150,op:-150,ord:-150,pretax:-150,net:-150,cash:-150,retained:-150,equity:-150,assets:-150,total:-150,cs_pretax:-150,cs_op:-150,cs_delta:-150,cs_close:-150}},
+ {t:"家賃<span class='num'>80</span>を現金で支払った",h:"地代家賃80。PL・BS・CSの動きは給料と同じパターン。",
+  e:{rent:80,sga:80,op:-80,ord:-80,pretax:-80,net:-80,cash:-80,retained:-80,equity:-80,assets:-80,total:-80,cs_pretax:-80,cs_op:-80,cs_delta:-80,cs_close:-80}},
+ {t:"設備を現金<span class='num'>500</span>で購入した",h:"固定資産+500・現金▲500。PLは動かない。CSは投資CF▲500。",
+  e:{cash:-500,fixed:500,cs_capex:-500,cs_invcf:-500,cs_delta:-500,cs_close:-500}},
+ {t:"減価償却費<span class='num'>50</span>を計上した",h:"現金の動かない費用。PLで▲50、固定資産▲50。CSは税引前▲50に償却+50を足し戻して現金の増減は0！",
+  e:{dep:50,sga:50,op:-50,ord:-50,pretax:-50,net:-50,fixed:-50,retained:-50,equity:-50,assets:-50,total:-50,cs_pretax:-50,cs_dep:50}},
+ {t:"銀行から<span class='num'>400</span>を借り入れた",h:"現金+400・借入金+400。収益ではないのでPLは動かない。CSは財務CF+400。",
+  e:{cash:400,debt:400,liab:400,assets:400,total:400,cs_finin:400,cs_fin:400,cs_delta:400,cs_close:400}},
+ {t:"借入金の元金<span class='num'>100</span>を返済した",h:"費用ではない！ 現金▲100・借入金▲100。CSは財務CF▲100。",
+  e:{cash:-100,debt:-100,liab:-100,assets:-100,total:-100,cs_repay:-100,cs_fin:-100,cs_delta:-100,cs_close:-100}},
+ {t:"売掛金<span class='num'>150</span>を回収した",h:"売掛金が現金に変わるだけ。PLは動かない。CSは売掛金増減+150で営業CF+150。",
+  e:{cash:150,ar:-150,cs_ar:150,cs_op:150,cs_delta:150,cs_close:150}},
+ {t:"商品（原価<span class='num'>100</span>）を全額掛けで<span class='num'>300</span>販売した",h:"利益は200出るのに現金はゼロ！ 売掛金+300・在庫▲100。CSは税引前200・売掛▲300・在庫+100で営業CF0。「黒字なのにお金がない」の入口。",
+  e:{sales:300,cogs:100,gross:200,op:200,ord:200,pretax:200,net:200,ar:300,inv:-100,retained:200,equity:200,assets:200,total:200,cs_pretax:200,cs_ar:-300,cs_inv:100}},
+ {t:"定期保険料<span class='num'>100</span>を支払った（最高返戻率50%以下）",h:"全額損金タイプ。保険料100がまるごと費用になり、利益も現金も100減る。",
+  e:{ins:100,sga:100,op:-100,ord:-100,pretax:-100,net:-100,cash:-100,retained:-100,equity:-100,assets:-100,total:-100,cs_pretax:-100,cs_op:-100,cs_delta:-100,cs_close:-100}},
+ {t:"法人税<span class='num'>40</span>を現金で納付した",h:"法人税等40で当期純利益▲40。CSは法人税支払▲40。",
+  e:{tax:40,net:-40,cash:-40,retained:-40,equity:-40,assets:-40,total:-40,cs_tax:-40,cs_op:-40,cs_delta:-40,cs_close:-40}},
+];
+
+/* --- MODE3 保険 --- */
+const INSURANCE=[
+ {s:"STAGE 1／4　全額損金",t:"定期保険料<span class='num'>100</span>を支払った（最高返戻率<span class='num'>50</span>%以下）",
+  d:"掛け捨てに近い定期保険。税務上は支払った全額をその期の損金にできる。",
+  h:"保険料100がまるごとPLの費用（販管費）→ 利益が100減り、利益剰余金も100減る。BSに資産は何も残らない。CSは営業CF▲100。",
+  e:{ins:100,sga:100,op:-100,ord:-100,pretax:-100,net:-100,cash:-100,retained:-100,equity:-100,assets:-100,total:-100,cs_pretax:-100,cs_op:-100,cs_delta:-100,cs_close:-100}},
+ {s:"STAGE 2／4　４割損金",t:"定期保険料<span class='num'>100</span>を支払った（最高返戻率<span class='num'>85</span>%以下）",
+  d:"返戻率が高い定期保険は、当初期間は損金にできるのは4割だけ。残り6割は「前払保険料」として資産計上。",
+  h:"費用は40だけ、60はBSの前払保険料（資産）へ。現金は100出ていくが利益は40しか減らない。CSは営業CF▲40＋投資CF▲60（保険など資産の増減）＝▲100。",
+  e:{ins:40,sga:40,op:-40,ord:-40,pretax:-40,net:-40,cash:-100,prepaid:60,retained:-40,equity:-40,assets:-40,total:-40,cs_pretax:-40,cs_op:-40,cs_other:-60,cs_invcf:-60,cs_delta:-100,cs_close:-100}},
+ {s:"STAGE 3／4　全額資産計上",t:"終身保険の保険料<span class='num'>100</span>を支払った",
+  d:"終身保険・養老保険・年金保険など貯蓄性の高い保険は、費用にできず全額が資産になる。",
+  h:"PLはまったく動かない！ 現金100が保険積立金100に姿を変えるだけ。利益への影響ゼロ。CSは投資CF▲100のみ。",
+  e:{cash:-100,insasset:100,cs_other:-100,cs_invcf:-100,cs_delta:-100,cs_close:-100}},
+ {s:"STAGE 4／4　解約",t:"STAGE 2の保険を解約し、解約返戻金<span class='num'>100</span>を受け取った",
+  d:"４割損金の保険（前払保険料60が資産に載っている状態）を解約したら返戻金100が入金された。",
+  h:"資産に載っていた前払保険料60を取り崩し（▲60）、返戻金100との差額40だけが雑収入として利益になる。CSは営業CF+40と投資CF+60（資産の取り崩し）で現金+100。損金にした分は出口で課税される！",
+  e:{misc:40,ord:40,pretax:40,net:40,cash:100,prepaid:-60,retained:40,equity:40,assets:40,total:40,cs_pretax:40,cs_op:40,cs_other:60,cs_invcf:60,cs_delta:100,cs_close:100}},
+];
+
+/* ================= 状態 ================= */
+let mode=null, stepIdx=0, misses=0, streak=0, score=0;
+let values={}, expected={}, activeCell=null, kpBuf="", randomOrder=[];
+const $=id=>document.getElementById(id);
+const store={get k(){return "z3g_"+ (mode||"");}};
+
+function loadScore(){score=Number(localStorage.getItem("z3g_score")||0);$("scoreDisp").textContent=fmt(score,false);}
+function saveScore(){localStorage.setItem("z3g_score",String(score));$("scoreDisp").textContent=fmt(score,false);}
+
+/* ================= 表示ユーティリティ ================= */
+function fmt(n,neg=true){
+  if(n===0||n===undefined||n===null||n==="")return "0";
+  const a=Math.abs(n).toLocaleString("en-US");
+  return n<0?(neg?"▲"+a:"-"+a):a;
+}
+function buildRows(){
+  const mk=(rows,elId)=>{
+    const el=$(elId);el.innerHTML="";
+    rows.forEach(r=>{
+      const [id,label,sub,red]=r;
+      const div=document.createElement("div");
+      if(sub==="head"){div.className="row";div.innerHTML=`<span class="divhead" style="background:${elId==='bsRows'?'var(--bs)':'var(--navy)'}">${label}</span>`;el.appendChild(div);return;}
+      div.className="row"+(sub==="sub"?" sub":"");
+      div.innerHTML=`<span class="lbl ${red==="red"?"red":""}">${label}</span><span class="cell" id="cell_${id}" data-id="${id}" data-label="${label}"></span>`;
+      el.appendChild(div);
+    });
+  };
+  mk(PL_ROWS,"plRows");mk(BS_ROWS,"bsRows");mk(CS_ROWS,"csRows");
+  document.querySelectorAll(".cell").forEach(c=>{
+    c.addEventListener("click",()=>selectCell(c));
+  });
+}
+function renderValues(){
+  ALL_IDS.forEach(id=>{
+    const c=$("cell_"+id);if(!c)return;
+    const v=values[id]||0;
+    c.textContent=v===0?"":fmt(v);
+    c.classList.toggle("neg",v<0);
+  });
+  liveChecks();
+}
+
+/* ================= キーパッド ================= */
+function selectCell(c){
+  document.querySelectorAll(".cell.active").forEach(x=>x.classList.remove("active"));
+  c.classList.add("active");activeCell=c;kpBuf="";
+  $("kpTarget").innerHTML=`<b>${c.dataset.label}</b> に入力（±でマイナス）`;
+  $("keypad").classList.add("show");
+}
+function kp(d){if(!activeCell)return;kpBuf+=d;activeCell.textContent=fmt(Number(kpBuf)||0);previewNeg();}
+function kpDel(){kpBuf=kpBuf.slice(0,-1);if(activeCell)activeCell.textContent=kpBuf?fmt(Number(kpBuf)):"";}
+function kpClear(){kpBuf="";if(activeCell)activeCell.textContent="";}
+function kpNeg(){if(!kpBuf)kpBuf="-";else if(kpBuf.startsWith("-"))kpBuf=kpBuf.slice(1);else kpBuf="-"+kpBuf;
+  if(activeCell)activeCell.textContent=kpBuf==="-"?"▲":fmt(Number(kpBuf)||0);previewNeg();}
+function previewNeg(){if(activeCell)activeCell.classList.toggle("neg",kpBuf.startsWith("-"));}
+function kpOk(){
+  if(activeCell){
+    const v=Number(kpBuf);
+    values[activeCell.dataset.id]=isNaN(v)?0:v;
+    activeCell.classList.remove("active","wrong","right");
+  }
+  activeCell=null;kpBuf="";
+  $("keypad").classList.remove("show");
+  renderValues();
+}
+document.addEventListener("keydown",e=>{
+  if(!activeCell)return;
+  if(/^[0-9]$/.test(e.key))kp(e.key);
+  else if(e.key==="Backspace"){e.preventDefault();kpDel();}
+  else if(e.key==="-"||e.key==="_")kpNeg();
+  else if(e.key==="Enter")kpOk();
+  else if(e.key==="Escape"){kpBuf="";kpOk();}
+});
+
+/* ================= 整合性ライブチェック ================= */
+function liveChecks(){
+  const v=id=>values[id]||0;
+  set("chkBS",v("assets")===v("total")&&(v("assets")!==0||v("total")!==0),v("assets")===0&&v("total")===0);
+  set("chkCS1",v("cs_delta")===v("cs_op")+v("cs_invcf")+v("cs_fin")&&hasCS(),!hasCS());
+  set("chkCS2",v("cs_close")===v("cs_open")+v("cs_delta")&&hasCS(),!hasCS());
+  function hasCS(){return ["cs_delta","cs_close","cs_op","cs_invcf","cs_fin"].some(id=>v(id)!==0);}
+  function set(id,ok,idle){const el=$(id);el.className="chk"+(idle?"":ok?" ok":" ng");}
+}
+
+/* ================= モード進行 ================= */
+function startMode(m){
+  mode=m;stepIdx=0;streak=0;
+  if(m==="basic"){const saved=Number(localStorage.getItem("z3g_basic_step")||0);stepIdx=Math.min(saved,BASIC.length-1);}
+  if(m==="random"){randomOrder=shuffle([...RANDOM_CARDS.keys()]);}
+  if(m==="insurance"){const saved=Number(localStorage.getItem("z3g_ins_step")||0);stepIdx=Math.min(saved,INSURANCE.length-1);}
+  $("home").style.display="none";$("game").style.display="block";
+  loadProblem();
+  window.scrollTo(0,0);
+}
+function goHome(){
+  $("game").style.display="none";$("home").style.display="block";
+  $("keypad").classList.remove("show");activeCell=null;
+  renderProgress();
+}
+function renderProgress(){
+  const b=Number(localStorage.getItem("z3g_basic_step")||0);
+  $("progBasic").textContent=b>=BASIC.length?"★ 2期目の決算まで完走済み！":b>0?`途中まで進行中（STEP ${b+1}/${BASIC.length}）`:"";
+  const i=Number(localStorage.getItem("z3g_ins_step")||0);
+  $("progIns").textContent=i>=INSURANCE.length?"★ 全4ステージクリア！":i>0?`STAGE ${i+1}/4 に挑戦中`:"";
+  const hs=Number(localStorage.getItem("z3g_random_best")||0);
+  $("progRandom").textContent=hs>0?`最高連続正解: ${hs}`:"";
+}
+function currentProblem(){
+  if(mode==="basic")return BASIC[stepIdx];
+  if(mode==="random")return RANDOM_CARDS[randomOrder[stepIdx%randomOrder.length]];
+  return INSURANCE[stepIdx];
+}
+function loadProblem(){
+  misses=0;
+  const p=currentProblem();
+  expected={};ALL_IDS.forEach(id=>expected[id]=0);
+  Object.assign(expected,p.e);
+  /* mode1は前ステップの状態をプリセット */
+  values={};ALL_IDS.forEach(id=>values[id]=0);
+  if(mode==="basic"&&stepIdx>0){
+    const prev=BASIC[stepIdx-1];
+    const prevState={};ALL_IDS.forEach(id=>prevState[id]=0);Object.assign(prevState,prev.e);
+    if(prev.endPeriod){ /* 期またぎ: PL/CSリセット、BS繰越、期首現金セット */
+      ALL_IDS.forEach(id=>{
+        const isBS=BS_ROWS.some(r=>r[0]===id);
+        values[id]=isBS?prevState[id]:0;
+      });
+      values["cs_open"]=prevState["cash"];
+    }else{
+      Object.assign(values,prevState);
+    }
+  }
+  /* 表示 */
+  const tag=mode==="basic"?`STEP ${stepIdx+1}/${BASIC.length}${p.p2?"（第2期）":"（第1期）"}`:mode==="random"?`カード ${stepIdx+1}`:p.s;
+  $("stageDisp").textContent=mode==="basic"?"MODE 1 ベーシック編":mode==="random"?`MODE 2 ランダム経理処理　連続正解: ${streak}`:"MODE 3 保険の経理処理";
+  $("cardTag").textContent=tag;
+  $("cardTitle").innerHTML=p.t;
+  $("cardDesc").innerHTML=p.d||"この取引をPL・BS・CSに反映しよう。該当のないセルは空欄（=0）のままでOK。";
+  $("cardTip").innerHTML=p.h||"";$("cardTip").classList.remove("show");
+  $("resultBox").className="result";$("resultBox").innerHTML="";
+  $("answerBtn").style.display="none";
+  $("judgeBtn").disabled=false;
+  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow"));
+  renderValues();
+}
+function toggleTip(){$("cardTip").classList.toggle("show");}
+function clearInputs(){
+  if(mode==="basic"&&stepIdx>0){loadProblem();return;}
+  values={};ALL_IDS.forEach(id=>values[id]=0);
+  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow"));
+  renderValues();
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ================= 判定 ================= */
+function judge(){
+  const wrong=[];
+  ALL_IDS.forEach(id=>{
+    const c=$("cell_"+id);c.classList.remove("wrong","right");
+    if((values[id]||0)!==(expected[id]||0))wrong.push(id);
+  });
+  const box=$("resultBox");
+  if(wrong.length===0){
+    /* クリア */
+    const pts=Math.max(100-misses*20,20)+(mode==="random"?streak*10:0);
+    score+=pts;saveScore();
+    if(mode==="random"){streak++;const best=Number(localStorage.getItem("z3g_random_best")||0);if(streak>best)localStorage.setItem("z3g_random_best",String(streak));}
+    ALL_IDS.forEach(id=>{if((expected[id]||0)!==0)$("cell_"+id).classList.add("right");});
+    ["pretax","cs_pretax","net","retained","cs_close","cash"].forEach((id,i)=>{
+      setTimeout(()=>$("cell_"+id).classList.add("glow"),i*180);
+    });
+    const p=currentProblem();
+    let msg=`<span class="big">🎉 クリア！ +${pts}pt</span><br>`;
+    if(mode==="random")msg+=`連続正解 ${streak} 回目！ `;
+    msg+=`PL純利益→BS剰余金、CS期末現金→BS現金、3表がつながった！`;
+    if(mode==="basic"&&currentProblem().endPeriod===2)msg+=`<br><b>🏆 2期目の決算まで完走おめでとう！</b> 資本金500の会社が総資産${fmt(expected.assets)}<span class="unit">万円</span>・純資産${fmt(expected.equity)}<span class="unit">万円</span>に成長した。`;
+    box.className="result clear show";box.innerHTML=msg;
+    $("judgeBtn").disabled=true;
+    /* 進捗保存 & 次へ */
+    setTimeout(()=>{
+      if(mode==="basic"){
+        const p=currentProblem();
+        localStorage.setItem("z3g_basic_step",String(stepIdx+1));
+        if(p.endPeriod===1){showOverlay("第1期 決算完了！","PLとCSは1年間の「フロー」なので第2期はゼロからスタート。BSは会社の「ストック」なのでそのまま繰り越します。<br><br>第1期末の現金370万円が、第2期のCS「期首の現金」になります。",next);}
+        else if(p.endPeriod===2){showOverlay("🏆 ベーシック編 完全クリア！","おめでとうございます！ 続けてMODE 2（ランダム経理処理）やMODE 3（保険の経理処理）に挑戦しましょう。",goHome);}
+        else next();
+      }else if(mode==="insurance"){
+        localStorage.setItem("z3g_ins_step",String(stepIdx+1));
+        if(stepIdx>=INSURANCE.length-1){showOverlay("🏆 保険の経理処理 マスター！","全額損金・４割損金・全額資産計上・解約の4パターンを制覇。<br><br>ポイント: 「損金にできる保険は出口（解約時）で課税される」— 保険は課税の繰り延べであって節税そのものではない、が今日イチの学びです。",goHome);}
+        else next();
+      }else next();
+    },1400);
+  }else{
+    misses++;streak=mode==="random"?0:streak;
+    wrong.forEach(id=>$("cell_"+id).classList.add("wrong"));
+    const names=wrong.slice(0,6).map(id=>{
+      const c=$("cell_"+id);const sheet=PL_ROWS.some(r=>r[0]===id)?"PL":BS_ROWS.some(r=>r[0]===id)?"BS":"CS";
+      return `${sheet}「${c.dataset.label}」`;
+    });
+    box.className="result miss show";
+    box.innerHTML=`<span class="big">おしい！ ${wrong.length}か所ちがう</span><br>${names.join("、")}${wrong.length>6?" など":""}をチェック。<br><span style="font-size:12px">ヒントは「？」ボタン。空欄は0として判定されます。</span>`;
+    if(misses>=2)$("answerBtn").style.display="inline-block";
+  }
+}
+function next(){
+  stepIdx++;
+  if(mode==="basic"&&stepIdx>=BASIC.length){goHome();return;}
+  if(mode==="insurance"&&stepIdx>=INSURANCE.length){goHome();return;}
+  loadProblem();window.scrollTo(0,0);
+}
+function showAnswer(){
+  ALL_IDS.forEach(id=>{values[id]=expected[id]||0;});
+  renderValues();
+  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong"));
+  $("resultBox").className="result miss show";
+  $("resultBox").innerHTML=`答えを表示しました（このステップは得点なし）。数字の流れを確認したら「判定する」で次へ進めます。`;
+  misses=99;
+}
+function showOverlay(title,body,cb){
+  $("ovTitle").textContent=title;$("ovBody").innerHTML=body;
+  $("overlay").classList.add("show");
+  $("ovBtn").onclick=()=>{$("overlay").classList.remove("show");cb();};
+}
+
+/* ================= モバイルタブ ================= */
+function showSheet(i,btn){
+  document.querySelectorAll(".sheet").forEach((s,j)=>s.classList.toggle("mshow",j===i));
+  document.querySelectorAll(".stabs button").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+}
+
+/* ================= 起動 ================= */
+buildRows();loadScore();renderProgress();
+window.__game={values,get expected(){return expected},judge,startMode,set:(id,v)=>{values[id]=v;renderValues();}};
+</script>
+</body>
+</html>

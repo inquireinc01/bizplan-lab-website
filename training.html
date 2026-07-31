@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>BizPlan Laboratory | トレーニング</title>
+<meta name="description" content="財務3表マスターをはじめ、数字に強くなるためのトレーニングをゲーム感覚で。BizPlan Laboratoryのトレーニングシリーズです。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=2026072732" />
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="sim">
+            <span class="mega-trigger-label">生命保険ツール</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="stock-valuation.html" class="mega-panel-item"><span class="mega-num">1</span>自社株×生命保険</a>
+      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
+      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
+      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
+      <a href="tax-exemption.html" class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
+      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
+      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="ds">
+            <span class="mega-trigger-label">ディスカッションシート</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
+      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
+      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
+      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="stock-valuation.html" class="mobile-accordion-link"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a href="future-liability.html" class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a href="treasury-stock.html" class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a href="retirement-benefit.html" class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a href="tax-exemption.html" class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a href="premium-funding.html" class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a href="reduced-new-contract.html" class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="medical-ds.html" class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a href="religious-ds.html" class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a href="venture-ds.html" class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a href="asset-management-ds.html" class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a href="deficit-company-ds.html" class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a href="holdings-ds.html" class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ===== ヒーロー ===== -->
+  <section class="hero-pattern relative py-7 sm:py-9">
+    <div class="relative z-10 max-w-4xl mx-auto px-5 sm:px-8 text-center">
+      <h1 class="text-white font-black text-xl sm:text-2xl leading-tight mb-1.5">
+        ゲームで鍛える<br class="sm:hidden" />財務トレーニング
+      </h1>
+      <p class="font-brand-en text-white/75 font-bold tracking-[0.2em] text-[11px] sm:text-xs uppercase">
+        Training Lab &mdash; Learn by Playing
+      </p>
+    </div>
+  </section>
+
+    <!-- ===== 一覧 ===== -->
+  <section class="py-16 sm:py-20 md:py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="tool-tabs" role="tablist">
+        <a href="tools.html" class="tool-tab-btn">
+          <span class="tool-tab-jp">生命保険ツール</span>
+          <span class="font-brand-en tool-tab-en">LIFE INSURANCE (1&ndash;7)</span>
+        </a>
+        <a href="discussion.html" class="tool-tab-btn">
+          <span class="tool-tab-jp">ディスカッションシート</span>
+          <span class="font-brand-en tool-tab-en">DISCUSSION SHEET (8&ndash;13)</span>
+        </a>
+        <a href="training.html" class="tool-tab-btn active">
+          <span class="tool-tab-jp">トレーニング</span>
+          <span class="font-brand-en tool-tab-en">TRAINING (OP.1&ndash;9)</span>
+        </a>
+        <a href="basic-info.html" class="tool-tab-btn">
+          <span class="tool-tab-jp">基本情報入力</span>
+          <span class="font-brand-en tool-tab-en">BASIC INFO INPUT</span>
+        </a>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <a href="training/zaimu3hyo-master/index.html" class="lift-card group relative bg-white border border-gray-200 rounded-xl p-8 pt-9 block shadow-sm overflow-hidden">
+          <span class="font-brand-en absolute -right-1 -bottom-4 text-6xl font-black text-[#5b4b8a] opacity-10 pointer-events-none select-none">MASTER</span>
+          <span class="absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" style="background-color:#5b4b8a"></span>
+          <span class="absolute top-4 right-4 text-[10px] font-black tracking-widest text-white px-2.5 py-1 rounded-full" style="background-color:#c2452d">NEW</span>
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-[#0f2a4a]">Opus.<span style="color:#5b4b8a">1</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#5b4b8a"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2" style="color:#5b4b8a">Financial Statements Game</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-[#0f2a4a]">財務3表</span><span class="font-bold text-2xl text-gray-500 ml-1">マスター</span></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-5">会社設立から2期目の決算まで完走するベーシック編、取引カードをさばくランダム経理処理、保険の経理処理の3モード。PL・BS・CSのつながりをゲームで体得します。</p>
+          <span class="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#0f2a4a] bg-white text-[#0f2a4a] transition-colors duration-200 group-hover:bg-[#0f2a4a] group-hover:text-white">トレーニングを始める <span aria-hidden="true">&rarr;</span></span>
+        </a>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>2</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>3</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>4</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>5</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>6</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>7</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>8</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+        <div class="relative bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 pt-9 overflow-hidden">
+          <div class="mb-5">
+            <span class="text-5xl font-black leading-none tracking-tight text-gray-300">Opus.<span>9</span></span>
+            <div class="w-8 h-[3px] mt-3 rounded-full bg-gray-200"></div>
+          </div>
+          <p class="font-brand-en text-[11px] font-bold tracking-[0.2em] uppercase mb-2 text-gray-400">Coming Soon</p>
+          <h2 class="mb-3 leading-tight"><span class="font-black text-3xl text-gray-300">準備中</span></h2>
+          <p class="text-sm text-gray-400 leading-relaxed mb-5">新しいトレーニングを製作中です。公開をお楽しみに。</p>
+          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-gray-300 bg-white text-gray-400">COMING SOON</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 flex flex-wrap gap-3">
+      <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <div class="max-w-3xl space-y-3 mb-6">
+      <p class="text-xs text-gray-500 leading-relaxed">
+        各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。
+      </p>
+      <p class="text-xs text-gray-500 leading-relaxed">
+        ご入力いただいた会社名・氏名等の情報は、お客様のブラウザ内にのみ保存され、弊社が取得することはありません。
+      </p>
+    </div>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260727b"></script>
+</body>
+</html>
