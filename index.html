@@ -15,23 +15,20 @@
 <link rel="stylesheet" href="css/style.css?v=2026072732" />
 <style>
 /* ===== ヒーロー飾り文字(トップページ専用) ===== */
-.hero-brand-eyebrow{
+.hero-brand-mark{
+  position:absolute; margin:0;
   font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Segoe UI",Arial,sans-serif;
-  font-weight:350; font-stretch:condensed;
-  color:rgba(255,255,255,.5); letter-spacing:.55em; text-indent:.55em;
-  font-size:clamp(10px,1.3vw,12px); text-transform:uppercase;
+  font-weight:350; font-stretch:condensed; line-height:1;
+  letter-spacing:.02em; color:rgba(255,255,255,.16); white-space:nowrap;
+  pointer-events:none; user-select:none;
 }
-.hero-brand-title{
-  font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Segoe UI",Arial,sans-serif;
-  font-weight:600 !important; font-stretch:condensed; line-height:1.05;
-  font-size:clamp(42px,7.5vw,72px); letter-spacing:.08em;
-  color:rgba(255,255,255,.92);
+.hero-brand-mark--tl{
+  left:.12em; top:-.12em;
+  font-size:clamp(42px,7vw,78px);
 }
-@supports((-webkit-text-stroke:1px #fff) or (text-stroke:1px #fff)){
-  .hero-brand-title{
-    color:transparent;
-    -webkit-text-stroke:1.5px rgba(255,255,255,.82);
-  }
+.hero-brand-mark--br{
+  right:.15em; bottom:-.16em;
+  font-size:clamp(54px,9.5vw,104px);
 }
 </style>
 </head>
@@ -109,11 +106,9 @@
 <main>
 
 <!-- ===== ヒーロー(ブランド帯) ===== -->
-  <section class="hero-pattern relative py-7 sm:py-9">
-    <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 text-center">
-      <p class="hero-brand-eyebrow mb-1.5 sm:mb-2">Professional Portal</p>
-      <h1 class="hero-brand-title">By TK&amp;Company</h1>
-    </div>
+  <section class="hero-pattern relative overflow-hidden h-28 sm:h-36">
+    <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Portal</span>
+    <h1 class="hero-brand-mark hero-brand-mark--br">By TK&amp;Company</h1>
   </section>
 
   <!-- ===== メインサービス ===== -->
