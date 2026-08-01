@@ -28,6 +28,15 @@ header .score b{font-family:Arial;font-size:16px}
 .mode-card h3{font-size:17px;margin:10px 0 6px;color:var(--navy)}
 .mode-card p{font-size:12.5px;color:#555;line-height:1.7}
 .mode-card .prog{font-size:11.5px;color:var(--ok);margin-top:8px;font-weight:bold}
+/* ---- progress bar ---- */
+.prog-wrap{margin-top:10px}
+.prog-track{height:8px;background:#E3E8F0;border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;width:0;background:linear-gradient(90deg,var(--navy2),var(--navy));border-radius:5px;transition:width .5s ease}
+.prog-fill.done{background:linear-gradient(90deg,#2AA772,var(--ok))}
+.prog-label{font-size:11px;color:#667;margin-top:5px;display:flex;justify-content:space-between}
+.prog-label b{font-family:Arial;color:var(--navy)}
+.game-prog{margin:-2px 0 12px}
+.game-prog .prog-track{height:7px}
 
 /* ---- game screen ---- */
 .gamebar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
@@ -140,7 +149,10 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
         <span class="no">MODE 1</span>
         <h3>ベーシック編</h3>
         <p>資本金と創業融資で会社を立ち上げ、2期目の決算まで完走しよう。取引のたびにPL・BS・CSを自分の手で更新していく全16ステップ。</p>
-        <p class="prog" id="progBasic"></p>
+        <div class="prog-wrap">
+          <div class="prog-track"><div class="prog-fill" id="progBasicFill"></div></div>
+          <div class="prog-label"><span id="progBasicText">未プレイ</span><b id="progBasicPct">0%</b></div>
+        </div>
       </div>
       <div class="mode-card" onclick="startMode('random')">
         <span class="no">MODE 2</span>
@@ -152,7 +164,10 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
         <span class="no">MODE 3</span>
         <h3>保険の経理処理</h3>
         <p>全額損金・４割損金・全額資産計上、そして解約。生命保険の経理処理4パターンを3表で完全マスター。</p>
-        <p class="prog" id="progIns"></p>
+        <div class="prog-wrap">
+          <div class="prog-track"><div class="prog-fill" id="progInsFill"></div></div>
+          <div class="prog-label"><span id="progInsText">未プレイ</span><b id="progInsPct">0%</b></div>
+        </div>
       </div>
     </div>
     <footer>TK&amp;Company Inc. All Rights Reserved.</footer>
@@ -163,6 +178,10 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
     <div class="gamebar">
       <button class="back" onclick="goHome()">← モード選択</button>
       <span class="stage" id="stageDisp"></span>
+    </div>
+    <div class="game-prog" id="gameProg" style="display:none">
+      <div class="prog-track"><div class="prog-fill" id="gameProgFill"></div></div>
+      <div class="prog-label"><span id="gameProgText"></span><b id="gameProgPct"></b></div>
     </div>
 
     <div class="card-q">
@@ -464,12 +483,32 @@ function goHome(){
   renderProgress();
 }
 function renderProgress(){
-  const b=Number(localStorage.getItem("z3g_basic_step")||0);
-  $("progBasic").textContent=b>=BASIC.length?"★ 2期目の決算まで完走済み！":b>0?`途中まで進行中（STEP ${b+1}/${BASIC.length}）`:"";
-  const i=Number(localStorage.getItem("z3g_ins_step")||0);
-  $("progIns").textContent=i>=INSURANCE.length?"★ 全4ステージクリア！":i>0?`STAGE ${i+1}/4 に挑戦中`:"";
+  const setBar=(fillId,textId,pctId,done,total,doneMsg,playMsg)=>{
+    const pct=Math.min(Math.round(done/total*100),100);
+    const fill=$(fillId);fill.style.width=pct+"%";fill.classList.toggle("done",done>=total);
+    $(textId).textContent=done>=total?doneMsg:done>0?playMsg:"未プレイ";
+    $(pctId).textContent=pct+"%";
+  };
+  const b=Math.min(Number(localStorage.getItem("z3g_basic_step")||0),BASIC.length);
+  setBar("progBasicFill","progBasicText","progBasicPct",b,BASIC.length,"★ 2期目の決算まで完走！",`STEP ${b}/${BASIC.length} クリア`);
+  const i=Math.min(Number(localStorage.getItem("z3g_ins_step")||0),INSURANCE.length);
+  setBar("progInsFill","progInsText","progInsPct",i,INSURANCE.length,"★ 全4ステージクリア！",`STAGE ${i}/4 クリア`);
   const hs=Number(localStorage.getItem("z3g_random_best")||0);
   $("progRandom").textContent=hs>0?`最高連続正解: ${hs}`:"";
+}
+function renderGameProg(){
+  const wrap=$("gameProg");
+  if(mode==="basic"||mode==="insurance"){
+    const total=mode==="basic"?BASIC.length:INSURANCE.length;
+    const pct=Math.round(stepIdx/total*100);
+    $("gameProgFill").style.width=pct+"%";
+    $("gameProgFill").classList.toggle("done",stepIdx>=total);
+    $("gameProgText").textContent=(mode==="basic"?`STEP ${stepIdx+1}/${total}`:`STAGE ${stepIdx+1}/${total}`)+"　クリアで前進！";
+    $("gameProgPct").textContent=pct+"%";
+    wrap.style.display="block";
+  }else{
+    wrap.style.display="none";
+  }
 }
 function currentProblem(){
   if(mode==="basic")return BASIC[stepIdx];
@@ -507,6 +546,7 @@ function loadProblem(){
   $("answerBtn").style.display="none";
   $("judgeBtn").disabled=false;
   document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow"));
+  renderGameProg();
   renderValues();
 }
 function toggleTip(){$("cardTip").classList.toggle("show");}
@@ -535,6 +575,13 @@ function judge(){
     ["pretax","cs_pretax","net","retained","cs_close","cash"].forEach((id,i)=>{
       setTimeout(()=>$("cell_"+id).classList.add("glow"),i*180);
     });
+    if(mode==="basic"||mode==="insurance"){
+      const total=mode==="basic"?BASIC.length:INSURANCE.length;
+      const pct=Math.round((stepIdx+1)/total*100);
+      $("gameProgFill").style.width=pct+"%";
+      $("gameProgFill").classList.toggle("done",stepIdx+1>=total);
+      $("gameProgPct").textContent=pct+"%";
+    }
     const p=currentProblem();
     let msg=`<span class="big">🎉 クリア！ +${pts}pt</span><br>`;
     if(mode==="random")msg+=`連続正解 ${streak} 回目！ `;
