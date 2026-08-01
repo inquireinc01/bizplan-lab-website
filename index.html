@@ -42,13 +42,6 @@
         <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
       </a>
 
-      <div class="flex-1 max-w-md ml-auto hidden sm:block">
-        <div class="relative">
-          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
-          <input id="portal-search" type="search" placeholder="ページ内検索（例: 退職金、事業承継、財務3表）" autocomplete="off"
-            class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
-        </div>
-      </div>
 
       <div class="flex items-center gap-3 shrink-0">
         <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
@@ -56,13 +49,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
-      </div>
-    </div>
-    <div class="sm:hidden pb-3">
-      <div class="relative">
-        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
-        <input id="portal-search-m" type="search" placeholder="ページ内検索" autocomplete="off"
-          class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
       </div>
     </div>
   </div>
@@ -282,11 +268,6 @@
     </div>
   </section>
 
-  <!-- 検索0件メッセージ -->
-  <div id="searchEmpty" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-    <p class="text-sm text-gray-500">「<span id="searchEmptyWord" class="font-bold text-[#0f2a4a]"></span>」に該当するコンテンツはありません。</p>
-  </div>
-
 </main>
 
 <!-- ===== フッター ===== -->
@@ -309,40 +290,5 @@
 </footer>
 
 <script src="js/menu.js?v=20260727b"></script>
-<script>
-(function(){
-  "use strict";
-  var cards=Array.prototype.slice.call(document.querySelectorAll("main .grid > *"));
-  var secs=Array.prototype.slice.call(document.querySelectorAll("main section")).filter(function(s){return s.querySelector(".grid");});
-  var empty=document.getElementById("searchEmpty");
-  var emptyWord=document.getElementById("searchEmptyWord");
-  function norm(s){return (s||"").toLowerCase().replace(/\s+/g,"");}
-  function filter(q){
-    var nq=norm(q), hits=0;
-    cards.forEach(function(c){
-      var show=!nq||norm(c.textContent).indexOf(nq)>-1;
-      c.style.display=show?"":"none";
-      if(show)hits++;
-    });
-    secs.forEach(function(s){
-      var any=Array.prototype.some.call(s.querySelectorAll(".grid > *"),function(c){return c.style.display!=="none";});
-      s.style.display=any?"":"none";
-    });
-    if(empty){
-      empty.classList.toggle("hidden",!(nq&&hits===0));
-      if(emptyWord)emptyWord.textContent=q;
-    }
-  }
-  ["portal-search","portal-search-m"].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el)return;
-    el.addEventListener("input",function(){
-      filter(el.value.trim());
-      var other=document.getElementById(id==="portal-search"?"portal-search-m":"portal-search");
-      if(other&&other.value!==el.value)other.value=el.value;
-    });
-  });
-})();
-</script>
 </body>
 </html>
