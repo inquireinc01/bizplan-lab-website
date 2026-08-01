@@ -35,8 +35,25 @@ header .score b{font-family:Arial;font-size:16px}
 .prog-fill.done{background:linear-gradient(90deg,#2AA772,var(--ok))}
 .prog-label{font-size:11px;color:#667;margin-top:5px;display:flex;justify-content:space-between}
 .prog-label b{font-family:Arial;color:var(--navy)}
-.game-prog{margin:-2px 0 12px}
-.game-prog .prog-track{height:7px}
+/* ---- 縦型プログレス(プレイ画面左) ---- */
+.game-body{display:flex;gap:14px;align-items:flex-start}
+.game-main{flex:1;min-width:0}
+.vprog{width:52px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:7px;position:sticky;top:64px;height:min(62vh,540px)}
+.vprog-pct{font-family:Arial;font-weight:bold;font-size:14px;color:var(--navy)}
+.vprog-track{flex:1;width:20px;background:#E3E8F0;border-radius:10px;display:flex;flex-direction:column-reverse;gap:3px;padding:3px;box-shadow:inset 0 1px 3px rgba(30,45,80,.12)}
+.vprog-track .seg{flex:1;border-radius:5px;background:transparent;transition:background .4s}
+.vprog-track .seg.done{background:linear-gradient(180deg,var(--navy2),var(--navy))}
+.vprog-track .seg.done.goal{background:linear-gradient(180deg,#2AA772,var(--ok))}
+.vprog-track .seg.cur{animation:segpulse 1.2s ease-in-out infinite}
+@keyframes segpulse{0%,100%{background:#C9D4E8}50%{background:#8FA5CF}}
+.vprog-step{font-family:Arial;font-weight:bold;font-size:11.5px;color:#667;white-space:nowrap}
+@media(max-width:960px){
+  .game-body{gap:8px}
+  .vprog{width:34px;top:56px;height:min(55vh,440px)}
+  .vprog-track{width:14px;border-radius:8px;padding:2px;gap:2px}
+  .vprog-pct{font-size:11.5px}
+  .vprog-step{font-size:10px}
+}
 
 /* ---- game screen ---- */
 .gamebar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
@@ -179,10 +196,13 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
       <button class="back" onclick="goHome()">← モード選択</button>
       <span class="stage" id="stageDisp"></span>
     </div>
-    <div class="game-prog" id="gameProg" style="display:none">
-      <div class="prog-track"><div class="prog-fill" id="gameProgFill"></div></div>
-      <div class="prog-label"><span id="gameProgText"></span><b id="gameProgPct"></b></div>
-    </div>
+    <div class="game-body">
+    <aside class="vprog" id="gameProg" style="display:none" aria-label="進捗">
+      <div class="vprog-pct" id="gameProgPct"></div>
+      <div class="vprog-track" id="gameProgSegs"></div>
+      <div class="vprog-step" id="gameProgText"></div>
+    </aside>
+    <div class="game-main">
 
     <div class="card-q">
       <span class="tag" id="cardTag">取引カード</span>
@@ -221,6 +241,9 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
     </div>
 
     <div class="result" id="resultBox"></div>
+
+    </div><!-- /.game-main -->
+    </div><!-- /.game-body -->
   </div>
 </div>
 
@@ -500,15 +523,30 @@ function renderGameProg(){
   const wrap=$("gameProg");
   if(mode==="basic"||mode==="insurance"){
     const total=mode==="basic"?BASIC.length:INSURANCE.length;
-    const pct=Math.round(stepIdx/total*100);
-    $("gameProgFill").style.width=pct+"%";
-    $("gameProgFill").classList.toggle("done",stepIdx>=total);
-    $("gameProgText").textContent=(mode==="basic"?`STEP ${stepIdx+1}/${total}`:`STAGE ${stepIdx+1}/${total}`)+"　クリアで前進！";
-    $("gameProgPct").textContent=pct+"%";
-    wrap.style.display="block";
+    const track=$("gameProgSegs");
+    track.innerHTML="";
+    for(let i=0;i<total;i++){
+      const s=document.createElement("span");
+      s.className="seg"+(i<stepIdx?" done":i===stepIdx?" cur":"");
+      if(i<stepIdx&&stepIdx>=total)s.classList.add("goal");
+      track.appendChild(s);
+    }
+    $("gameProgText").textContent=`${stepIdx+1}/${total}`;
+    $("gameProgPct").textContent=Math.round(stepIdx/total*100)+"%";
+    wrap.style.display="flex";
   }else{
     wrap.style.display="none";
   }
+}
+function fillGameProg(){ /* クリア直後: 現在ステップのセグメントを即塗る */
+  const total=mode==="basic"?BASIC.length:INSURANCE.length;
+  const segs=$("gameProgSegs").children;
+  if(segs[stepIdx]){
+    segs[stepIdx].classList.remove("cur");
+    segs[stepIdx].classList.add("done");
+    if(stepIdx+1>=total)for(const s of segs)s.classList.add("goal");
+  }
+  $("gameProgPct").textContent=Math.round((stepIdx+1)/total*100)+"%";
 }
 function currentProblem(){
   if(mode==="basic")return BASIC[stepIdx];
@@ -575,13 +613,7 @@ function judge(){
     ["pretax","cs_pretax","net","retained","cs_close","cash"].forEach((id,i)=>{
       setTimeout(()=>$("cell_"+id).classList.add("glow"),i*180);
     });
-    if(mode==="basic"||mode==="insurance"){
-      const total=mode==="basic"?BASIC.length:INSURANCE.length;
-      const pct=Math.round((stepIdx+1)/total*100);
-      $("gameProgFill").style.width=pct+"%";
-      $("gameProgFill").classList.toggle("done",stepIdx+1>=total);
-      $("gameProgPct").textContent=pct+"%";
-    }
+    if(mode==="basic"||mode==="insurance")fillGameProg();
     const p=currentProblem();
     let msg=`<span class="big">🎉 クリア！ +${pts}pt</span><br>`;
     if(mode==="random")msg+=`連続正解 ${streak} 回目！ `;
