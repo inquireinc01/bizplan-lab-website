@@ -24,11 +24,11 @@
 }
 .hero-brand-mark--tl{
   left:.12em; top:-.12em;
-  font-size:clamp(42px,7vw,78px);
+  font-size:clamp(22px,3.6vw,40px);
 }
 .hero-brand-mark--br{
   right:.15em; bottom:-.16em;
-  font-size:clamp(54px,9.5vw,104px);
+  font-size:clamp(28px,5vw,54px);
 }
 </style>
 </head>
@@ -106,9 +106,17 @@
 <main>
 
 <!-- ===== ヒーロー(ブランド帯) ===== -->
-  <section class="hero-pattern relative overflow-hidden h-28 sm:h-36">
+  <section class="hero-pattern relative overflow-hidden h-14 sm:h-[72px]">
     <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Portal</span>
     <h1 class="hero-brand-mark hero-brand-mark--br">By TK&amp;Company</h1>
+    <form action="https://www.google.com/search" method="get" target="_blank" rel="noopener"
+      class="absolute inset-0 z-10 flex items-center justify-center px-16 sm:px-4">
+      <div class="relative w-full max-w-sm">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+        <input type="search" name="q" placeholder="Google検索（Web全体）" autocomplete="off"
+          class="w-full rounded-full border border-white/30 bg-white/95 pl-10 pr-4 py-2 text-sm shadow-md focus:outline-none focus:bg-white" />
+      </div>
+    </form>
   </section>
 
   <!-- ===== メインサービス ===== -->
