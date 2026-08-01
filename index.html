@@ -109,14 +109,19 @@
   <section class="hero-pattern relative overflow-hidden h-14 sm:h-[72px]">
     <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Portal</span>
     <h1 class="hero-brand-mark hero-brand-mark--br">By TK&amp;Company</h1>
-    <form action="https://www.google.com/search" method="get" target="_blank" rel="noopener"
-      class="absolute inset-0 z-10 flex items-center justify-center px-16 sm:px-4">
-      <div class="relative w-full max-w-sm">
-        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
-        <input type="search" name="q" placeholder="Google検索（Web全体）" autocomplete="off"
-          class="w-full rounded-full border border-white/30 bg-white/95 pl-10 pr-4 py-2 text-sm shadow-md focus:outline-none focus:bg-white" />
-      </div>
-    </form>
+  </section>
+
+  <!-- Google検索(Web全体) -->
+  <section class="bg-white border-b border-gray-100 py-4 sm:py-5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <form action="https://www.google.com/search" method="get" target="_blank" rel="noopener" class="mx-auto w-full max-w-md">
+        <div class="relative">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+          <input type="search" name="q" placeholder="Google検索（Web全体・新しいタブで開きます）" autocomplete="off"
+            class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
+        </div>
+      </form>
+    </div>
   </section>
 
   <!-- ===== メインサービス ===== -->
