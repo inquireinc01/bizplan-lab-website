@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
 
   const STORAGE_KEY = 'bpl_stock_valuation_v1';
+  // テスト配信ページ(trial-)ではサンプル既定値を使わず、データクリア状態を既定にする
+  // (法人税率だけはルールどおり30%を既定に残す)
+  const IS_TRIAL = window.location.pathname.indexOf('trial-') >= 0;
   const DEFAULTS = {
     companySize: 'large',
     taxAssets: 15000, taxLiabilities: 8000, bookAssets: 12000, bookLiabilities: 8000,
@@ -36,6 +39,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30000, ss0_ruiji: 30000, ss0_junsisan: 60000, ss0_houjin: 45000,
   };
+  // trial用のゼロ既定(companySizeとcorpTaxRateProj以外は全て0)
+  const TRIAL_DEF = (function () {
+    const o = {};
+    Object.keys(DEFAULTS).forEach((k) => {
+      o[k] = k === 'companySize' ? DEFAULTS.companySize : (k === 'corpTaxRateProj' ? 30 : 0);
+    });
+    return o;
+  })();
+
   // 「選択した株主のみ」の保存・読込(入力ページと同じSTORAGE_KEYに相乗りする)
   function loadHolderSel() {
     try {
@@ -99,13 +111,14 @@ document.addEventListener('DOMContentLoaded', function () {
       stored = null;
     }
     const usedDefaults = !stored;
-    const src = stored || DEFAULTS;
-    const v = { companySize: src.companySize || DEFAULTS.companySize };
+    const fallback = IS_TRIAL ? TRIAL_DEF : DEFAULTS; // trialは入力したもののみ反映(未入力=0)
+    const src = stored || fallback;
+    const v = { companySize: src.companySize || fallback.companySize };
     Object.keys(DEFAULTS).forEach((key) => {
       if (key === 'companySize') return;
       const raw = src[key];
       const parsed = raw === undefined || raw === '' ? NaN : (window.numClean ? window.numClean(raw) : parseFloat(raw));
-      v[key] = isNaN(parsed) ? DEFAULTS[key] : parsed;
+      v[key] = isNaN(parsed) ? fallback[key] : parsed;
     });
     return { v, usedDefaults };
   }
@@ -168,7 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const L = sizeCfg.l;
     const shinshaku = sizeCfg.shin;
     const sizeLabel = sizeCfg.label;
-    const shares = v.sharesOutstanding;
+    // 株数0(未入力)のとき0除算でNaNにならないようにする(評価0のまま表示できる)
+    const shares = v.sharesOutstanding > 0 ? v.sharesOutstanding : 1;
 
     const netAssetsAtValuation = v.ss0_junsisan; // 純資産価額(万円)
     const netAssetPerShare = (netAssetsAtValuation * 10000) / shares;
@@ -192,8 +206,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const sizeCfg = SIZE_CONFIG[v.companySize] || SIZE_CONFIG['mid-mid'];
     const L = sizeCfg.l;
     const shinshaku = sizeCfg.shin;
-    const shares = v.sharesOutstanding;
-    const shares50YenBasis = v.capitalAmount / 50;
+    const shares = v.sharesOutstanding > 0 ? v.sharesOutstanding : 1;
+    const shares50YenBasis = v.capitalAmount > 0 ? v.capitalAmount / 50 : 1;
     const afterTaxProfit = annualProfitValue * (1 - shared.corpTaxRate / 100);
     const base0 = year0.netAssetsAtValuation;
 
@@ -616,9 +630,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const el = document.getElementById(id);
       if (!el) return;
       if (usedDefaults) {
+        el.value = '';
+        if (IS_TRIAL) {
+          // テスト版はサンプルを見せず、クリア状態(グレーの0＋単位)にする
+          el.placeholder = '0 ' + (UNIT_MAP[id] || '');
+          return;
+        }
         // サンプル既定値は黒字の実値として入れず、グレーの「入力例：」placeholderで示す
         // (計算はloadValuesのフォールバックで既定値が使われる)。全体ルール(2026-07-28)
-        el.value = '';
         const ex = id === 'insuranceGrowthRate' ? Number(DEFAULTS[id] || 0).toFixed(2)
           : (window.numFmt ? window.numFmt(DEFAULTS[id]) : DEFAULTS[id]);
         el.placeholder = '入力例：' + ex + ' ' + (UNIT_MAP[id] || '');
