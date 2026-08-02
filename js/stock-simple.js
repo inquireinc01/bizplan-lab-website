@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!form || !document.getElementById('ssHolderBody')) return;
 
   var STORAGE_KEY = 'bpl_stock_valuation_v1';
+  // テスト配信ページ(trial-)ではサンプル既定値を使わず、データクリア状態を既定にする
+  var IS_TRIAL = window.location.pathname.indexOf('trial-') >= 0;
   var SIZE_CONFIG = {
     large: { l: 1.00, label: '大会社' },
     'mid-large': { l: 0.90, label: '中会社（大）' },
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var numD = function (id) {
     var el = document.getElementById(id);
     var v = num(el ? el.value : '');
+    if (IS_TRIAL) return v; // テスト版はサンプル値へフォールバックしない
     return isNaN(v) && SS_DEF[id] !== undefined ? SS_DEF[id] : v;
   };
 
@@ -300,6 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 送信時: 入力例のままのブランク欄は、サンプル値を実値として確定してから試算に進む
   function materializeDefaults() {
+    if (IS_TRIAL) return; // テスト版はサンプル値を確定しない
     ['ssShares', 'ssCapital'].concat(EVAL_KEYS.map(function (k) { return 'ssV_' + k; })).forEach(function (id) {
       var el = document.getElementById(id);
       if (el && el.value === '' && SS_DEF[id] !== undefined) el.value = String(SS_DEF[id]);
@@ -387,6 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function seedHolders() {
     holderBody.innerHTML = '';
     var tr = holderRow({});
+    if (IS_TRIAL) return; // テスト版はサンプルを見せない(クリア状態)
     var hn = tr.querySelector('.hn'), hs = tr.querySelector('.hs');
     hn.placeholder = '入力例：' + SS_DEF.holderName;
     hs.placeholder = '入力例：' + fmt(SS_DEF.holderShares) + ' 株';
@@ -395,14 +400,20 @@ document.addEventListener('DOMContentLoaded', function () {
   function seedEval() {
     EVAL_KEYS.forEach(function (k) {
       var el = document.getElementById('ssV_' + k);
-      if (el && el.value === '') el.placeholder = '入力例：' + fmt(SS_DEF['ssV_' + k]) + ' 円';
+      if (el && el.value === '') {
+        el.placeholder = IS_TRIAL ? '0 円' : '入力例：' + fmt(SS_DEF['ssV_' + k]) + ' 円';
+      }
     });
   }
   function seedCapital() {
     var sharesEl = document.getElementById('ssShares');
-    if (sharesEl && sharesEl.value === '') sharesEl.placeholder = '入力例：' + fmt(SS_DEF.ssShares) + ' 株';
+    if (sharesEl && sharesEl.value === '') {
+      sharesEl.placeholder = IS_TRIAL ? '0 株' : '入力例：' + fmt(SS_DEF.ssShares) + ' 株';
+    }
     var capEl = document.getElementById('ssCapital');
-    if (capEl && capEl.value === '') capEl.placeholder = '入力例：' + fmt(SS_DEF.ssCapital) + ' 円';
+    if (capEl && capEl.value === '') {
+      capEl.placeholder = IS_TRIAL ? '0 円' : '入力例：' + fmt(SS_DEF.ssCapital) + ' 円';
+    }
   }
 
   // ===== 初期化 =====
