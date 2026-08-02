@@ -25,6 +25,14 @@ window.armHeroClearBtn = function (btn, doAction) {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
+  // ===== 全体ルール(2026-07-28): Tabキーは入力エリアだけを遷移する =====
+  // ?ヘルプチップ(help-tip)はtabindex=0でフォーカス可能にしていたが、
+  // 入力の途中でTabを押すたびにチップへ止まり操作の妨げになるため、タブ順から外す。
+  // (チップはクリック/タップ/ホバーで開ける。全ページ共通でここで一括適用)
+  document.querySelectorAll('.help-tip').forEach(function (t) {
+    t.setAttribute('tabindex', '-1');
+  });
+
   const header = document.getElementById('site-header');
   const menuButton = document.getElementById('menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
