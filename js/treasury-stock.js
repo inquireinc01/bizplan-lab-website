@@ -108,11 +108,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function refreshAutoCash() {
     if (cashManual) return;
+    // デフォルト時(自動計算の元になる欄をユーザーが入力していない間)は数値を黒字で出さず、
+    // グレーの「自動計算：万円」で自動入力エリアであることを示す(全体ルール)。
+    // 試算自体はrecompute側でサンプル由来の自動値にフォールバックする(本番のみ)
+    const userTyped = ['corpTaxRate', 'insuranceGainRate', 'stockCorpValue'].some(function (id) {
+      const el = document.getElementById(id);
+      return el && el.value !== '';
+    });
     const r = computeCashMin();
-    if (!isNaN(r.auto)) {
-      cashInput.value = r.auto;
-      if (window.numReformatAll) window.numReformatAll();
+    if (!userTyped || isNaN(r.auto)) {
+      cashInput.value = '';
+      cashInput.placeholder = '自動計算：万円';
+      return;
     }
+    cashInput.value = r.auto;
+    if (window.numReformatAll) window.numReformatAll();
   }
   function setCashMode(manual) {
     cashManual = manual;
@@ -122,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cashHint) cashHint.textContent = manual
       ? '手入力モード(金庫株の買取に必要な最低額を下回るとエラーになります)'
       : '他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)';
+    if (cashInput.value === '') cashInput.placeholder = manual ? '0 万円' : '自動計算：万円';
     if (!manual) refreshAutoCash();
   }
   if (cashLockBtn) cashLockBtn.addEventListener('click', function () { setCashMode(!cashManual); });
@@ -302,6 +313,8 @@ document.addEventListener('DOMContentLoaded', function () {
     clearError();
 
     const cash = num('cash');
+    // 現金が自動計算モードでグレー表示(未確定)の間も、試算は自動値で行う
+    if (isNaN(cash.value) && !cashManual) cash.value = computeCashMin().auto;
     const capital = num('capital');
     const corpTaxRate = num('corpTaxRate');
     const incomeTaxRate = num('incomeTaxRate');
@@ -319,6 +332,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 代わりに該当欄を薄い赤(input-error)で示す
     let blankCount = 0;
     for (const [key, field] of Object.entries(fields)) {
+      // 自動計算モードの欄(現金の自動設定など)は入力を求める対象から省く(全体ルール)
+      if (field.el.readOnly) { field.el.classList.remove('input-error'); continue; }
       const blank = isNaN(field.value);
       field.el.classList.toggle('input-error', blank);
       if (blank) blankCount += 1;

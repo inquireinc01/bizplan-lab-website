@@ -60,12 +60,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const MAX_MAN = 999999; // 万円(金額)の上限
     const MAX_RATE = 1000; // %(率)の上限
     const rateKeys = ['deductibleRate', 'corpTaxRateRnc'];
+    // 未入力は「あと〇項目」で案内し、該当欄を薄い赤で示す(自動計算モードの欄は対象から省く。全体ルール)
+    let blankCount = 0;
+    let firstBlank = null;
     for (const [key, field] of Object.entries(fields)) {
-      if (isNaN(field.value)) {
-        showError('すべての項目を入力してください。');
-        field.el.focus();
-        return;
-      }
+      if (field.el.readOnly) { field.el.classList.remove('input-error'); continue; }
+      const blank = isNaN(field.value);
+      field.el.classList.toggle('input-error', blank);
+      if (blank) { blankCount += 1; if (!firstBlank) firstBlank = field.el; }
+    }
+    if (blankCount > 0) {
+      showError('あと' + blankCount + '項目入力してください。');
+      firstBlank.focus();
+      return;
+    }
+    for (const [key, field] of Object.entries(fields)) {
       const isRate = rateKeys.indexOf(key) >= 0;
       const limit = isRate ? MAX_RATE : MAX_MAN;
       if (Math.abs(field.value) > limit) {

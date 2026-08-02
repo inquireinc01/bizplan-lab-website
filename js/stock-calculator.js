@@ -631,6 +631,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!el) return;
       if (usedDefaults) {
         el.value = '';
+        if (id === 'annualProfitB' && !manualBMode) {
+          // 自動入力エリアはデフォルト時グレーで「自動計算：単位」と示す(全体ルール)
+          el.placeholder = '自動計算：万円';
+          return;
+        }
         if (IS_TRIAL) {
           // テスト版はサンプルを見せず、クリア状態(グレーの0＋単位)にする
           el.placeholder = '0 ' + (UNIT_MAP[id] || '');
@@ -675,8 +680,17 @@ document.addEventListener('DOMContentLoaded', function () {
       ? base - (currentValues.premiumAmount || 0) * (currentValues.deductibleRatio || 0) / 100
       : base;
     currentValues.annualProfitB = auto;
+    if (!el) return;
+    // 【現状】税引前利益が未入力(デフォルト表示)の間は、自動値も黒字にせず
+    // グレーの「自動計算：万円」で自動入力エリアであることを示す(全体ルール)
+    const aEl = document.getElementById('annualProfit');
+    if (aEl && aEl.value === '') {
+      el.value = '';
+      el.placeholder = '自動計算：万円';
+      return;
+    }
     // 共通ルール: 数字は必ずカンマ区切りで表示する
-    if (el) el.value = window.numFmt ? window.numFmt(Math.round(auto)) : String(Math.round(auto));
+    el.value = window.numFmt ? window.numFmt(Math.round(auto)) : String(Math.round(auto));
   }
 
   function persistCurrentValues() {
