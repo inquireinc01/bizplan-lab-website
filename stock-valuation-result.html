@@ -262,13 +262,11 @@
               <input type="number" id="annualProfit" class="form-input w-full rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
-              <div class="flex items-center justify-between gap-2 mb-1 flex-wrap">
-                <label class="block text-xs font-medium mb-0" for="annualProfitB">【変更後】税引前利益（万円）<span class="help-tip" tabindex="0">?<span class="help-text">自動入力の欄です。「保険料を変更後利益に反映」をONにすると【現状】税引前利益−保険料×損金割合で自動計算されます。自由に入力したい場合は「手入力」をONにしてください(手入力ONにすると保険料の反映は自動的にOFFになります)。</span></span></label>
-                <button type="button" id="manualProfitBBtn" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline shrink-0">
-                  <span class="dot"></span>手入力
-                </button>
-              </div>
-              <input type="number" id="annualProfitB" class="form-input w-full rounded-lg px-3 py-2 text-sm" disabled />
+              <label class="flex items-center justify-between gap-2 text-xs font-medium mb-1" for="annualProfitB">
+                <span class="flex items-center">【変更後】税引前利益（万円）<span class="help-tip" tabindex="0">?<span class="help-text">自動入力の欄です。「保険料を変更後利益に反映」をONにすると【現状】税引前利益−保険料×損金割合で自動計算されます。自由に入力したい場合は「手入力する」を押してください(手入力にすると保険料の反映は自動的にOFFになります)。</span></span></span>
+                <button type="button" id="manualProfitBBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
+              </label>
+              <input type="number" id="annualProfitB" readonly class="form-input w-full rounded-lg px-3 py-2 text-sm bg-gray-50" />
             </div>
             <div>
               <label class="block text-xs font-medium mb-1" for="annualDividend">年間配当金総額(万円)<span class="help-tip" tabindex="0">?<span class="help-text">配当を増額することによる自社株評価の上昇は考慮していません。</span></span></label>
@@ -543,7 +541,7 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260728a"></script>
+<script src="js/stock-calculator.js?v=20260728b"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

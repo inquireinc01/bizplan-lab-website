@@ -606,9 +606,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // 「保険料を変更後利益に反映」と「手入力」は排他で、片方をONにするともう片方は自動的にOFFになる
   function applyProfitBState() {
     const el = document.getElementById('annualProfitB');
-    if (el) el.disabled = !manualBMode;
+    if (el) {
+      // 金庫株の「法人の現金」と同じ作法: 自動時はreadonly+グレー地、手入力時のみ編集可
+      el.readOnly = !manualBMode;
+      el.classList.toggle('bg-gray-50', !manualBMode);
+    }
     const mb = document.getElementById('manualProfitBBtn');
-    if (mb) mb.classList.toggle('is-on', manualBMode);
+    if (mb) mb.textContent = manualBMode ? '自動計算に戻す' : '手入力する';
     const ab = document.getElementById('autoPremiumBBtn');
     if (ab) ab.classList.toggle('is-on', autoPremiumToB);
   }
