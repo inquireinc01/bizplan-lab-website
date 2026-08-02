@@ -250,6 +250,10 @@
           <div class="flex items-start justify-between gap-3 mb-3">
             <p class="text-sm font-bold text-gray-700 flex items-center mb-0">試算条件を変更する<span class="help-tip" tabindex="0">?<span class="help-text">数値を変更すると、上のグラフと下の表が即座に更新されます。シナリオA・Bは独立した2つの前提です(例: 生命保険の加入前後の比較)。金額は万円単位です。</span></span></p>
             <div class="flex items-center gap-3 shrink-0">
+              <span id="applyBasicInfoMsg" class="hidden text-[11px] font-bold self-center" style="color:#a83d3d"></span>
+              <button type="button" id="applyBasicInfoBtn" class="overlay-toggle overlay-toggle-navy" title="基本情報入力(決算書情報)の直前期データを試算条件に反映します">
+                <span class="dot"></span>基本情報を反映<span class="help-tip" tabindex="0">?<span class="help-text">基本情報入力の決算書情報(直前期)から、税引前当期利益を【現状】税引前利益に反映します(円→万円換算)。決算書情報が未入力の場合は反映されません。</span></span>
+              </button>
               <button type="button" id="selHoldersBtn" class="overlay-toggle overlay-toggle-navy" title="下の「株主の状況」でチェックした株主の持分だけを評価額に反映します">
                 <span class="dot"></span>選択した株主のみ
               </button>
@@ -541,7 +545,7 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260728c"></script>
+<script src="js/stock-calculator.js?v=20260728d"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

@@ -680,10 +680,16 @@ document.addEventListener('DOMContentLoaded', function () {
     livePanel.addEventListener('change', function (e) {
       const id = e.target && e.target.id;
       if (!id || !PROJECTION_IDS.includes(id)) return;
-      // 空欄は0として扱う(データクリアで空にしたときもグラフ・表が入力どおりになる)
+      // 空欄は0として扱う(データクリアで空にしたときもグラフ・表が入力どおりになる)。
+      // ただし法人税率だけは空欄=デフォルト(30%)に戻す(0%だと試算が実態から離れすぎるため)
       const raw = (e.target.value || '').replace(/,/g, '').trim();
-      const parsed = raw === '' ? 0 : parseFloat(raw);
-      currentValues[id] = isNaN(parsed) ? currentValues[id] : parsed;
+      if (id === 'corpTaxRateProj' && raw === '') {
+        currentValues[id] = DEFAULTS.corpTaxRateProj;
+        e.target.value = String(DEFAULTS.corpTaxRateProj);
+      } else {
+        const parsed = raw === '' ? 0 : parseFloat(raw);
+        currentValues[id] = isNaN(parsed) ? currentValues[id] : parsed;
+      }
       if (!manualBMode && (id === 'annualProfit' || id === 'premiumAmount' || id === 'deductibleRatio')) {
         syncAutoProfitB();
       }
@@ -737,6 +743,41 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 死亡保険金額の税引後(法人税控除後)表示トグル =====
+  // ===== 基本情報を反映: 基本情報入力(決算書情報)の直前期データを試算条件へ =====
+  const applyBasicInfoBtn = document.getElementById('applyBasicInfoBtn');
+  if (applyBasicInfoBtn && !applyBasicInfoBtn.disabled) {
+    applyBasicInfoBtn.addEventListener('click', function () {
+      const msgEl = document.getElementById('applyBasicInfoMsg');
+      const showMsg = function (text) {
+        if (!msgEl) return;
+        msgEl.textContent = text;
+        msgEl.classList.remove('hidden');
+        clearTimeout(msgEl._t);
+        msgEl._t = setTimeout(function () { msgEl.classList.add('hidden'); }, 4000);
+      };
+      let fs = null;
+      try {
+        const raw = localStorage.getItem('bpl_financial_statements_v1');
+        fs = raw ? JSON.parse(raw) : null;
+      } catch (e) {}
+      const yenVal = fs ? (window.numClean ? window.numClean(fs.pl_incomeBeforeTax_1) : parseFloat(fs.pl_incomeBeforeTax_1)) : NaN;
+      if (isNaN(yenVal)) {
+        showMsg('基本情報入力(決算書情報)が未入力です');
+        return;
+      }
+      const man10 = Math.round(yenVal / 10000);
+      currentValues.annualProfit = man10;
+      const el = document.getElementById('annualProfit');
+      if (el) el.value = String(man10);
+      syncAutoProfitB();
+      persistCurrentValues();
+      recomputeSeriesOnly();
+      // 反映できたことが分かるよう、ランプを一瞬点灯させる
+      applyBasicInfoBtn.classList.add('is-on');
+      setTimeout(function () { applyBasicInfoBtn.classList.remove('is-on'); }, 900);
+    });
+  }
+
   // ===== 【変更後】税引前利益のモード切替(既定はどちらもOFF=自動入力エリアで固定表示) =====
   const autoPremiumBBtn = document.getElementById('autoPremiumBBtn');
   if (autoPremiumBBtn) {

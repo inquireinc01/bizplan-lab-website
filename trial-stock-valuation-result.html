@@ -154,6 +154,9 @@
           <div class="flex items-start justify-between gap-3 mb-3">
             <p class="text-sm font-bold text-gray-700 flex items-center mb-0">試算条件を変更する<span class="help-tip" tabindex="0">?<span class="help-text">数値を変更すると、上のグラフと下の表が即座に更新されます。シナリオA・Bは独立した2つの前提です(例: 生命保険の加入前後の比較)。金額は万円単位です。</span></span></p>
             <div class="flex items-center gap-3 shrink-0">
+              <button type="button" id="applyBasicInfoBtn" class="overlay-toggle overlay-toggle-navy" disabled title="テスト版では利用できません">
+                <span class="dot"></span>基本情報を反映
+              </button>
               <button type="button" id="selHoldersBtn" class="overlay-toggle overlay-toggle-navy" title="下の「株主の状況」でチェックした株主の持分だけを評価額に反映します">
                 <span class="dot"></span>選択した株主のみ
               </button>
@@ -441,7 +444,7 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260728c"></script>
+<script src="js/stock-calculator.js?v=20260728d"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 <script>
 /* テスト配信版: 全データクリアの確定クリック時に印を置き、
