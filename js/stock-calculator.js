@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
   let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
   let dsYear = 30; // 自社株評価・株主の状況テーブルの表示年数(入力欄でリアルタイムに変更可能)
+  let horizonYears = 30; // グラフ・推移表の表示期間(30/40/50/60年をプルダウンで選択)
   let autoPremiumToB = false; // 保険料を【変更後】税引前利益に自動反映するかどうか(既定OFF・ボタンでトグル)
   let manualBMode = false;    // 【変更後】税引前利益を手入力するかどうか(既定OFF=自動入力エリア)
 
@@ -216,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let cumulative = base0;
     const out = [metricsFor(0, cumulative)];
-    for (let t = 1; t <= 30; t++) {
+    for (let t = 1; t <= horizonYears; t++) {
       let retained = afterTaxProfit - shared.annualDividend;
       if (shared.retirementYear !== null && shared.retirementYear === t) {
         retained -= shared.retirementAmount;
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const seriesB = computeScenario(v, year0, v.annualProfitB, shared);
 
     const series = [];
-    for (let t = 0; t <= 30; t++) {
+    for (let t = 0; t <= horizonYears; t++) {
       series.push({
         year: t,
         saizokuT_A: seriesA[t].saizoku, houjinT_A: seriesA[t].houjin, ruijiT_A: seriesA[t].ruiji, junsisanT_A: seriesA[t].junsisan, mandaT_A: seriesA[t].manda,
@@ -352,7 +353,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let xLabels = '';
-    [0, 5, 10, 15, 20, 25, 30].forEach((yr) => {
+    const xStep = horizonYears > 40 ? 10 : 5;
+    const xTicks = [];
+    for (let yr = 0; yr <= horizonYears; yr += xStep) xTicks.push(yr);
+    xTicks.forEach((yr) => {
       const gx = padL + yr * slotWidth + slotWidth / 2;
       xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yearLabel(yr)}</text>`;
     });
@@ -362,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const EVENT_FLAG_WIDTH = 76;
     const EVENT_FLAG_H = 16;
     function drawEventFlag(year, label, color, topY, drawGuide) {
-      if (year === null || year === undefined || isNaN(year) || year < 1 || year > 30) return { line: '', flag: '' };
+      if (year === null || year === undefined || isNaN(year) || year < 1 || year > horizonYears) return { line: '', flag: '' };
       const rxc = padL + year * slotWidth + slotWidth / 2;
       const clampX = Math.max(padL + EVENT_FLAG_WIDTH / 2, Math.min(SVG_W - EVENT_FLAG_WIDTH / 2 - 4, rxc));
       let flag = `<rect x="${(clampX - EVENT_FLAG_WIDTH / 2).toFixed(1)}" y="${topY.toFixed(1)}" width="${EVENT_FLAG_WIDTH}" height="${EVENT_FLAG_H}" rx="8" fill="${color}"/>
@@ -380,8 +384,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let retireLine = '', retireFlag = '', lossLine = '', lossFlag = '';
     const bothEventsActive = showRetirement && showSpecialLoss && currentValues &&
       retirementYear !== null && currentValues.specialLossYear !== null &&
-      retirementYear >= 1 && retirementYear <= 30 &&
-      currentValues.specialLossYear >= 1 && currentValues.specialLossYear <= 30;
+      retirementYear >= 1 && retirementYear <= horizonYears &&
+      currentValues.specialLossYear >= 1 && currentValues.specialLossYear <= horizonYears;
     // 年が近く(ピクセル距離がフラッグ幅未満)フラッグ同士が重なって隠れてしまう場合は縦に並べる。
     // 完全に同じ年のときだけ、ガイド線は下段(特別損失)側にまとめて重複を避ける。
     const yearGapPx = bothEventsActive ? Math.abs(retirementYear - currentValues.specialLossYear) * slotWidth : Infinity;
@@ -420,9 +424,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const amt0 = currentValues.insuranceAmount * netFactor;
       const growthFactor = 1 + (currentValues.insuranceGrowthRate || 0) / 100;
       const periodRaw = Math.max(0, Math.round(currentValues.coveragePeriod || 0));
-      const period = Math.min(30, periodRaw);
-      // 31年以上が入力された場合、30年で保障が終わるわけではないことを示す(グラフは30年までしか描画できないため)
-      const continuesBeyond = periodRaw > 30;
+      const period = Math.min(horizonYears, periodRaw);
+      // 表示期間を超える保障期間が入力された場合、そこで保障が終わるわけではないことを示す
+      const continuesBeyond = periodRaw > horizonYears;
       if (period > 0) {
         // i<=period(年periodのバーの右端まで)にすることで、保障期間ぴったりまで塗りが届くようにする
         // (以前はi<periodだったため、保障期間30年でも29年目のバーで塗りが止まって見えていた)
@@ -617,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el.value = '';
         const ex = id === 'insuranceGrowthRate' ? Number(DEFAULTS[id] || 0).toFixed(2)
           : (window.numFmt ? window.numFmt(DEFAULTS[id]) : DEFAULTS[id]);
-        el.placeholder = '入力例：' + ex;
+        el.placeholder = '入力例：' + ex + ' ' + (UNIT_MAP[id] || '');
         return;
       }
       // 死亡保険金額上昇率は0でも「0.00」と表示し、小数点2位まで揃える
@@ -771,6 +775,26 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 死亡保険金額の税引後(法人税控除後)表示トグル =====
+  // ===== グラフ・推移表の表示期間(30/40/50/60年)プルダウン =====
+  const horizonSelect = document.getElementById('horizonSelect');
+  function applyHorizonLabel() {
+    const el = document.getElementById('tblHorizonLabel');
+    if (el) el.textContent = String(horizonYears);
+  }
+  if (horizonSelect) {
+    horizonSelect.addEventListener('change', function () {
+      const v = parseInt(horizonSelect.value, 10);
+      horizonYears = (v === 40 || v === 50 || v === 60) ? v : 30;
+      if (dsYear > horizonYears) {
+        dsYear = horizonYears;
+        if (dsYearInput) dsYearInput.value = String(horizonYears);
+      }
+      applyHorizonLabel();
+      refreshAll();
+    });
+  }
+  applyHorizonLabel();
+
   // ===== 基本情報を反映: 基本情報入力(決算書情報)の直前期データを試算条件へ =====
   const applyBasicInfoBtn = document.getElementById('applyBasicInfoBtn');
   if (applyBasicInfoBtn && !applyBasicInfoBtn.disabled) {
@@ -864,10 +888,10 @@ document.addEventListener('DOMContentLoaded', function () {
   if (dsYearInput) {
     dsYearInput.addEventListener('change', function () {
       const parsed = parseFloat(dsYearInput.value);
-      if (isNaN(parsed) || parsed < 0 || parsed > 30) {
+      if (isNaN(parsed) || parsed < 0 || parsed > horizonYears) {
         if (dsYearError) dsYearError.classList.remove('hidden');
-        dsYear = 30;
-        dsYearInput.value = '30';
+        dsYear = horizonYears;
+        dsYearInput.value = String(horizonYears);
         renderDsTables();
         return;
       }

@@ -158,7 +158,14 @@
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-3">
           <div>
             <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.2em] text-[11px] mb-1">STOCK VALUE PROJECTION</p>
-            <h3 class="font-black text-xl text-[#0f2a4a] flex items-center">自社株評価の推移予測<span class="help-tip" tabindex="0">?<span class="help-text">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。</span></span></h3>
+            <h3 class="font-black text-xl text-[#0f2a4a] flex items-center">自社株評価の推移予測<span class="help-tip" tabindex="0">?<span class="help-text">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。表示期間は右のプルダウンで30〜60年から選べ、下の評価額推移表も同じ期間で表示されます。</span></span>
+              <select id="horizonSelect" class="form-input rounded-lg px-2 py-1 text-sm font-bold ml-3" style="width:auto">
+                <option value="30" selected>30年</option>
+                <option value="40">40年</option>
+                <option value="50">50年</option>
+                <option value="60">60年</option>
+              </select>
+            </h3>
           </div>
           <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
             <button type="button" id="retirementToggleBtn" class="overlay-toggle overlay-toggle-navy">
@@ -362,7 +369,7 @@
 
         <!-- 推移表 -->
         <div class="mt-8">
-          <h4 class="font-bold text-sm mb-2 flex items-center">評価額推移表(0〜30年・総額・万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。</span></span></h4>
+          <h4 class="font-bold text-sm mb-2 flex items-center">評価額推移表(0〜<span id="tblHorizonLabel">30</span>年・総額・万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。</span></span></h4>
           <div class="overflow-auto border border-gray-200 rounded-lg" style="max-height:360px">
             <table class="w-full text-xs" id="trendTable">
               <colgroup>
@@ -545,7 +552,7 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260728e"></script>
+<script src="js/stock-calculator.js?v=20260728f"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>
