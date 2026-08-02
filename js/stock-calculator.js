@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const STORAGE_KEY = 'bpl_stock_valuation_v1';
   const DEFAULTS = {
-    companySize: 'mid-mid',
+    companySize: 'large',
     taxAssets: 15000, taxLiabilities: 8000, bookAssets: 12000, bookLiabilities: 8000,
     simA: 480, simB: 6.0, simC: 45, simD: 350, ownB: 4.0, ownC: 60, ownD: 420,
-    sharesOutstanding: 2000, capitalAmount: 1000000,
+    sharesOutstanding: 200000, capitalAmount: 10000000,
     corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
     retirementYear: 10, retirementAmount: 20000, mvNetAssets: 20000, realOpProfit: 2500,
     // その他特別損失(発生時期を指定して純資産の推移に反映。未入力なら影響なし)
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 生命保険の契約条件(死亡保険金額のグラフ表示・参考情報として保持)
     insuranceAmount: 30000, insuranceGrowthRate: 3, coveragePeriod: 25, premiumAmount: 500, deductibleRatio: 60,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
-    ss0_saizoku: 30237, ss0_ruiji: 23557, ss0_junsisan: 50277, ss0_houjin: 36917,
+    ss0_saizoku: 30000, ss0_ruiji: 30000, ss0_junsisan: 60000, ss0_houjin: 45000,
   };
   // 「選択した株主のみ」の保存・読込(入力ページと同じSTORAGE_KEYに相乗りする)
   function loadHolderSel() {

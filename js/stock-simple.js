@@ -12,14 +12,30 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   var EVAL_KEYS = ['saizoku', 'ruiji', 'junsisan', 'heiyo', 'houjin', 'haito'];
 
+  // サンプル既定値(2026-07-28に画像指定の数値へ変更)。
+  // 全体ルール: 黒字の実値は入れず、グレーの「入力例：数値 単位」placeholderで示し、
+  // 計算・表示はブランク時にこの値へフォールバックする
+  var SS_DEF = {
+    ssShares: 200000, ssCapital: 10000000,
+    ssV_saizoku: 300000000, ssV_ruiji: 300000000, ssV_junsisan: 600000000,
+    ssV_heiyo: 300000000, ssV_houjin: 450000000, ssV_haito: 5000000,
+    holderName: '社長', holderShares: 200000,
+  };
+  // ブランク時にサンプル既定値へフォールバックして読む
+  var numD = function (id) {
+    var el = document.getElementById(id);
+    var v = num(el ? el.value : '');
+    return isNaN(v) && SS_DEF[id] !== undefined ? SS_DEF[id] : v;
+  };
+
   var num = function (v) { return window.numClean ? window.numClean(v) : parseFloat(String(v == null ? '' : v).replace(/,/g, '')); };
   var fmt = function (n) { return window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'); };
   var setTxt = function (id, t) { var el = document.getElementById(id); if (el) el.textContent = t; };
 
   // ===== 自社株評価テーブル: 一株あたり・額面倍率 =====
   function perShareOf(key) {
-    var shares = num(document.getElementById('ssShares').value);
-    var v = num((document.getElementById('ssV_' + key) || {}).value);
+    var shares = numD('ssShares');
+    var v = numD('ssV_' + key);
     if (isNaN(v) || isNaN(shares) || shares <= 0) return NaN;
     return v / shares;
   }
@@ -32,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var capitalEl = document.getElementById('ssCapital');
     var parEl = document.getElementById('ssParValue');
     if (!capitalEl || !parEl) return;
-    var capital = num(capitalEl.value);
-    var shares = num(document.getElementById('ssShares').value);
+    var capital = numD('ssCapital');
+    var shares = numD('ssShares');
     if (isNaN(capital) || capital <= 0 || isNaN(shares) || shares <= 0) return;
     parEl.value = fmt(capital / shares); // カンマ区切りで表示する
   }
@@ -77,13 +93,14 @@ document.addEventListener('DOMContentLoaded', function () {
   // (株主名が1件でも入力された時点で、発行済株式数との差分を表示する)
   function recalcHolders() {
     var rows = Array.prototype.slice.call(holderBody.querySelectorAll('.ss-holder'));
-    var baseShares = num(document.getElementById('ssShares').value); // 発行済株式数を基準
+    var baseShares = numD('ssShares'); // 発行済株式数を基準(ブランク時はサンプル値)
     var perReka = perShareOf('saizoku');
     var perHojin = perShareOf('houjin');
     var sumShares = 0, totReka = 0, totHojin = 0, anyNamed = false;
     rows.forEach(function (r) {
       if (r.querySelector('.hn').value.trim()) anyNamed = true;
       var shares = num(r.querySelector('.hs').value);
+      if (isNaN(shares) && r.querySelector('.hs').dataset.def) shares = num(r.querySelector('.hs').dataset.def);
       var eff = !isNaN(shares) ? shares : 0;
       var ratio = (!isNaN(baseShares) && baseShares > 0) ? (eff / baseShares) * 100 : NaN;
       var reka = !isNaN(perReka) ? eff * perReka : NaN;
@@ -160,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     };
     var v = {};
-    WARN_KEYS.forEach(function (k) { v[k] = num((document.getElementById('ssV_' + k) || {}).value); });
+    WARN_KEYS.forEach(function (k) { v[k] = numD('ssV_' + k); });
     var sizeKey = (document.getElementById('ssSize') || {}).value || 'mid-mid';
     var candKey = sizeKey === 'large' ? 'ruiji' : 'heiyo';
     if (isNaN(v.saizoku) || isNaN(v.junsisan) || isNaN(v[candKey])) { clearAll(); return; }
@@ -281,7 +298,26 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof t.blur === 'function') t.blur();
   });
 
+  // 送信時: 入力例のままのブランク欄は、サンプル値を実値として確定してから試算に進む
+  function materializeDefaults() {
+    ['ssShares', 'ssCapital'].concat(EVAL_KEYS.map(function (k) { return 'ssV_' + k; })).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.value === '' && SS_DEF[id] !== undefined) el.value = String(SS_DEF[id]);
+    });
+    var firstHs = holderBody.querySelector('.ss-holder .hs');
+    var anyShares = false;
+    holderBody.querySelectorAll('.ss-holder .hs').forEach(function (el) { if (el.value !== '') anyShares = true; });
+    if (!anyShares && firstHs && firstHs.dataset.def) {
+      firstHs.value = firstHs.dataset.def;
+      var hn = firstHs.closest('.ss-holder').querySelector('.hn');
+      if (hn && hn.value === '') hn.value = SS_DEF.holderName;
+    }
+    updateParFromCapital();
+    if (window.numReformatAll) window.numReformatAll();
+  }
+
   form.addEventListener('submit', function (e) {
+    materializeDefaults();
     e.preventDefault();
     var err = document.getElementById('calcErrorArea');
     err.classList.add('hidden');
@@ -347,19 +383,26 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== 初期データ(サンプル) =====
+  // 全体ルール: サンプル既定値は黒字で入れず、グレーの「入力例：数値 単位」で表示する
   function seedHolders() {
     holderBody.innerHTML = '';
-    holderRow({});
+    var tr = holderRow({});
+    var hn = tr.querySelector('.hn'), hs = tr.querySelector('.hs');
+    hn.placeholder = '入力例：' + SS_DEF.holderName;
+    hs.placeholder = '入力例：' + fmt(SS_DEF.holderShares) + ' 株';
+    hs.dataset.def = String(SS_DEF.holderShares);
   }
   function seedEval() {
-    var d = { saizoku: '302371500', ruiji: '235572000', junsisan: '502770000', heiyo: '302371500', houjin: '369171000', haito: '40000000' };
-    EVAL_KEYS.forEach(function (k) { var el = document.getElementById('ssV_' + k); if (el && el.value === '') el.value = d[k]; });
+    EVAL_KEYS.forEach(function (k) {
+      var el = document.getElementById('ssV_' + k);
+      if (el && el.value === '') el.placeholder = '入力例：' + fmt(SS_DEF['ssV_' + k]) + ' 円';
+    });
   }
-  // 額面は資本金から自動計算されるため、初期表示でも整合するよう資本金を入れておく
-  // (発行済株式数400株 × 額面50,000円 = 20,000,000円)
   function seedCapital() {
+    var sharesEl = document.getElementById('ssShares');
+    if (sharesEl && sharesEl.value === '') sharesEl.placeholder = '入力例：' + fmt(SS_DEF.ssShares) + ' 株';
     var capEl = document.getElementById('ssCapital');
-    if (capEl && capEl.value === '') capEl.value = '20000000';
+    if (capEl && capEl.value === '') capEl.placeholder = '入力例：' + fmt(SS_DEF.ssCapital) + ' 円';
   }
 
   // ===== 初期化 =====

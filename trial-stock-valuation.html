@@ -492,11 +492,11 @@
           <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="ssShares">発行済株式数（株）</label>
-              <input type="number" id="ssShares" value="400" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
+              <input type="number" id="ssShares" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
             </div>
             <div class="ss-simple-only">
               <label class="flex items-center text-sm font-medium mb-1.5" for="ssCapital">資本金（円）<span class="help-tip" tabindex="0">?<span class="help-text">登記上の資本金の額を円単位で入力してください。発行済株式数で割って1株あたりの額面を自動計算します。</span></span></label>
-              <input type="number" id="ssCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 20,000,000" />
+              <input type="number" id="ssCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="ssParValue">額面（1株・円）<span class="help-tip" tabindex="0">?<span class="help-text">資本金 ÷ 発行済株式数 で自動計算されます(簡易入力)。額面倍率の分母になります。</span></span></label>
@@ -505,9 +505,9 @@
             <div class="ss-simple-only">
               <label class="flex items-center text-sm font-medium mb-1.5" for="ssSize">会社規模<span class="help-tip" tabindex="0">?<span class="help-text">総資産価額・従業員数・取引金額から判定される会社規模区分です。併用方式のLの割合が決まります。判定済みの区分を選択してください。</span></span></label>
               <select id="ssSize" class="form-select w-full rounded-lg px-4 py-2.5 text-sm">
-                <option value="large">大会社</option>
+                <option value="large" selected>大会社</option>
                 <option value="mid-large">中会社（大）</option>
-                <option value="mid-mid" selected>中会社（中）</option>
+                <option value="mid-mid">中会社（中）</option>
                 <option value="mid-small">中会社（小）</option>
                 <option value="small">小会社</option>
               </select>
@@ -833,7 +833,7 @@ try { localStorage.setItem('bpl_stock_version', 'simple'); } catch (e) {}
 </script>
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-simple.js?v=20260727x"></script>
+<script src="js/stock-simple.js?v=20260728g"></script>
 <script src="js/stock-detail.js?v=20260724o"></script>
 <script src="js/stock-tdb.js?v=20260724c"></script>
 <script src="js/stock-stepper.js?v=20260724d"></script>
