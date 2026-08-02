@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
     if (blankCount > 0) {
-      showError('すべての項目を入力してください。');
+      showError('あと' + blankCount + '項目入力してください。');
       return;
     }
     for (const [key, field] of Object.entries(fields)) {
