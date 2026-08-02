@@ -616,12 +616,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const ab = document.getElementById('autoPremiumBBtn');
     if (ab) ab.classList.toggle('is-on', autoPremiumToB);
   }
-  // 「保険料を変更後利益に反映」ON時: 【変更後】税引前利益 = 【現状】税引前利益 − 保険料 × 損金割合
+  // 【変更後】税引前利益の自動値:
+  //   反映OFF(既定) = 【現状】税引前利益と同じ数字
+  //   反映ON       = 【現状】税引前利益 − 保険料 × 損金割合
+  // 手入力モードのときだけ自動計算せず、入力値をそのまま使う
   function syncAutoProfitB() {
-    if (!autoPremiumToB) return;
+    if (manualBMode || !currentValues) return;
     const el = document.getElementById('annualProfitB');
-    const auto = (currentValues.annualProfit || 0)
-      - (currentValues.premiumAmount || 0) * (currentValues.deductibleRatio || 0) / 100;
+    const base = currentValues.annualProfit || 0;
+    const auto = autoPremiumToB
+      ? base - (currentValues.premiumAmount || 0) * (currentValues.deductibleRatio || 0) / 100
+      : base;
     currentValues.annualProfitB = auto;
     if (el) el.value = String(Math.round(auto));
   }
@@ -646,6 +651,7 @@ document.addEventListener('DOMContentLoaded', function () {
     currentValues = v;
     populateLivePanel(v);
     applyProfitBState();
+    syncAutoProfitB();
 
     const year0 = computeYear0(v);
     const result = computeSeries(v, year0);
@@ -678,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const raw = (e.target.value || '').replace(/,/g, '').trim();
       const parsed = raw === '' ? 0 : parseFloat(raw);
       currentValues[id] = isNaN(parsed) ? currentValues[id] : parsed;
-      if (autoPremiumToB && (id === 'annualProfit' || id === 'premiumAmount' || id === 'deductibleRatio')) {
+      if (!manualBMode && (id === 'annualProfit' || id === 'premiumAmount' || id === 'deductibleRatio')) {
         syncAutoProfitB();
       }
       clearTimeout(liveTimer);
@@ -749,6 +755,7 @@ document.addEventListener('DOMContentLoaded', function () {
       manualBMode = !manualBMode;
       if (manualBMode) autoPremiumToB = false; // 排他: 手入力ONで保険料の反映は自動OFF
       applyProfitBState();
+      syncAutoProfitB();
       const el = document.getElementById('annualProfitB');
       if (manualBMode && el) {
         try { el.focus({ preventScroll: true }); el.select(); } catch (e) {}
