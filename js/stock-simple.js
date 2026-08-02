@@ -145,7 +145,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function recalcAll() { recalcEval(); recalcHolders(); }
 
   document.getElementById('ssAddHolder').addEventListener('click', function () { holderRow({}); recalcHolders(); });
-  form.addEventListener('change', recalcAll);
+  form.addEventListener('change', function () {
+    recalcAll();
+    // STEP2で転記した自社株評価(相続税評価額など)を最優先で結果ページに反映するため、
+    // 「この内容で試算する」を押す前でも、変更を確定するたびに保存しておく。
+    // (従来は送信時のバリデーションを全て通らないと保存されず、
+    //  資本金未入力などで止まると転記した評価額が結果に反映されなかった)
+    persistOnly();
+  });
 
   // ===== 保存 / 復元 =====
   function loadStored() {
