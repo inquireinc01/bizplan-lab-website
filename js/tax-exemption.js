@@ -5,6 +5,45 @@
    - 「シミュレーション結果に進む」で内容を保存し結果ページへ遷移
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
+  // テスト配信ページ(trial-)ではサンプル値を使わずデータクリア状態を既定にする
+  var IS_TRIAL = window.location.pathname.indexOf('trial-') >= 0;
+  // サンプル既定値と単位(全体ルール: グレー「入力例：数値 単位」で表示し、
+  // 本番では「シミュレーション結果に進む」時に未入力欄へ確定してから保存する)
+  var TX_SAMPLE = {
+    txTaxableIncomeSimple: [800, '万円'], txSalaryIncome: [1200, '万円'], txBusinessIncome: [0, '万円'],
+    txRealEstateIncome: [0, '万円'], txDividendIncome: [0, '万円'], txMiscIncome: [0, '万円'],
+    txTransferShort: [0, '万円'], txTransferLong: [0, '万円'], txForestryIncome: [0, '万円'],
+    txInterestIncome: [0, '万円'], txStockTransfer: [0, '万円'], txLandTransfer: [0, '万円'],
+    txSocialInsurance: [150, '万円'], txSmallBizDeduction: [0, '万円'], txEarthquakeDeduction: [0, '万円'],
+    txMedicalDeduction: [0, '万円'], txDependentGeneral: [0, '人'], txDependentSpecific: [0, '人'],
+    txDependentElderly: [0, '人'], txOtherDeduction: [0, '万円'],
+    txInheritanceRate: [30, '%'], txHeirs: [2, '人'], txChildren: [2, '人'], txAdopted: [0, '人'],
+    txParents: [0, '人'], txSiblings: [0, '人'],
+    txAssetLand: [8000, '万円'], txAssetBuilding: [2000, '万円'], txAssetSecurities: [3000, '万円'],
+    txAssetCash: [5000, '万円'], txAssetOther: [500, '万円'],
+    txSmallLotValue: [6000, '万円'], txSmallLotArea: [300, '㎡'],
+    txDebt: [2000, '万円'], txFuneralCost: [300, '万円'],
+  };
+  function applyTxPlaceholders() {
+    Object.keys(TX_SAMPLE).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el || el.value !== '') return;
+      var sample = TX_SAMPLE[id][0], unit = TX_SAMPLE[id][1];
+      el.placeholder = (!IS_TRIAL && sample > 0)
+        ? '入力例：' + (window.numFmt ? window.numFmt(sample) : sample) + ' ' + unit
+        : '0 ' + unit;
+    });
+  }
+  // 本番: 入力例のままのブランク欄はサンプル値を確定してから保存・遷移する
+  function materializeTxDefaults() {
+    if (IS_TRIAL) return;
+    Object.keys(TX_SAMPLE).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.value === '') el.value = String(TX_SAMPLE[id][0]);
+    });
+    if (window.numReformatAll) window.numReformatAll();
+  }
+
   const form = document.getElementById('txForm');
   if (!form || !window.bplTax) return;
   const T = window.bplTax;
@@ -291,6 +330,8 @@ document.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     clearError();
+    // 本番: 入力例のままのブランク欄はサンプル値を確定してから検証・保存する
+    materializeTxDefaults();
     refreshAuto();
     if (!validate()) return;
     save();
@@ -325,4 +366,5 @@ document.addEventListener('DOMContentLoaded', function () {
   applyItVersion(itVersion);
   applyIhVersion(ihVersion);
   if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
+  applyTxPlaceholders();
 });

@@ -123,6 +123,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 入力内容のブラウザ内保存(サーバーには送信しない。ファイル保存/読込・入力データクリアの対象) =====
   const STORAGE_KEY = 'bpl_future_liability_v1';
+  // 全体ルール: 未入力欄はグレーで「0 万円」を表示(サンプル既定値はないため入力例は出さない)
+  function applyFlPlaceholders() {
+    form.querySelectorAll('input[id]').forEach(function (el) {
+      if (el.value === '' && !el.placeholder) el.placeholder = '0 万円';
+    });
+  }
+
   function loadSavedValues() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -985,6 +992,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateOffBalanceAsset();
     recompute();
   }
+  applyFlPlaceholders();
   const clearBtn = document.getElementById('flClearBtn');
   if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
 

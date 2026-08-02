@@ -164,35 +164,35 @@
                 <span class="flex items-center">法人の現金（利益）<span class="help-tip" tabindex="0">?<span class="help-text" id="cashHint">他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)</span></span></span>
                 <button type="button" id="cashLockBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
               </label>
-              <input type="number" id="cash" value="20000" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="自動計算" />
+              <input type="number" id="cash" readonly class="form-input w-full rounded-lg px-4 py-2.5 text-sm bg-gray-50" placeholder="自動計算" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="capital">資本金</label>
-              <input type="number" id="capital" value="1000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1,000" />
+              <input type="number" id="capital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1,000" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="corpTaxRate">法人税率(%)</label>
-              <input type="number" id="corpTaxRate" value="30" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" step="0.1" />
+              <input type="number" id="corpTaxRate" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" step="0.1" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="incomeTaxRate">所得税・社保率(%)</label>
-              <input type="number" id="incomeTaxRate" value="50" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 50" step="0.1" />
+              <input type="number" id="incomeTaxRate" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 50" step="0.1" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="inheritanceTaxRate">相続税率(%)</label>
-              <input type="number" id="inheritanceTaxRate" value="40" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 40" step="0.1" />
+              <input type="number" id="inheritanceTaxRate" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 40" step="0.1" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="insuranceGainRate">保険差益(運用成果)(%)</label>
-              <input type="number" id="insuranceGainRate" value="100" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 100" step="0.1" />
+              <input type="number" id="insuranceGainRate" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 100" step="0.1" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="stockInheritanceValue">自社株の相続税評価</label>
-              <input type="number" id="stockInheritanceValue" value="10000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 10,000" />
+              <input type="number" id="stockInheritanceValue" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 10,000" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5" for="stockCorpValue">自社株の法人税法評価</label>
-              <input type="number" id="stockCorpValue" value="14000" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 14,000" />
+              <input type="number" id="stockCorpValue" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 14,000" />
             </div>
           </div>
         
@@ -431,6 +431,6 @@
 
 <script src="js/menu.js?v=20260728a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/treasury-stock.js?v=20260727u"></script>
+<script src="js/treasury-stock.js?v=20260728k"></script>
 </body>
 </html>

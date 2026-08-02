@@ -12,10 +12,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const $ = (id) => document.getElementById(id);
   const setTxt = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
+  // テスト配信ページ(trial-)ではサンプル値を使わない
+  const IS_TRIAL = window.location.pathname.indexOf('trial-') >= 0;
+  // 生命保険の設計のサンプル既定値(全体ルール: グレー「入力例：数値 単位」表示+本番はフォールバック)
+  const TXR_SAMPLE = {
+    txGeneralPremium: [40000, '円/年'], txPensionPremium: [30000, '円/年'], txMedicalPremium: [20000, '円/年'],
+    txDeathBenefit: [600, '万円'], txRetirementBenefit: [300, '万円'],
+    txSalaryMonthly: [100, '万円'], txCondolenceAmount: [1000, '万円'],
+  };
+  function applyTxrPlaceholders() {
+    Object.keys(TXR_SAMPLE).forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el || el.value !== '') return;
+      const sample = TXR_SAMPLE[id][0], unit = TXR_SAMPLE[id][1];
+      el.placeholder = (!IS_TRIAL && sample > 0)
+        ? '入力例：' + (window.numFmt ? window.numFmt(sample) : sample) + ' ' + unit
+        : '0 ' + unit;
+    });
+  }
+
   const numOf = (id) => {
     const el = $(id);
     if (!el) return NaN;
-    return window.numClean ? window.numClean(el.value) : parseFloat(el.value);
+    let v = window.numClean ? window.numClean(el.value) : parseFloat(el.value);
+    // 本番: 未入力はサンプル既定値で試算(入力例placeholderと対応)。テスト版は入力したもののみ
+    if (isNaN(v) && !IS_TRIAL && TXR_SAMPLE[id]) v = TXR_SAMPLE[id][0];
+    return v;
   };
 
   /* ===== ？ツールチップ ===== */
@@ -479,4 +501,5 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 
   if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
+  applyTxrPlaceholders();
 });

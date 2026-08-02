@@ -5,9 +5,33 @@ document.addEventListener('DOMContentLoaded', function () {
   const resultArea = document.getElementById('tsResultArea');
   const errorArea = document.getElementById('tsErrorArea');
 
+  // テスト配信ページ(trial-)ではサンプル値を使わず、データクリア状態を既定にする
+  const IS_TRIAL = window.location.pathname.indexOf('trial-') >= 0;
+  // サンプル既定値と単位(全体ルール: グレーの「入力例：数値 単位」placeholderで表示し、
+  // 本番では未入力時にこの値へフォールバックして試算する)
+  const TS_SAMPLE = {
+    capital: [1000, '万円'], corpTaxRate: [30, '%'], incomeTaxRate: [50, '%'],
+    inheritanceTaxRate: [40, '%'], insuranceGainRate: [100, '%'],
+    stockInheritanceValue: [10000, '万円'], stockCorpValue: [14000, '万円'],
+  };
+  function applyTsPlaceholders() {
+    Object.keys(TS_SAMPLE).forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el || el.value !== '') return;
+      const sample = TS_SAMPLE[id][0], unit = TS_SAMPLE[id][1];
+      el.placeholder = (!IS_TRIAL && sample > 0)
+        ? '入力例：' + (window.numFmt ? window.numFmt(sample) : sample) + ' ' + unit
+        : '0 ' + unit;
+    });
+    const cashEl = document.getElementById('cash');
+    if (cashEl && cashEl.value === '') cashEl.placeholder = '0 万円';
+  }
+
   const num = (id) => {
     const el = document.getElementById(id);
-    const v = parseFloat((el.value || '').replace(/,/g, ''));
+    let v = parseFloat((el.value || '').replace(/,/g, ''));
+    // 本番: 未入力はサンプル既定値で試算する(入力例placeholderと対応)。テスト版は入力したもののみ
+    if (isNaN(v) && !IS_TRIAL && TS_SAMPLE[id]) v = TS_SAMPLE[id][0];
     return { value: v, el };
   };
 
@@ -516,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 初期化: 保存済みデータがあれば復元し、法人の現金を自動計算モードで初期化して試算を表示 =====
   loadSavedValues();
+  applyTsPlaceholders();
   setCashMode(false);
   recompute();
 });
