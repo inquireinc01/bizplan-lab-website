@@ -226,6 +226,9 @@
               <button type="button" id="insuranceNetToggleBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
                 <span class="dot"></span>法人税控除後で表示<span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金は受取時に法人税が課税されるため、実際に使える金額は保険金額より少なくなります。ONにするとグラフの死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示します。</span></span>
               </button>
+              <button type="button" id="autoPremiumBBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
+                <span class="dot"></span>保険料を変更後利益に反映<span class="help-tip" tabindex="0">?<span class="help-text">ONにすると【変更後】税引前利益を「【現状】税引前利益 − 保険料 × 損金割合」で自動計算し、手入力できなくなります。OFFに戻すと元の手入力値に戻ります。既定はOFFです。</span></span>
+              </button>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div>
@@ -433,7 +436,7 @@
 
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260727y"></script>
+<script src="js/stock-calculator.js?v=20260727z"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 <script>
 /* テスト配信版: 全データクリアの確定クリック時に印を置き、

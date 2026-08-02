@@ -141,6 +141,8 @@ document.addEventListener('DOMContentLoaded', function () {
   let showSpecialLoss = false; // その他特別損失マーカーをグラフに表示するかどうか(ボタンでトグル)
   let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
   let dsYear = 30; // 自社株評価・株主の状況テーブルの表示年数(入力欄でリアルタイムに変更可能)
+  let autoPremiumToB = false; // 保険料を【変更後】税引前利益に自動反映するかどうか(既定OFF・ボタンでトグル)
+  let manualProfitB = null;   // 自動反映ON前の手入力値(OFFに戻したとき復元する)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -600,6 +602,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // 「保険料を変更後利益に反映」ON時: 【変更後】税引前利益 = 【現状】税引前利益 − 保険料 × 損金割合
+  function syncAutoProfitB() {
+    const el = document.getElementById('annualProfitB');
+    if (!el) return;
+    el.disabled = autoPremiumToB;
+    if (!autoPremiumToB) return;
+    const auto = (currentValues.annualProfit || 0)
+      - (currentValues.premiumAmount || 0) * (currentValues.deductibleRatio || 0) / 100;
+    currentValues.annualProfitB = auto;
+    el.value = String(Math.round(auto));
+  }
+
   function persistCurrentValues() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -651,6 +665,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const raw = (e.target.value || '').replace(/,/g, '').trim();
       const parsed = raw === '' ? 0 : parseFloat(raw);
       currentValues[id] = isNaN(parsed) ? currentValues[id] : parsed;
+      if (autoPremiumToB && (id === 'annualProfit' || id === 'premiumAmount' || id === 'deductibleRatio')) {
+        syncAutoProfitB();
+      }
       clearTimeout(liveTimer);
       liveTimer = setTimeout(function () {
         persistCurrentValues();
@@ -701,6 +718,28 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 死亡保険金額の税引後(法人税控除後)表示トグル =====
+  // ===== 保険料を【変更後】税引前利益に自動反映するトグル(既定OFF) =====
+  const autoPremiumBBtn = document.getElementById('autoPremiumBBtn');
+  if (autoPremiumBBtn) {
+    autoPremiumBBtn.addEventListener('click', function () {
+      autoPremiumToB = !autoPremiumToB;
+      autoPremiumBBtn.classList.toggle('is-on', autoPremiumToB);
+      const el = document.getElementById('annualProfitB');
+      if (autoPremiumToB) {
+        manualProfitB = currentValues.annualProfitB; // OFFに戻したとき復元する
+        syncAutoProfitB();
+      } else {
+        if (el) el.disabled = false;
+        if (manualProfitB !== null && manualProfitB !== undefined) {
+          currentValues.annualProfitB = manualProfitB;
+          if (el) el.value = String(Math.round(manualProfitB));
+        }
+      }
+      persistCurrentValues();
+      recomputeSeriesOnly();
+    });
+  }
+
   const insuranceNetToggleBtn = document.getElementById('insuranceNetToggleBtn');
   if (insuranceNetToggleBtn) {
     insuranceNetToggleBtn.classList.toggle('is-on', showInsuranceNet);
