@@ -246,7 +246,7 @@
       
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>グラフの縦軸</dt><dd>入力ページで指定した各評価方式の時価総額（万円）を、経過年数に応じて推移させたものです。</dd><dt>表示指標の切替</dt><dd>上の評価額タイルをクリックすると表示する指標を切り替えられます（最大2つまで同時表示）。</dd><dt>死亡保険金額の上昇率</dt><dd>保険金額が年々増加する設計の場合、指定した上昇率で複利的に増加させて表示します。</dd><dt>経過年数</dt><dd>0〜30年の範囲で指定できます。範囲外の値を入力した場合は30年に補正されます。</dd></dl>
+            <dl><dt>グラフの縦軸</dt><dd>入力ページで指定した各評価方式の時価総額（万円）を、経過年数に応じて推移させたものです。</dd><dt>表示指標の切替</dt><dd>上の評価額タイルをクリックすると表示する指標を切り替えられます（最大2つまで同時表示）。</dd><dt>死亡保険金額の上昇率</dt><dd>保険金額が年々増加する設計の場合、指定した上昇率で複利的に増加させて表示します。</dd><dt>経過年数</dt><dd>0〜表示期間の範囲で指定できます。表示期間は推移予測の右上のプルダウンで30・40・50・60年から選択でき、範囲外の値を入力した場合は表示期間の年数に補正されます。</dd></dl>
             <p class="calc-logic-note">評価額の推移は、入力時点の評価額を基準に一定の前提で延長した概算です。実際の評価額は毎期の業績・資産内容によって変動します。</p>
           </div>
 </div>
@@ -407,7 +407,7 @@
               <label class="flex items-center gap-1.5 text-xs font-bold text-gray-600" for="dsYearInput">
                 <input type="number" id="dsYearInput" min="0" max="30" value="30" class="form-input rounded-lg px-2 py-1.5 text-sm text-right" style="width:4.5rem" />年後
               </label>
-              <span id="dsYearError" class="hidden text-xs font-bold" style="color:var(--color-red)">0〜30の範囲で入力してください(30に戻しました)</span>
+              <span id="dsYearError" class="hidden text-xs font-bold" style="color:var(--color-red)">0〜表示期間の範囲で入力してください(表示期間に戻しました)</span>
               <button type="button" id="dsScenarioToggleBtn" class="overlay-toggle overlay-toggle-navy overlay-toggle-inline">
                 <span class="dot"></span>対策後で表示
               </button>
@@ -525,7 +525,7 @@
   <div class="print-chart" id="pChartSlot"></div>
   <div class="print-legend" id="pChartLegend"></div>
 
-  <div class="print-sec">評価額推移表(0〜30年・総額・万円)</div>
+  <div class="print-sec">評価額推移表(総額・万円)</div>
   <table class="print-table" style="font-size:7pt">
     <thead>
       <tr>
@@ -552,7 +552,7 @@
 
 <script src="js/menu.js?v=20260802a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260802a"></script>
+<script src="js/stock-calculator.js?v=20260802b"></script>
 <script src="js/data-backup.js?v=20260722a"></script>
 </body>
 </html>

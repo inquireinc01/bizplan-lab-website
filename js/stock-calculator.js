@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   }
 
-  // 1つのシナリオ(年間税引前利益を指定)について、0〜30年の5指標(総額万円)を計算
+  // 1つのシナリオ(年間税引前利益を指定)について、0〜表示期間(horizonYears)の5指標(総額万円)を計算
   function computeScenario(v, year0, annualProfitValue, shared) {
     const sizeCfg = SIZE_CONFIG[v.companySize] || SIZE_CONFIG['mid-mid'];
     const L = sizeCfg.l;
@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 自社株評価・株主の状況テーブルの表示年数(リアルタイム反映) =====
-  // 0〜30の範囲外が入力された場合はエラーを表示し、強制的に30に戻す。
+  // 0〜表示期間(horizonYears)の範囲外が入力された場合はエラーを表示し、表示期間の年数に戻す。
   const dsYearInput = document.getElementById('dsYearInput');
   const dsYearError = document.getElementById('dsYearError');
   if (dsYearInput) {
