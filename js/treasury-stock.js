@@ -551,11 +551,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 初期化: 保存済みデータがあれば復元し、法人の現金を自動計算モードで初期化して試算を表示 =====
   loadSavedValues();
-  // テスト版の既定値(2026-07-28指定): 所得税・社保率/相続税率/保険差益は50を入れておく
+  // テスト版の既定値(2026-07-28指定): 所得税・社保率/相続税率/保険差益=50、法人税率=30
   if (IS_TRIAL) {
-    ['incomeTaxRate', 'inheritanceTaxRate', 'insuranceGainRate'].forEach(function (id) {
+    const TRIAL_RATES = { incomeTaxRate: '50', inheritanceTaxRate: '50', insuranceGainRate: '50', corpTaxRate: '30' };
+    Object.keys(TRIAL_RATES).forEach(function (id) {
       const el = document.getElementById(id);
-      if (el && el.value === '') el.value = '50';
+      if (el && el.value === '') el.value = TRIAL_RATES[id];
     });
   }
   applyTsPlaceholders();
