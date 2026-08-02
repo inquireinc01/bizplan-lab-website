@@ -126,7 +126,7 @@
     <div class="max-w-2xl mx-auto px-5">
 
       <div class="notice-box text-sm rounded-lg p-4 mb-10 leading-relaxed">
-        送信ボタンを押すと、お使いのメールソフトが起動し、内容が入力された状態で下書きが作成されます。そのまま送信してください。
+        送信ボタンを押すと、入力内容がそのまま送信されます。送信が完了すると、この画面に完了メッセージが表示されます。
       </div>
 
       <form id="feedbackForm" class="space-y-6">
@@ -190,7 +190,10 @@
 <script src="js/menu.js?v=20260802a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script>
-  const FEEDBACK_TO = 'taku_matsuda@bizplanlabo.com';
+  // 送信先: 専用Googleフォーム(2026-08-02作成)。mailto方式は廃止し、
+  // ページ内から直接送信して完了/失敗を画面に確定表示する
+  const FORM_POST_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeqyJPXGmVKc6U6F4tyNJT1Ny6G4kP75fRoD3n64kxR_GPqwg/formResponse';
+  const ENTRY = { type: 'entry.1210563576', tool: 'entry.1876298791', email: 'entry.1914879670', message: 'entry.622661420' };
   const typeLabels = { bug: '不具合報告', improvement: '改善提案', other: 'その他' };
   const toolLabels = {
     stock: '自社株×生命保険',
@@ -200,30 +203,46 @@
     other: 'その他',
   };
 
-  document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+  const form = document.getElementById('feedbackForm');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
     const type = document.getElementById('fbType').value;
     const tool = document.getElementById('fbTool').value;
     const email = document.getElementById('fbEmail').value;
     const message = document.getElementById('fbMessage').value;
-
-    const subject = `【BizPlan Laboratory】${typeLabels[type] || 'お問い合わせ'}`;
-    const bodyLines = [
-      `種別: ${typeLabels[type] || ''}`,
-      `対象ツール: ${toolLabels[tool] || '指定なし'}`,
-      `返信先メールアドレス: ${email || '(未入力)'}`,
-      '',
-      '内容:',
-      message,
-    ];
-    const mailtoUrl = `mailto:${FEEDBACK_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
-
-    window.location.href = mailtoUrl;
-
     const notice = document.getElementById('fbNotice');
-    notice.textContent = 'メールソフトが起動しない場合は、お手数ですが ' + FEEDBACK_TO + ' 宛に直接ご連絡ください。';
-    notice.classList.remove('hidden');
-    notice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const body = new URLSearchParams();
+    body.set(ENTRY.type, typeLabels[type] || 'その他');
+    body.set(ENTRY.tool, toolLabels[tool] || '指定なし');
+    body.set(ENTRY.email, email);
+    body.set(ENTRY.message, message);
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '送信中...';
+    const showNotice = (text, ok) => {
+      notice.textContent = text;
+      notice.className = 'text-sm rounded-lg p-4 ' + (ok
+        ? 'bg-[#e8f0e8] text-[#2d5580] font-bold border border-[#bcd4bc]'
+        : 'bg-red-50 text-red-700 font-bold border border-red-200');
+      notice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    // Googleフォームへ直接POSTする(no-corsのため応答本文は読めないが、
+    // 通信が完了すれば受理されている。失敗時はネットワークエラーで検知できる)
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 15000));
+    Promise.race([fetch(FORM_POST_URL, { method: 'POST', mode: 'no-cors', body: body }), timeout])
+      .then(function () {
+        showNotice('送信が完了しました。ご協力ありがとうございます。', true);
+        form.reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = '送信する';
+      })
+      .catch(function () {
+        showNotice('送信に失敗しました。通信環境をご確認のうえ、もう一度お試しください。', false);
+        submitBtn.disabled = false;
+        submitBtn.textContent = '送信する';
+      });
   });
 </script>
 </body>
