@@ -290,17 +290,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const MAX_AMOUNT = 999999; // 万円(桁あふれ・表示崩れ防止)
     const MAX_RATE = 1000; // %(桁あふれ防止のための上限)
     const rateKeys = ['corpTaxRate', 'incomeTaxRate', 'inheritanceTaxRate', 'insuranceGainRate'];
+    // 未入力・上限超過はfocus()で誘導しない。changeのたびに再計算が走るため、
+    // focus()を使うと全クリア直後のタブ移動が毎回先頭の未入力欄へ引き戻されてしまう。
+    // 代わりに該当欄を薄い赤(input-error)で示す
+    let hasBlank = false;
     for (const [key, field] of Object.entries(fields)) {
-      if (isNaN(field.value)) {
-        showError('すべての項目を入力してください。');
-        field.el.focus();
-        return;
-      }
+      const blank = isNaN(field.value);
+      field.el.classList.toggle('input-error', blank);
+      if (blank) hasBlank = true;
+    }
+    if (hasBlank) {
+      showError('すべての項目を入力してください。');
+      return;
+    }
+    for (const [key, field] of Object.entries(fields)) {
       const isRate = rateKeys.indexOf(key) >= 0;
       const limit = isRate ? MAX_RATE : MAX_AMOUNT;
-      if (Math.abs(field.value) > limit) {
+      const over = Math.abs(field.value) > limit;
+      field.el.classList.toggle('input-error', over);
+      if (over) {
         showError(isRate ? `率は ${MAX_RATE}% 以内で入力してください。` : `金額は ${man(MAX_AMOUNT)} 以内で入力してください。`);
-        field.el.focus();
         return;
       }
     }
@@ -309,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const cashReq = computeCashMin();
     if (!isNaN(cashReq.min) && cash.value < cashReq.min) {
       showError(`法人の利益が不足しています。②で金庫株を買い取る(遺族からの自社株買い)には、最低 ${man(Math.ceil(cashReq.min))} が必要です。`);
-      cash.el.focus();
+      cash.el.classList.add('input-error');
       return;
     }
 

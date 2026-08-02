@@ -874,5 +874,37 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+<script>
+/* テスト配信版: 全データクリアの確定クリック時に印を置き、
+   リロード/ページ遷移の後にデフォルトのダミー数値も含めて空にできるようにする */
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.querySelector('.hero-actions .hero-util-danger');
+  if (!btn) return;
+  btn.addEventListener('pointerdown', function () {
+    if (btn.classList.contains('is-confirming')) {
+      try { sessionStorage.setItem('bplTrialCleared', '1'); } catch (e) {}
+    }
+  });
+});
+</script>
+<script>
+/* テスト配信版: 直前に全データクリアが実行されていたら、
+   デフォルトで入っているダミー数値も含めて全入力欄を空にする */
+(function () {
+  var cleared = false;
+  try {
+    cleared = sessionStorage.getItem('bplTrialCleared') === '1';
+    if (cleared) sessionStorage.removeItem('bplTrialCleared');
+  } catch (e) {}
+  if (!cleared) return;
+  window.addEventListener('load', function () {
+    document.querySelectorAll('main input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]), main textarea').forEach(function (el) {
+      el.value = '';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  });
+})();
+</script>
 </body>
 </html>
