@@ -294,9 +294,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // 「選択した株主のみ」モードでは、チェックした株主の持分割合で総額を按分して描く
     const HF = holderFactor();
     // 死亡保険金額(showInsurance)はスケールに含めない: 上限を超えたら天井に張り付く仕様でよいため。
-    // バーの最大値には少し余白(8%)を持たせ、一番高い棒がグラフ上端にぴったり付かないようにする。
+    // 目盛りがキリのいい数字(1・2・2.5・5×10^n刻み)になるよう、最大値を切り上げて4等分する
     const rawMaxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f] * HF)), 1);
-    const maxV = rawMaxV * 1.08;
+    const niceStep = (x) => {
+      const pow = Math.pow(10, Math.floor(Math.log10(x)));
+      const f = x / pow;
+      const nf = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10;
+      return nf * pow;
+    };
+    const step = niceStep((rawMaxV * 1.05) / 4);
+    const maxV = step * 4;
     const minV = 0;
     const yBottom = H - padB;
     const y = (val) => yBottom - ((val - minV) / (maxV - minV || 1)) * plotH;
@@ -593,12 +600,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function populateLivePanel(v) {
+  // 各入力欄の単位(未入力時にグレーで「0 単位」と見せるためのplaceholder用)
+  const UNIT_MAP = {
+    corpTaxRateProj: '%', annualProfit: '万円', annualProfitB: '万円', annualDividend: '万円',
+    retirementYear: '年目', retirementAmount: '万円', specialLossYear: '年目', specialLossAmount: '万円',
+    mvNetAssets: '万円', realOpProfit: '万円',
+    insuranceAmount: '万円', insuranceGrowthRate: '%', coveragePeriod: '年', premiumAmount: '万円', deductibleRatio: '%',
+  };
+  function populateLivePanel(v, usedDefaults) {
     PROJECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
+      if (usedDefaults) {
+        // サンプル既定値は黒字の実値として入れず、グレーの「入力例：」placeholderで示す
+        // (計算はloadValuesのフォールバックで既定値が使われる)。全体ルール(2026-07-28)
+        el.value = '';
+        const ex = id === 'insuranceGrowthRate' ? Number(DEFAULTS[id] || 0).toFixed(2)
+          : (window.numFmt ? window.numFmt(DEFAULTS[id]) : DEFAULTS[id]);
+        el.placeholder = '入力例：' + ex;
+        return;
+      }
       // 死亡保険金額上昇率は0でも「0.00」と表示し、小数点2位まで揃える
       el.value = id === 'insuranceGrowthRate' ? Number(v[id] || 0).toFixed(2) : v[id];
+      el.placeholder = '0 ' + (UNIT_MAP[id] || '');
     });
   }
 
@@ -649,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (defaultNotice) defaultNotice.classList.toggle('hidden', !usedDefaults);
 
     currentValues = v;
-    populateLivePanel(v);
+    populateLivePanel(v, usedDefaults);
     applyProfitBState();
     syncAutoProfitB();
 
@@ -689,6 +713,10 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         const parsed = raw === '' ? 0 : parseFloat(raw);
         currentValues[id] = isNaN(parsed) ? currentValues[id] : parsed;
+        if (raw === '') {
+          // 全体ルール: クリア後の欄は空のまま、グレーで「0＋単位」を見せる
+          e.target.placeholder = '0 ' + (UNIT_MAP[id] || '');
+        }
       }
       if (!manualBMode && (id === 'annualProfit' || id === 'premiumAmount' || id === 'deductibleRatio')) {
         syncAutoProfitB();
