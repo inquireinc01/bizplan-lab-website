@@ -27,6 +27,9 @@ PUBLISH = [
     'header-nav-simplification',
     'unit-smaller-than-number-rule',
     'comma-format-numbers-everywhere',
+    'empty-input-placeholder-rule',
+    'remaining-count-error-rule',
+    'tab-skips-help-tips-rule',
     'hide-explanations-behind-help-tip',
     'recalc-on-commit-not-while-typing',
     'avoid-window-confirm-for-inline-actions',
@@ -35,6 +38,62 @@ PUBLISH = [
     'tk-company-logo-spec',
     'bizplan-push-every-change',
     'reduce-token-heavy-browser-debugging',
+]
+
+# ページ冒頭のサマリー。カテゴリごとに「何をするルールか」を一言でまとめ、
+# クリックで該当ルールの詳細(記事)へ飛ばす。文章はメモリの丸写しではなく、
+# 読む人が一読して分かる平易な言葉で手書きする。
+SUMMARY = [
+    ('入力欄の見せ方とふるまい', [
+        ('未入力の欄はグレーで「0 万円」、サンプル値は「入力例：3,000 万円」と単位付きで見せる',
+         'empty-input-placeholder-rule'),
+        ('自動計算の欄は既定でグレーの「自動計算：万円」。元の欄を入力すると数字が入る',
+         'empty-input-placeholder-rule'),
+        ('未入力エラーは「あと〇項目入力してください」。自動計算の欄は数に入れない',
+         'remaining-count-error-rule'),
+        ('計算し直すのは入力を確定したとき(欄から離れたとき)。入力中は動かさない',
+         'recalc-on-commit-not-while-typing'),
+        ('Tabキーは入力欄だけを移動する。「?」マークには止まらない',
+         'tab-skips-help-tips-rule'),
+    ]),
+    ('数字の表示', [
+        ('金額・数量は必ず3桁カンマ区切り。入力例の数字も同じ',
+         'comma-format-numbers-everywhere'),
+        ('万円・％・年などの単位は、数字より一回り小さく控えめに',
+         'unit-smaller-than-number-rule'),
+        ('数字の太字はArialのまま使う(Bahnschriftに変える案は廃止)',
+         'arial-bold-to-bahnschrift-rule'),
+    ]),
+    ('ボタンと画面まわり', [
+        ('「試算する」など主操作ボタンは専用デザイン(角丸□・ネイビー固定)',
+         'trigger-button-design-rule'),
+        ('ヒーロー帯は同じ幅の□アイコンボタン。全消しは白い「全データクリア」',
+         'clear-button-design-pattern'),
+        ('各入力エリアの小さいボタンは名前を「データクリア」で統一する',
+         'clear-button-design-pattern'),
+        ('ヘッダーのメニューは2つだけ・右寄せ',
+         'header-nav-simplification'),
+        ('項目の解説や計算式は画面に直書きせず「?」の中に隠す',
+         'hide-explanations-behind-help-tip'),
+    ]),
+    ('確認のとり方', [
+        ('window.confirm()は使わない(LINE等のアプリ内ブラウザで反応しないため)',
+         'avoid-window-confirm-for-inline-actions'),
+        ('クリア等はボタン自身が赤字で「本当にクリア？」に変わり、2回目クリックで実行',
+         'avoid-window-confirm-for-inline-actions'),
+    ]),
+    ('ブランド', [
+        ('TK&Company Inc.ロゴのフォント・配置・生成スクリプトの確定仕様',
+         'tk-company-logo-spec'),
+    ]),
+    ('Claude Codeへの作業指示', [
+        ('変更したら都度コミットしてpushする(確認待ちしない)',
+         'bizplan-push-every-change'),
+        ('フォント修正は指摘された箇所だけ。サイト全体の指定を勝手に変えない',
+         'scope-font-fixes-narrowly'),
+        ('ブラウザ検証はスクリーンショットと往復回数を絞る',
+         'reduce-token-heavy-browser-debugging'),
+    ]),
 ]
 
 TYPE_LABEL = {
@@ -159,9 +218,27 @@ def main():
     toc = ''.join('<li><a href="#%s">%s</a></li>' % (esc(r['name']), esc(r['description'] or r['name']))
                   for r in rules)
 
+    # サマリーの整合性チェック(飛び先が存在しないリンク・要約に載っていないルールを検出)
+    linked = set()
+    for _, items in SUMMARY:
+        for text, anchor in items:
+            linked.add(anchor)
+            if anchor not in known:
+                print('  [警告] サマリーの飛び先が公開ルールにありません:', anchor)
+    for key in PUBLISH:
+        if key not in linked:
+            print('  [警告] サマリーに載っていないルール:', key)
+
+    summary = ''.join(
+        '<div class="sum-cat"><h3>%s</h3><ul>%s</ul></div>' % (
+            esc(cat),
+            ''.join('<li><a href="#%s">%s</a></li>' % (esc(anchor), esc(text)) for text, anchor in items))
+        for cat, items in SUMMARY)
+
     html = TEMPLATE % {
         'count': len(rules),
         'generated': now,
+        'summary': summary,
         'toc': toc,
         'cards': '\n\n'.join(cards),
     }
@@ -200,12 +277,27 @@ TEMPLATE = u'''<!DOCTYPE html>
     border: 2px solid var(--red); background: #f9ecec; color: #5f2020;
     border-radius: .7rem; padding: .7rem .9rem; font-size: .75rem; line-height: 1.7; margin-bottom: 1.2rem;
   }
+  /* 冒頭サマリー: カテゴリごとに一言でまとめ、クリックで下の詳細へ飛ばす */
+  .summary { background: var(--card); border: 1px solid var(--line); border-radius: .7rem; padding: 1rem 1.2rem 1.1rem; margin-bottom: 1rem; }
+  .summary-title { margin: 0 0 .1rem; font-size: .95rem; font-weight: 900; color: var(--navy); }
+  .summary-lead { margin: 0 0 .9rem; font-size: .72rem; color: var(--ink-faint); }
+  .sum-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem .9rem; }
+  @media (max-width: 700px) { .sum-grid { grid-template-columns: 1fr; } }
+  .sum-cat { border-left: 3px solid var(--navy); padding: .1rem 0 .1rem .7rem; }
+  .sum-cat h3 { margin: 0 0 .25rem; font-size: .78rem; font-weight: 900; color: var(--navy); letter-spacing: .02em; }
+  .sum-cat ul { margin: 0; padding-left: 1rem; }
+  .sum-cat li { font-size: .78rem; line-height: 1.65; margin: .1rem 0; }
+  .sum-cat a { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .sum-cat a:hover { color: var(--red); border-bottom-color: var(--red); }
+  .sum-cat a::after { content: " ›"; color: var(--ink-faint); font-weight: 700; }
   .toc { background: var(--card); border: 1px solid var(--line); border-radius: .7rem; padding: .9rem 1.1rem; margin-bottom: 1.4rem; }
   .toc-title { margin: 0 0 .4rem; font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--ink-faint); }
   .toc ol { margin: 0; padding-left: 1.2rem; }
   .toc li { font-size: .8rem; margin: .15rem 0; }
   .toc a { color: var(--navy); text-decoration: none; }
   .toc a:hover { text-decoration: underline; }
+  .toc details summary { cursor: pointer; font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--ink-faint); }
+  .toc details[open] summary { margin-bottom: .4rem; }
   .rule {
     background: var(--card); border: 1px solid var(--line); border-radius: .7rem;
     padding: 1.1rem 1.3rem; margin-bottom: 1rem; scroll-margin-top: 1rem;
@@ -239,9 +331,16 @@ TEMPLATE = u'''<!DOCTYPE html>
   <div class="notice">
     このページはGitHub Pagesで公開されているため、URLを直接叩けば誰でも閲覧できます。掲載しているのはこのサイトの制作ルールのみで、他プロジェクトのメモは含めていません。
   </div>
+  <section class="summary">
+    <p class="summary-title">サマリー</p>
+    <p class="summary-lead">決まっていることの要点。項目をクリックすると、下の詳細ルールへ移動します。</p>
+    <div class="sum-grid">%(summary)s</div>
+  </section>
   <nav class="toc">
-    <p class="toc-title">目次</p>
-    <ol>%(toc)s</ol>
+    <details>
+      <summary>ルール一覧(全%(count)d件・タイトルで探す)</summary>
+      <ol>%(toc)s</ol>
+    </details>
   </nav>
 
 %(cards)s

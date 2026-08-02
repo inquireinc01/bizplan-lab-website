@@ -29,12 +29,27 @@
     border: 2px solid var(--red); background: #f9ecec; color: #5f2020;
     border-radius: .7rem; padding: .7rem .9rem; font-size: .75rem; line-height: 1.7; margin-bottom: 1.2rem;
   }
+  /* 冒頭サマリー: カテゴリごとに一言でまとめ、クリックで下の詳細へ飛ばす */
+  .summary { background: var(--card); border: 1px solid var(--line); border-radius: .7rem; padding: 1rem 1.2rem 1.1rem; margin-bottom: 1rem; }
+  .summary-title { margin: 0 0 .1rem; font-size: .95rem; font-weight: 900; color: var(--navy); }
+  .summary-lead { margin: 0 0 .9rem; font-size: .72rem; color: var(--ink-faint); }
+  .sum-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem .9rem; }
+  @media (max-width: 700px) { .sum-grid { grid-template-columns: 1fr; } }
+  .sum-cat { border-left: 3px solid var(--navy); padding: .1rem 0 .1rem .7rem; }
+  .sum-cat h3 { margin: 0 0 .25rem; font-size: .78rem; font-weight: 900; color: var(--navy); letter-spacing: .02em; }
+  .sum-cat ul { margin: 0; padding-left: 1rem; }
+  .sum-cat li { font-size: .78rem; line-height: 1.65; margin: .1rem 0; }
+  .sum-cat a { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .sum-cat a:hover { color: var(--red); border-bottom-color: var(--red); }
+  .sum-cat a::after { content: " ›"; color: var(--ink-faint); font-weight: 700; }
   .toc { background: var(--card); border: 1px solid var(--line); border-radius: .7rem; padding: .9rem 1.1rem; margin-bottom: 1.4rem; }
   .toc-title { margin: 0 0 .4rem; font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--ink-faint); }
   .toc ol { margin: 0; padding-left: 1.2rem; }
   .toc li { font-size: .8rem; margin: .15rem 0; }
   .toc a { color: var(--navy); text-decoration: none; }
   .toc a:hover { text-decoration: underline; }
+  .toc details summary { cursor: pointer; font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--ink-faint); }
+  .toc details[open] summary { margin-bottom: .4rem; }
   .rule {
     background: var(--card); border: 1px solid var(--line); border-radius: .7rem;
     padding: 1.1rem 1.3rem; margin-bottom: 1rem; scroll-margin-top: 1rem;
@@ -62,15 +77,22 @@
 <a class="back" href="admin.html">&larr; 管理者用ページ</a>
 <div class="head">
   <h1>Claude Code 指示ルール一覧</h1>
-  <p>このサイト(bizplan-lab-website)の制作でClaude Codeに指定したルール 13 件 ／ 生成日時 2026年07月27日 12:41</p>
+  <p>このサイト(bizplan-lab-website)の制作でClaude Codeに指定したルール 16 件 ／ 生成日時 2026年08月02日 19:15</p>
 </div>
 <div class="wrap">
   <div class="notice">
     このページはGitHub Pagesで公開されているため、URLを直接叩けば誰でも閲覧できます。掲載しているのはこのサイトの制作ルールのみで、他プロジェクトのメモは含めていません。
   </div>
+  <section class="summary">
+    <p class="summary-title">サマリー</p>
+    <p class="summary-lead">決まっていることの要点。項目をクリックすると、下の詳細ルールへ移動します。</p>
+    <div class="sum-grid"><div class="sum-cat"><h3>入力欄の見せ方とふるまい</h3><ul><li><a href="#empty-input-placeholder-rule">未入力の欄はグレーで「0 万円」、サンプル値は「入力例：3,000 万円」と単位付きで見せる</a></li><li><a href="#empty-input-placeholder-rule">自動計算の欄は既定でグレーの「自動計算：万円」。元の欄を入力すると数字が入る</a></li><li><a href="#remaining-count-error-rule">未入力エラーは「あと〇項目入力してください」。自動計算の欄は数に入れない</a></li><li><a href="#recalc-on-commit-not-while-typing">計算し直すのは入力を確定したとき(欄から離れたとき)。入力中は動かさない</a></li><li><a href="#tab-skips-help-tips-rule">Tabキーは入力欄だけを移動する。「?」マークには止まらない</a></li></ul></div><div class="sum-cat"><h3>数字の表示</h3><ul><li><a href="#comma-format-numbers-everywhere">金額・数量は必ず3桁カンマ区切り。入力例の数字も同じ</a></li><li><a href="#unit-smaller-than-number-rule">万円・％・年などの単位は、数字より一回り小さく控えめに</a></li><li><a href="#arial-bold-to-bahnschrift-rule">数字の太字はArialのまま使う(Bahnschriftに変える案は廃止)</a></li></ul></div><div class="sum-cat"><h3>ボタンと画面まわり</h3><ul><li><a href="#trigger-button-design-rule">「試算する」など主操作ボタンは専用デザイン(角丸□・ネイビー固定)</a></li><li><a href="#clear-button-design-pattern">ヒーロー帯は同じ幅の□アイコンボタン。全消しは白い「全データクリア」</a></li><li><a href="#clear-button-design-pattern">各入力エリアの小さいボタンは名前を「データクリア」で統一する</a></li><li><a href="#header-nav-simplification">ヘッダーのメニューは2つだけ・右寄せ</a></li><li><a href="#hide-explanations-behind-help-tip">項目の解説や計算式は画面に直書きせず「?」の中に隠す</a></li></ul></div><div class="sum-cat"><h3>確認のとり方</h3><ul><li><a href="#avoid-window-confirm-for-inline-actions">window.confirm()は使わない(LINE等のアプリ内ブラウザで反応しないため)</a></li><li><a href="#avoid-window-confirm-for-inline-actions">クリア等はボタン自身が赤字で「本当にクリア？」に変わり、2回目クリックで実行</a></li></ul></div><div class="sum-cat"><h3>ブランド</h3><ul><li><a href="#tk-company-logo-spec">TK&amp;Company Inc.ロゴのフォント・配置・生成スクリプトの確定仕様</a></li></ul></div><div class="sum-cat"><h3>Claude Codeへの作業指示</h3><ul><li><a href="#bizplan-push-every-change">変更したら都度コミットしてpushする(確認待ちしない)</a></li><li><a href="#scope-font-fixes-narrowly">フォント修正は指摘された箇所だけ。サイト全体の指定を勝手に変えない</a></li><li><a href="#reduce-token-heavy-browser-debugging">ブラウザ検証はスクリーンショットと往復回数を絞る</a></li></ul></div></div>
+  </section>
   <nav class="toc">
-    <p class="toc-title">目次</p>
-    <ol><li><a href="#trigger-button-design-rule">bizplan-lab-websiteの「試算する/実行する/比較する」等トリガーボタンの全体デザインルール(2026-07-23確定)</a></li><li><a href="#clear-button-design-pattern">bizplan-lab-websiteのヒーロー帯ボタン列と「データクリア」系ボタンの命名・配色・配置ルール(2026-07-23確定)</a></li><li><a href="#header-nav-simplification">bizplan-lab-websiteのグローバルヘッダーは2メニューのみ・右寄せ(2026-07-23確定)</a></li><li><a href="#unit-smaller-than-number-rule">数値に付く単位(万円・％・年など)は数字より小さく表示する全ページ共通ルール</a></li><li><a href="#comma-format-numbers-everywhere">金額・数量は必ず3桁カンマ区切り。プレースホルダーの例示数値も含む</a></li><li><a href="#hide-explanations-behind-help-tip">基本解説やロジックの説明は画面に直書きせず「?」ツールチップ(.help-tip)で隠す</a></li><li><a href="#recalc-on-commit-not-while-typing">再計算は入力中(input)ではなく入力確定時(change)に走らせる。入力中のリアルタイム変化は不要</a></li><li><a href="#avoid-window-confirm-for-inline-actions">bizplan-lab-websiteで軽量な確認操作にwindow.confirm()を使わない理由と代替パターン(2026-07-23)</a></li><li><a href="#scope-font-fixes-narrowly">フォント修正依頼は指摘された箇所だけに絞る。body全体やGoogle Fonts優先順位のような全体方針を勝手に変えない</a></li><li><a href="#arial-bold-to-bahnschrift-rule">【廃止済み】数字の太字はBahnschriftではなくArialのまま使う(2026-07-23に差し戻し)</a></li><li><a href="#tk-company-logo-spec">TK&amp;Company Inc.ロゴの確定仕様(フォント・配置アンカー・生成スクリプト場所)</a></li><li><a href="#bizplan-push-every-change">bizplan-lab-website(GitHub Pages)への変更は都度push、確認待ちしない</a></li><li><a href="#reduce-token-heavy-browser-debugging">ブラウザ検証・デバッグはスクリーンショット/往復回数を絞ってトークン消費を抑える</a></li></ol>
+    <details>
+      <summary>ルール一覧(全16件・タイトルで探す)</summary>
+      <ol><li><a href="#trigger-button-design-rule">bizplan-lab-websiteの「試算する/実行する/比較する」等トリガーボタンの全体デザインルール(2026-07-23確定)</a></li><li><a href="#clear-button-design-pattern">bizplan-lab-websiteのヒーロー帯ボタン列と「データクリア」系ボタンの命名・配色・配置ルール(2026-07-23確定)</a></li><li><a href="#header-nav-simplification">bizplan-lab-websiteのグローバルヘッダーは2メニューのみ・右寄せ(2026-07-23確定)</a></li><li><a href="#unit-smaller-than-number-rule">数値に付く単位(万円・％・年など)は数字より小さく表示する全ページ共通ルール</a></li><li><a href="#comma-format-numbers-everywhere">金額・数量は必ず3桁カンマ区切り。プレースホルダーの例示数値も含む</a></li><li><a href="#empty-input-placeholder-rule">数値入力欄の未入力表示ルール — クリア後はグレー「0＋単位」、サンプル既定値はグレー「入力例：数値」(2026-07-28全体ルール)</a></li><li><a href="#remaining-count-error-rule">未入力エラーは「あと〇項目入力してください」形式で、自動計算欄はカウントから省く(2026-08-02全体ルール)</a></li><li><a href="#tab-skips-help-tips-rule">Tabキーは入力エリアのみ遷移し、?ヘルプチップには止まらない(2026-07-28全体ルール)</a></li><li><a href="#hide-explanations-behind-help-tip">基本解説やロジックの説明は画面に直書きせず「?」ツールチップ(.help-tip)で隠す</a></li><li><a href="#recalc-on-commit-not-while-typing">再計算は入力中(input)ではなく入力確定時(change)に走らせる。入力中のリアルタイム変化は不要</a></li><li><a href="#avoid-window-confirm-for-inline-actions">bizplan-lab-websiteで軽量な確認操作にwindow.confirm()を使わない理由と代替パターン(2026-07-23)</a></li><li><a href="#scope-font-fixes-narrowly">フォント修正依頼は指摘された箇所だけに絞る。body全体やGoogle Fonts優先順位のような全体方針を勝手に変えない</a></li><li><a href="#arial-bold-to-bahnschrift-rule">【廃止済み】数字の太字はBahnschriftではなくArialのまま使う(2026-07-23に差し戻し)</a></li><li><a href="#tk-company-logo-spec">TK&amp;Company Inc.ロゴの確定仕様(フォント・配置アンカー・生成スクリプト場所)</a></li><li><a href="#bizplan-push-every-change">bizplan-lab-website(GitHub Pages)への変更は都度push、確認待ちしない</a></li><li><a href="#reduce-token-heavy-browser-debugging">ブラウザ検証・デバッグはスクリーンショット/往復回数を絞ってトークン消費を抑える</a></li></ol>
+    </details>
   </nav>
 
 <article class="rule" id="trigger-button-design-rule">
@@ -87,12 +109,12 @@
 <article class="rule" id="clear-button-design-pattern">
   <p class="rule-name">clear-button-design-pattern</p>
   <h2>bizplan-lab-websiteのヒーロー帯ボタン列と「データクリア」系ボタンの命名・配色・配置ルール(2026-07-23確定)</h2>
-  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-07-26</span></div>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-08-02</span></div>
   <div class="rule-body"><p><strong>ヒーロー帯ボタン列(最終形、2026-07-23確定・.hero-util-btn方式):</strong> 各ページのヒーロー(ネイビー帯)のボタン列は共通CSSクラス<code>.hero-actions</code>(ラッパー)+<code>.hero-util-btn</code>(各ボタン、<code>css/style.css</code>に定義)を使う。長いTailwindユーティリティ文字列を毎回書く旧方式(pill形・可変幅)は廃止し、アイコン+短いラベルの<strong>同じ幅の□ボタン</strong>に統一した。構成: トップ(ホームアイコン)・インポート(旧ファイルから読込む、アップロードアイコン)・保存(旧ファイルに保存、フロッピーアイコン)・PDF(旧PDFに出力する、アイコンは既存のものを維持)・<strong>全データクリア</strong>(ゴミ箱アイコン、<code>.hero-util-danger</code>クラスで列の末尾に間隔を空けて配置)。スマホ幅(<code>&lt;640px</code>)ではラベルを隠しアイコンのみの正方形になり1列に収まる。ホバーは色反転ではなく、白いふちがふわっと発光する演出(<code>box-shadow</code>のグロー)。基本情報入力ボタンはヒーローから削除済み(トップページのカードに一本化、→index.htmlの<code>.tool-tabs</code>)。TOP MENUは自ページ(index.html)には出さない。ヘッダー側のTOP MENU・基本情報入力リンクは廃止済み(→<a href="#header-nav-simplification">header-nav-simplification</a>)。</p>
 <p>各ツールページのヒーローにある「入力データクリア」ボタンは<strong>「全データクリア」</strong>という名称で、配色は赤系ではなく白系に統一する。加えて、そのページの各入力エリア(前提条件カードや各フォームの送信ボタン横、またはSTEPセクションの見出し右)に、そのエリアだけをクリアする小さい「データクリア」ボタンを個別に配置する。</p>
 <p><strong>Why:</strong> ヒーローの赤いボタンは「一体何が消えるのか分かりにくい」とユーザーから指摘された。ページ全体を消す操作であることを明示するため「全」を付けて白色に統一し、逆に「このフォームだけクリアしたい」というニーズには、入力している場所のすぐ近くに小さいボタンを置くことで応える、という役割分担にした。</p>
 <p><strong>How to apply:</strong></p>
-<ul><li>ヒーロー全消しボタン: ラベル「全入力データクリア」、class は他の白ボタンと同一 (<code>border-white/40 text-white hover:bg-white hover:text-[#0f2a4a]</code>)。単一ドメインのページでも全ページ一律でこの名称・配色にする。</li><li>各入力エリア用の小ボタン: ラベルは<strong>「データクリア」</strong>(2026-07-27にユーザーが「入力データクリアではなくデータクリア。他のページもそうなってるでしょ」と指摘。<code>.section-clear-btn</code>を使うbasic-info.html等の既存ページに合わせる)。フォーム送信ボタンがある場合はその隣に<code>btn-outline</code>スタイルで配置(例: stock-valuation.htmlのcalcResetBtn/dtResetBtn/tbResetBtn、future-liability.htmlのflFieldClearBtn等)。送信ボタンがなくリアルタイム計算のページ(treasury-stock.html)では、入力エリアの見出し行の右端に小さいテキストリンク「クリア」を配置する(tsFieldClearBtn)。</li><li>実装は「トグル確認(1回目クリックでボタン自身が赤字の「本当にクリア？」に切り替わり、4秒以内の2回目クリックで実行。window.confirm()はLINE等アプリ内ブラウザで無反応になるため使わない。menu.jsの共通ヘルパー<code>window.armClearBtn</code>を使う)→対象input(必要ならselectも)を空欄化→該当localStorageキーをremoveItem→再計算/非表示化」を1つの関数にまとめ、ヒーロー用ボタン(<code>armHeroClearBtn</code>)と小ボタンの両方から同じ関数を呼ぶ(JSファイルの重複を避ける)。テスト版(trial-)で既定値を持つ欄(金庫株の税率等)は、クリア後も既定値を復帰させて初期表示と同じ状態に戻す(2026-08-02全ページ統一)。</li><li>既にstock-valuation.html(3タブ)・basic-info.html(fsResetBtn)のように独立入力エリアごとの個別クリアボタンが元々あるページはそのまま流用し、改めて追加しない。</li><li>CSS/JS変更時はキャッシュバージョン(style.css?v=, 各js?v=)を該当ファイルを参照する全ページで一括更新すること。</li></ul>
+<ul><li>ヒーロー全消しボタン: ラベル「全入力データクリア」、class は他の白ボタンと同一 (<code>border-white/40 text-white hover:bg-white hover:text-[#0f2a4a]</code>)。単一ドメインのページでも全ページ一律でこの名称・配色にする。</li><li>各入力エリア用の小ボタン: ラベルは<strong>「データクリア」</strong>(2026-07-27にユーザーが「入力データクリアではなくデータクリア。他のページもそうなってるでしょ」と指摘。<code>.section-clear-btn</code>を使うbasic-info.html等の既存ページに合わせる)。フォーム送信ボタンがある場合はその隣に<code>btn-outline</code>スタイルで配置(例: stock-valuation.htmlのcalcResetBtn/dtResetBtn/tbResetBtn、future-liability.htmlのflFieldClearBtn等)。送信ボタンがなくリアルタイム計算のページ(treasury-stock.html)では、入力エリアの見出し行の右端に小さいテキストリンク「クリア」を配置する(tsFieldClearBtn)。</li><li>実装(2026-08-02全ページ統一): 確認はwindow.confirm()ではなく<strong>トグル確認</strong>(1回目クリックでボタン自身が赤字「本当にクリア？」に切り替わり、4秒以内の2回目で実行)。menu.jsの共通ヘルパー<code>window.armClearBtn(btn, doAction)</code>(通常ボタン用)と<code>window.armHeroClearBtn</code>(ヒーロー用)を使い、「対象input(必要ならselectも)を空欄化→該当localStorageキーをremoveItem→再計算/非表示化」を1つの関数にまとめて両方から呼ぶ。<code>.section-clear-btn</code>も内部でarmClearBtnを使う。警告色CSSは<code>button.is-confirming:not(.hero-util-btn)</code>+<code>.btn-outline.is-confirming</code>(style.css)。テスト版(trial-)で既定値を持つ欄(金庫株の税率50/50/50/30等)はクリア後も既定値を復帰させ初期表示と同じ状態に戻す。</li><li>既にstock-valuation.html(3タブ)・basic-info.html(fsResetBtn)のように独立入力エリアごとの個別クリアボタンが元々あるページはそのまま流用し、改めて追加しない。</li><li>CSS/JS変更時はキャッシュバージョン(style.css?v=, 各js?v=)を該当ファイルを参照する全ページで一括更新すること。</li></ul>
 <p>関連: <a href="#arial-bold-to-bahnschrift-rule">arial-bold-to-bahnschrift-rule</a>, <a href="#header-nav-simplification">header-nav-simplification</a>, <a href="#avoid-window-confirm-for-inline-actions">avoid-window-confirm-for-inline-actions</a></p></div>
 </article>
 
@@ -125,6 +147,35 @@
 <p><strong>Why:</strong> 入力値・計算結果は<code>number-format.js</code>が自動でカンマ整形するが、<code>placeholder</code>属性は対象外で素の数字のままだった。2026-07-24にユーザーから「数字はカンマ必須だってば。資本金の例：200000ってさ。200,000でしょうよ。全体ルールに入ってないかな？」と指摘。</p>
 <p><strong>How to apply:</strong></p>
 <ul><li><code>placeholder="例: 20000000"</code> ではなく <code>placeholder="例: 20,000,000"</code> と書く。</li><li><strong>カンマを付けないもの</strong>: 年(2005/2031)、電話番号(03-1234-5678)、郵便番号(123-4567)、法人番号(1234567890123)、登録番号(第12345号)、および3桁以下の数値・率(30/0.75など)。</li><li>入力欄の<code>value</code>や計算結果のtextContentは<code>number-format.js</code>(<code>window.numFmt</code>)が整形するので個別対応は不要。新規の数値表示を書くときは<code>window.numFmt()</code>を通す。</li><li>単位の見せ方は<a href="#unit-smaller-than-number-rule">unit-smaller-than-number-rule</a>も併せて守る。</li></ul></div>
+</article>
+
+<article class="rule" id="empty-input-placeholder-rule">
+  <p class="rule-name">empty-input-placeholder-rule</p>
+  <h2>数値入力欄の未入力表示ルール — クリア後はグレー「0＋単位」、サンプル既定値はグレー「入力例：数値」(2026-07-28全体ルール)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-08-02</span></div>
+  <div class="rule-body"><p>bizplan-lab-websiteの数値入力欄の未入力状態の見せ方(2026-07-28にユーザーが全体ルール化)。</p>
+<ul><li><strong>データクリア後・未入力時</strong>: 欄は空にし、placeholderでグレーの「0＋単位」(例: <code>0 万円</code>、<code>0 %</code>)を表示する。数字を入力したら単位は付けない(通常の数値表示)。</li><li><strong>サンプル既定値(ダミーデータ)</strong>: 黒字の実値として入れず、placeholderでグレーの「入力例：3,000 万円」の形式で表示する(<strong>単位も付ける</strong>。2026-07-28追記)。計算はブランク時に既定値へフォールバックさせる(実装例: stock-calculator.jsのloadValues)。</li><li><strong>自動計算エリア(readonly+グレー地の自動入力欄)</strong>: デフォルト時(元になる欄が未入力の間)は黒字の数値を出さず、placeholderでグレーの「<strong>自動計算：単位</strong>」(例: <code>自動計算：万円</code>)を表示する(2026-08-02追記)。元の欄が入力されたら自動値をカンマ区切りの黒字で表示。手入力モードに切り替えたら通常ルール(<code>0 単位</code>)に戻す。適用例: 金庫株の「法人の現金」(treasury-stock.js refreshAutoCash)、自社株結果の「変更後税引前利益」(stock-calculator.js syncAutoProfitB)。試算自体は自動値へフォールバックして継続する。</li><li>placeholder(ブラウザ標準のグレー)を使うことで「入力すると消える・グレー表示」が自動で満たされる。</li><li>第一適用: 自社株シミュレーションの試算条件パネル(stock-valuation-result.html/trial版、2026-07-28)。以降、新規・改修ページはこの方式に合わせる。</li><li>関連: <a href="#comma-format-numbers-everywhere">comma-format-numbers-everywhere</a> <a href="#unit-smaller-than-number-rule">unit-smaller-than-number-rule</a> <a href="#recalc-on-commit-not-while-typing">recalc-on-commit-not-while-typing</a></li></ul></div>
+</article>
+
+<article class="rule" id="remaining-count-error-rule">
+  <p class="rule-name">remaining-count-error-rule</p>
+  <h2>未入力エラーは「あと〇項目入力してください」形式で、自動計算欄はカウントから省く(2026-08-02全体ルール)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-08-02</span></div>
+  <div class="rule-body"><p>bizplan-lab-websiteの未入力エラーメッセージの全体ルール(2026-08-02ユーザー指示)。</p>
+<ul><li>「すべての項目を入力してください」ではなく「<strong>あと〇項目入力してください。</strong>」と残り数を表示する。</li><li><strong>自動計算部分(readonlyの自動入力エリア)はカウントと赤枠マーキングの対象から省く</strong>(ユーザーが入力できない欄を「入力してください」に含めない)。実装は <code>field.el.readOnly</code> ならスキップ。</li><li>未入力欄は薄い赤(input-error)で示す。change駆動で再計算するページではfocus()による誘導はしない(→タブ移動が引き戻される不具合の原因)。</li><li>適用済み: 金庫株(treasury-stock.js recompute)、減額新契約(reduced-new-contract.js submit)。新規ページも同形式にする。</li></ul>
+<p><strong>Why:</strong> 何項目残っているかが分かるほうが親切で、自動計算欄まで赤くなると「入力できないのにエラー」という矛盾が起きるため。</p>
+<p><strong>How to apply:</strong> blankCountループの先頭で <code>if (field.el.readOnly) { field.el.classList.remove('input-error'); continue; }</code>。メッセージは <code>'あと' + blankCount + '項目入力してください。'</code>。</p>
+<ul><li>関連: <a href="#empty-input-placeholder-rule">empty-input-placeholder-rule</a> <a href="#recalc-on-commit-not-while-typing">recalc-on-commit-not-while-typing</a></li></ul></div>
+</article>
+
+<article class="rule" id="tab-skips-help-tips-rule">
+  <p class="rule-name">tab-skips-help-tips-rule</p>
+  <h2>Tabキーは入力エリアのみ遷移し、?ヘルプチップには止まらない(2026-07-28全体ルール)</h2>
+  <div class="rule-meta"><span class="rule-tag">進め方の指示</span><span class="rule-date">更新 2026-08-02</span></div>
+  <div class="rule-body"><p>bizplan-lab-websiteの全体ルール(2026-07-28)。入力中にTabキーを押したとき、?ヘルプチップ(.help-tip)にフォーカスが止まらず、入力エリアだけを遷移する。</p>
+<p><strong>Why:</strong> チップはHTML上 <code>tabindex="0"</code> で置かれることが多く、入力欄の間に挟まるためTab移動のたびに止まって操作の妨げになる。</p>
+<p><strong>How to apply:</strong> <code>js/menu.js</code> のDOMContentLoaded先頭で <code>document.querySelectorAll('.help-tip')</code> に一括で <code>tabindex="-1"</code> を設定している(全ページ共通・新規ページにも自動適用)。新しいページを作るときはmenu.jsを読み込めばよく、HTML側のtabindex="0"はそのままで構わない。チップの開閉はクリック/タップ/ホバーで行う。</p>
+<ul><li>関連: <a href="#hide-explanations-behind-help-tip">hide-explanations-behind-help-tip</a> <a href="#empty-input-placeholder-rule">empty-input-placeholder-rule</a></li></ul></div>
 </article>
 
 <article class="rule" id="hide-explanations-behind-help-tip">
