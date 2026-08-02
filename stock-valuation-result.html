@@ -319,12 +319,14 @@
           <div class="field-highlight field-highlight-red mt-4">
             <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
               <p class="field-highlight-title flex items-center mb-0">生命保険の契約条件<span class="help-tip" tabindex="0">?<span class="help-text">変額保険・外貨建て保険等、運用実績で死亡保険金額が増減する場合は上昇率(年率)を入力してください。グラフの表示上限に達した場合はそこで頭打ちになります。</span></span></p>
-              <button type="button" id="insuranceNetToggleBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
-                <span class="dot"></span>法人税控除後で表示<span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金は受取時に法人税が課税されるため、実際に使える金額は保険金額より少なくなります。ONにするとグラフの死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示します。</span></span>
-              </button>
-              <button type="button" id="autoPremiumBBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
-                <span class="dot"></span>保険料を変更後利益に反映<span class="help-tip" tabindex="0">?<span class="help-text">ONにすると【変更後】税引前利益を「【現状】税引前利益 − 保険料 × 損金割合」で自動計算し、手入力できなくなります。OFFに戻すと元の手入力値に戻ります。既定はOFFです。</span></span>
-              </button>
+              <div class="flex items-center gap-2 flex-wrap justify-end ml-auto">
+                <button type="button" id="autoPremiumBBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
+                  <span class="dot"></span>保険料を変更後利益に反映<span class="help-tip" tabindex="0">?<span class="help-text">ONにすると【変更後】税引前利益を「【現状】税引前利益 − 保険料 × 損金割合」で自動計算し、手入力できなくなります。OFFに戻すと元の手入力値に戻ります。既定はOFFです。</span></span>
+                </button>
+                <button type="button" id="insuranceNetToggleBtn" class="overlay-toggle overlay-toggle-red overlay-toggle-inline">
+                  <span class="dot"></span>法人税控除後で表示<span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金は受取時に法人税が課税されるため、実際に使える金額は保険金額より少なくなります。ONにするとグラフの死亡保険金額を「法人税率(%)」欄の税率で控除した後(手取り)の金額で表示します。</span></span>
+                </button>
+              </div>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div>
