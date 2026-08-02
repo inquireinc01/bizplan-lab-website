@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', function () {
   let chartLayout = null;
   let currentValues = null;
 
+  // ===== 「選択した株主のみ」モード =====
+  // ONのとき、株主の状況でチェックした株主の持分(株数)だけを評価額の総額に反映する。
+  // 1株あたりの評価・倍率は会社全体のままで、グラフ・タイル・推移表・総額だけを按分する
+  let selHoldersMode = false;
+  let holderSel = null; // 株主index→チェック状態(未設定はチェック済み扱い)
+
   const PROJECTION_IDS = [
     'corpTaxRateProj', 'annualProfit', 'annualProfitB', 'annualDividend',
     'retirementYear', 'retirementAmount', 'specialLossYear', 'specialLossAmount', 'mvNetAssets', 'realOpProfit',
@@ -30,6 +36,50 @@ document.addEventListener('DOMContentLoaded', function () {
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30237, ss0_ruiji: 23557, ss0_junsisan: 50277, ss0_houjin: 36917,
   };
+  // 「選択した株主のみ」の保存・読込(入力ページと同じSTORAGE_KEYに相乗りする)
+  function loadHolderSel() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const o = raw ? JSON.parse(raw) : {};
+      selHoldersMode = o.ss_holderSelMode === '1';
+      holderSel = o.ss_holderSel ? JSON.parse(o.ss_holderSel) : null;
+    } catch (e) {}
+  }
+  function persistHolderSel() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const o = raw ? JSON.parse(raw) : {};
+      o.ss_holderSelMode = selHoldersMode ? '1' : '0';
+      if (holderSel) o.ss_holderSel = JSON.stringify(holderSel);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(o));
+    } catch (e) {}
+  }
+  function holderChecked(i) {
+    return (!holderSel || holderSel[i] === undefined || holderSel[i] === null) ? true : !!holderSel[i];
+  }
+  // チェックした株主の持株数合計 ÷ 発行済株式数(モードOFFや株主未登録のときは1)
+  function holderFactor() {
+    if (!selHoldersMode || !currentValues) return 1;
+    let stored = {};
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      stored = raw ? JSON.parse(raw) : {};
+    } catch (e) {}
+    let holders = [];
+    try { holders = stored.ss_holders ? JSON.parse(stored.ss_holders) : []; } catch (e) {}
+    const shares = currentValues.sharesOutstanding;
+    if (!holders.length || !(shares > 0)) return 1;
+    let sum = 0;
+    holders.forEach(function (h, i) {
+      if (!holderChecked(i)) return;
+      const hs = window.numClean ? window.numClean(h.shares) : parseFloat(h.shares);
+      const hr = window.numClean ? window.numClean(h.ratio) : parseFloat(h.ratio);
+      const eff = !isNaN(hs) ? hs : (!isNaN(hr) ? (hr / 100) * shares : NaN);
+      if (!isNaN(eff)) sum += eff;
+    });
+    return sum / shares;
+  }
+
   const SIZE_CONFIG = {
     large: { l: 1.00, shin: 0.7, label: '大会社' },
     'mid-large': { l: 0.90, shin: 0.6, label: '中会社(大)' },
@@ -239,9 +289,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const plotH = H - padT - padB;
 
     const activeFields = selectedMetrics.map((k) => METRICS[k].field);
+    // 「選択した株主のみ」モードでは、チェックした株主の持分割合で総額を按分して描く
+    const HF = holderFactor();
     // 死亡保険金額(showInsurance)はスケールに含めない: 上限を超えたら天井に張り付く仕様でよいため。
     // バーの最大値には少し余白(8%)を持たせ、一番高い棒がグラフ上端にぴったり付かないようにする。
-    const rawMaxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f])), 1);
+    const rawMaxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f] * HF)), 1);
     const maxV = rawMaxV * 1.08;
     const minV = 0;
     const yBottom = H - padB;
@@ -270,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const m = METRICS[selectedMetrics[0]];
       series.forEach((p, i) => {
         const barX = padL + i * slotWidth + (slotWidth - barWidth) / 2;
-        const barY = y(p[m.field]);
+        const barY = y(p[m.field] * HF);
         const barH = Math.max(0, yBottom - barY);
         const delay = (i * 30).toFixed(0);
         bars += `<rect class="chart-bar" data-year="${i}" data-metric="${selectedMetrics[0]}" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}" ${barAttrs(p, m)} rx="1.5" style="animation-delay:${delay}ms"/>`;
@@ -282,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
         series.forEach((p, i) => {
           const groupStart = padL + i * slotWidth + (slotWidth - groupWidth) / 2;
           const barX = groupStart + si * overlapOffset;
-          const barY = y(p[m.field]);
+          const barY = y(p[m.field] * HF);
           const barH = Math.max(0, yBottom - barY);
           const delay = (i * 30 + si * 15).toFixed(0);
           bars += `<rect class="chart-bar" data-year="${i}" data-metric="${key}" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}" ${barAttrs(p, m)} rx="1.5" style="animation-delay:${delay}ms"/>`;
@@ -423,8 +475,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderTable(series) {
     const body = document.getElementById('trendTableBody');
     let rows = '';
+    const HF = holderFactor();
     series.forEach((p) => {
-      const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B];
+      const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B].map((x) => x * HF);
       // 税引前利益がマイナス(赤字)の場合、推移が負値になり得るため、サイト共通の△+赤字表記に統一する
       const cells = vals.map((v, i) => {
         const negCls = v < 0 ? ' neg-val' : '';
@@ -465,9 +518,11 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (e) {}
     const par = window.numClean ? window.numClean(stored.ss_parValue) : parseFloat(stored.ss_parValue);
 
+    const HF = holderFactor();
     evalBody.innerHTML = DS_EVAL_ROWS.map((r) => {
-      const totalMan = row[`${r.key}T_${scenario}`];
-      const perShareYen = shares > 0 ? (totalMan * 10000) / shares : NaN;
+      const rawTotal = row[`${r.key}T_${scenario}`];
+      const totalMan = rawTotal * HF;
+      const perShareYen = shares > 0 ? (rawTotal * 10000) / shares : NaN;
       const mult = (!isNaN(perShareYen) && par > 0) ? (perShareYen / par) : NaN;
       return `<tr class="border-b border-gray-100">
         <td class="px-3 py-2 text-left font-medium whitespace-nowrap">${r.label}</td>
@@ -486,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (e) {}
 
     if (!holders.length) {
-      holderBody.innerHTML = '<tr><td colspan="5" class="px-2 py-3 text-center text-gray-400 text-xs">株主情報が未入力です。入力ページの「STEP3 株主の状況」で株主を登録すると表示されます。</td></tr>';
+      holderBody.innerHTML = '<tr><td colspan="6" class="px-2 py-3 text-center text-gray-400 text-xs">株主情報が未入力です。入力ページの「STEP3 株主の状況」で株主を登録すると表示されます。</td></tr>';
       document.getElementById('dsTotShares').textContent = '-';
       document.getElementById('dsTotRatio').textContent = '-';
       document.getElementById('dsTotReka').textContent = '-';
@@ -495,18 +550,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let sumEff = 0, sumRatio = 0, totReka = 0, totHojin = 0;
-    holderBody.innerHTML = holders.map((h) => {
+    holderBody.innerHTML = holders.map((h, hIdx) => {
       const hShares = window.numClean ? window.numClean(h.shares) : parseFloat(h.shares);
       const hRatio = window.numClean ? window.numClean(h.ratio) : parseFloat(h.ratio);
       const eff = !isNaN(hShares) ? hShares : ((!isNaN(hRatio) && shares > 0) ? (hRatio / 100) * shares : NaN);
       const reka = (!isNaN(eff) && !isNaN(perShareSaizoku)) ? eff * perShareSaizoku : NaN;
       const hojin = (!isNaN(eff) && !isNaN(perShareHoujin)) ? eff * perShareHoujin : NaN;
       const ratioVal = !isNaN(hRatio) ? hRatio : ((!isNaN(hShares) && shares > 0) ? (hShares / shares) * 100 : NaN);
-      if (!isNaN(eff)) sumEff += eff;
-      if (!isNaN(reka)) totReka += reka;
-      if (!isNaN(hojin)) totHojin += hojin;
-      if (!isNaN(ratioVal)) sumRatio += ratioVal;
-      return `<tr class="border-b border-gray-100">
+      const on = holderChecked(hIdx);
+      const counted = selHoldersMode ? on : true;
+      if (counted) {
+        if (!isNaN(eff)) sumEff += eff;
+        if (!isNaN(reka)) totReka += reka;
+        if (!isNaN(hojin)) totHojin += hojin;
+        if (!isNaN(ratioVal)) sumRatio += ratioVal;
+      }
+      return `<tr class="border-b border-gray-100${selHoldersMode && !on ? ' opacity-40' : ''}">
+        <td class="px-2 py-2 text-center"><input type="checkbox" class="ds-holder-check" data-idx="${hIdx}"${on ? ' checked' : ''} /></td>
         <td class="px-2 py-2 text-left">${h.name || '(未入力)'}</td>
         <td class="px-2 py-2 text-right">${isNaN(eff) ? '-' : (window.numFmt ? window.numFmt(Math.round(eff)) : Math.round(eff).toLocaleString('ja-JP'))}</td>
         <td class="px-2 py-2 text-right">${isNaN(ratioVal) ? '-' : ratioVal.toFixed(2) + '%'}</td>
@@ -522,11 +582,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateCurrentValues(series) {
     const p0 = series[0];
+    const HF = holderFactor();
     Object.keys(BASE_METRICS).forEach((base) => {
       const elA = document.getElementById(`cv_${base}_A`);
       const elB = document.getElementById(`cv_${base}_B`);
-      if (elA) elA.innerHTML = manTile(p0[`${base}T_A`]);
-      if (elB) elB.innerHTML = manTile(p0[`${base}T_B`]);
+      if (elA) elA.innerHTML = manTile(p0[`${base}T_A`] * HF);
+      if (elB) elB.innerHTML = manTile(p0[`${base}T_B`] * HF);
     });
   }
 
@@ -731,7 +792,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const rowsHtml = Object.keys(METRICS).filter((key) => !METRICS[key].hidden).map((key) => {
       const m = METRICS[key];
       const isSel = selectedMetrics.includes(key);
-      return `<div class="flex justify-between gap-4"><span class="flex items-center gap-1.5 ${isSel ? 'font-bold' : 'text-gray-500'}"><span class="inline-block w-2 h-2 rounded-full" style="background:${m.color}"></span>${m.label}</span><span class="${isSel ? 'font-bold' : ''}">${Math.round(p[m.field]).toLocaleString('ja-JP')}</span></div>`;
+      return `<div class="flex justify-between gap-4"><span class="flex items-center gap-1.5 ${isSel ? 'font-bold' : 'text-gray-500'}"><span class="inline-block w-2 h-2 rounded-full" style="background:${m.color}"></span>${m.label}</span><span class="${isSel ? 'font-bold' : ''}">${Math.round(p[m.field] * holderFactor()).toLocaleString('ja-JP')}</span></div>`;
     }).join('');
     tooltip.innerHTML = `<p class="font-bold text-[#0f2a4a] mb-1.5">${yearLabel(p.year)}(総額・万円)</p>${rowsHtml}`;
     tooltip.classList.remove('hidden');
@@ -810,6 +871,30 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('click', function () {
     document.querySelectorAll('.help-tip.open').forEach((t) => t.classList.remove('open'));
   });
+
+  // ===== 「選択した株主のみ」モードのUI =====
+  loadHolderSel();
+  const selHoldersBtn = document.getElementById('selHoldersBtn');
+  if (selHoldersBtn) {
+    selHoldersBtn.classList.toggle('is-on', selHoldersMode);
+    selHoldersBtn.addEventListener('click', function () {
+      selHoldersMode = !selHoldersMode;
+      selHoldersBtn.classList.toggle('is-on', selHoldersMode);
+      persistHolderSel();
+      if (lastSeries) recomputeSeriesOnly(); else refreshAll();
+    });
+  }
+  const dsHolderBodyEl = document.getElementById('dsHolderBody');
+  if (dsHolderBodyEl) {
+    dsHolderBodyEl.addEventListener('change', function (e) {
+      const cb = e.target && e.target.closest ? e.target.closest('.ds-holder-check') : null;
+      if (!cb) return;
+      if (!holderSel) holderSel = [];
+      holderSel[parseInt(cb.dataset.idx, 10)] = cb.checked;
+      persistHolderSel();
+      if (lastSeries) recomputeSeriesOnly(); else refreshAll();
+    });
+  }
 
   // ===== 初期表示: 入力ページの保存値(またはサンプル値)で自動試算 =====
   refreshAll();
