@@ -12,6 +12,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script>
+/* テスト配信版: 本番ページと保存データ(localStorage)を完全に分離する。
+   bpl_で始まるキーへのアクセスをtrial_bpl_に読み替えるため、
+   本番側で保存した入力・サンプル確定値がテストページに現れることはない */
+(function () {
+  var map = function (k) { return (typeof k === 'string' && k.indexOf('bpl_') === 0) ? 'trial_' + k : k; };
+  var g = Storage.prototype.getItem, s = Storage.prototype.setItem, r = Storage.prototype.removeItem;
+  Storage.prototype.getItem = function (k) { return g.call(this, map(k)); };
+  Storage.prototype.setItem = function (k, v) { return s.call(this, map(k), v); };
+  Storage.prototype.removeItem = function (k) { return r.call(this, map(k)); };
+})();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/style.css?v=2026072732" />
 </head>
