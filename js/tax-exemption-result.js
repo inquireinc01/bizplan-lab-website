@@ -463,7 +463,9 @@ document.addEventListener('DOMContentLoaded', function () {
   if (clearBtn && window.armHeroClearBtn) {
     window.armHeroClearBtn(clearBtn, function () {
       try { localStorage.removeItem(T.STORAGE_KEY); } catch (e) {}
-      window.location.href = 'tax-exemption.html';
+      // テスト配信用のtrial-ページ上では、trial-版の入力ページへ戻る
+      var pfx = window.location.pathname.indexOf('trial-') >= 0 ? 'trial-' : '';
+      window.location.href = pfx + 'tax-exemption.html';
     });
   }
 

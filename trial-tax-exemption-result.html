@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
@@ -16,91 +17,12 @@
 </head>
 <body class="bg-white text-[#2b2f36]">
 
-<!-- ===== グローバルヘッダー ===== -->
-<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+<!-- ===== 簡易ヘッダー(テスト配信用: ナビ・リンクなし) ===== -->
+<header class="bg-white border-b border-gray-100">
   <div class="max-w-7xl mx-auto px-5 sm:px-8">
-    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
-      <a href="index.html" class="flex items-center shrink-0">
-        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
-      </a>
-
-      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
-        <div class="mega-item">
-          <button type="button" class="mega-trigger active" data-mega="sim">
-            <span class="mega-trigger-label">生命保険ツール</span>
-            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="mega-panel">
-      <a href="stock-valuation.html" class="mega-panel-item"><span class="mega-num">1</span>自社株×生命保険</a>
-      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
-      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
-      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
-      <a href="tax-exemption.html" class="mega-panel-item active"><span class="mega-num">5</span>非課税×生命保険</a>
-      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
-      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
-          </div>
-        </div>
-
-        <div class="mega-item">
-          <button type="button" class="mega-trigger" data-mega="ds">
-            <span class="mega-trigger-label">ディスカッションシート</span>
-            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="mega-panel">
-      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
-      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
-      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
-      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
-      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
-      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
-          </div>
-        </div>
-      </nav>
-
-      <div class="flex items-center gap-3 shrink-0">
-        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        </button>
-      </div>
+    <div class="flex items-center min-h-20 py-2">
+      <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
     </div>
-  </div>
-
-  <div id="mobile-menu" class="hidden">
-    <nav class="flex flex-col gap-2 p-3">
-
-      <div class="mobile-accordion open">
-        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
-          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
-          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="mobile-accordion-panel">
-        <a href="stock-valuation.html" class="mobile-accordion-link"><span class="mega-num">1</span>自社株×生命保険</a>
-        <a href="future-liability.html" class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
-        <a href="treasury-stock.html" class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
-        <a href="retirement-benefit.html" class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
-        <a href="tax-exemption.html" class="mobile-accordion-link active"><span class="mega-num">5</span>非課税×生命保険</a>
-        <a href="premium-funding.html" class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
-        <a href="reduced-new-contract.html" class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
-        </div>
-      </div>
-
-      <div class="mobile-accordion">
-        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
-          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
-          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="mobile-accordion-panel">
-        <a href="medical-ds.html" class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
-        <a href="religious-ds.html" class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
-        <a href="venture-ds.html" class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
-        <a href="asset-management-ds.html" class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
-        <a href="deficit-company-ds.html" class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
-        <a href="holdings-ds.html" class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
-        </div>
-      </div>
-    </nav>
   </div>
 </header>
 
@@ -117,10 +39,6 @@
       </div>
       <div class="hero-actions" data-backup-keys="bpl_tax_exemption_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
-        <a href="index.html" class="hero-util-btn" title="トップページ">
-          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
-          <span class="hero-util-label">トップ</span>
-        </a>
         <button type="button" class="js-backup-load hero-util-btn" title="ファイルから読み込む">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15V4m0 0L8 8m4-4l4 4M5 16v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
           <span class="hero-util-label">読込み</span>
@@ -145,12 +63,12 @@
   <section class="py-6 sm:py-8">
     <div class="max-w-6xl mx-auto px-5">
       <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <a href="tax-exemption.html" class="btn-outline px-5 py-2 rounded-full text-sm font-bold">← 入力内容を修正する</a>
+        <a href="trial-tax-exemption.html" class="btn-outline px-5 py-2 rounded-full text-sm font-bold">← 入力内容を修正する</a>
         <span id="txResultMode" class="tx-mode-badges"></span>
       </div>
 
       <div id="txNoDataArea" class="hidden bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg p-5">
-        入力データが見つかりません。<a href="tax-exemption.html" class="underline font-bold">入力ページ</a>で内容を入力し、「シミュレーション結果に進む」を押してください。
+        入力データが見つかりません。<a href="trial-tax-exemption.html" class="underline font-bold">入力ページ</a>で内容を入力し、「シミュレーション結果に進む」を押してください。
       </div>
 
 <div id="txResultArea" class="space-y-6">
@@ -371,10 +289,6 @@
 <!-- ===== フッター ===== -->
 <footer class="bg-[#091a30] text-white py-10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mb-6 flex flex-wrap gap-3">
-      <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
-      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
-    </div>
     <div class="max-w-3xl space-y-3 mb-6">
       <p class="text-xs text-gray-500 leading-relaxed">
         各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。

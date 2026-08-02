@@ -294,7 +294,9 @@ document.addEventListener('DOMContentLoaded', function () {
     refreshAuto();
     if (!validate()) return;
     save();
-    window.location.href = 'tax-exemption-result.html';
+    // テスト配信用のtrial-ページ上では、trial-版の結果ページへ遷移する
+    var pfx = window.location.pathname.indexOf('trial-') >= 0 ? 'trial-' : '';
+    window.location.href = pfx + 'tax-exemption-result.html';
   });
 
   /* ===== 入力データクリア ===== */
