@@ -160,7 +160,7 @@
           <div id="chartTooltip" class="hidden absolute z-10 pointer-events-none bg-white border border-gray-300 rounded-lg shadow-lg p-3 text-xs" style="min-width:180px"></div>
         </div>
       
-          <div class="calc-logic">
+          <div class="calc-logic" id="calcLogic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl><dt>グラフの縦軸</dt><dd>入力ページで指定した各評価方式の時価総額（万円）を、経過年数に応じて推移させたものです。</dd><dt>表示指標の切替</dt><dd>上の評価額タイルをクリックすると表示する指標を切り替えられます（最大2つまで同時表示）。</dd><dt>死亡保険金額の上昇率</dt><dd>保険金額が年々増加する設計の場合、指定した上昇率で複利的に増加させて表示します。</dd><dt>経過年数</dt><dd>0〜30年の範囲で指定できます。範囲外の値を入力した場合は30年に補正されます。</dd></dl>
             <p class="calc-logic-note">評価額の推移は、入力時点の評価額を基準に一定の前提で延長した概算です。実際の評価額は毎期の業績・資産内容によって変動します。</p>
@@ -378,6 +378,12 @@
 <!-- ===== フッター ===== -->
 <footer class="bg-[#091a30] text-white py-10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- テスト配信ページでも残すリンク: 配信登録・不具合報告・計算ロジック(2026-08-02指示) -->
+    <div class="mb-6 flex flex-wrap gap-3">
+    <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
+    <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    <a href="#calcLogic" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">計算ロジック</a>
+    </div>
     <div class="max-w-3xl space-y-3 mb-6">
       <p class="text-xs text-gray-500 leading-relaxed">
         各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。

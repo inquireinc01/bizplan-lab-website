@@ -83,7 +83,7 @@
             <svg id="bsChart" viewBox="0 0 700 456" class="w-full h-auto" role="img" aria-label="会計上・実質的・簿外負債発動時のバランスシート比較"></svg>
             <div id="chartTooltip" class="chart-tooltip" role="tooltip"></div>
           
-          <div class="calc-logic">
+          <div class="calc-logic" id="calcLogic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl><dt>資産合計 / 負債・純資産合計</dt><dd>資産合計 = <code>流動資産 ＋ 固定資産 ＋ その他資産</code>、負債・純資産合計 = <code>流動負債 ＋ 固定負債 ＋ 純資産</code></dd><dt>貸借の一致チェック</dt><dd>6項目すべてを入力した時点で左右を比較し、差額が生じている場合は両カードの枠を薄い赤で警告します。</dd><dt>将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（未入力の項目は0として扱います）</dd><dt>次世代将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（次世代分。将来負債とは別枠の任意入力）</dd><dt>不足分（自動計算）</dt><dd><code>max(0, 将来負債合計 − (生命保険金 ＋ その他))</code>。備えが将来負債に届かない差額を自動で埋め、簿外資産合計が将来負債合計と一致するようにしています。</dd><dt>簿外資産合計</dt><dd><code>生命保険金 ＋ その他 ＋ 不足分</code></dd></dl>
             <p class="calc-logic-note">金額はすべて万円単位です。不足分は入力欄ではなく自動算出値のため、直接編集できません。</p>
@@ -230,6 +230,12 @@
 <!-- ===== フッター ===== -->
 <footer class="bg-[#091a30] text-white py-10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- テスト配信ページでも残すリンク: 配信登録・不具合報告・計算ロジック(2026-08-02指示) -->
+    <div class="mb-6 flex flex-wrap gap-3">
+    <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
+    <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    <a href="#calcLogic" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">計算ロジック</a>
+    </div>
     <div class="max-w-3xl space-y-3 mb-6">
       <p class="text-xs text-gray-500 leading-relaxed">
         各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。

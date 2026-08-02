@@ -251,7 +251,7 @@
 
           <div id="txPlanErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mt-4"></div>
 
-          <div class="calc-logic">
+          <div class="calc-logic" id="calcLogic">
             <p class="calc-logic-title">計算ロジック</p>
             <dl>
               <dt>所得税の軽減額(年間)</dt>
@@ -287,6 +287,12 @@
 <!-- ===== フッター ===== -->
 <footer class="bg-[#091a30] text-white py-10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- テスト配信ページでも残すリンク: 配信登録・不具合報告・計算ロジック(2026-08-02指示) -->
+    <div class="mb-6 flex flex-wrap gap-3">
+    <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
+    <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    <a href="#calcLogic" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">計算ロジック</a>
+    </div>
     <div class="max-w-3xl space-y-3 mb-6">
       <p class="text-xs text-gray-500 leading-relaxed">
         各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。
