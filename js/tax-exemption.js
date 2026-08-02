@@ -354,12 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const clearBtn = $('txClearBtn');
   if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
   const fieldClearBtn = $('txFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-      doClearFields();
-    });
-  }
+  if (window.armClearBtn) window.armClearBtn(fieldClearBtn, doClearFields);
 
   /* ===== 初期表示 ===== */
   restore();

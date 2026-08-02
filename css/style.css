@@ -250,6 +250,17 @@ button:active,
   font-weight: 700;
 }
 
+/* データクリア系ボタン共通(全ページ): window.confirm()は使わず、1回目クリックで
+   ボタン自身が「本当にクリア？」の警告表示に切り替わり、2回目クリックで実行する。
+   ヒーローの全データクリア(白ボタン)だけは専用スタイル側で警告表示する */
+button.is-confirming:not(.hero-util-btn) {
+  color: var(--color-red) !important;
+  font-weight: 700;
+}
+.btn-outline.is-confirming {
+  border-color: var(--color-red) !important;
+}
+
 /* ========== 数値の表示ルール ========== */
 /* 入力欄(金額・数値)は右寄せ */
 .num-input {

@@ -71,9 +71,8 @@
 
   // ===== 入力データクリア(基本情報欄のみ) =====
   var fieldClearBtn = document.getElementById('biFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('基本情報の入力内容をクリアします。保存されているデータも削除されます。よろしいですか？')) return;
+  if (window.armClearBtn) {
+    window.armClearBtn(fieldClearBtn, function () {
       fieldIds.forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.value = '';

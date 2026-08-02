@@ -52,12 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const resetBtn = document.getElementById('dsResetBtn');
   if (window.armHeroClearBtn) window.armHeroClearBtn(resetBtn, doClearFields);
   const fieldClearBtn = document.getElementById('dsFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。よろしいですか？')) return;
-      doClearFields();
-    });
-  }
+  if (window.armClearBtn) window.armClearBtn(fieldClearBtn, doClearFields);
 
   // ===== PDF出力: 入力内容から印刷シートを組み立てる =====
   function fieldDisplayValue(el) {

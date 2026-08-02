@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
       applyBtn2.textContent = '反映済み';
     });
 
-    clearBtn2.addEventListener('click', function () {
+    if (window.armClearBtn) window.armClearBtn(clearBtn2, function () {
       input.value = '';
       pending = null;
       previewWrap.classList.add('hidden');

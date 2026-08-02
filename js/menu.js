@@ -24,6 +24,30 @@ window.armHeroClearBtn = function (btn, doAction) {
   });
 };
 
+// ===== 各入力エリアの「データクリア」用トグル確認ヘルパー(全ページ共通)。
+//       ヒーロー用と同じく、1回目クリックでボタン自身が「本当にクリア？」の警告表示に切り替わり、
+//       4秒以内の2回目クリックでdoActionを実行する(window.confirm()は使わない) =====
+window.armClearBtn = function (btn, doAction) {
+  if (!btn) return;
+  const originalText = btn.textContent;
+  let revertTimer = null;
+  btn.addEventListener('click', function () {
+    if (btn.classList.contains('is-confirming')) {
+      clearTimeout(revertTimer);
+      btn.classList.remove('is-confirming');
+      btn.textContent = originalText;
+      doAction();
+      return;
+    }
+    btn.classList.add('is-confirming');
+    btn.textContent = '本当にクリア？';
+    revertTimer = setTimeout(function () {
+      btn.classList.remove('is-confirming');
+      btn.textContent = originalText;
+    }, 4000);
+  });
+};
+
 document.addEventListener('DOMContentLoaded', function () {
   // ===== 全体ルール(2026-07-28): Tabキーは入力エリアだけを遷移する =====
   // ?ヘルプチップ(help-tip)はtabindex=0でフォーカス可能にしていたが、
@@ -129,32 +153,18 @@ document.addEventListener('DOMContentLoaded', function () {
   //       1回目クリックで「本当にクリア？」表示に切り替わり、3秒以内の2回目クリックで実行する
   //       ボタン自身によるトグル確認方式にする =====
   document.querySelectorAll('.section-clear-btn').forEach(function (btn) {
-    const originalText = btn.textContent;
-    let revertTimer = null;
-    btn.addEventListener('click', function () {
-      if (btn.classList.contains('is-confirming')) {
-        clearTimeout(revertTimer);
-        btn.classList.remove('is-confirming');
-        btn.textContent = originalText;
-        const scope = btn.closest('[data-clear-scope]') || btn.closest('.calc-section') || btn.closest('form');
-        if (!scope) return;
-        scope.querySelectorAll('input, select, textarea').forEach(function (el) {
-          if (el.type === 'checkbox' || el.type === 'radio') {
-            el.checked = false;
-          } else {
-            el.value = '';
-          }
-          el.dispatchEvent(new Event('input', { bubbles: true }));
-          el.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-        return;
-      }
-      btn.classList.add('is-confirming');
-      btn.textContent = '本当にクリア？';
-      revertTimer = setTimeout(function () {
-        btn.classList.remove('is-confirming');
-        btn.textContent = originalText;
-      }, 4000);
+    window.armClearBtn(btn, function () {
+      const scope = btn.closest('[data-clear-scope]') || btn.closest('.calc-section') || btn.closest('form');
+      if (!scope) return;
+      scope.querySelectorAll('input, select, textarea').forEach(function (el) {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          el.checked = false;
+        } else {
+          el.value = '';
+        }
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
     });
   });
 

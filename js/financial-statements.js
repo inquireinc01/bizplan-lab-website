@@ -64,9 +64,8 @@
   });
 
   var resetBtn = document.getElementById('fsResetBtn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。よろしいですか？')) return;
+  if (window.armClearBtn) {
+    window.armClearBtn(resetBtn, function () {
       inputs.forEach(function (el) { el.value = ''; el.style.outline = ''; });
       localStorage.removeItem(STORAGE_KEY);
       var msg = document.getElementById('fsSavedMsg');

@@ -116,12 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const clearBtn = document.getElementById('rncClearBtn');
   if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
   const fieldClearBtn = document.getElementById('rncFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-      doClearFields();
-    });
-  }
+  if (window.armClearBtn) window.armClearBtn(fieldClearBtn, doClearFields);
 
   // ===== PDF出力 =====
   function doPrint() {

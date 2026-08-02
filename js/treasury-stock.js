@@ -499,17 +499,13 @@ document.addEventListener('DOMContentLoaded', function () {
     form.querySelectorAll('input[id]').forEach(function (el) { el.value = ''; });
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     setCashMode(false);
+    applyTrialRateDefaults();
     recompute();
   }
   const clearBtn = document.getElementById('tsClearBtn');
   if (window.armHeroClearBtn) window.armHeroClearBtn(clearBtn, doClearFields);
   const fieldClearBtn = document.getElementById('tsFieldClearBtn');
-  if (fieldClearBtn) {
-    fieldClearBtn.addEventListener('click', function () {
-      if (!window.confirm('入力内容をすべてクリアします。保存されているデータも削除されます。よろしいですか？')) return;
-      doClearFields();
-    });
-  }
+  if (window.armClearBtn) window.armClearBtn(fieldClearBtn, doClearFields);
 
   // ===== PDF出力 =====
   let lastResult = null;
@@ -551,14 +547,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 初期化: 保存済みデータがあれば復元し、法人の現金を自動計算モードで初期化して試算を表示 =====
   loadSavedValues();
-  // テスト版の既定値(2026-07-28指定): 所得税・社保率/相続税率/保険差益=50、法人税率=30
-  if (IS_TRIAL) {
+  // テスト版の既定値(2026-07-28指定): 所得税・社保率/相続税率/保険差益=50、法人税率=30。
+  // 初期表示とデータクリア後の両方で適用し、クリア後も同じ初期状態に戻す
+  function applyTrialRateDefaults() {
+    if (!IS_TRIAL) return;
     const TRIAL_RATES = { incomeTaxRate: '50', inheritanceTaxRate: '50', insuranceGainRate: '50', corpTaxRate: '30' };
     Object.keys(TRIAL_RATES).forEach(function (id) {
       const el = document.getElementById(id);
       if (el && el.value === '') el.value = TRIAL_RATES[id];
     });
   }
+  applyTrialRateDefaults();
   applyTsPlaceholders();
   setCashMode(false);
   recompute();
