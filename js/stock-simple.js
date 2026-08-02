@@ -142,7 +142,41 @@ document.addEventListener('DOMContentLoaded', function () {
     setTxt('ssTotHojin', totHojin ? fmt(totHojin) : '-');
   }
 
-  function recalcAll() { recalcEval(); recalcHolders(); }
+  // ===== STEP2 相続税評価額とSTEP1(会社規模=Lの割合)の整合性チェック =====
+  // ルール: 相続税評価額は「純資産価額」か「併用方式」のいずれか安いほう。
+  //         大会社のみ「類似業種比準価額」と「純資産価額」のいずれか安いほう。
+  // 転記値がこのルールと合わない場合、該当欄を薄い赤にして見出し横に赤文字を出す。
+  // アラートのみで、シミュレーション自体はそのまま進められる。
+  // (明細書の端数処理による差を考慮し、期待値の1%または1,000円までのズレは許容)
+  var WARN_KEYS = ['saizoku', 'ruiji', 'junsisan', 'heiyo'];
+  function checkSaizokuConsistency() {
+    var warnEl = document.getElementById('ssSaizokuWarn');
+    if (!warnEl) return;
+    var clearAll = function () {
+      warnEl.classList.add('hidden');
+      WARN_KEYS.forEach(function (k) {
+        var el = document.getElementById('ssV_' + k);
+        if (el) el.classList.remove('ss-consistency-warn');
+      });
+    };
+    var v = {};
+    WARN_KEYS.forEach(function (k) { v[k] = num((document.getElementById('ssV_' + k) || {}).value); });
+    var sizeKey = (document.getElementById('ssSize') || {}).value || 'mid-mid';
+    var candKey = sizeKey === 'large' ? 'ruiji' : 'heiyo';
+    if (isNaN(v.saizoku) || isNaN(v.junsisan) || isNaN(v[candKey])) { clearAll(); return; }
+    var expected = Math.min(v[candKey], v.junsisan);
+    var tol = Math.max(Math.abs(expected) * 0.01, 1000);
+    if (Math.abs(v.saizoku - expected) <= tol) { clearAll(); return; }
+    // 整合していない: 相続税評価額と、比較対象の2欄を薄い赤で示す
+    clearAll();
+    warnEl.classList.remove('hidden');
+    ['saizoku', candKey, 'junsisan'].forEach(function (k) {
+      var el = document.getElementById('ssV_' + k);
+      if (el) el.classList.add('ss-consistency-warn');
+    });
+  }
+
+  function recalcAll() { recalcEval(); recalcHolders(); checkSaizokuConsistency(); }
 
   document.getElementById('ssAddHolder').addEventListener('click', function () { holderRow({}); recalcHolders(); });
   form.addEventListener('change', function () {

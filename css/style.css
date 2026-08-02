@@ -3166,3 +3166,10 @@ svg {
 /* ========== メルマガ案内: ラインナップカード ==========
    カード全体がサンプルへのリンク。ホバー挙動はトップページのカード(lift-card)と共通 */
 .nl-lineup [data-sample] { cursor: pointer; }
+
+/* 自社株STEP2: 相続税評価額とLの割合(会社規模)の整合性が取れないときの薄い赤。
+   送信時エラー(input-error)とは別クラスにして、入力し直しで消える処理と干渉しないようにする */
+.ss-consistency-warn {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+}
