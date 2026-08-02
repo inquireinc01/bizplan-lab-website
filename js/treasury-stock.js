@@ -317,13 +317,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // 未入力・上限超過はfocus()で誘導しない。changeのたびに再計算が走るため、
     // focus()を使うと全クリア直後のタブ移動が毎回先頭の未入力欄へ引き戻されてしまう。
     // 代わりに該当欄を薄い赤(input-error)で示す
-    let hasBlank = false;
+    let blankCount = 0;
     for (const [key, field] of Object.entries(fields)) {
       const blank = isNaN(field.value);
       field.el.classList.toggle('input-error', blank);
-      if (blank) hasBlank = true;
+      if (blank) blankCount += 1;
     }
-    if (hasBlank) {
+    if (blankCount === Object.keys(fields).length) {
+      // まだ何も入力されていない初期状態(テスト版のデータクリア既定など)では
+      // エラーや赤枠を出さない。入力が始まってから未入力欄を誘導する
+      Object.values(fields).forEach((f) => f.el.classList.remove('input-error'));
+      clearError();
+      resultArea.classList.add('hidden');
+      return;
+    }
+    if (blankCount > 0) {
       showError('すべての項目を入力してください。');
       return;
     }
