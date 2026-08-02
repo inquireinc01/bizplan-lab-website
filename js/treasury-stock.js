@@ -323,9 +323,12 @@ document.addEventListener('DOMContentLoaded', function () {
       field.el.classList.toggle('input-error', blank);
       if (blank) blankCount += 1;
     }
-    if (blankCount === Object.keys(fields).length) {
-      // まだ何も入力されていない初期状態(テスト版のデータクリア既定など)では
-      // エラーや赤枠を出さない。入力が始まってから未入力欄を誘導する
+    const coreBlank = ['cash', 'capital', 'stockInheritanceValue', 'stockCorpValue']
+      .every((k) => isNaN(fields[k].value));
+    if (coreBlank) {
+      // 金額系が何も入力されていない初期状態(テスト版のデータクリア既定など)では
+      // エラーや赤枠を出さない(率の既定値だけ入っていても中立のまま)。
+      // 入力が始まってから未入力欄を誘導する
       Object.values(fields).forEach((f) => f.el.classList.remove('input-error'));
       clearError();
       resultArea.classList.add('hidden');
@@ -548,6 +551,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 初期化: 保存済みデータがあれば復元し、法人の現金を自動計算モードで初期化して試算を表示 =====
   loadSavedValues();
+  // テスト版の既定値(2026-07-28指定): 所得税・社保率/相続税率/保険差益は50を入れておく
+  if (IS_TRIAL) {
+    ['incomeTaxRate', 'inheritanceTaxRate', 'insuranceGainRate'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el && el.value === '') el.value = '50';
+    });
+  }
   applyTsPlaceholders();
   setCashMode(false);
   recompute();
