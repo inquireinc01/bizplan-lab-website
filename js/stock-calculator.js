@@ -656,7 +656,8 @@ document.addEventListener('DOMContentLoaded', function () {
       ? base - (currentValues.premiumAmount || 0) * (currentValues.deductibleRatio || 0) / 100
       : base;
     currentValues.annualProfitB = auto;
-    if (el) el.value = String(Math.round(auto));
+    // 共通ルール: 数字は必ずカンマ区切りで表示する
+    if (el) el.value = window.numFmt ? window.numFmt(Math.round(auto)) : String(Math.round(auto));
   }
 
   function persistCurrentValues() {
@@ -820,7 +821,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const man10 = Math.round(yenVal / 10000);
       currentValues.annualProfit = man10;
       const el = document.getElementById('annualProfit');
-      if (el) el.value = String(man10);
+      if (el) el.value = window.numFmt ? window.numFmt(man10) : String(man10);
       syncAutoProfitB();
       persistCurrentValues();
       recomputeSeriesOnly();
