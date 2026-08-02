@@ -99,7 +99,9 @@ document.addEventListener('DOMContentLoaded', function () {
       // localStorage不可の環境でも遷移は継続(結果ページ側でデフォルト値にフォールバック)
     }
 
-    window.location.href = 'stock-valuation-result.html';
+    // テスト配信用のtrial-ページ上では、trial-版の結果ページへ遷移する
+    var pfx = window.location.pathname.indexOf('trial-') >= 0 ? 'trial-' : '';
+    window.location.href = pfx + 'stock-valuation-result.html';
   });
 
   const resetBtn = document.getElementById('calcResetBtn');

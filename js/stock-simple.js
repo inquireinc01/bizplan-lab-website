@@ -300,7 +300,9 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
     persistOnly();
-    window.location.href = 'stock-valuation-result.html';
+    // テスト配信用のtrial-ページ上では、trial-版の結果ページへ遷移する
+    var pfx = window.location.pathname.indexOf('trial-') >= 0 ? 'trial-' : '';
+    window.location.href = pfx + 'stock-valuation-result.html';
   });
 
   // ===== 初期データ(サンプル) =====

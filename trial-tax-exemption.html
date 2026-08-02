@@ -649,9 +649,54 @@
   </div>
 </div>
 
+<script>
+/* テスト配信版: 入力方式は簡易のみ。保存済みの選択も簡易に戻してから各スクリプトを読む */
+try {
+  var _k = 'bpl_tax_exemption_v1';
+  var _d = JSON.parse(localStorage.getItem(_k) || '{}');
+  _d.txItVersion = 'simple'; _d.txIhVersion = 'simple';
+  localStorage.setItem(_k, JSON.stringify(_d));
+} catch (e) {}
+</script>
 <script src="js/menu.js?v=20260727b"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/tax-exemption-calc.js?v=20260727d"></script>
 <script src="js/tax-exemption.js?v=20260727t"></script>
+<style>
+/* テスト配信版: 簡易入力以外の方式カードは残したまま非アクティブにする */
+.version-card.trial-locked {
+  pointer-events: none;
+  opacity: 0.45;
+  filter: grayscale(0.4);
+}
+.trial-locked-note {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #a83d3d;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+</style>
+<script>
+/* テスト配信版: 簡易入力以外の方式カードを非アクティブ化(削除はしない) */
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.version-card').forEach(function (card) {
+    var v = card.dataset.version || card.dataset.itVersion || card.dataset.ihVersion;
+    if (v && v !== 'simple') {
+      card.classList.add('trial-locked');
+      card.setAttribute('aria-disabled', 'true');
+      card.removeAttribute('tabindex');
+      var note = document.createElement('span');
+      note.className = 'trial-locked-note';
+      note.textContent = 'テスト版では利用できません';
+      card.appendChild(note);
+    }
+  });
+});
+</script>
 </body>
 </html>
