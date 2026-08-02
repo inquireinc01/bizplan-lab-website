@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let dsShowAfter = false; // 自社株評価・株主の状況テーブルをシナリオB(対策後)で表示するかどうか(ボタンでトグル)
   let dsYear = 30; // 自社株評価・株主の状況テーブルの表示年数(入力欄でリアルタイムに変更可能)
   let autoPremiumToB = false; // 保険料を【変更後】税引前利益に自動反映するかどうか(既定OFF・ボタンでトグル)
-  let manualProfitB = null;   // 自動反映ON前の手入力値(OFFに戻したとき復元する)
+  let manualBMode = false;    // 【変更後】税引前利益を手入力するかどうか(既定OFF=自動入力エリア)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -602,16 +602,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // 【変更後】税引前利益は自動入力エリア(手入力ON時のみ編集可)。
+  // 「保険料を変更後利益に反映」と「手入力」は排他で、片方をONにするともう片方は自動的にOFFになる
+  function applyProfitBState() {
+    const el = document.getElementById('annualProfitB');
+    if (el) el.disabled = !manualBMode;
+    const mb = document.getElementById('manualProfitBBtn');
+    if (mb) mb.classList.toggle('is-on', manualBMode);
+    const ab = document.getElementById('autoPremiumBBtn');
+    if (ab) ab.classList.toggle('is-on', autoPremiumToB);
+  }
   // 「保険料を変更後利益に反映」ON時: 【変更後】税引前利益 = 【現状】税引前利益 − 保険料 × 損金割合
   function syncAutoProfitB() {
-    const el = document.getElementById('annualProfitB');
-    if (!el) return;
-    el.disabled = autoPremiumToB;
     if (!autoPremiumToB) return;
+    const el = document.getElementById('annualProfitB');
     const auto = (currentValues.annualProfit || 0)
       - (currentValues.premiumAmount || 0) * (currentValues.deductibleRatio || 0) / 100;
     currentValues.annualProfitB = auto;
-    el.value = String(Math.round(auto));
+    if (el) el.value = String(Math.round(auto));
   }
 
   function persistCurrentValues() {
@@ -633,6 +641,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     currentValues = v;
     populateLivePanel(v);
+    applyProfitBState();
 
     const year0 = computeYear0(v);
     const result = computeSeries(v, year0);
@@ -718,22 +727,27 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 死亡保険金額の税引後(法人税控除後)表示トグル =====
-  // ===== 保険料を【変更後】税引前利益に自動反映するトグル(既定OFF) =====
+  // ===== 【変更後】税引前利益のモード切替(既定はどちらもOFF=自動入力エリアで固定表示) =====
   const autoPremiumBBtn = document.getElementById('autoPremiumBBtn');
   if (autoPremiumBBtn) {
     autoPremiumBBtn.addEventListener('click', function () {
       autoPremiumToB = !autoPremiumToB;
-      autoPremiumBBtn.classList.toggle('is-on', autoPremiumToB);
+      if (autoPremiumToB) manualBMode = false; // 排他: 反映ONで手入力は自動OFF
+      applyProfitBState();
+      syncAutoProfitB();
+      persistCurrentValues();
+      recomputeSeriesOnly();
+    });
+  }
+  const manualProfitBBtn = document.getElementById('manualProfitBBtn');
+  if (manualProfitBBtn) {
+    manualProfitBBtn.addEventListener('click', function () {
+      manualBMode = !manualBMode;
+      if (manualBMode) autoPremiumToB = false; // 排他: 手入力ONで保険料の反映は自動OFF
+      applyProfitBState();
       const el = document.getElementById('annualProfitB');
-      if (autoPremiumToB) {
-        manualProfitB = currentValues.annualProfitB; // OFFに戻したとき復元する
-        syncAutoProfitB();
-      } else {
-        if (el) el.disabled = false;
-        if (manualProfitB !== null && manualProfitB !== undefined) {
-          currentValues.annualProfitB = manualProfitB;
-          if (el) el.value = String(Math.round(manualProfitB));
-        }
+      if (manualBMode && el) {
+        try { el.focus({ preventScroll: true }); el.select(); } catch (e) {}
       }
       persistCurrentValues();
       recomputeSeriesOnly();
