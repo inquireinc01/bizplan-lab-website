@@ -3184,3 +3184,18 @@ svg {
   background-color: #fef2f2 !important;
   border-color: #fca5a5 !important;
 }
+
+/* ===== テスト配信ページ(trial-*)の無効表示 =====
+   本番と同じUIを見せるためヘッダーのナビやヒーローのボタンは残すが、
+   クリックできないようにグレーアウトする。有効なのはロゴと「トップ」
+   (どちらもテストページのトップ trial-portal.html へ戻る)だけ */
+.trial-off,
+.trial-off * {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+.trial-off {
+  opacity: .4;
+  filter: grayscale(1);
+  user-select: none;
+}

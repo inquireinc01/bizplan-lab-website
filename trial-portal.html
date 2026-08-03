@@ -13,20 +13,80 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026080201" />
+<link rel="stylesheet" href="css/style.css?v=2026080202" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
 <!-- テストとひと目でわかる黄黒ストライプ -->
 <div style="height:14px;background:repeating-linear-gradient(45deg,#ffd23f 0,#ffd23f 16px,#1c2229 16px,#1c2229 32px)"></div>
 
-<!-- ===== 簡易ヘッダー(テスト用: ナビ・リンクなし) ===== -->
-<header class="bg-white border-b border-gray-100">
+<!-- ===== グローバルヘッダー(テスト配信用: ロゴのみ有効。ナビは表示するが無効) ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
   <div class="max-w-7xl mx-auto px-5 sm:px-8">
-    <div class="flex items-center justify-between min-h-20 py-2">
-      <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
-      <span class="text-[11px] font-black tracking-widest text-white px-3 py-1.5 rounded-full" style="background-color:#a83d3d">TEST</span>
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="trial-portal.html" class="flex items-center shrink-0" title="テストページのトップに戻る">
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+      </a>
+
+
+      <div class="flex-1 max-w-[14rem] ml-auto hidden sm:block trial-off">
+        <div class="relative">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+          <input id="portal-search" type="search" placeholder="サイト内検索" autocomplete="off"
+            class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800 trial-off" disabled>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
+    <div class="sm:hidden pb-3 trial-off">
+      <div class="relative">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+        <input id="portal-search-m" type="search" placeholder="サイト内検索" autocomplete="off"
+          class="w-full rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#0f2a4a] focus:bg-white transition-colors" />
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden trial-off">
+    <nav class="flex flex-col gap-2 p-3">
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a class="mobile-accordion-link"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
+    </nav>
   </div>
 </header>
 

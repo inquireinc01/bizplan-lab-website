@@ -25,16 +25,95 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026080201" />
+<link rel="stylesheet" href="css/style.css?v=2026080202" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
-<!-- ===== 簡易ヘッダー(テスト配信用: ナビ・リンクなし) ===== -->
-<header class="bg-white border-b border-gray-100">
+<!-- ===== グローバルヘッダー(テスト配信用: ロゴのみ有効。ナビは表示するが無効) ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
   <div class="max-w-7xl mx-auto px-5 sm:px-8">
-    <div class="flex items-center min-h-20 py-2">
-      <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="trial-portal.html" class="flex items-center shrink-0" title="テストページのトップに戻る">
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto trial-off" aria-disabled="true">
+        <div class="mega-item">
+          <button type="button" class="mega-trigger active" data-mega="sim">
+            <span class="mega-trigger-label">生命保険ツール</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a class="mega-panel-item active"><span class="mega-num">1</span>自社株×生命保険</a>
+      <a class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
+      <a class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
+      <a class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
+      <a class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
+      <a class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
+      <a class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="ds">
+            <span class="mega-trigger-label">ディスカッションシート</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
+      <a class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
+      <a class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+      <a class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+      <a class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
+      <a class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800 trial-off" disabled>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden trial-off">
+    <nav class="flex flex-col gap-2 p-3">
+
+      <div class="mobile-accordion open">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a class="mobile-accordion-link active"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
+    </nav>
   </div>
 </header>
 
@@ -49,6 +128,18 @@
         <p class="hero-io-badge font-brand-en coming-soon-glow font-black tracking-[0.15em]">INPUT</p>
       </div>
       <div class="hero-actions" data-backup-keys="bpl_stock_valuation_v1,bpl_stock_detail_v1,bpl_stock_tdb_v1,bpl_stock_version">
+        <a href="trial-portal.html" class="hero-util-btn" title="テストページのトップに戻る">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
+          <span class="hero-util-label">トップ</span>
+        </a>
+        <button type="button" disabled class="hero-util-btn trial-off" data-trial-off title="テスト版では利用できません: ファイルから読み込む">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15V4m0 0L8 8m4-4l4 4M5 16v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
+          <span class="hero-util-label">読込み</span>
+        </button>
+        <button type="button" disabled class="hero-util-btn trial-off" data-trial-off title="テスト版では利用できません: ファイルに保存">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 4h11l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 4v5h7V4M8 20v-6h8v6"/></svg>
+          <span class="hero-util-label">保存</span>
+        </button>
         <button type="button" id="svAllClearBtn" class="hero-util-btn hero-util-danger" title="全データクリア">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12M9 7V4h6v3m-8 0l1 13a2 2 0 002 2h4a2 2 0 002-2l1-13"/></svg>
           <span class="hero-util-label">全データクリア</span>
@@ -849,7 +940,7 @@
 /* テスト配信版: 入力方式は簡易のみ。保存済みの選択も簡易に戻してから各スクリプトを読む */
 try { localStorage.setItem('bpl_stock_version', 'simple'); } catch (e) {}
 </script>
-<script src="js/menu.js?v=20260802a"></script>
+<script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/stock-simple.js?v=20260728h"></script>
 <script src="js/stock-detail.js?v=20260724o"></script>

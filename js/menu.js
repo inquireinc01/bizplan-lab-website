@@ -239,6 +239,9 @@ document.addEventListener('DOMContentLoaded', function () {
 // ===== 管理者用ボタン: Ctrl+Shift+D で表示/非表示を切り替える(全ページ共通) =====
 //       表示状態は保存しない。ページを読み込み直すと必ず消えた状態に戻る。
 document.addEventListener('DOMContentLoaded', function () {
+  // テスト配信ページ(trial-)には管理者用ページへの入口を作らない。
+  // 本サイトへ辿れる抜け穴を残さないため、キー操作でも出現させない
+  if (window.location.pathname.indexOf('trial-') >= 0) return;
   const header = document.getElementById('site-header');
   if (!header) return;
   const menuBtn = document.getElementById('menu-button');
