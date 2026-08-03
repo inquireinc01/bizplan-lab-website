@@ -155,10 +155,11 @@
 
   <section class="py-16 sm:py-20">
     <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
-      <!-- PC/iPad横向き(lg以上)では左に前提条件を固定、右に結果を並べて同時に見られるようにする -->
+      <!-- PC/iPad横向き(lg以上)では左に前提条件、右に結果を並べて同時に見られるようにする -->
       <div class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-10 lg:items-start">
 
-      <div class="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+      <!-- 入力エリアは独立スクロールにしない(overflowで?チップの吹き出しが切れるため。将来負債と同じ方針) -->
+      <div>
       <form id="treasuryForm" class="space-y-10">
 
         <div class="calc-section bg-white p-6 sm:p-8">
