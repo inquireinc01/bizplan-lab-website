@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function refreshAutoCash() {
     if (cashManual) return;
     // デフォルト時(自動計算の元になる欄をユーザーが入力していない間)は数値を黒字で出さず、
-    // グレーの「自動計算：万円」で自動入力エリアであることを示す(全体ルール)。
+    // グレーの「入力不要：万円」で自動入力エリアであることを示す(全体ルール)。
     // 試算自体はrecompute側でサンプル由来の自動値にフォールバックする(本番のみ)
     const userTyped = ['corpTaxRate', 'insuranceGainRate', 'stockCorpValue'].some(function (id) {
       const el = document.getElementById(id);
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const r = computeCashMin();
     if (!userTyped || isNaN(r.auto)) {
       cashInput.value = '';
-      cashInput.placeholder = '自動計算：万円';
+      cashInput.placeholder = '入力不要：万円';
       return;
     }
     cashInput.value = r.auto;
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cashHint) cashHint.textContent = manual
       ? '手入力モード(金庫株の買取に必要な最低額を下回るとエラーになります)'
       : '他の項目から自動計算(金庫株の買取に必要な最低額に5千万円以上を上乗せし、億／5千万円単位で設定)';
-    if (cashInput.value === '') cashInput.placeholder = manual ? '0 万円' : '自動計算：万円';
+    if (cashInput.value === '') cashInput.placeholder = manual ? '0 万円' : '入力不要：万円';
     if (!manual) refreshAutoCash();
   }
   if (cashLockBtn) cashLockBtn.addEventListener('click', function () { setCashMode(!cashManual); });
