@@ -943,8 +943,17 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    const anyEmpty = Object.values(fields).some((field) => isNaN(field.value));
-    if (anyEmpty) {
+    // 入力途中でも、入力済みの数字から順にグラフへ反映する(未入力は0として集計)。
+    // 全項目が未入力の初期状態だけダミーBSの表示にとどめる(2026-08-03指示)
+    const EXTRA_INPUT_IDS = OFF_BALANCE_ASSET_IDS.concat(NEXT_FUTURE_LIAB_IDS);
+    const anyInput = Object.values(fields).some((f) => !isNaN(f.value))
+      || EXTRA_INPUT_IDS.some((id) => !isNaN(num(id).value));
+
+    // 入力を始めたら、必須欄(BS6項目+将来負債3項目)の未入力を薄い赤で示す(全体ルール)。
+    // 簿外資産・次世代将来負債は0扱いの任意入力、不足分は自動計算のため赤枠の対象外
+    Object.values(fields).forEach((f) => f.el.classList.toggle('input-error', anyInput && isNaN(f.value)));
+
+    if (!anyInput) {
       drawDummyChart();
       document.getElementById('flBalanceNote').classList.add('hidden');
       lastResult = null;
@@ -952,17 +961,25 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const totalAssets = fields.curAssets.value + fields.fixedAssets.value + fields.otherAssets.value;
-    const totalLiabNet = fields.curLiab.value + fields.fixedLiab.value + fields.netAssets.value;
-    const futureLiabTotal = fields.retirement.value + fields.succession.value + fields.otherFuture.value;
-    const netAssets = fields.netAssets.value;
+    // 未入力は0として扱ったコピーで集計・描画する
+    const fieldsZ = {};
+    Object.keys(fields).forEach((k) => {
+      fieldsZ[k] = { value: isNaN(fields[k].value) ? 0 : fields[k].value, el: fields[k].el };
+    });
+
+    const totalAssets = fieldsZ.curAssets.value + fieldsZ.fixedAssets.value + fieldsZ.otherAssets.value;
+    const totalLiabNet = fieldsZ.curLiab.value + fieldsZ.fixedLiab.value + fieldsZ.netAssets.value;
+    const futureLiabTotal = fieldsZ.retirement.value + fieldsZ.succession.value + fieldsZ.otherFuture.value;
+    const netAssets = fieldsZ.netAssets.value;
     const ratio = netAssets !== 0 ? (futureLiabTotal / netAssets) * 100 : null;
     const remaining = netAssets - futureLiabTotal;
 
+    const allFilled = Object.values(fields).every((f) => !isNaN(f.value));
     const balanceNote = document.getElementById('flBalanceNote');
     resultArea.classList.remove('hidden');
-    if (Math.abs(totalAssets - totalLiabNet) > 0.5) {
-      // 左右が一致しない間はグラフを更新せず直前の状態のまま保持する(入力エリアの赤枠はupdateBalanceCheckが担当)
+    if (allFilled && Math.abs(totalAssets - totalLiabNet) > 0.5) {
+      // 全項目入力済みで左右が一致しない間はグラフを更新せず直前の状態のまま保持する
+      // (入力途中の不一致は当然なので警告しない。入力エリアの赤枠はupdateBalanceCheckが担当)
       balanceNote.textContent = '※ 総資産と負債・純資産合計が一致していません。一致するとグラフに反映されます。';
       balanceNote.classList.remove('hidden');
       saveCurrentValues();
@@ -970,9 +987,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     balanceNote.classList.add('hidden');
 
-    drawBalanceSheetChart(fields, netAssets, futureLiabTotal);
+    drawBalanceSheetChart(fieldsZ, netAssets, futureLiabTotal);
 
-    lastResult = { fields, totalAssets, totalLiabNet, futureLiabTotal, netAssets, ratio, remaining };
+    // PDF出力は全項目入力済みのときだけ許可する(従来どおり)
+    lastResult = allFilled ? { fields, totalAssets, totalLiabNet, futureLiabTotal, netAssets, ratio, remaining } : null;
 
     saveCurrentValues();
   }
