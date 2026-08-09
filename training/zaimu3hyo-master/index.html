@@ -85,6 +85,32 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .hint-btn{display:inline-block;margin-top:10px;font-size:12px;font-weight:bold;color:var(--navy);background:#fff;border:1.5px solid var(--navy);border-radius:9999px;padding:6px 16px;cursor:pointer;font-family:inherit;transition:background .2s ease,color .2s ease}
 .hint-btn:hover{background:var(--navy);color:#fff}
 
+/* ---- 中級編: BSの2期比較+○×クイズ ---- */
+#compare{max-width:760px;margin:0 auto}
+.cmp-head h2{font-size:18px;color:var(--navy);margin:8px 0 6px}
+.cmp-lead{font-size:12.5px;color:#667;margin-bottom:14px}
+.cmp-table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px;margin-bottom:22px}
+.cmp-table th,.cmp-table td{padding:7px 12px;border-bottom:1px solid #EDF0F4;text-align:right}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table th{background:var(--navy);color:#fff;font-size:12px}
+.cmp-table th:first-child,.cmp-table td:first-child{text-align:left}
+.cmp-table td{font-family:Arial}
+.cmp-table td:first-child{font-family:inherit;font-size:12px}
+.cmp-table tr.sub td{font-weight:bold;background:#F3F6FA}
+.cmp-diff-up{color:var(--ok);font-weight:bold}
+.cmp-diff-down{color:var(--red);font-weight:bold}
+.quiz-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.quiz-item .q{font-size:13.5px;font-weight:bold;color:var(--navy);margin-bottom:8px}
+.qz-btn{font-size:15px;font-weight:bold;border:1.5px solid var(--line);background:#fff;border-radius:9999px;padding:6px 22px;margin-right:8px;cursor:pointer;font-family:inherit}
+.qz-btn:disabled{opacity:.45;cursor:default}
+.qz-btn.pick-ok{border-color:var(--ok);background:#E3F4EB;color:var(--ok);opacity:1}
+.qz-btn.pick-ng{border-color:var(--red);background:#FBEAE8;color:var(--red);opacity:1}
+.qz-ans{font-size:12.5px;line-height:1.7;margin-top:8px;display:none}
+.qz-ans.show{display:block}
+.qz-ans b.ok{color:var(--ok)} .qz-ans b.ng{color:var(--red)}
+.cmp-actions{display:flex;align-items:center;gap:14px;margin:18px 0 30px;flex-wrap:wrap}
+.cmp-result{font-size:13.5px;font-weight:bold;color:var(--navy)}
+
 .checks{display:flex;gap:12px;row-gap:8px;margin:0 0 18px;flex-wrap:wrap;align-items:center}
 .chk{font-size:11.5px;padding:5px 14px;border-radius:14px;background:#fff;color:#98a2ae;border:1px solid var(--line)}
 .chk.ok{background:#E3F4EB;color:var(--ok);border-color:var(--ok);font-weight:bold}
@@ -222,26 +248,35 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
       <div class="mode-card" onclick="startMode('basic')">
         <span class="no">MODE 1</span>
         <h3>ベーシック編</h3>
-        <p>資本金と創業融資で会社を立ち上げ、2期目の決算まで完走しよう。取引のたびにPL・BS・CSを自分の手で更新していく全16ステップ。</p>
+        <p>資本金と創業融資で会社を立ち上げ、第1期の決算までを完走しよう。取引のたびにPL・BS・CSを自分の手で更新していく入門コース。</p>
         <div class="prog-wrap">
           <div class="prog-track"><div class="prog-fill" id="progBasicFill"></div></div>
           <div class="prog-label"><span id="progBasicText">未プレイ</span><b id="progBasicPct">0%</b></div>
         </div>
       </div>
-      <div class="mode-card" onclick="startMode('random')">
+      <div class="mode-card" onclick="startMode('intermediate')">
         <span class="no">MODE 2</span>
-        <h3>ランダム経理処理</h3>
-        <p>次々に出てくる取引カードを3表に反映するスピード勝負。連続正解でボーナス。1取引ずつの影響だけを入力するシンプルルール。</p>
-        <p class="prog" id="progRandom"></p>
+        <h3>中級編</h3>
+        <p>第1期から第2期の決算までフル完走。仕上げに2期分のBSを見比べて、会社がどう育ったかを○×クイズで読み解く。</p>
+        <div class="prog-wrap">
+          <div class="prog-track"><div class="prog-fill" id="progIntFill"></div></div>
+          <div class="prog-label"><span id="progIntText">未プレイ</span><b id="progIntPct">0%</b></div>
+        </div>
       </div>
       <div class="mode-card" onclick="startMode('insurance')">
         <span class="no">MODE 3</span>
-        <h3>保険の経理処理</h3>
+        <h3>保険の経理処理編</h3>
         <p>全額損金・４割損金・全額資産計上、そして解約。生命保険の経理処理4パターンを3表で完全マスター。</p>
         <div class="prog-wrap">
           <div class="prog-track"><div class="prog-fill" id="progInsFill"></div></div>
           <div class="prog-label"><span id="progInsText">未プレイ</span><b id="progInsPct">0%</b></div>
         </div>
+      </div>
+      <div class="mode-card" onclick="startMode('random')">
+        <span class="no">MODE 4</span>
+        <h3>ランダムゲームトライアル</h3>
+        <p>次々に出てくる取引カードを3表に反映するスピード勝負。連続正解でボーナス。1取引ずつの影響だけを入力するシンプルルール。</p>
+        <p class="prog" id="progRandom"></p>
       </div>
     </div>
     <footer>TK&amp;Company Inc. All Rights Reserved.</footer>
@@ -297,6 +332,20 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
 
     </div><!-- /.game-main -->
     </div><!-- /.game-body -->
+  </div>
+
+  <!-- ============ 中級編クリア後: BSの2期比較+○×クイズ ============ -->
+  <div id="compare" style="display:none">
+    <div class="cmp-head">
+      <h2>BSはどう育った？ ― 第1期末と第2期末のくらべ読み</h2>
+      <p class="cmp-lead">数字はすべて<span class="unit">万円</span>。まず表を眺めてから、下の○×クイズで読み取りをチェックしよう（正解1問+20pt）。</p>
+    </div>
+    <table class="cmp-table" id="cmpTable"></table>
+    <div id="quizArea"></div>
+    <div class="cmp-actions">
+      <span class="cmp-result" id="quizResult"></span>
+      <button class="btn-primary" onclick="goHome()">モード選択へ戻る</button>
+    </div>
   </div>
 </div>
 
@@ -422,7 +471,11 @@ const BASIC=[
   endPeriod:2},
 ];
 
-/* --- MODE2 ランダム: 1取引の影響だけ（ゼロから） --- */
+/* 第1期のステップ数 = ベーシック編(MODE 1)の範囲。中級編(MODE 2)は全ステップ(2期分) */
+const P1_LEN=BASIC.findIndex(pb=>pb.endPeriod===1)+1;
+function modeTotal(){return mode==="basic"?P1_LEN:mode==="intermediate"?BASIC.length:INSURANCE.length;}
+
+/* --- MODE4 ランダムゲームトライアル: 1取引の影響だけ（ゼロから） --- */
 const RANDOM_CARDS=[
  {t:"商品を現金<span class='num'>200</span>で仕入れた（未販売）",h:"在庫は資産。現金▲200と在庫+200で資産合計は変わらない。CSは在庫増減▲200。",
   e:{cash:-200,inv:200,cs_inv:-200,cs_op:-200,cs_delta:-200,cs_close:-200}},
@@ -580,6 +633,63 @@ function liveChecks(){
   function set(id,ok,idle){const el=$(id);el.className="chk"+(idle?"":ok?" ok":" ng");}
 }
 
+/* ================= 中級編: BSの2期比較+○×クイズ ================= */
+const CMP_ROWS=[["cash","現金"],["ar","売掛金"],["inv","在庫"],["fixed","固定資産"],["assets","資産合計","sub"],
+ ["debt","借入金"],["liab","負債合計","sub"],["capital","資本金"],["retained","利益剰余金"],["equity","純資産合計","sub"],["total","負債＋純資産","sub"]];
+/* 設問は数値をハードコードせず、第1期末(a)・第2期末(b)の正解データから真偽と解説を作る */
+const QUIZ=[
+ {q:"総資産（資産合計）は第1期末より増えた",f:(a,b)=>b.assets>a.assets,ex:(a,b)=>`資産合計は ${fmt(a.assets)} → ${fmt(b.assets)}。利益の蓄積で会社の規模が育った。`},
+ {q:"現金は第1期末より減った",f:(a,b)=>b.cash<a.cash,ex:(a,b)=>`現金は ${fmt(a.cash)} → ${fmt(b.cash)}。利益と売掛金の回収で増えている。`},
+ {q:"利益剰余金には2期分の利益が積み上がっている",f:(a,b)=>b.retained>a.retained,ex:(a,b)=>`利益剰余金は ${fmt(a.retained)} → ${fmt(b.retained)}。第1期の利益に第2期の利益が積み上がった。`},
+ {q:"借入金は返済が進んで減った",f:(a,b)=>b.debt<a.debt,ex:(a,b)=>`借入金は ${fmt(a.debt)} → ${fmt(b.debt)}。元金返済は費用ではなく、BSと財務CFに効く。`},
+ {q:"固定資産は減価償却のぶんだけ目減りした",f:(a,b)=>b.fixed<a.fixed,ex:(a,b)=>`固定資産は ${fmt(a.fixed)} → ${fmt(b.fixed)}。現金を使わずに費用化が進んだ。`},
+ {q:"資本金も利益に応じて増えた",f:(a,b)=>b.capital>a.capital,ex:(a,b)=>`資本金は ${fmt(b.capital)} のまま変わらない。資本金は出資額で、利益で増えるのは利益剰余金。`},
+ {q:"第2期末の純資産合計は負債合計より大きい",f:(a,b)=>b.equity>b.liab,ex:(a,b)=>`純資産 ${fmt(b.equity)} ＞ 負債 ${fmt(b.liab)}。返さなくてよいお金が過半を占める安定した形。`},
+ {q:"自己資本比率（純資産÷総資産）は第1期末より改善した",f:(a,b)=>(b.equity/b.total)>(a.equity/a.total),ex:(a,b)=>`${Math.round(a.equity/a.total*100)}% → ${Math.round(b.equity/b.total*100)}%。財務体質が強くなった。`},
+ {q:"売掛金は第1期末より減った",f:(a,b)=>b.ar<a.ar,ex:(a,b)=>`売掛金は ${fmt(a.ar)} → ${fmt(b.ar)}。売上の伸びに伴って新しいツケも増えている。`},
+];
+let quizDone=0,quizRight=0;
+function showCompare(){
+  $("game").style.display="none";$("home").style.display="none";
+  $("compare").style.display="block";
+  $("stageDisp").textContent="MODE 2 中級編　BS比較○×クイズ";
+  buildCompare();window.scrollTo(0,0);
+}
+function buildCompare(){
+  const a=BASIC[P1_LEN-1].e, b=BASIC[BASIC.length-1].e;
+  const v=(o,k)=>o[k]||0;
+  let html=`<tr><th>科目</th><th>第1期末</th><th>第2期末</th><th>増減</th></tr>`;
+  CMP_ROWS.forEach(r=>{
+    const x=v(a,r[0]),y=v(b,r[0]),d=y-x;
+    html+=`<tr${r[2]?' class="sub"':''}><td>${r[1]}</td><td>${fmt(x)}</td><td>${fmt(y)}</td><td class="${d>0?'cmp-diff-up':d<0?'cmp-diff-down':''}">${d>0?"+":""}${fmt(d)}</td></tr>`;
+  });
+  $("cmpTable").innerHTML=html;
+  quizDone=0;quizRight=0;$("quizResult").textContent="";
+  const qa=$("quizArea");qa.innerHTML="";
+  QUIZ.forEach((qz,i)=>{
+    const ok=qz.f(a,b);
+    const div=document.createElement("div");div.className="quiz-item";
+    div.innerHTML=`<div class="q">Q${i+1}. ${qz.q}</div>
+      <button class="qz-btn" data-v="1">○</button><button class="qz-btn" data-v="0">×</button>
+      <div class="qz-ans"></div>`;
+    const btns=div.querySelectorAll(".qz-btn"),ans=div.querySelector(".qz-ans");
+    btns.forEach(bn=>bn.addEventListener("click",()=>{
+      const pick=bn.dataset.v==="1";
+      btns.forEach(x=>x.disabled=true);
+      const correct=pick===ok;
+      bn.classList.add(correct?"pick-ok":"pick-ng");
+      quizDone++;if(correct){quizRight++;score+=20;saveScore();}
+      ans.innerHTML=`<b class="${correct?"ok":"ng"}">${correct?"正解！ +20pt":"ざんねん…"}</b>（答えは ${ok?"○":"×"}）　${qz.ex(a,b)}`;
+      ans.classList.add("show");
+      if(quizDone===QUIZ.length){
+        $("quizResult").textContent=`クイズ結果: ${quizRight}/${QUIZ.length} 問正解（+${quizRight*20}pt）`;
+        localStorage.setItem("z3g_int_quiz",String(quizRight));
+      }
+    }));
+    qa.appendChild(div);
+  });
+}
+
 /* ================= 3表の一致箇所リンク(1〜4) =================
    1:PL当期純利益=BS利益剰余金 2:BS現金=CS期末の現金
    3:PL税引前利益=CS税引前利益 4:BS資産合計=負債+純資産 */
@@ -634,15 +744,18 @@ function initLinkPairs(){
 function startMode(m){
   mode=m;stepIdx=0;streak=0;
   $("game").classList.toggle("ins-mode",m==="insurance");
-  if(m==="basic"){const saved=Number(localStorage.getItem("z3g_basic_step")||0);stepIdx=Math.min(saved,BASIC.length-1);}
+  if(m==="basic"){const saved=Number(localStorage.getItem("z3g_basic_step")||0);stepIdx=Math.min(saved,P1_LEN-1);}
+  if(m==="intermediate"){const saved=Number(localStorage.getItem("z3g_int_step")||0);stepIdx=Math.min(saved,BASIC.length-1);}
   if(m==="random"){randomOrder=shuffle([...RANDOM_CARDS.keys()]);}
   if(m==="insurance"){const saved=Number(localStorage.getItem("z3g_ins_step")||0);stepIdx=Math.min(saved,INSURANCE.length-1);}
+  $("compare").style.display="none";
   $("home").style.display="none";$("game").style.display="block";
   loadProblem();
   window.scrollTo(0,0);
 }
 function goHome(){
   $("stageDisp").textContent="モードを選んでください";
+  $("compare").style.display="none";
   $("game").style.display="none";$("home").style.display="block";
   $("keypad").classList.remove("show");activeCell=null;
   renderProgress();
@@ -654,8 +767,10 @@ function renderProgress(){
     $(textId).textContent=done>=total?doneMsg:done>0?playMsg:"未プレイ";
     $(pctId).textContent=pct+"%";
   };
-  const b=Math.min(Number(localStorage.getItem("z3g_basic_step")||0),BASIC.length);
-  setBar("progBasicFill","progBasicText","progBasicPct",b,BASIC.length,"★ 2期目の決算まで完走！",`STEP ${b}/${BASIC.length} クリア`);
+  const b=Math.min(Number(localStorage.getItem("z3g_basic_step")||0),P1_LEN);
+  setBar("progBasicFill","progBasicText","progBasicPct",b,P1_LEN,"★ 第1期の決算まで完走！",`STEP ${b}/${P1_LEN} クリア`);
+  const m2=Math.min(Number(localStorage.getItem("z3g_int_step")||0),BASIC.length);
+  setBar("progIntFill","progIntText","progIntPct",m2,BASIC.length,"★ 2期完走！仕上げは比較クイズ",`STEP ${m2}/${BASIC.length} クリア`);
   const i=Math.min(Number(localStorage.getItem("z3g_ins_step")||0),INSURANCE.length);
   setBar("progInsFill","progInsText","progInsPct",i,INSURANCE.length,"★ 全4ステージクリア！",`STAGE ${i}/4 クリア`);
   const hs=Number(localStorage.getItem("z3g_random_best")||0);
@@ -663,8 +778,8 @@ function renderProgress(){
 }
 function renderGameProg(){
   const wrap=$("gameProg");
-  if(mode==="basic"||mode==="insurance"){
-    const total=mode==="basic"?BASIC.length:INSURANCE.length;
+  if(mode==="basic"||mode==="intermediate"||mode==="insurance"){
+    const total=modeTotal();
     const track=$("gameProgSegs");
     track.innerHTML="";
     for(let i=0;i<total;i++){
@@ -681,7 +796,7 @@ function renderGameProg(){
   }
 }
 function fillGameProg(){ /* クリア直後: 現在ステップのセグメントを即塗る */
-  const total=mode==="basic"?BASIC.length:INSURANCE.length;
+  const total=modeTotal();
   const segs=$("gameProgSegs").children;
   if(segs[stepIdx]){
     segs[stepIdx].classList.remove("cur");
@@ -691,7 +806,7 @@ function fillGameProg(){ /* クリア直後: 現在ステップのセグメン�
   $("gameProgPct").textContent=Math.round((stepIdx+1)/total*100)+"%";
 }
 function currentProblem(){
-  if(mode==="basic")return BASIC[stepIdx];
+  if(mode==="basic"||mode==="intermediate")return BASIC[stepIdx];
   if(mode==="random")return RANDOM_CARDS[randomOrder[stepIdx%randomOrder.length]];
   return INSURANCE[stepIdx];
 }
@@ -702,7 +817,7 @@ function loadProblem(){
   Object.assign(expected,p.e);
   /* mode1は前ステップの状態をプリセット */
   values={};ALL_IDS.forEach(id=>values[id]=0);
-  if(mode==="basic"&&stepIdx>0){
+  if((mode==="basic"||mode==="intermediate")&&stepIdx>0){
     const prev=BASIC[stepIdx-1];
     const prevState={};ALL_IDS.forEach(id=>prevState[id]=0);Object.assign(prevState,prev.e);
     if(prev.endPeriod){ /* 期またぎ: PL/CSリセット、BS繰越、期首現金セット */
@@ -716,8 +831,8 @@ function loadProblem(){
     }
   }
   /* 表示 */
-  const tag=mode==="basic"?`STEP ${stepIdx+1}/${BASIC.length}${p.p2?"（第2期）":"（第1期）"}`:mode==="random"?`カード ${stepIdx+1}`:p.s;
-  $("stageDisp").textContent=mode==="basic"?"MODE 1 ベーシック編":mode==="random"?`MODE 2 ランダム経理処理　連続正解: ${streak}`:"MODE 3 保険の経理処理";
+  const tag=(mode==="basic"||mode==="intermediate")?`STEP ${stepIdx+1}/${modeTotal()}${p.p2?"（第2期）":"（第1期）"}`:mode==="random"?`カード ${stepIdx+1}`:p.s;
+  $("stageDisp").textContent=mode==="basic"?"MODE 1 ベーシック編":mode==="intermediate"?"MODE 2 中級編":mode==="random"?`MODE 4 ランダムゲームトライアル　連続正解: ${streak}`:"MODE 3 保険の経理処理編";
   $("cardTag").textContent=tag;
   $("cardTitle").innerHTML=p.t;
   $("cardDesc").innerHTML=p.d||"この取引をPL・BS・CSに反映しよう。該当のないセルは空欄（=0）のままでOK。";
@@ -734,7 +849,7 @@ function toggleTip(){
   $("cardHelpBtn").textContent=on?"ヒントを閉じる":"ヒントを見る";
 }
 function clearInputs(){
-  if(mode==="basic"&&stepIdx>0){loadProblem();return;}
+  if((mode==="basic"||mode==="intermediate")&&stepIdx>0){loadProblem();return;}
   values={};ALL_IDS.forEach(id=>values[id]=0);
   document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow"));
   renderValues();
@@ -759,12 +874,12 @@ function judge(){
     LINK_PAIRS.forEach((p,i)=>{
       p.cells.forEach(id=>setTimeout(()=>lkFlash($("cell_"+id)),i*320));
     });
-    if(mode==="basic"||mode==="insurance")fillGameProg();
+    if(mode!=="random")fillGameProg();
     const p=currentProblem();
     let msg=`<span class="big">🎉 クリア！ +${pts}pt</span><br>`;
     if(mode==="random")msg+=`連続正解 ${streak} 回目！ `;
     msg+=`PL純利益→BS剰余金、CS期末現金→BS現金、3表がつながった！`;
-    if(mode==="basic"&&currentProblem().endPeriod===2)msg+=`<br><b>🏆 2期目の決算まで完走おめでとう！</b> 資本金500の会社が総資産${fmt(expected.assets)}<span class="unit">万円</span>・純資産${fmt(expected.equity)}<span class="unit">万円</span>に成長した。`;
+    if(mode==="intermediate"&&currentProblem().endPeriod===2)msg+=`<br><b>🏆 2期目の決算まで完走おめでとう！</b> 資本金500の会社が総資産${fmt(expected.assets)}<span class="unit">万円</span>・純資産${fmt(expected.equity)}<span class="unit">万円</span>に成長した。`;
     box.className="result clear show";box.innerHTML=msg;
     $("judgeBtn").disabled=true;
     /* 進捗保存 & 次へ */
@@ -772,8 +887,13 @@ function judge(){
       if(mode==="basic"){
         const p=currentProblem();
         localStorage.setItem("z3g_basic_step",String(stepIdx+1));
+        if(p.endPeriod===1){showOverlay("🏆 ベーシック編クリア！","第1期の決算まで完走おめでとうございます！<br><br>続きはMODE 2（中級編）へ。第2期の決算まで進み、最後に2期分のBSを見比べる○×クイズが待っています。",goHome);}
+        else next();
+      }else if(mode==="intermediate"){
+        const p=currentProblem();
+        localStorage.setItem("z3g_int_step",String(stepIdx+1));
         if(p.endPeriod===1){showOverlay("第1期 決算完了！","PLとCSは1年間の「フロー」なので第2期はゼロからスタート。BSは会社の「ストック」なのでそのまま繰り越します。<br><br>第1期末の現金370万円が、第2期のCS「期首の現金」になります。",next);}
-        else if(p.endPeriod===2){showOverlay("🏆 ベーシック編 完全クリア！","おめでとうございます！ 続けてMODE 2（ランダム経理処理）やMODE 3（保険の経理処理）に挑戦しましょう。",goHome);}
+        else if(p.endPeriod===2){showOverlay("🏆 2期完走！","第2期の決算まで完了。仕上げに、第1期末と第2期末のBSを見比べて○×クイズに挑戦しよう。",showCompare);}
         else next();
       }else if(mode==="insurance"){
         localStorage.setItem("z3g_ins_step",String(stepIdx+1));
@@ -795,7 +915,8 @@ function judge(){
 }
 function next(){
   stepIdx++;
-  if(mode==="basic"&&stepIdx>=BASIC.length){goHome();return;}
+  if(mode==="basic"&&stepIdx>=P1_LEN){goHome();return;}
+  if(mode==="intermediate"&&stepIdx>=BASIC.length){goHome();return;}
   if(mode==="insurance"&&stepIdx>=INSURANCE.length){goHome();return;}
   loadProblem();window.scrollTo(0,0);
 }
