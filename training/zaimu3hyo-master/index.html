@@ -56,6 +56,9 @@ header .score b{font-family:Arial;font-size:16px}
 }
 
 /* ---- game screen ---- */
+.hdr-back{color:#fff;font-size:12.5px;font-weight:bold;text-decoration:none;white-space:nowrap;border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:6px 12px;transition:box-shadow .25s ease,border-color .25s ease}
+.hdr-back:hover{border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.5)}
+@media(max-width:480px){.hb-long{display:none}}
 .gamebar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .gamebar .back{font-size:12.5px;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
 .gamebar .stage{font-size:13px;font-weight:bold;color:var(--navy)}
@@ -84,7 +87,8 @@ header .score b{font-family:Arial;font-size:16px}
 .row{display:flex;align-items:center;border-bottom:1px solid #EDF0F4;min-height:33px}
 .row:last-child{border-bottom:none}
 .row .lbl{flex:1.25;font-size:12px;padding:4px 8px;line-height:1.3}
-.row .lbl.red{color:var(--red);font-weight:bold}
+/* 保険関連項目の赤字は保険経理処理編(MODE 3)のときだけ(2026-08-03指示) */
+.ins-mode .row .lbl.red{color:var(--red);font-weight:bold}
 .row.sub{font-weight:bold}
 .sheet.pl .row.sub{background:var(--plbg)} .sheet.bs .row.sub{background:var(--bsbg)} .sheet.cs .row.sub{background:var(--csbg)}
 .row .divhead{flex:1;font-size:11px;font-weight:bold;color:#fff;padding:3px 8px}
@@ -174,7 +178,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
 </head>
 <body>
 <header>
-  <a href="../../training.html" style="color:#fff;opacity:.75;font-size:12px;text-decoration:none;white-space:nowrap">&larr; 一覧</a>
+  <a href="../../training.html" class="hdr-back">&larr; <span class="hb-long">前のページに</span>戻る</a>
   <h1>財務3表マスター</h1>
   <span class="score">SCORE <b id="scoreDisp">0</b></span>
 </header>
@@ -583,6 +587,7 @@ function initLinkPairs(){
 /* ================= モード進行 ================= */
 function startMode(m){
   mode=m;stepIdx=0;streak=0;
+  $("game").classList.toggle("ins-mode",m==="insurance");
   if(m==="basic"){const saved=Number(localStorage.getItem("z3g_basic_step")||0);stepIdx=Math.min(saved,BASIC.length-1);}
   if(m==="random"){randomOrder=shuffle([...RANDOM_CARDS.keys()]);}
   if(m==="insurance"){const saved=Number(localStorage.getItem("z3g_ins_step")||0);stepIdx=Math.min(saved,INSURANCE.length-1);}
