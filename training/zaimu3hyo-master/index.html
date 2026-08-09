@@ -337,6 +337,7 @@ const BS_ROWS=[
  ["aOth","その他資産 計","auto"],
  ["assets","資産合計","sub"],
  ["_h2","【負債・純資産】","head"],
+ ["ap","買掛金"],["accrued","未払金"],
  ["lCur","流動負債 計","auto"],
  ["debt","借入金"],
  ["lFix","固定負債 計","auto"],
@@ -350,8 +351,8 @@ const CS_ROWS=[
  ["cs_finin","資本金・借入"],["cs_repay","元金の返済"],["cs_fin","財務CF","sub"],
  ["cs_delta","現金の増減","sub"],["cs_open","期首の現金"],["cs_close","期末の現金","sub"]];
 /* BSの区分計(自動計算・入力不可)。値は明細の合計から常に自動で埋める。
-   流動負債は現状該当する明細がないため常に空欄(0)表示 */
-const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["fixed"],aOth:["prepaid","insasset"],lCur:[],lFix:["debt"]};
+   流動負債 計=買掛金+未払金 */
+const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["fixed"],aOth:["prepaid","insasset"],lCur:["ap","accrued"],lFix:["debt"]};
 const ALL_IDS=[...PL_ROWS,...BS_ROWS,...CS_ROWS].map(r=>r[0]).filter(id=>!id.startsWith("_")&&!(id in AUTO_DEFS));
 
 /* ================= 問題データ（単位:万円） ================= */
