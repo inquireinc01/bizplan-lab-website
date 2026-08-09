@@ -76,7 +76,7 @@ header .score b{font-family:Arial;font-size:16px}
 .chk.ng{background:#FBEAE8;color:var(--red);border-color:#E5B4AE}
 
 /* ---- statements ---- */
-.sheets{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:12px;align-items:start}
+.sheets{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;align-items:start}
 .sheet{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .sheet .head{color:#fff;font-size:13.5px;font-weight:bold;padding:8px 12px;letter-spacing:.05em}
 .sheet.pl .head{background:var(--pl)} .sheet.bs .head{background:var(--bs)} .sheet.cs .head{background:var(--cs)}
@@ -99,6 +99,12 @@ header .score b{font-family:Arial;font-size:16px}
 @keyframes glow{0%,100%{box-shadow:0 0 2px rgba(232,163,61,.4)}50%{box-shadow:0 0 12px rgba(232,163,61,.95);border-color:var(--gold)}}
 
 .linknote{font-size:11px;color:#888;padding:6px 10px;background:#F7F8FA;border-top:1px dashed var(--line)}
+
+/* ---- BSの2列表示(資産|負債・純資産)。文字サイズはそのまま、詰めて収める ---- */
+.bs-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 6px;align-items:start}
+.bs-cols .bs-col{min-width:0}
+.bs-cols .cell{min-width:0;margin-right:4px;padding:5px 5px}
+.bs-cols .lbl{padding:4px 5px}
 
 /* ---- actions ---- */
 .actions{display:flex;gap:10px;margin:16px 0;align-items:center;flex-wrap:wrap}
@@ -422,18 +428,32 @@ function fmt(n,neg=true){
   return n<0?(neg?"▲"+a:"-"+a):a;
 }
 function buildRows(){
+  const mkRow=(r,isBs)=>{
+    const [id,label,sub,red]=r;
+    const div=document.createElement("div");
+    if(sub==="head"){div.className="row";div.innerHTML=`<span class="divhead" style="background:${isBs?'var(--bs)':'var(--navy)'}">${label}</span>`;return div;}
+    div.className="row"+(sub==="sub"?" sub":"");
+    div.innerHTML=`<span class="lbl ${red==="red"?"red":""}">${label}</span><span class="cell" id="cell_${id}" data-id="${id}" data-label="${label}"></span>`;
+    return div;
+  };
   const mk=(rows,elId)=>{
     const el=$(elId);el.innerHTML="";
-    rows.forEach(r=>{
-      const [id,label,sub,red]=r;
-      const div=document.createElement("div");
-      if(sub==="head"){div.className="row";div.innerHTML=`<span class="divhead" style="background:${elId==='bsRows'?'var(--bs)':'var(--navy)'}">${label}</span>`;el.appendChild(div);return;}
-      div.className="row"+(sub==="sub"?" sub":"");
-      div.innerHTML=`<span class="lbl ${red==="red"?"red":""}">${label}</span><span class="cell" id="cell_${id}" data-id="${id}" data-label="${label}"></span>`;
-      el.appendChild(div);
-    });
+    rows.forEach(r=>el.appendChild(mkRow(r,elId==='bsRows')));
   };
-  mk(PL_ROWS,"plRows");mk(BS_ROWS,"bsRows");mk(CS_ROWS,"csRows");
+  // BSだけは実際の貸借対照表と同じく、資産(左)|負債・純資産(右)の2列で描画する(2026-08-03指示)
+  const mkBs=()=>{
+    const el=$("bsRows");el.innerHTML="";
+    el.classList.add("bs-cols");
+    const left=document.createElement("div");left.className="bs-col";
+    const right=document.createElement("div");right.className="bs-col";
+    let target=left;
+    BS_ROWS.forEach(r=>{
+      if(r[0]==="_h2")target=right;
+      target.appendChild(mkRow(r,true));
+    });
+    el.appendChild(left);el.appendChild(right);
+  };
+  mk(PL_ROWS,"plRows");mkBs();mk(CS_ROWS,"csRows");
   document.querySelectorAll(".cell").forEach(c=>{
     c.addEventListener("click",()=>selectCell(c));
   });
