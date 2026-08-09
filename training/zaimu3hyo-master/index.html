@@ -81,6 +81,9 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .help-tip{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#E3E8F0;color:var(--navy);font-size:12px;font-weight:bold;border:none;cursor:pointer;vertical-align:middle;margin-left:6px}
 .tip-pop{display:none;background:#FFFDF3;border:1px solid var(--gold);border-radius:10px;padding:10px 14px;font-size:12.5px;line-height:1.8;margin-top:8px;color:#444}
 .tip-pop.show{display:block}
+/* 各STEPのヒントボタン(取引カード内)。開閉でラベルが切り替わる */
+.hint-btn{display:inline-block;margin-top:10px;font-size:12px;font-weight:bold;color:var(--navy);background:#fff;border:1.5px solid var(--navy);border-radius:9999px;padding:6px 16px;cursor:pointer;font-family:inherit;transition:background .2s ease,color .2s ease}
+.hint-btn:hover{background:var(--navy);color:#fff}
 
 .checks{display:flex;gap:12px;row-gap:8px;margin:0 0 18px;flex-wrap:wrap;align-items:center}
 .chk{font-size:11.5px;padding:5px 14px;border-radius:14px;background:#fff;color:#98a2ae;border:1px solid var(--line)}
@@ -258,7 +261,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
       <span class="tag" id="cardTag">取引カード</span>
       <h3 id="cardTitle"></h3>
       <div class="desc" id="cardDesc"></div>
-      <button class="help-tip" id="cardHelpBtn" onclick="toggleTip()">？</button>
+      <button class="hint-btn" id="cardHelpBtn" onclick="toggleTip()">ヒントを見る</button>
       <div class="tip-pop" id="cardTip"></div>
     </div>
 
@@ -718,7 +721,7 @@ function loadProblem(){
   $("cardTag").textContent=tag;
   $("cardTitle").innerHTML=p.t;
   $("cardDesc").innerHTML=p.d||"この取引をPL・BS・CSに反映しよう。該当のないセルは空欄（=0）のままでOK。";
-  $("cardTip").innerHTML=p.h||"";$("cardTip").classList.remove("show");
+  $("cardTip").innerHTML=p.h||"この取引が3表のどこに効くか、PL→BS→CSの順に考えてみよう。現金が動けばCS、損益が動けばPL、財産や負債が動けばBSに反映される。";$("cardTip").classList.remove("show");$("cardHelpBtn").textContent="ヒントを見る";
   $("resultBox").className="result";$("resultBox").innerHTML="";
   $("answerBtn").style.display="none";
   $("judgeBtn").disabled=false;
@@ -726,7 +729,10 @@ function loadProblem(){
   renderGameProg();
   renderValues();
 }
-function toggleTip(){$("cardTip").classList.toggle("show");}
+function toggleTip(){
+  const on=$("cardTip").classList.toggle("show");
+  $("cardHelpBtn").textContent=on?"ヒントを閉じる":"ヒントを見る";
+}
 function clearInputs(){
   if(mode==="basic"&&stepIdx>0){loadProblem();return;}
   values={};ALL_IDS.forEach(id=>values[id]=0);
