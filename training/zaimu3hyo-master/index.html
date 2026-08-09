@@ -118,8 +118,10 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .linknote{font-size:11px;color:#888;padding:6px 10px;background:#F7F8FA;border-top:1px dashed var(--line)}
 
 /* ---- BSの2列表示(資産|負債・純資産)。文字サイズはそのまま、詰めて収める ---- */
-.bs-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 6px;align-items:start}
-.bs-cols .bs-col{min-width:0}
+/* 左右の列を同じ高さに伸ばし、最終行(資産合計/負債+純資産)を常に下端で横に揃える */
+.bs-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 6px;align-items:stretch}
+.bs-cols .bs-col{min-width:0;display:flex;flex-direction:column}
+.bs-cols .bs-col .row:last-child{margin-top:auto}
 .bs-cols .cell{min-width:0;margin-right:4px;padding:5px 5px}
 .bs-cols .lbl{padding:4px 5px}
 
@@ -331,7 +333,7 @@ const BS_ROWS=[
  ["_h1","【資産】","head"],
  ["cash","現金"],["ar","売掛金"],["inv","在庫"],
  ["aCur","流動資産 計","auto"],
- ["fixed","固定資産"],
+ ["building","建物"],["land","土地"],["fixed","固定資産"],
  ["aFix","固定資産 計","auto"],
  ["prepaid","前払保険料","","red"],["insasset","保険積立金","","red"],
  ["aOth","その他資産 計","auto"],
@@ -352,7 +354,7 @@ const CS_ROWS=[
  ["cs_delta","現金の増減","sub"],["cs_open","期首の現金"],["cs_close","期末の現金","sub"]];
 /* BSの区分計(自動計算・入力不可)。値は明細の合計から常に自動で埋める。
    流動負債 計=買掛金+未払金 */
-const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["fixed"],aOth:["prepaid","insasset"],lCur:["ap","accrued"],lFix:["debt"]};
+const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["building","land","fixed"],aOth:["prepaid","insasset"],lCur:["ap","accrued"],lFix:["debt"]};
 const ALL_IDS=[...PL_ROWS,...BS_ROWS,...CS_ROWS].map(r=>r[0]).filter(id=>!id.startsWith("_")&&!(id in AUTO_DEFS));
 
 /* ================= 問題データ（単位:万円） ================= */
