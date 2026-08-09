@@ -106,6 +106,22 @@ header .score b{font-family:Arial;font-size:16px}
 .bs-cols .cell{min-width:0;margin-right:4px;padding:5px 5px}
 .bs-cols .lbl{padding:4px 5px}
 
+/* ---- 3表の一致箇所リンク(1〜4)。セル寸法は変えず、色バー+丸数字+光で示す ----
+   1:PL当期純利益=BS利益剰余金(金) 2:BS現金=CS期末の現金(青)
+   3:PL税引前利益=CS税引前利益(緑) 4:BS資産合計=負債+純資産(紫) */
+.cell.lk1{--lkc:#c9962e;border-left:3px solid #c9962e !important}
+.cell.lk2{--lkc:#3b6ea5;border-left:3px solid #3b6ea5 !important}
+.cell.lk3{--lkc:#2f7d5d;border-left:3px solid #2f7d5d !important}
+.cell.lk4{--lkc:#5b4b8a;border-left:3px solid #5b4b8a !important}
+.lk-badge{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:9.5px;font-weight:bold;color:#fff;margin-left:4px;vertical-align:1px;cursor:pointer;flex-shrink:0;font-family:Arial}
+.lk-badge.lk1{background:#c9962e}.lk-badge.lk2{background:#3b6ea5}
+.lk-badge.lk3{background:#2f7d5d}.lk-badge.lk4{background:#5b4b8a}
+.lk-badge:hover{transform:scale(1.25)}
+.cell.lk-glow{box-shadow:0 0 0 2px var(--lkc),0 0 10px var(--lkc);border-color:var(--lkc)}
+.cell.lk-flash{animation:lkpulse .55s ease-in-out 2}
+@keyframes lkpulse{0%,100%{box-shadow:0 0 2px var(--lkc)}50%{box-shadow:0 0 0 2px var(--lkc),0 0 14px var(--lkc)}}
+.chk .lk-badge{cursor:default;margin-left:6px;vertical-align:-2px}
+
 /* ---- actions ---- */
 .actions{display:flex;gap:10px;margin:16px 0;align-items:center;flex-wrap:wrap}
 .btn-primary{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px 34px;font-size:15px;font-weight:bold;letter-spacing:.1em;cursor:pointer;position:relative;overflow:hidden;font-family:inherit}
@@ -472,6 +488,9 @@ function renderValues(){
 function selectCell(c){
   document.querySelectorAll(".cell.active").forEach(x=>x.classList.remove("active"));
   c.classList.add("active");activeCell=c;kpBuf="";
+  lkClearGlow();
+  const lp=lkPartner(c.dataset.id);
+  if(lp){const q=$("cell_"+lp.partner);if(q)q.classList.add("lk-glow");}
   $("kpTarget").innerHTML=`<b>${c.dataset.label}</b> に入力（±でマイナス）`;
   $("keypad").classList.add("show");
 }
@@ -489,6 +508,7 @@ function kpOk(){
   }
   activeCell=null;kpBuf="";
   $("keypad").classList.remove("show");
+  lkClearGlow();
   renderValues();
 }
 document.addEventListener("keydown",e=>{
@@ -508,6 +528,56 @@ function liveChecks(){
   set("chkCS2",v("cs_close")===v("cs_open")+v("cs_delta")&&hasCS(),!hasCS());
   function hasCS(){return ["cs_delta","cs_close","cs_op","cs_invcf","cs_fin"].some(id=>v(id)!==0);}
   function set(id,ok,idle){const el=$(id);el.className="chk"+(idle?"":ok?" ok":" ng");}
+}
+
+/* ================= 3表の一致箇所リンク(1〜4) =================
+   1:PL当期純利益=BS利益剰余金 2:BS現金=CS期末の現金
+   3:PL税引前利益=CS税引前利益 4:BS資産合計=負債+純資産 */
+const LINK_PAIRS=[
+ {cells:["net","retained"]},
+ {cells:["cash","cs_close"]},
+ {cells:["pretax","cs_pretax"]},
+ {cells:["assets","total"]},
+];
+function lkPartner(id){for(let i=0;i<LINK_PAIRS.length;i++){const p=LINK_PAIRS[i];if(p.cells.includes(id))return{idx:i,partner:p.cells.find(x=>x!==id)};}return null;}
+function lkClearGlow(){document.querySelectorAll(".cell.lk-glow").forEach(c=>c.classList.remove("lk-glow"));}
+function lkSheetIndex(id){return PL_ROWS.some(r=>r[0]===id)?0:BS_ROWS.some(r=>r[0]===id)?1:2;}
+function lkFlash(cell){cell.classList.remove("lk-flash");void cell.offsetWidth;cell.classList.add("lk-flash");setTimeout(()=>cell.classList.remove("lk-flash"),1300);}
+function lkJump(idx,fromId){
+  const p=LINK_PAIRS[idx];const partner=p.cells.find(x=>x!==fromId);
+  const cell=$("cell_"+partner);if(!cell)return;
+  /* スマホ(タブ表示)のときは相手のシートへ切り替えてから光らせる */
+  const stabs=document.querySelector(".stabs");
+  if(stabs&&getComputedStyle(stabs).display!=="none"){
+    const btns=stabs.querySelectorAll("button");const si=lkSheetIndex(partner);
+    if(btns[si])showSheet(si,btns[si]);
+  }
+  cell.scrollIntoView({behavior:"smooth",block:"center"});
+  lkFlash(cell);
+}
+function initLinkPairs(){
+  LINK_PAIRS.forEach((p,i)=>{
+    p.cells.forEach(id=>{
+      const cell=$("cell_"+id);if(!cell)return;
+      cell.classList.add("lk"+(i+1));
+      /* 丸数字バッジはラベル側に付ける(セルは入力でtextContentが書き替わるため) */
+      const lbl=cell.parentElement.querySelector(".lbl");
+      if(lbl&&!lbl.querySelector(".lk-badge")){
+        const b=document.createElement("span");
+        b.className="lk-badge lk"+(i+1);b.textContent=String(i+1);
+        b.title="対応する項目へ移動";
+        b.addEventListener("click",e=>{e.stopPropagation();lkJump(i,id);});
+        lbl.appendChild(b);
+      }
+      /* 行にカーソルを乗せると相手セルが同色に光る */
+      const row=cell.parentElement;
+      row.addEventListener("mouseenter",()=>{const q=$("cell_"+p.cells.find(x=>x!==id));if(q)q.classList.add("lk-glow");});
+      row.addEventListener("mouseleave",lkClearGlow);
+    });
+  });
+  /* 上部の整合チェックにも4番の色を付けて凡例を兼ねる */
+  const chk=$("chkBS");
+  if(chk&&!chk.querySelector(".lk-badge")){const b=document.createElement("span");b.className="lk-badge lk4";b.textContent="4";chk.appendChild(b);}
 }
 
 /* ================= モード進行 ================= */
@@ -603,7 +673,7 @@ function loadProblem(){
   $("resultBox").className="result";$("resultBox").innerHTML="";
   $("answerBtn").style.display="none";
   $("judgeBtn").disabled=false;
-  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow"));
+  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow","lk-glow","lk-flash"));
   renderGameProg();
   renderValues();
 }
@@ -630,8 +700,9 @@ function judge(){
     score+=pts;saveScore();
     if(mode==="random"){streak++;const best=Number(localStorage.getItem("z3g_random_best")||0);if(streak>best)localStorage.setItem("z3g_random_best",String(streak));}
     ALL_IDS.forEach(id=>{if((expected[id]||0)!==0)$("cell_"+id).classList.add("right");});
-    ["pretax","cs_pretax","net","retained","cs_close","cash"].forEach((id,i)=>{
-      setTimeout(()=>$("cell_"+id).classList.add("glow"),i*180);
+    /* 一致ペア1→4の順に同色でリレー点灯して「3表のつながり」を見せる */
+    LINK_PAIRS.forEach((p,i)=>{
+      p.cells.forEach(id=>setTimeout(()=>lkFlash($("cell_"+id)),i*320));
     });
     if(mode==="basic"||mode==="insurance")fillGameProg();
     const p=currentProblem();
@@ -695,7 +766,7 @@ function showSheet(i,btn){
 }
 
 /* ================= 起動 ================= */
-buildRows();loadScore();renderProgress();
+buildRows();initLinkPairs();loadScore();renderProgress();
 window.__game={values,get expected(){return expected},judge,startMode,set:(id,v)=>{values[id]=v;renderValues();}};
 </script>
 </body>
