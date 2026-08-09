@@ -56,10 +56,10 @@ header .score b{font-family:Arial;font-size:16px}
 }
 
 /* ---- game screen ---- */
-.gamebar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.gamebar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .gamebar .back{font-size:12.5px;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
 .gamebar .stage{font-size:13px;font-weight:bold;color:var(--navy)}
-.card-q{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:14px 18px;margin-bottom:12px;position:relative}
+.card-q{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:18px 22px;margin-bottom:22px;position:relative}
 .card-q .tag{position:absolute;top:-11px;left:14px;background:var(--navy);color:#fff;font-size:11px;padding:2px 12px;border-radius:10px;letter-spacing:.08em}
 .card-q h3{font-size:16px;color:var(--navy);line-height:1.5}
 .card-q h3 .num{font-family:Arial;font-weight:bold}
@@ -70,13 +70,13 @@ header .score b{font-family:Arial;font-size:16px}
 .tip-pop{display:none;background:#FFFDF3;border:1px solid var(--gold);border-radius:10px;padding:10px 14px;font-size:12.5px;line-height:1.8;margin-top:8px;color:#444}
 .tip-pop.show{display:block}
 
-.checks{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
-.chk{font-size:11.5px;padding:4px 12px;border-radius:12px;background:#E9EDF3;color:#888;border:1px solid var(--line)}
+.checks{display:flex;gap:12px;row-gap:8px;margin:0 0 18px;flex-wrap:wrap;align-items:center}
+.chk{font-size:11.5px;padding:5px 14px;border-radius:14px;background:#fff;color:#98a2ae;border:1px solid var(--line)}
 .chk.ok{background:#E3F4EB;color:var(--ok);border-color:var(--ok);font-weight:bold}
 .chk.ng{background:#FBEAE8;color:var(--red);border-color:#E5B4AE}
 
 /* ---- statements ---- */
-.sheets{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;align-items:start}
+.sheets{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:18px;align-items:start}
 .sheet{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .sheet .head{color:#fff;font-size:13.5px;font-weight:bold;padding:8px 12px;letter-spacing:.05em}
 .sheet.pl .head{background:var(--pl)} .sheet.bs .head{background:var(--bs)} .sheet.cs .head{background:var(--cs)}
