@@ -108,6 +108,10 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .cell.right{border-color:var(--ok);background:#E3F4EB}
 .cell.glow{animation:glow 1.2s ease-in-out infinite}
 .cell.neg{color:var(--red)}
+/* BSの区分計: 自動計算・入力不可(破線+グレー地) */
+.row.autorow{background:#F7F9FB}
+.row.autorow .lbl{color:#7a8594}
+.cell.auto{background:#EEF1F5;border-style:dashed;color:#556;cursor:default}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 @keyframes glow{0%,100%{box-shadow:0 0 2px rgba(232,163,61,.4)}50%{box-shadow:0 0 12px rgba(232,163,61,.95);border-color:var(--gold)}}
 
@@ -325,11 +329,18 @@ const PL_ROWS=[
  ["pretax","税引前利益","sub"],["tax","法人税等"],["net","当期純利益","sub"]];
 const BS_ROWS=[
  ["_h1","【資産】","head"],
- ["cash","現金"],["ar","売掛金"],["inv","在庫"],["fixed","固定資産"],
+ ["cash","現金"],["ar","売掛金"],["inv","在庫"],
+ ["aCur","流動資産 計","auto"],
+ ["fixed","固定資産"],
+ ["aFix","固定資産 計","auto"],
  ["prepaid","前払保険料","","red"],["insasset","保険積立金","","red"],
+ ["aOth","その他資産 計","auto"],
  ["assets","資産合計","sub"],
  ["_h2","【負債・純資産】","head"],
- ["debt","借入金"],["liab","負債合計","sub"],
+ ["lCur","流動負債 計","auto"],
+ ["debt","借入金"],
+ ["lFix","固定負債 計","auto"],
+ ["liab","負債合計","sub"],
  ["capital","資本金"],["retained","利益剰余金"],
  ["equity","純資産合計","sub"],["total","負債＋純資産","sub"]];
 const CS_ROWS=[
@@ -338,7 +349,10 @@ const CS_ROWS=[
  ["cs_capex","固定資産の取得"],["cs_other","保険など資産の増減","","red"],["cs_invcf","投資CF","sub"],
  ["cs_finin","資本金・借入"],["cs_repay","元金の返済"],["cs_fin","財務CF","sub"],
  ["cs_delta","現金の増減","sub"],["cs_open","期首の現金"],["cs_close","期末の現金","sub"]];
-const ALL_IDS=[...PL_ROWS,...BS_ROWS,...CS_ROWS].map(r=>r[0]).filter(id=>!id.startsWith("_"));
+/* BSの区分計(自動計算・入力不可)。値は明細の合計から常に自動で埋める。
+   流動負債は現状該当する明細がないため常に空欄(0)表示 */
+const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["fixed"],aOth:["prepaid","insasset"],lCur:[],lFix:["debt"]};
+const ALL_IDS=[...PL_ROWS,...BS_ROWS,...CS_ROWS].map(r=>r[0]).filter(id=>!id.startsWith("_")&&!(id in AUTO_DEFS));
 
 /* ================= 問題データ（単位:万円） ================= */
 /* --- MODE1 ベーシック: 累計方式 --- */
@@ -470,8 +484,8 @@ function buildRows(){
     const [id,label,sub,red]=r;
     const div=document.createElement("div");
     if(sub==="head"){div.className="row";div.innerHTML=`<span class="divhead" style="background:${isBs?'var(--bs)':'var(--navy)'}">${label}</span>`;return div;}
-    div.className="row"+(sub==="sub"?" sub":"");
-    div.innerHTML=`<span class="lbl ${red==="red"?"red":""}">${label}</span><span class="cell" id="cell_${id}" data-id="${id}" data-label="${label}"></span>`;
+    div.className="row"+(sub==="sub"?" sub":"")+(sub==="auto"?" autorow":"");
+    div.innerHTML=`<span class="lbl ${red==="red"?"red":""}">${label}</span><span class="cell${sub==="auto"?" auto":""}" id="cell_${id}" data-id="${id}" data-label="${label}"></span>`;
     return div;
   };
   const mk=(rows,elId)=>{
@@ -493,6 +507,7 @@ function buildRows(){
   };
   mk(PL_ROWS,"plRows");mkBs();mk(CS_ROWS,"csRows");
   document.querySelectorAll(".cell").forEach(c=>{
+    if(c.classList.contains("auto"))return; // 区分計は自動計算のため入力不可
     c.addEventListener("click",()=>selectCell(c));
   });
 }
@@ -500,6 +515,13 @@ function renderValues(){
   ALL_IDS.forEach(id=>{
     const c=$("cell_"+id);if(!c)return;
     const v=values[id]||0;
+    c.textContent=v===0?"":fmt(v);
+    c.classList.toggle("neg",v<0);
+  });
+  /* BSの区分計(自動計算) */
+  Object.keys(AUTO_DEFS).forEach(id=>{
+    const c=$("cell_"+id);if(!c)return;
+    const v=AUTO_DEFS[id].reduce((sum,k)=>sum+(values[k]||0),0);
     c.textContent=v===0?"":fmt(v);
     c.classList.toggle("neg",v<0);
   });
