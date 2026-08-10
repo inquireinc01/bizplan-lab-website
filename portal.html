@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>ポータル | By TK&amp;Company</title>
+<meta name="description" content="朝いちばんに開くための起動ページ。左に試算ツール、中央に検索と朝刊、右に天気・道路・路線。生命保険プロフェッショナルの一日をひとつの画面から始める By TK&amp;Company ポータル。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=2026081101" />
+<style>
+/* ===== ヒーロー飾り文字(index.htmlと共通の見せ方) ===== */
+.hero-brand-mark{
+  position:absolute; margin:0;
+  font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Segoe UI",Arial,sans-serif;
+  font-weight:350; font-stretch:condensed; line-height:1;
+  letter-spacing:.02em; color:rgba(255,255,255,.16); white-space:nowrap;
+  pointer-events:none; user-select:none;
+}
+.hero-brand-mark--tl{ left:.12em; top:-.12em; font-size:clamp(22px,3.6vw,40px); }
+.hero-brand-mark--br{ right:.15em; bottom:-.16em; font-size:clamp(28px,5vw,54px); }
+</style>
+</head>
+<body class="bg-white text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="sim">
+            <span class="mega-trigger-label">生命保険ツール</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="stock-valuation.html" class="mega-panel-item"><span class="mega-num">1</span>自社株×生命保険</a>
+      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
+      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
+      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
+      <a href="tax-exemption.html" class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
+      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
+      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="ds">
+            <span class="mega-trigger-label">ディスカッションシート</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
+      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
+      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
+      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="index.html" class="portal-link-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+          <span class="portal-link-label">サイトTOPへ</span>
+        </a>
+        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="stock-valuation.html" class="mobile-accordion-link"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a href="future-liability.html" class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a href="treasury-stock.html" class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a href="retirement-benefit.html" class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a href="tax-exemption.html" class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a href="premium-funding.html" class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a href="reduced-new-contract.html" class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="medical-ds.html" class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a href="religious-ds.html" class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a href="venture-ds.html" class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a href="asset-management-ds.html" class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a href="deficit-company-ds.html" class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a href="holdings-ds.html" class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== ヒーロー(ブランド帯) ===== -->
+  <section class="hero-pattern relative overflow-hidden h-14 sm:h-[72px]">
+    <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Daily Portal</span>
+    <h1 class="hero-brand-mark hero-brand-mark--br">By TK&amp;Company</h1>
+  </section>
+
+  <!-- ===== テーマタブ + 起動ページ設定 ===== -->
+  <div class="portal-tabbar">
+    <div class="portal-tabbar-inner">
+      <div class="portal-tabs-scroll">
+        <button type="button" class="portal-tab active" data-portal-tab="daily">今日の朝刊</button>
+        <button type="button" class="portal-tab" data-portal-tab="tax">税制改正</button>
+        <button type="button" class="portal-tab" data-portal-tab="sme">中小企業</button>
+        <button type="button" class="portal-tab" data-portal-tab="ins">保険</button>
+        <button type="button" class="portal-tab" data-portal-tab="case">ケース</button>
+        <button type="button" class="portal-tab" data-portal-tab="saved">保存</button>
+      </div>
+
+      <div class="portal-startup pl-3">
+        <button type="button" id="startupBtn" class="portal-link-btn" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v14H4z"/><path stroke-linecap="round" d="M4 9h16"/></svg>
+          <span class="portal-link-label">最初に開くページに設定</span>
+        </button>
+        <div id="startupPanel" class="portal-startup-panel" hidden>
+          <h3>ブラウザを開いたら、この画面から始める</h3>
+          <p>下のURLを、ご利用のブラウザの「起動時に開くページ」に登録してください。</p>
+          <div class="portal-startup-url">
+            <span id="startupUrl">https://bizplanlabo.com/portal.html</span>
+            <button type="button" id="startupCopy" class="portal-startup-copy">コピー</button>
+          </div>
+          <ol class="mt-3 space-y-1">
+            <li><b>Chrome</b>：設定 &rarr; 起動時 &rarr;「特定のページまたはページセットを開く」&rarr;「新しいページを追加」に貼り付け</li>
+            <li><b>Edge</b>：設定 &rarr;［スタート、ホーム、新規タブ］&rarr;「これらのページを開く」&rarr;「新しいページを追加」に貼り付け</li>
+            <li><b>Safari</b>：設定 &rarr; 一般 &rarr;「ホームページ」に貼り付け</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="portal-shell">
+    <div class="portal-grid">
+
+      <!-- ================= 左: TK&Company ツール ================= -->
+      <aside class="portal-col-left portal-col-side">
+        <div class="portal-card">
+          <p class="font-brand-en portal-kicker" style="letter-spacing:.18em">TK&amp;Company Tools</p>
+
+          <a href="tools.html" class="portal-featured">
+            <p class="font-brand-en portal-kicker">Featured</p>
+            <p class="portal-featured-title">法人エキスパート<br />シミュレーター</p>
+            <span class="portal-featured-go">ツール一覧を開く <span aria-hidden="true">&rarr;</span></span>
+          </a>
+
+          <p class="portal-rail-label">計算</p>
+          <div class="portal-calc-grid">
+            <a href="stock-valuation.html" class="portal-calc-item">自社株評価
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="retirement-benefit.html" class="portal-calc-item">退職金試算
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="future-liability.html" class="portal-calc-item">将来負債試算
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="treasury-stock.html" class="portal-calc-item">金庫株試算
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+          </div>
+
+          <p class="portal-rail-label">生命保険提案</p>
+          <div class="portal-rail-list">
+            <a href="tax-exemption.html" class="portal-rail-item"><span class="portal-rail-cross">&times;</span>非課税
+              <svg class="portal-rail-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="premium-funding.html" class="portal-rail-item"><span class="portal-rail-cross">&times;</span>原資創出
+              <svg class="portal-rail-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="reduced-new-contract.html" class="portal-rail-item"><span class="portal-rail-cross">&times;</span>減額充当
+              <svg class="portal-rail-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="discussion.html" class="portal-rail-item"><span class="portal-rail-cross">&times;</span>ディスカッションシート
+              <svg class="portal-rail-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+            <a href="training.html" class="portal-rail-item"><span class="portal-rail-cross">&times;</span>トレーニング
+              <svg class="portal-rail-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a>
+          </div>
+
+          <a href="basic-info.html" class="btn-primary mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 text-xs">基本情報を入力する <span aria-hidden="true">&rarr;</span></a>
+          <p class="portal-note mt-2">会社名・決算数値を一度入力すれば、各ツールに自動反映されます。</p>
+        </div>
+      </aside>
+
+      <!-- ================= 中央: 検索・朝刊・テーマ別 ================= -->
+      <div class="portal-col-center">
+
+        <!-- ---- サーチデスク(全タブ共通) ---- -->
+        <div class="portal-card">
+          <p class="font-brand-en portal-kicker">Search Desk</p>
+          <form id="searchForm" class="portal-search-form" autocomplete="off">
+            <svg class="portal-search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+            <input type="search" id="searchWord" class="portal-search-input" placeholder="調べたいキーワードを入力" aria-label="検索キーワード" />
+          </form>
+          <div class="portal-search-btns">
+            <button type="button" class="portal-search-btn is-primary" data-search="google">Google で検索 <span aria-hidden="true">&#8599;</span></button>
+            <button type="button" class="portal-search-btn" data-search="news">ニュースを検索 <span aria-hidden="true">&#8599;</span></button>
+            <button type="button" class="portal-search-btn" data-search="nta">国税庁内を検索 <span aria-hidden="true">&#8599;</span></button>
+            <button type="button" class="portal-search-btn" data-search="site">サイト内を検索 <span aria-hidden="true">&#8599;</span></button>
+          </div>
+          <p class="portal-search-hint">Enterキーで Google 検索　|　検索結果は新しいタブで開きます<span class="help-tip" tabindex="-1">?<span class="help-text">「国税庁内を検索」は国税庁サイト(nta.go.jp)に、「サイト内を検索」は当サイト(bizplanlabo.com)に絞り込んだ検索結果を開きます。いずれもGoogleの絞り込み検索を使っています。</span></span></p>
+        </div>
+
+        <!-- ============ タブ: 今日の朝刊 ============ -->
+        <div class="portal-panel" data-portal-panel="daily">
+          <div class="portal-card mt-4">
+            <p class="font-brand-en portal-kicker">Morning Brief</p>
+            <p class="portal-brief-title">今日の要点を、<br />出社前の数分で押さえる</p>
+            <p class="portal-card-lead mt-2">経済・金融・保険業界の動きを毎朝お届けする「DailyBrief by TK&amp;Company」。面談前に押さえておきたい話題を、要点だけに絞ってまとめています。</p>
+            <div class="flex flex-wrap gap-2 mt-4">
+              <a href="newsletter.html" class="btn-primary inline-flex items-center gap-1.5 px-5 py-2.5 text-xs">配信登録・サンプルを見る <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </div>
+
+          <div class="portal-card mt-4">
+            <div class="portal-feed-head">
+              <h2 class="portal-feed-title">今朝の3本</h2>
+              <span class="portal-badge-soon font-brand-en">COMING SOON</span>
+            </div>
+            <div class="portal-feed-empty">
+              <p class="portal-note">配信中の DailyBrief から、毎朝の注目3本をここに自動掲載します。<br />公開までは <a href="newsletter.html" class="text-[#0f2a4a] underline">配信サンプル</a> をご覧ください。</p>
+            </div>
+          </div>
+
+          <div class="portal-card mt-4">
+            <div class="portal-feed-head">
+              <h2 class="portal-feed-title">よく使うページ</h2>
+            </div>
+            <div class="portal-feed-list">
+              <div class="portal-feed-row is-top">
+                <span class="portal-feed-no">01</span>
+                <a href="basic-info.html" class="flex-1"><span class="portal-feed-text">まず基本情報を入力して、各ツールに反映させる</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="basic-info.html" data-save-title="基本情報入力" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">02</span>
+                <a href="tools.html" class="flex-1"><span class="portal-feed-text">生命保険ツール7本から、面談に合うものを選ぶ</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="tools.html" data-save-title="生命保険ツール一覧" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">03</span>
+                <a href="training/zaimu3hyo-master/index.html" class="flex-1"><span class="portal-feed-text">財務3表マスターで、決算書の読み方を鍛える</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="training/zaimu3hyo-master/index.html" data-save-title="財務3表マスター" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">04</span>
+                <a href="feedback.html" class="flex-1"><span class="portal-feed-text">不具合の報告・改善の提案を送る</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="feedback.html" data-save-title="サポート(不具合報告・改善提案)" aria-label="保存する">&#9734;</button>
+              </div>
+            </div>
+            <p class="portal-note mt-3">&#9734; を押すと「保存」タブに追加され、次回もこの画面から開けます。</p>
+          </div>
+        </div>
+
+        <!-- ============ タブ: 税制改正 ============ -->
+        <div class="portal-panel mt-4" data-portal-panel="tax" hidden>
+          <div class="portal-card">
+            <div class="portal-feed-head">
+              <div>
+                <h2 class="portal-feed-title">税制改正</h2>
+                <p class="portal-card-lead">制度変更と、顧客への説明論点を分けて読む。</p>
+              </div>
+              <span class="portal-badge-soon font-brand-en">COMING SOON</span>
+            </div>
+            <div class="portal-feed-empty">
+              <p class="portal-note">税制改正トピックの記事は準備中です。公開までは、下の試算ツールで影響額をご確認ください。</p>
+            </div>
+          </div>
+
+          <div class="portal-card mt-4">
+            <div class="portal-feed-head">
+              <h2 class="portal-feed-title">税制まわりで使うツール</h2>
+            </div>
+            <div class="portal-feed-list">
+              <div class="portal-feed-row is-top">
+                <span class="portal-feed-no">01</span>
+                <a href="tax-exemption.html" class="flex-1"><span class="portal-feed-text">非課税×生命保険 &mdash; 死亡保険金の非課税枠で相続税がどこまで下がるか</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="tax-exemption.html" data-save-title="非課税×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">02</span>
+                <a href="retirement-benefit.html" class="flex-1"><span class="portal-feed-text">退職金×生命保険 &mdash; 役員報酬と退職金で手取りがどれだけ変わるか</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="retirement-benefit.html" data-save-title="退職金×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">03</span>
+                <a href="stock-valuation.html" class="flex-1"><span class="portal-feed-text">自社株×生命保険 &mdash; 自社株評価額と、承継時の税負担を見える化する</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="stock-valuation.html" data-save-title="自社株×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">04</span>
+                <a href="treasury-stock.html" class="flex-1"><span class="portal-feed-text">金庫株×生命保険 &mdash; 自己株式の買取り原資と、みなし配当課税を確認する</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="treasury-stock.html" data-save-title="金庫株×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">05</span>
+                <a href="basic-info.html" class="flex-1"><span class="portal-feed-text">基本情報入力 &mdash; 決算数値を一度入れて、各試算に反映させる</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="basic-info.html" data-save-title="基本情報入力" aria-label="保存する">&#9734;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ タブ: 中小企業 ============ -->
+        <div class="portal-panel mt-4" data-portal-panel="sme" hidden>
+          <div class="portal-card">
+            <div class="portal-feed-head">
+              <div>
+                <h2 class="portal-feed-title">中小企業・財務</h2>
+                <p class="portal-card-lead">決算書とキャッシュフローから、面談テーマを見つける。</p>
+              </div>
+              <span class="portal-badge-soon font-brand-en">COMING SOON</span>
+            </div>
+            <div class="portal-feed-empty">
+              <p class="portal-note">財務・キャッシュフローの記事は準備中です。公開までは、下のコンテンツで読み解き方をご確認ください。</p>
+            </div>
+          </div>
+
+          <div class="portal-card mt-4">
+            <div class="portal-feed-head">
+              <h2 class="portal-feed-title">数字を読むためのコンテンツ</h2>
+            </div>
+            <div class="portal-feed-list">
+              <div class="portal-feed-row is-top">
+                <span class="portal-feed-no">01</span>
+                <a href="training/zaimu3hyo-master/index.html" class="flex-1"><span class="portal-feed-text">財務3表マスター &mdash; PL・BS・CSのつながりをゲーム感覚で体得する</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="training/zaimu3hyo-master/index.html" data-save-title="財務3表マスター" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">02</span>
+                <a href="future-liability.html" class="flex-1"><span class="portal-feed-text">将来負債×生命保険 &mdash; 借入金と将来の支出を、返済原資とあわせて見る</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="future-liability.html" data-save-title="将来負債×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">03</span>
+                <a href="premium-funding.html" class="flex-1"><span class="portal-feed-text">原資創出モデル &mdash; 保険料の原資をどこから生み出すかを組み立てる</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="premium-funding.html" data-save-title="原資創出モデル" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">04</span>
+                <a href="reduced-new-contract.html" class="flex-1"><span class="portal-feed-text">減額充当モデル &mdash; 既契約の減額分を、新しい保障に充てる道筋を示す</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="reduced-new-contract.html" data-save-title="減額充当モデル" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">05</span>
+                <a href="deficit-company-ds.html" class="flex-1"><span class="portal-feed-text">赤字会社×DS &mdash; 業績が厳しい会社との対話をどう進めるか</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="deficit-company-ds.html" data-save-title="赤字会社×ディスカッションシート" aria-label="保存する">&#9734;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ タブ: 保険 ============ -->
+        <div class="portal-panel mt-4" data-portal-panel="ins" hidden>
+          <div class="portal-card">
+            <div class="portal-feed-head">
+              <div>
+                <h2 class="portal-feed-title">保険</h2>
+                <p class="portal-card-lead">提案の型を、7本の試算ツールで確認する。</p>
+              </div>
+            </div>
+            <div class="portal-feed-list">
+              <div class="portal-feed-row is-top">
+                <span class="portal-feed-no">01</span>
+                <a href="stock-valuation.html" class="flex-1"><span class="portal-feed-text">自社株×生命保険</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="stock-valuation.html" data-save-title="自社株×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">02</span>
+                <a href="future-liability.html" class="flex-1"><span class="portal-feed-text">将来負債×生命保険</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="future-liability.html" data-save-title="将来負債×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">03</span>
+                <a href="treasury-stock.html" class="flex-1"><span class="portal-feed-text">金庫株×生命保険</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="treasury-stock.html" data-save-title="金庫株×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">04</span>
+                <a href="retirement-benefit.html" class="flex-1"><span class="portal-feed-text">退職金×生命保険</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="retirement-benefit.html" data-save-title="退職金×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">05</span>
+                <a href="tax-exemption.html" class="flex-1"><span class="portal-feed-text">非課税×生命保険</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="tax-exemption.html" data-save-title="非課税×生命保険" aria-label="保存する">&#9734;</button>
+              </div>
+            </div>
+            <div class="portal-feed-more"><a href="tools.html">生命保険ツールをもっと見る &mdash;</a></div>
+          </div>
+
+          <div class="portal-card mt-4">
+            <div class="portal-feed-head">
+              <div>
+                <h2 class="portal-feed-title">損害保険</h2>
+                <p class="portal-card-lead">事業中断・賠償リスクの論点。</p>
+              </div>
+              <span class="portal-badge-soon font-brand-en">COMING SOON</span>
+            </div>
+            <div class="portal-feed-empty">
+              <p class="portal-note">損害保険のコンテンツは準備中です。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ タブ: ケース ============ -->
+        <div class="portal-panel mt-4" data-portal-panel="case" hidden>
+          <div class="portal-card">
+            <div class="portal-feed-head">
+              <div>
+                <h2 class="portal-feed-title">ケース別ディスカッションシート</h2>
+                <p class="portal-card-lead">法人の性格ごとに、対話の切り口を変える。</p>
+              </div>
+            </div>
+            <div class="portal-feed-list">
+              <div class="portal-feed-row is-top">
+                <span class="portal-feed-no">08</span>
+                <a href="medical-ds.html" class="flex-1"><span class="portal-feed-text">医療法人×DS &mdash; 出資持分と理事長交代を切り口にする</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="medical-ds.html" data-save-title="医療法人×DS" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">09</span>
+                <a href="religious-ds.html" class="flex-1"><span class="portal-feed-text">宗教法人×DS &mdash; 収益事業と役員の処遇を整理する</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="religious-ds.html" data-save-title="宗教法人×DS" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">10</span>
+                <a href="venture-ds.html" class="flex-1"><span class="portal-feed-text">ベンチャー企業×DS &mdash; 株価が上がる前の対策を話す</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="venture-ds.html" data-save-title="ベンチャー企業×DS" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">11</span>
+                <a href="asset-management-ds.html" class="flex-1"><span class="portal-feed-text">資産管理会社×DS &mdash; 個人資産と法人資産の分け方を確認する</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="asset-management-ds.html" data-save-title="資産管理会社×DS" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">12</span>
+                <a href="deficit-company-ds.html" class="flex-1"><span class="portal-feed-text">赤字会社×DS &mdash; 保障を落とさずに立て直す順番を決める</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="deficit-company-ds.html" data-save-title="赤字会社×DS" aria-label="保存する">&#9734;</button>
+              </div>
+              <div class="portal-feed-row">
+                <span class="portal-feed-no">13</span>
+                <a href="holdings-ds.html" class="flex-1"><span class="portal-feed-text">ホールディングス×DS &mdash; 持株会社化の前後で何が変わるかを示す</span></a>
+                <button type="button" class="portal-save-btn" data-save-href="holdings-ds.html" data-save-title="ホールディングス×DS" aria-label="保存する">&#9734;</button>
+              </div>
+            </div>
+            <div class="portal-feed-more"><a href="discussion.html">ディスカッションシート一覧へ &mdash;</a></div>
+          </div>
+        </div>
+
+        <!-- ============ タブ: 保存 ============ -->
+        <div class="portal-panel mt-4" data-portal-panel="saved" hidden>
+          <div class="portal-card">
+            <div class="portal-feed-head">
+              <div>
+                <h2 class="portal-feed-title">保存したページ</h2>
+                <p class="portal-card-lead">&#9734; を押したページがここに並びます。</p>
+              </div>
+            </div>
+            <div id="savedList" class="portal-feed-list"></div>
+            <div id="savedEmpty" class="portal-feed-empty">
+              <p class="portal-note">まだ保存したページはありません。各タブの一覧で &#9734; を押すと、ここに追加されます。</p>
+            </div>
+            <p class="portal-note mt-3">保存先はご利用のブラウザ内です。別のPCやブラウザには引き継がれません。</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= 右: マイエリア ================= -->
+      <aside class="portal-col-right portal-col-side">
+        <div class="portal-my-grid">
+          <div class="portal-card">
+            <p class="font-brand-en portal-kicker">My Area</p>
+            <label for="areaSelect" class="sr-only">地域</label>
+            <select id="areaSelect" class="portal-area-select">
+              <option value="016000">北海道（札幌）</option>
+              <option value="040000">宮城（仙台）</option>
+              <option value="130000" selected>東京</option>
+              <option value="140000">神奈川（横浜）</option>
+              <option value="120000">千葉</option>
+              <option value="110000">埼玉（さいたま）</option>
+              <option value="230000">愛知（名古屋）</option>
+              <option value="260000">京都</option>
+              <option value="270000">大阪</option>
+              <option value="280000">兵庫（神戸）</option>
+              <option value="340000">広島</option>
+              <option value="400000">福岡</option>
+              <option value="471000">沖縄（那覇）</option>
+            </select>
+            <p class="portal-note mt-2">地域設定はブラウザに保存されます。</p>
+          </div>
+
+          <div class="portal-card">
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="portal-card-title">天気予報</h2>
+              <span class="portal-note">気象庁</span>
+            </div>
+            <div class="portal-weather-row">
+              <div>
+                <p class="portal-weather-place" id="wxPlace">&mdash;</p>
+                <p class="portal-weather-desc" id="wxDesc">読み込み中…</p>
+              </div>
+              <p class="portal-weather-temp" id="wxTemp"></p>
+            </div>
+            <a id="wxLink" href="https://www.jma.go.jp/bosai/forecast/#area_type=offices&amp;area_code=130000" target="_blank" rel="noopener" class="portal-out-btn">気象庁の予報を見る <span aria-hidden="true">&#8599;</span></a>
+          </div>
+
+          <div class="portal-card">
+            <h2 class="portal-card-title">道路交通情報</h2>
+            <p class="portal-card-lead">渋滞・規制・通行止め</p>
+            <a href="https://www.jartic.or.jp/" target="_blank" rel="noopener" class="portal-out-btn">JARTICで確認 <span aria-hidden="true">&#8599;</span></a>
+          </div>
+
+          <div class="portal-card portal-card-dark">
+            <h2 class="portal-card-title">Yahoo! 路線情報</h2>
+            <p class="portal-card-lead">乗換案内・運行情報</p>
+            <a href="https://transit.yahoo.co.jp/" target="_blank" rel="noopener" class="portal-out-btn">路線情報を開く <span aria-hidden="true">&#8599;</span></a>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 flex flex-wrap gap-3">
+      <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <div class="max-w-3xl space-y-3 mb-6">
+      <p class="text-xs text-gray-500 leading-relaxed">
+        天気・道路交通・路線の各情報は、気象庁／JARTIC／Yahoo! JAPANの各サイトへのリンクです。表示内容の正確性・最新性については各提供元をご確認ください。
+      </p>
+      <p class="text-xs text-gray-500 leading-relaxed">
+        ご入力いただいた会社名・氏名等の情報は、お客様のブラウザ内にのみ保存され、弊社が取得することはありません。
+      </p>
+    </div>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/menu.js?v=20260803a"></script>
+<script src="js/portal.js?v=20260811a"></script>
+</body>
+</html>

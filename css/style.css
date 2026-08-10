@@ -3199,3 +3199,679 @@ svg {
   filter: grayscale(1);
   user-select: none;
 }
+
+/* ==========================================================================
+   繝昴・繧ｿ繝ｫ繧ｵ繧､繝・portal.html)
+   1/4(繝・・繝ｫ) : 1/2(讀懃ｴ｢繝ｻ譛晏・) : 1/4(繝槭う繧ｨ繝ｪ繧｢)縺ｮ3繧ｫ繝ｩ繝縲・   蟾ｦ蜿ｳ縺ｯ逕ｻ髱｢縺ｫ蝗ｺ螳壹＠縲∽ｸｭ螟ｮ縺縺代ｒ隱ｭ縺ｿ騾ｲ繧√ｋ讒区・縲・   ========================================================================== */
+
+/* ---- 蜷・・繝ｼ繧ｸ縺ｮ繝倥ャ繝繝ｼ蜿ｳ荳翫後・繝ｼ繧ｿ繝ｫ繧ｵ繧､繝医∈縲阪・繧ｿ繝ｳ ---- */
+.portal-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.05rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--color-navy);
+  background-color: var(--color-navy);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.portal-link-btn:hover {
+  background-color: #fff;
+  color: var(--color-navy);
+  box-shadow: 0 8px 18px rgba(15, 42, 74, 0.16);
+}
+.portal-link-btn svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+@media (max-width: 480px) {
+  .portal-link-btn {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.7rem;
+  }
+  .portal-link-btn .portal-link-label {
+    display: none;
+  }
+}
+
+/* ---- 繝ｬ繧､繧｢繧ｦ繝・---- */
+.portal-shell {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+.portal-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.4rem;
+  align-items: start;
+}
+@media (min-width: 1280px) {
+  .portal-col-side {
+    position: sticky;
+    top: 6.2rem;
+    max-height: calc(100vh - 7.5rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .portal-col-side::-webkit-scrollbar {
+    width: 6px;
+  }
+  .portal-col-side::-webkit-scrollbar-thumb {
+    background-color: var(--color-gray-200);
+    border-radius: 9999px;
+  }
+}
+@media (max-width: 1279px) {
+  .portal-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr);
+  }
+  .portal-col-right {
+    grid-column: 1 / -1;
+  }
+  .portal-my-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  .portal-my-grid > .portal-card + .portal-card {
+    margin-top: 0;
+  }
+}
+@media (max-width: 860px) {
+  .portal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* 1カラムでは、まず検索と朝刊。ツールとマイエリアはその下に回す */
+  .portal-col-center {
+    order: 1;
+  }
+  .portal-col-left {
+    order: 2;
+  }
+  .portal-col-right {
+    order: 3;
+  }
+}
+
+/* ---- 蜈ｱ騾壹き繝ｼ繝・---- */
+.portal-card {
+  background-color: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.85rem;
+  padding: 1.1rem 1.15rem;
+  box-shadow: 0 1px 2px rgba(15, 42, 74, 0.04);
+}
+.portal-card + .portal-card {
+  margin-top: 1rem;
+}
+.portal-kicker {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+  margin-bottom: 0.55rem;
+}
+.portal-card-title {
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  letter-spacing: 0.02em;
+}
+.portal-card-lead {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--color-gray-600);
+  line-height: 1.7;
+  margin-top: 0.2rem;
+}
+.portal-note {
+  font-size: 0.66rem;
+  font-weight: 400;
+  color: var(--color-gray-400);
+  line-height: 1.7;
+}
+
+/* ---- 繧ｿ繝・莉頑律縺ｮ譛晏・ / 遞主宛謾ｹ豁｣ 窶ｦ) ---- */
+.portal-tabbar {
+  position: sticky;
+  top: 5rem;
+  z-index: 30;
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.portal-tabbar-inner {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* タブだけを横スクロールさせる。「最初に開くページに設定」の手順パネルが
+   スクロール枠に切り取られないよう、ボタンはこの枠の外に置く */
+.portal-tabs-scroll {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.portal-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+.portal-tab {
+  position: relative;
+  padding: 0.85rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s ease;
+}
+.portal-tab:hover {
+  color: var(--color-navy);
+}
+.portal-tab.active {
+  color: var(--color-navy);
+}
+.portal-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0;
+  height: 2.5px;
+  border-radius: 9999px;
+  background-color: var(--color-navy);
+}
+.portal-panel[hidden] {
+  display: none;
+}
+
+/* ---- 蟾ｦ: 繝・・繝ｫ繝ｬ繝ｼ繝ｫ ---- */
+.portal-featured {
+  display: block;
+  border-radius: 0.7rem;
+  padding: 1rem 1.05rem 0.95rem;
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy) 60%, var(--color-navy-light) 100%);
+  color: #fff;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.portal-featured:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(15, 42, 74, 0.28);
+}
+.portal-featured .portal-kicker {
+  color: rgba(255, 255, 255, 0.62);
+  margin-bottom: 0.4rem;
+}
+.portal-featured-title {
+  font-size: 0.98rem;
+  font-weight: 900;
+  line-height: 1.45;
+}
+.portal-featured-go {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.7rem;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+.portal-rail-label {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  margin: 1.15rem 0 0.55rem;
+}
+.portal-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.portal-calc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  padding: 0.7rem 0.65rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.5rem;
+  background-color: var(--color-off-white);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  line-height: 1.35;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.portal-calc-item:hover {
+  border-color: var(--color-navy);
+  background-color: #fff;
+  color: var(--color-navy);
+}
+.portal-calc-item svg {
+  width: 0.7rem;
+  height: 0.7rem;
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+.portal-rail-list {
+  border-top: 1px solid var(--color-gray-100);
+}
+.portal-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.15rem;
+  border-bottom: 1px solid var(--color-gray-100);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.portal-rail-item:hover {
+  color: var(--color-navy);
+  padding-left: 0.35rem;
+}
+.portal-rail-cross {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--color-blue);
+  flex-shrink: 0;
+}
+.portal-rail-item .portal-rail-arrow {
+  margin-left: auto;
+  width: 0.7rem;
+  height: 0.7rem;
+  opacity: 0.4;
+}
+
+/* ---- 荳ｭ螟ｮ: 繧ｵ繝ｼ繝√ョ繧ｹ繧ｯ ---- */
+.portal-search-form {
+  position: relative;
+}
+.portal-search-input {
+  width: 100%;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.6rem;
+  background-color: var(--color-off-white);
+  padding: 0.9rem 1rem 0.9rem 2.6rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.portal-search-input::placeholder {
+  color: var(--color-gray-400);
+  font-weight: 400;
+}
+.portal-search-input:focus {
+  outline: none;
+  border-color: var(--color-navy);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(15, 42, 74, 0.1);
+}
+.portal-search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--color-gray-400);
+  pointer-events: none;
+}
+.portal-search-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+@media (max-width: 640px) {
+  .portal-search-btns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.portal-search-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.4rem;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.5rem;
+  background-color: #fff;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+.portal-search-btn:hover {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+.portal-search-btn.is-primary {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+.portal-search-btn.is-primary:hover {
+  background-color: var(--color-navy);
+  color: #fff;
+}
+.portal-search-hint {
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--color-gray-400);
+}
+
+/* ---- 荳ｭ螟ｮ: 繝｢繝ｼ繝九Φ繧ｰ繝悶Μ繝ｼ繝・---- */
+.portal-brief-title {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+@media (max-width: 640px) {
+  .portal-brief-title {
+    font-size: 1.18rem;
+  }
+}
+
+/* ---- 荳ｭ螟ｮ: 險倅ｺ九Μ繧ｹ繝・---- */
+.portal-feed-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1.5px solid var(--color-navy);
+}
+.portal-feed-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  letter-spacing: 0.03em;
+}
+.portal-feed-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding: 0.75rem 0.1rem;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+a.portal-feed-row {
+  transition: background-color 0.2s ease;
+}
+a.portal-feed-row:hover {
+  background-color: var(--color-off-white);
+}
+.portal-feed-no {
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+  width: 1.5rem;
+}
+.portal-feed-row.is-top .portal-feed-no {
+  color: var(--color-red);
+}
+.portal-feed-date {
+  font-family: Arial, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+.portal-feed-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  line-height: 1.6;
+}
+a.portal-feed-row:hover .portal-feed-text {
+  color: var(--color-navy);
+}
+.portal-feed-more {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.6rem;
+}
+.portal-feed-more a {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.portal-feed-more a:hover {
+  text-decoration: underline;
+}
+/* 險倅ｺ九′縺ｾ縺逋ｻ骭ｲ縺輔ｌ縺ｦ縺・↑縺・そ繧ｯ繧ｷ繝ｧ繝ｳ縺ｫ蜃ｺ縺呎ｺ門ｙ荳ｭ縺ｮ譫 */
+.portal-feed-empty {
+  margin-top: 0.9rem;
+  padding: 1.4rem 1rem;
+  border: 1px dashed var(--color-gray-200);
+  border-radius: 0.6rem;
+  background-color: var(--color-off-white);
+  text-align: center;
+}
+.portal-badge-soon {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  background-color: #b98a2f;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+/* ---- 蜿ｳ: 繝槭う繧ｨ繝ｪ繧｢ ---- */
+.portal-area-select {
+  width: 100%;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.5rem;
+  background-color: #fff;
+  padding: 0.6rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+.portal-area-select:focus {
+  outline: none;
+  border-color: var(--color-navy);
+  box-shadow: 0 0 0 3px rgba(15, 42, 74, 0.1);
+}
+.portal-weather-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.7rem 0 0.2rem;
+}
+.portal-weather-place {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: var(--color-navy);
+}
+.portal-weather-desc {
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--color-gray-600);
+  margin-top: 0.15rem;
+}
+.portal-weather-temp {
+  font-family: Arial, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+}
+.portal-weather-temp .unit {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.portal-weather-temp .temp-max {
+  color: var(--color-red);
+}
+.portal-weather-temp .temp-min {
+  color: var(--color-blue);
+}
+.portal-out-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  margin-top: 0.7rem;
+  padding: 0.6rem 0.5rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.45rem;
+  background-color: var(--color-off-white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+.portal-out-btn:hover {
+  border-color: var(--color-navy);
+  background-color: #fff;
+  color: var(--color-navy);
+}
+.portal-card-dark {
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy) 100%);
+  border-color: transparent;
+  color: #fff;
+}
+.portal-card-dark .portal-card-title {
+  color: #fff;
+}
+.portal-card-dark .portal-card-lead,
+.portal-card-dark .portal-kicker {
+  color: rgba(255, 255, 255, 0.65);
+}
+.portal-card-dark .portal-out-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+.portal-card-dark .portal-out-btn:hover {
+  background-color: #fff;
+  color: var(--color-navy);
+}
+
+/* ---- 襍ｷ蜍輔・繝ｼ繧ｸ險ｭ螳壹・謇矩・繝昴ャ繝励が繝ｼ繝舌・) ---- */
+.portal-startup {
+  position: relative;
+}
+.portal-startup-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 21rem;
+  max-width: 80vw;
+  background-color: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.7rem;
+  box-shadow: 0 18px 40px rgba(15, 42, 74, 0.18);
+  padding: 1rem 1.05rem;
+  z-index: 60;
+  text-align: left;
+}
+.portal-startup-panel[hidden] {
+  display: none;
+}
+.portal-startup-panel h3 {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  margin-bottom: 0.3rem;
+}
+.portal-startup-panel p,
+.portal-startup-panel li {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--color-gray-600);
+  line-height: 1.75;
+}
+.portal-startup-panel ol {
+  padding-left: 1.1rem;
+  list-style: decimal;
+}
+.portal-startup-url {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.4rem;
+  background-color: var(--color-off-white);
+  border: 1px solid var(--color-gray-200);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  word-break: break-all;
+}
+.portal-startup-copy {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-navy);
+  background-color: #fff;
+  color: var(--color-navy);
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.portal-startup-copy:hover {
+  background-color: var(--color-navy);
+  color: #fff;
+}
+
+/* ---- 笘・ｿ晏ｭ倥・繧ｿ繝ｳ(險倅ｺ九・繝・・繝ｫ陦後・蜿ｳ遶ｯ) ---- */
+.portal-save-btn {
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.portal-save-btn:hover {
+  color: var(--color-navy);
+  background-color: var(--color-slate-soft);
+}
+.portal-save-btn.is-saved {
+  color: #b98a2f;
+}

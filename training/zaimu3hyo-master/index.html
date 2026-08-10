@@ -18,6 +18,11 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .head-logo img{height:38px;width:auto;display:block}
 .head-mode-btn{font-size:12.5px;font-weight:bold;color:var(--navy);background:#fff;border:1.5px solid var(--navy);border-radius:9999px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .2s ease,color .2s ease}
 .head-mode-btn:hover{background:var(--navy);color:#fff}
+.head-actions{display:flex;align-items:center;gap:10px}
+.head-portal-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:bold;color:#fff;background:var(--navy);border:1.5px solid var(--navy);border-radius:9999px;padding:8px 18px;white-space:nowrap;transition:background .2s ease,color .2s ease}
+.head-portal-btn:hover{background:#fff;color:var(--navy)}
+.head-portal-btn svg{width:14px;height:14px;flex-shrink:0}
+@media (max-width:520px){.head-portal-btn{padding:8px 12px;font-size:0;gap:0}.head-portal-btn svg{width:16px;height:16px}}
 /* ---- ヒーロー帯(他ツールと同じネイビーグラデ) ---- */
 .hero{background:linear-gradient(135deg,#091a30 0%,#0f2a4a 55%,#1c3f68 100%);color:#fff;padding:14px 20px}
 .hero-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -231,7 +236,13 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
 <!-- ===== ヘッダー(他ツールと同じ白ヘッダー: 左ロゴ・右モード選択) ===== -->
 <header class="site-head">
   <a href="../../index.html" class="head-logo"><img src="../../images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" /></a>
-  <button type="button" class="head-mode-btn" onclick="goHome()">モード選択</button>
+  <div class="head-actions">
+    <button type="button" class="head-mode-btn" onclick="goHome()">モード選択</button>
+    <a href="../../portal.html" class="head-portal-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h6v6H4zM14 6h6v4h-6zM14 14h6v4h-6zM4 16h6v2H4z"/></svg>
+      ポータルサイトへ
+    </a>
+  </div>
 </header>
 
 <!-- ===== ヒーロー帯(ネイビーグラデ: キッカー+タイトル+モード名 / 右にスコア) ===== -->
