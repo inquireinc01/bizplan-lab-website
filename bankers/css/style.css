@@ -113,14 +113,14 @@ img { max-width: 100%; height: auto; display: block; }
   width: 60%; height: 140%;
   background: radial-gradient(circle, rgba(59,110,165,.18) 0%, transparent 65%);
 }
-/* ヒーロー帯はシリーズ各ページのロゴのグラデーションを反映する(2026-08-13指示)。
-   白文字が読める濃度に暗部を寄せつつ、ロゴと同じ色相で135度に流す */
-.hero-pattern--weekend { background: linear-gradient(135deg, #431f05 0%, #9a4a10 55%, #e08a2f 100%); }
-.hero-pattern--weekend::after { background: radial-gradient(circle, rgba(240,160,60,.22) 0%, transparent 65%); }
-.hero-pattern--weekday { background: linear-gradient(135deg, #071b38 0%, #1c4d8f 55%, #3878c7 100%); }
-.hero-pattern--weekday::after { background: radial-gradient(circle, rgba(110,165,230,.24) 0%, transparent 65%); }
-.hero-pattern--toolbox { background: linear-gradient(135deg, #123312 0%, #2e6b2e 55%, #58a058 100%); }
-.hero-pattern--toolbox::after { background: radial-gradient(circle, rgba(120,190,120,.22) 0%, transparent 65%); }
+/* ヒーロー帯はシリーズ各ページのロゴ色を反映する(2026-08-13指示)。
+   ネイビーを主体(左〜中央)に、右端だけロゴのグラデーション色へ流す(ネイビー強め指定) */
+.hero-pattern--weekend { background: linear-gradient(135deg, #091a30 0%, #0f2a4a 48%, #8a4310 84%, #e08a2f 100%); }
+.hero-pattern--weekend::after { background: radial-gradient(circle, rgba(240,160,60,.20) 0%, transparent 65%); }
+.hero-pattern--weekday { background: linear-gradient(135deg, #091a30 0%, #0f2a4a 48%, #1c4d8f 80%, #3878c7 100%); }
+.hero-pattern--weekday::after { background: radial-gradient(circle, rgba(110,165,230,.22) 0%, transparent 65%); }
+.hero-pattern--toolbox { background: linear-gradient(135deg, #091a30 0%, #0f2a4a 48%, #276027 82%, #58a058 100%); }
+.hero-pattern--toolbox::after { background: radial-gradient(circle, rgba(120,190,120,.20) 0%, transparent 65%); }
 
 .hero-brand-mark {
   position: absolute; margin: 0;
