@@ -458,6 +458,7 @@
       <h1 id="resultMessage"></h1>
       <p id="resultSub"></p>
       <div class="result-actions">
+        <button class="retry-button" id="btnReview" hidden>間違えた問題だけ復習する <span>→</span></button>
         <button class="retry-button" id="btnRetry">もう一度挑戦 <span>↻</span></button>
         <button class="ghost-button" id="btnHome">コース選択へ戻る</button>
       </div>
@@ -484,6 +485,9 @@
 const COURSES = [window.COURSE_SHOP, window.COURSE_FINANCE];
 const $ = id => document.getElementById(id);
 let course = null;       // 現在のコース
+let quizSet = [];        // 今回出題する問題（復習モードでは間違えた問題のみ）
+let reviewMode = false;  // 復習モードかどうか
+let lastMissed = [];     // 直前の結果で間違えた問題
 let idx = 0, answered = null, score = 0;
 let sides = [];          // 各問題で good が A(0) か B(1) か
 let results = [];        // {q, correct}
@@ -501,11 +505,11 @@ function setPhase(phase){
     $("bandTitle").textContent = "UI/UX 2択テスト";
     $("bandSub").textContent = "実際のWebパーツを見比べて、UI/UXの判断軸を身につける2択テストです。コースを選んで始めてください。";
   }else if(phase === "quiz"){
-    $("bandTitle").textContent = course.title;
-    $("bandSub").textContent = course.desc;
+    $("bandTitle").textContent = reviewMode ? `${course.title}（復習モード）` : course.title;
+    $("bandSub").textContent = reviewMode ? `前回間違えた${quizSet.length}問だけを、もう一度解き直します。` : course.desc;
   }else{
-    $("bandTitle").textContent = "テスト結果";
-    $("bandSub").textContent = `${course.title}（全${course.questions.length}問）の結果です。`;
+    $("bandTitle").textContent = reviewMode ? "復習の結果" : "テスト結果";
+    $("bandSub").textContent = `${course.title}（${reviewMode ? "復習" : "全"}${quizSet.length}問）の結果です。`;
   }
   window.scrollTo({top:0, behavior:"smooth"});
 }
@@ -542,10 +546,10 @@ function renderIntro(){
 }
 
 function renderQuestion(){
-  const q = course.questions[idx];
-  const total = course.questions.length;
+  const q = quizSet[idx];
+  const total = quizSet.length;
   answered = null;
-  $("progressLabel").textContent = q.g === "チュートリアル" ? "TUTORIAL" : course.en;
+  $("progressLabel").textContent = reviewMode ? "REVIEW" : (q.g === "チュートリアル" ? "TUTORIAL" : course.en);
   $("progressNum").innerHTML = `${String(idx+1).padStart(2,"0")} <em>/ ${total}</em>`;
   $("progressFill").style.width = (idx / total * 100) + "%";
   $("qGroup").textContent = q.g;
@@ -568,7 +572,7 @@ function renderQuestion(){
 
 function choose(pick){ // 0=A, 1=B
   if(answered !== null || !course) return;
-  const q = course.questions[idx];
+  const q = quizSet[idx];
   const goodSide = sides[idx];
   const correct = pick === goodSide;
   answered = pick;
@@ -597,55 +601,65 @@ function choose(pick){ // 0=A, 1=B
   $("fbExplain").textContent = q.explain;
   $("fbPrinciple").textContent = q.principle;
   $("kbdHint").style.display = "none";
-  $("progressFill").style.width = ((idx+1) / course.questions.length * 100) + "%";
+  $("progressFill").style.width = ((idx+1) / quizSet.length * 100) + "%";
   $("btnNext").focus();
 }
 
 function next(){
   if(answered === null) return;
-  if(idx === course.questions.length - 1){ showResult(); return; }
+  if(idx === quizSet.length - 1){ showResult(); return; }
   idx++;
   renderQuestion();
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
 function showResult(){
-  const total = course.questions.length;
+  const total = quizSet.length;
   const rate = Math.round(score / total * 100);
-  const best = Math.max(Number(localStorage.getItem(bestKey(course)) || 0), score);
-  localStorage.setItem(bestKey(course), String(best));
+  // 自己ベストはフル挑戦（全問）のときだけ更新する
+  let best = Number(localStorage.getItem(bestKey(course)) || 0);
+  if(!reviewMode){
+    best = Math.max(best, score);
+    localStorage.setItem(bestKey(course), String(best));
+  }
 
   setPhase("result");
   $("scoreRing").style.setProperty("--score", (rate * 3.6) + "deg");
   $("finalScore").textContent = score;
   $("finalTotal").textContent = `/ ${total}`;
   const level = rate >= 90 ? "UX STRATEGIST" : rate >= 75 ? "UX DESIGNER" : rate >= 55 ? "UX EXPLORER" : "UX BEGINNER";
-  const message = rate >= 90 ? "判断の理由まで、かなり身についています。"
+  const message = reviewMode
+    ? (rate === 100 ? "苦手だった問題を全問クリアしました。" : "解き直しで判断軸が定着していきます。")
+    : rate >= 90 ? "判断の理由まで、かなり身についています。"
     : rate >= 75 ? "実務で使える観点がしっかり育っています。"
     : rate >= 55 ? "基本は順調。復習で判断軸がさらに強くなります。"
     : "ここからが面白いところ。解説を見直して再挑戦しましょう。";
-  $("resultLevel").textContent = level;
+  $("resultLevel").textContent = reviewMode ? "REVIEW MODE" : level;
   $("resultMessage").textContent = message;
-  $("resultSub").textContent = `${course.title} ／ 正解率 ${rate}% ／ 自己ベスト ${best}点`;
+  $("resultSub").textContent = reviewMode
+    ? `${course.title}（復習${total}問） ／ 正解率 ${rate}%`
+    : `${course.title} ／ 正解率 ${rate}% ／ 自己ベスト ${best}点`;
 
-  // 分野別スコア
+  // 分野別スコア（復習モードでは出題した分野のみ表示）
   const grid = $("breakdownGrid");
   grid.innerHTML = "";
   course.groups.forEach(g=>{
-    const inGroup = results.filter(r => r.q.g === g.name);
-    const totalG = course.questions.filter(q => q.g === g.name).length;
-    const got = inGroup.filter(r => r.correct).length;
-    const pct = totalG ? Math.round(got / totalG * 100) : 0;
+    const totalG = quizSet.filter(q => q.g === g.name).length;
+    if(!totalG) return;
+    const got = results.filter(r => r.q.g === g.name && r.correct).length;
+    const pct = Math.round(got / totalG * 100);
     const card = document.createElement("div");
     card.className = "breakdown-card";
     card.innerHTML = `<div><b>${g.icon}</b><strong>${g.name}</strong><span>${got} / ${totalG}</span></div><div class="skill-track"><i style="width:${pct}%"></i></div>`;
     grid.appendChild(card);
   });
 
-  // 復習リスト
+  // 復習リスト＋復習ボタン
   const missed = results.filter(r => !r.correct);
+  lastMissed = missed.map(r => r.q);
+  $("btnReview").hidden = lastMissed.length === 0;
   $("reviewTitle").textContent = missed.length ? `間違えた${missed.length}問を復習` : "全問正解です！";
-  $("reviewSub").textContent = missed.length ? "正解そのものより、判断の理由をもう一度確認しましょう。" : `${total}問すべての判断軸をマスターしました。`;
+  $("reviewSub").textContent = missed.length ? "下の解説を読み直すか、「間違えた問題だけ復習する」でもう一度解き直せます。" : `${total}問すべての判断軸をマスターしました。`;
   const list = $("reviewList");
   list.innerHTML = "";
   missed.forEach(r=>{
@@ -657,16 +671,22 @@ function showResult(){
   });
 }
 
-function start(c){
-  course = c;
+function runQuiz(questions, isReview){
+  quizSet = questions;
+  reviewMode = isReview;
   idx = 0; score = 0; answered = null; results = [];
-  sides = course.questions.map(() => Math.random() < 0.5 ? 0 : 1);
+  sides = quizSet.map(() => Math.random() < 0.5 ? 0 : 1);
   setPhase("quiz");
   renderQuestion();
 }
-function home(){ course = null; renderIntro(); setPhase("intro"); }
+function start(c){
+  course = c;
+  runQuiz(c.questions, false);
+}
+function home(){ course = null; reviewMode = false; renderIntro(); setPhase("intro"); }
 
 $("btnRetry").addEventListener("click", ()=>start(course));
+$("btnReview").addEventListener("click", ()=>runQuiz(lastMissed, true));
 $("btnHome").addEventListener("click", home);
 $("brandHome").addEventListener("click", home);
 $("chA").addEventListener("click", ()=>choose(0));
