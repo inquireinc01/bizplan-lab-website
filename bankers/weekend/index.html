@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<title>銀行員の休日 | あなたの休日が、ちゃんと休日でありますように。</title>
+<meta name="description" content="銀行員・金融機関職員のためのポータル。資格・実務・キャリアを一箇所に。所属は聞きません。あなたの休日が、ちゃんと休日でありますように。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../css/style.css?v=2026081226" />
+</head>
+<body class="bg-[#f8f9fb] text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between gap-5 min-h-[78px] py-2.5 flex-wrap">
+
+      <a href="index.html" class="flex items-center shrink-0 no-underline">
+        <img src="../images/logo.png?v=102" alt="銀行員の休日 — Bankers Weekend" class="h-[46px] sm:h-[54px] w-auto" />
+      </a>
+
+    </div>
+  </div>
+</header>
+
+<!-- ===== ヒーロー(ブランド帯) ===== -->
+<section class="hero-pattern relative overflow-hidden h-[86px] sm:h-[104px]">
+  <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">WEEKEND</span>
+  <span class="hero-brand-mark hero-brand-mark--br" aria-hidden="true">BANKERS</span>
+  <div class="relative z-10 max-w-[1400px] mx-auto px-5 sm:px-8 h-full flex items-center">
+    <h1 class="text-white text-[16px] sm:text-[20px] font-bold tracking-[.12em] pl-3.5 border-l-[3px] border-[#3b6ea5]">
+      あなたの休日が、ちゃんと休日でありますように。
+    </h1>
+  </div>
+</section>
+
+<main class="max-w-[1400px] mx-auto px-5 sm:px-8 py-7">
+  <div class="layout-3col">
+
+    <!-- ============ 左カラム 1/4 ============ -->
+    <div class="col-left">
+      <div class="flex flex-col gap-4">
+
+        <!-- メールマガジン登録 -->
+        <div class="side-card mm-card">
+          <div class="sc-head">
+            <span class="sc-ja">メールマガジン</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Weekday</span>
+          </div>
+          <div class="sc-body">
+            <div class="mm-name">銀行員の平日</div>
+            <p class="mm-lede">平日の朝、指数・金利・ニュースを1通に。</p>
+            <form id="mm-form" class="mm-form" novalidate>
+              <input type="email" id="mm-email" class="mm-input" placeholder="mail@example.com" autocomplete="email" aria-label="メールアドレス" />
+              <button type="submit" class="btn-primary mm-btn">登録無料</button>
+            </form>
+            <a href="#" id="mm-sample" class="mm-sample">サンプルを見る <span aria-hidden="true">&rarr;</span></a>
+            <div id="mm-done" class="mm-done" hidden>ご登録ありがとうございます。次の平日の朝からお届けします。</div>
+          </div>
+        </div>
+
+        <!-- コンテンツカード -->
+        <a href="totonoeru.html" id="card-totonoeru" class="content-card lift-card">
+          <span class="cc-bar" style="background-color:#3b6ea5"></span>
+          <span class="cc-mark font-brand-en" aria-hidden="true">TOTONOE</span>
+          <span class="cc-kicker font-brand-en">Prepare</span>
+          <div class="cc-title">今週も整える</div>
+          <p class="cc-desc">来週のために、休日のうちに少しだけ。知識・営業・キャリア・マナーの道具箱。</p>
+          <span class="cc-go" aria-hidden="true">&rarr;</span>
+        </a>
+
+        <a href="yasumu.html" id="card-yasumu" class="content-card lift-card">
+          <span class="cc-bar" style="background-color:#5c8272"></span>
+          <span class="cc-mark font-brand-en" aria-hidden="true">YASUMU</span>
+          <span class="cc-kicker font-brand-en">Rest</span>
+          <div class="cc-title">今週は休む</div>
+          <p class="cc-desc">体を戻す、肩の力を抜く、人付き合いを楽にする。休日の使い方の話。</p>
+          <span class="cc-go" aria-hidden="true">&rarr;</span>
+        </a>
+
+        <!-- 過去記事カテゴリ別 -->
+        <div class="side-card" id="card-archive">
+          <div class="sc-head">
+            <span class="sc-ja">過去記事（カテゴリ別）</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Archive</span>
+          </div>
+          <div class="sc-body">
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot yomimono"></span>休日の読み物</span><span class="cnt">4</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot aruaru"></span>銀行あるある</span><span class="cnt">3</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot keieisha"></span>中小企業経営者の独り言</span><span class="cnt">2</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot tegami"></span>元バンカーからの手紙</span><span class="cnt">2</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot tarumono"></span>銀行員たるもの</span><span class="cnt">3</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot kaiketsu"></span>銀行員の課題解決</span><span class="cnt">5</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot yume"></span>たまには夢を語りたい</span><span class="cnt">1</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot guchi"></span>たまにはグチを言いたい</span><span class="cnt">2</span></a>
+          </div>
+          <div class="sc-note">帯を押すと全件一覧、カテゴリを押すと絞り込み一覧を表示します。件数は実データです。</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ 中央カラム 1/2 ============ -->
+    <div class="col-center">
+
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="sec-kicker font-brand-en">Latest Posts</span>
+        <span class="text-[14px] text-gray-500">新着記事</span>
+      </div>
+
+      <!-- 記事は data/posts.json から描画する（更新は Googleフォーム → 運営承認 → build-posts.ps1） -->
+      <div id="posts"></div>
+      <p class="text-center text-[12px] text-gray-400 pt-1 pb-2">一部の記事は運用開始前のサンプルです。</p>
+
+    </div>
+
+    <!-- ============ 右カラム 1/4 ============ -->
+    <div class="col-right">
+      <div class="side-stack flex flex-col gap-3">
+
+        <!-- カレンダー -->
+        <div class="side-card m-fold" id="card-calendar">
+          <div class="sc-head">
+            <span class="sc-ja">カレンダー</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Calendar</span>
+          </div>
+          <div class="sc-body">
+            <div class="cal-head">
+              <span class="m" id="cal-m"></span>
+              <span class="y" id="cal-y"></span>
+            </div>
+            <table class="cal">
+              <thead>
+                <tr><th class="sun">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th class="sat">土</th></tr>
+              </thead>
+              <!-- 当月をJSで描画。祝日は holidays-jp のJSONで着色 -->
+              <tbody id="cal-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 指数・金利 -->
+        <div class="side-card m-fold" id="card-market">
+          <div class="sc-head">
+            <span class="sc-ja">指数・金利</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Market</span>
+          </div>
+          <!-- 値はすべて訪問時に取得(株価=前日終値・為替=前営業日参照レート・金利=指標シート) -->
+          <div class="sc-body" id="mkt-body"></div>
+        </div>
+
+        <!-- 天気予報(都道府県切替) -->
+        <div class="side-card m-fold" id="card-weather">
+          <div class="sc-head">
+            <span class="sc-ja">天気予報</span>
+            <select id="wx-pref" class="sc-select" aria-label="天気予報の都道府県"></select>
+            <span class="sc-en font-brand-en" aria-hidden="true">Weather</span>
+          </div>
+          <div class="sc-body" id="wx-body"></div>
+        </div>
+
+        <!-- 電車遅延(全国主要路線・リアルタイム) -->
+        <div class="side-card m-fold" id="card-transit">
+          <div class="sc-head">
+            <span class="sc-ja">電車遅延情報</span>
+            <span id="tr-count" class="sc-count zero">0</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Train</span>
+          </div>
+          <div class="sc-body" id="tr-body"></div>
+        </div>
+
+        <!-- 右カラム共通の注記(出典) -->
+        <div class="side-note">
+          表示は訪問時に自動取得します。出典 — 天気：気象庁予報データ／為替：欧州中央銀行参照レート（前営業日）／株価指数：前日終値／金利：運営更新（日次目安）／電車遅延：全国主要路線の遅延情報（数分間隔）。
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="site-foot mt-8">
+  <span class="foot-mark font-brand-en" aria-hidden="true">BANKERS WEEKEND</span>
+  <div class="relative z-10 max-w-[1400px] mx-auto px-5 sm:px-8 py-8">
+    <div class="mb-8">
+      <div class="font-brand-en text-[11px] font-bold tracking-[.34em] uppercase text-[#6f87a5]">Bankers Weekend</div>
+      <div class="text-[20px] font-black text-white tracking-[.08em] mt-1">銀行員の休日</div>
+    </div>
+
+    <!-- サイトマップ -->
+    <nav class="foot-map" aria-label="サイトマップ">
+      <div>
+        <div class="fm-head font-brand-en">今週も整える</div>
+        <ul class="fm-list">
+          <li><a href="totonoeru.html">一覧を見る</a></li>
+          <li class="fm-soon">金融知識・実務ノウハウ</li>
+          <li class="fm-soon">業務効率化・ITスキル</li>
+          <li class="fm-soon">営業戦略・顧客対応</li>
+          <li class="fm-soon">キャリア形成・自己研鑽</li>
+          <li class="fm-soon">ビジネスマナー・基本動作</li>
+          <li class="fm-soon">身だしなみ・印象管理</li>
+        </ul>
+      </div>
+      <div>
+        <div class="fm-head font-brand-en">今週は休む</div>
+        <ul class="fm-list">
+          <li><a href="yasumu.html">一覧を見る</a></li>
+          <li class="fm-soon">コンディショニング・自己啓発</li>
+          <li class="fm-soon">息抜き・雑談ネタ</li>
+          <li class="fm-soon">処世術・社内人間関係</li>
+          <li class="fm-soon">会食・飲み会プロデュース</li>
+          <li class="fm-soon">ゴルフ・社内イベント</li>
+          <li class="fm-soon">気配り・贈答品</li>
+        </ul>
+      </div>
+      <div>
+        <div class="fm-head font-brand-en">ブログ</div>
+        <ul class="fm-list">
+          <li><a href="index.html">新着記事</a></li>
+          <li><span class="cat-dot yomimono"></span><a href="#">休日の読み物</a></li>
+          <li><span class="cat-dot aruaru"></span><a href="#">銀行あるある</a></li>
+          <li><span class="cat-dot keieisha"></span><a href="#">中小企業経営者の独り言</a></li>
+          <li><span class="cat-dot tegami"></span><a href="#">元バンカーからの手紙</a></li>
+          <li><span class="cat-dot tarumono"></span><a href="#">銀行員たるもの</a></li>
+          <li><span class="cat-dot kaiketsu"></span><a href="#">銀行員の課題解決</a></li>
+          <li><span class="cat-dot yume"></span><a href="#">たまには夢を語りたい</a></li>
+          <li><span class="cat-dot guchi"></span><a href="#">たまにはグチを言いたい</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="fm-head font-brand-en">サイト情報</div>
+        <ul class="fm-list">
+          <li><a href="index.html">ホーム</a></li>
+          <li class="fm-soon">メールマガジン 銀行員の平日</li>
+          <li class="fm-soon">このサイトについて</li>
+          <li class="fm-soon">運営している人間について</li>
+          <li class="fm-soon">お問い合わせ</li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="mt-8 pt-4 border-t border-white/10 text-[11px]">
+      &copy; <span class="num">2026</span> 銀行員の休日 — Phase 0 プロトタイプ
+    </div>
+  </div>
+</footer>
+
+<script>
+// スマホの格納式カード(.m-fold)をタップで開閉する。
+// PCではCSS側が常時展開なので、openクラスが付いても見た目は変わらない。
+Array.prototype.forEach.call(document.querySelectorAll('.m-fold > .sc-head'), function (head) {
+  head.addEventListener('click', function (e) {
+    if (e.target.closest('select')) return; // 都道府県セレクタの操作では開閉しない
+    head.parentElement.classList.toggle('open');
+  });
+});
+
+// メルマガ登録(フェーズ0はフォーム挙動のみ。送信先は未接続)
+document.getElementById('mm-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var input = document.getElementById('mm-email');
+  var value = input.value.trim();
+  if (!value || value.indexOf('@') < 0) {
+    input.style.borderColor = '#a83d3d';
+    input.focus();
+    return;
+  }
+  document.getElementById('mm-form').hidden = true;
+  document.getElementById('mm-sample').hidden = true;
+  document.getElementById('mm-done').hidden = false;
+});
+document.getElementById('mm-email').addEventListener('change', function () {
+  this.style.borderColor = '';
+});
+
+/* ============================================================
+   ライブウィジェット — カレンダー／指数・金利／天気／電車遅延
+   ------------------------------------------------------------
+   すべて訪問時に取得する。出典:
+   ・カレンダー: JSで当月生成。祝日は holidays-jp の公開JSON
+   ・天気: 気象庁の予報JSON(都道府県切替・選択はlocalStorageのみに保存)
+   ・為替: Frankfurter(欧州中央銀行の参照レート。前営業日)
+   ・株価指数: Apps Script経由でStooqの前日終値(10分キャッシュ)
+   ・金利: 回答スプレッドシートの「指標」シート(運営が更新)
+   ・電車遅延: 全国主要路線の遅延JSONをApps Script経由で取得(5分キャッシュ)
+   ============================================================ */
+var API_BASE = 'https://script.google.com/macros/s/AKfycbzkCJO4Hh60mfQIB0IecB7zmOY79NDwwpwSGJ6zPjK3G4TomMs-rt4oY4AmKrM0r9Z_/exec';
+
+// [地方, 都道府県, 気象庁エリアコード]
+var PREFS = [
+  ['北海道・東北','北海道','016000'], ['北海道・東北','青森','020000'], ['北海道・東北','岩手','030000'],
+  ['北海道・東北','宮城','040000'], ['北海道・東北','秋田','050000'], ['北海道・東北','山形','060000'],
+  ['北海道・東北','福島','070000'],
+  ['関東','茨城','080000'], ['関東','栃木','090000'], ['関東','群馬','100000'], ['関東','埼玉','110000'],
+  ['関東','千葉','120000'], ['関東','東京','130000'], ['関東','神奈川','140000'],
+  ['中部','新潟','150000'], ['中部','富山','160000'], ['中部','石川','170000'], ['中部','福井','180000'],
+  ['中部','山梨','190000'], ['中部','長野','200000'], ['中部','岐阜','210000'], ['中部','静岡','220000'],
+  ['中部','愛知','230000'],
+  ['近畿','三重','240000'], ['近畿','滋賀','250000'], ['近畿','京都','260000'], ['近畿','大阪','270000'],
+  ['近畿','兵庫','280000'], ['近畿','奈良','290000'], ['近畿','和歌山','300000'],
+  ['中国','鳥取','310000'], ['中国','島根','320000'], ['中国','岡山','330000'], ['中国','広島','340000'],
+  ['中国','山口','350000'],
+  ['四国','徳島','360000'], ['四国','香川','370000'], ['四国','愛媛','380000'], ['四国','高知','390000'],
+  ['九州・沖縄','福岡','400000'], ['九州・沖縄','佐賀','410000'], ['九州・沖縄','長崎','420000'],
+  ['九州・沖縄','熊本','430000'], ['九州・沖縄','大分','440000'], ['九州・沖縄','宮崎','450000'],
+  ['九州・沖縄','鹿児島','460100'], ['九州・沖縄','沖縄','471000']
+];
+
+function wEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function isoDate(d) {
+  return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+}
+
+/* ---------- カレンダー(当月・今日・祝日) ---------- */
+(function calendarLive() {
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth(), today = now.getDate();
+  document.getElementById('cal-m').textContent = String(m + 1);
+  document.getElementById('cal-y').textContent = String(y);
+  var first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+  var holidays = {};
+  function paint() {
+    var html = '', d = 1;
+    for (var w = 0; w < 6 && d <= days; w++) {
+      html += '<tr>';
+      for (var c = 0; c < 7; c++) {
+        if ((w === 0 && c < first) || d > days) {
+          html += '<td class="empty"><span class="d">0</span></td>';
+        } else {
+          var iso = isoDate(new Date(y, m, d));
+          var cls = [];
+          if (holidays[iso]) cls.push('holiday');
+          else if (c === 0) cls.push('sun');
+          else if (c === 6) cls.push('sat');
+          if (d === today) cls.push('today');
+          html += '<td' + (cls.length ? ' class="' + cls.join(' ') + '"' : '') + '><span class="d">' + d + '</span></td>';
+          d++;
+        }
+      }
+      html += '</tr>';
+    }
+    document.getElementById('cal-body').innerHTML = html;
+  }
+  paint();
+  fetch('https://holidays-jp.github.io/api/v1/date.json')
+    .then(function (r) { return r.json(); })
+    .then(function (j) { holidays = j || {}; paint(); })
+    .catch(function () {});
+})();
+
+/* ---------- 指数・金利(株価=前日終値・為替=前営業日・金利=指標シート) ---------- */
+(function marketLive() {
+  var body = document.getElementById('mkt-body');
+  var eq = null, fx = { usd: null, eur: null }, rates = null;
+  function chg(cur, prev, pct) {
+    var d = pct ? (cur - prev) / prev * 100 : (cur - prev);
+    var cls = d > 0.0005 ? 'up' : d < -0.0005 ? 'down' : 'flat';
+    var sign = d > 0 ? '+' : '';
+    return '<span class="c ' + cls + '">' + sign + d.toFixed(2) + (pct ? '%' : '') + '</span>';
+  }
+  function row(l, v, c) {
+    return '<div class="idx-row"><span class="l">' + l + '</span><span class="r"><span class="v">' + v + '</span>' + (c || '') + '</span></div>';
+  }
+  function paint() {
+    var html = '<div class="idx-group font-brand-en">Equity</div>';
+    if (eq === null) html += row('読み込み中…', '');
+    else if (!eq.length) html += row('取得できませんでした', '');
+    else eq.forEach(function (x) {
+      html += row(wEsc(x.label), Number(x.close).toLocaleString('ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), chg(x.close, x.prev, true));
+    });
+    html += '<div class="idx-group font-brand-en">FX</div>';
+    if (fx.usd) html += row('USD／JPY', fx.usd.v.toFixed(2), chg(fx.usd.v, fx.usd.p, false));
+    if (fx.eur) html += row('EUR／JPY', fx.eur.v.toFixed(2), chg(fx.eur.v, fx.eur.p, false));
+    if (!fx.usd && !fx.eur) html += row('読み込み中…', '');
+    html += '<div class="idx-group font-brand-en">Rates</div>';
+    if (rates === null) html += row('読み込み中…', '');
+    else if (!rates.length) html += row('取得できませんでした', '');
+    else rates.forEach(function (x) {
+      var d = x.delta ? '<span class="c flat">' + wEsc(x.delta) + '</span>' : '';
+      html += row(wEsc(x.label), wEsc(x.value) + '<span class="unit">%</span>', d);
+    });
+    body.innerHTML = html;
+  }
+  paint();
+  fetch(API_BASE + '?type=market')
+    .then(function (r) { return r.json(); })
+    .then(function (j) { eq = j.equity || []; rates = j.rates || []; paint(); })
+    .catch(function () { eq = []; rates = []; paint(); });
+  ['USD', 'EUR'].forEach(function (base) {
+    var from = isoDate(new Date(Date.now() - 10 * 86400000));
+    fetch('https://api.frankfurter.dev/v1/' + from + '..?base=' + base + '&symbols=JPY')
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var ds = Object.keys(j.rates || {}).sort();
+        if (ds.length >= 2) {
+          var v = j.rates[ds[ds.length - 1]].JPY, p = j.rates[ds[ds.length - 2]].JPY;
+          fx[base.toLowerCase()] = { v: v, p: p };
+          paint();
+        }
+      })
+      .catch(function () {});
+  });
+})();
+
+/* ---------- 天気予報(気象庁・都道府県切替) ---------- */
+function renderWeather(i) {
+  var p = PREFS[i];
+  var body = document.getElementById('wx-body');
+  body.innerHTML = '<div class="wx-row"><span class="desc">読み込み中…</span></div>';
+  fetch('https://www.jma.go.jp/bosai/forecast/data/forecast/' + p[2] + '.json')
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var short = j[0].timeSeries[0], area = short.areas[0];
+      var wx = {};
+      short.timeDefines.forEach(function (t, k) {
+        wx[t.slice(0, 10)] = { text: String(area.weathers[k]).split('　')[0].replace(/\s/g, ''), code: String(area.weatherCodes[k]) };
+      });
+      var tmin = {}, tmax = {};
+      j.forEach(function (blk) {
+        (blk.timeSeries || []).forEach(function (ts) {
+          var a = ts.areas[0];
+          if (a.tempsMin || a.tempsMax) ts.timeDefines.forEach(function (t, k) {
+            var d = t.slice(0, 10);
+            if (a.tempsMin && a.tempsMin[k] !== '') tmin[d] = a.tempsMin[k];
+            if (a.tempsMax && a.tempsMax[k] !== '') tmax[d] = a.tempsMax[k];
+          });
+          if (a.temps) ts.timeDefines.forEach(function (t, k) {
+            var d = t.slice(0, 10), v = a.temps[k];
+            if (v === '' || v === undefined) return;
+            if (!(d in tmax) || +v > +tmax[d]) tmax[d] = v;
+            if (!(d in tmin) || +v < +tmin[d]) tmin[d] = v;
+          });
+        });
+      });
+      var names = ['今日', '明日', '明後日'], html = '';
+      for (var o = 0; o < 3; o++) {
+        var iso = isoDate(new Date(Date.now() + o * 86400000));
+        var w = wx[iso];
+        var icon = '—', text = '—';
+        if (w) {
+          var c1 = w.code.charAt(0);
+          icon = c1 === '1' ? '☀' : c1 === '2' ? '☁' : c1 === '3' ? '☂' : '☃';
+          text = w.text;
+        }
+        var hi = tmax[iso] !== undefined ? tmax[iso] : '–';
+        var lo = tmin[iso] !== undefined ? tmin[iso] : '–';
+        html += '<div class="wx-row"><span class="day">' + names[o] + '</span>'
+              + '<span class="ico">' + icon + '</span><span class="desc">' + wEsc(text) + '</span>'
+              + '<span class="tmp"><span class="hi">' + wEsc(hi) + '</span> / <span class="lo">' + wEsc(lo) + '</span><span class="unit">℃</span></span></div>';
+      }
+      body.innerHTML = html;
+    })
+    .catch(function () {
+      body.innerHTML = '<div class="wx-row"><span class="desc">天気情報を取得できませんでした。</span></div>';
+    });
+}
+
+(function initWeather() {
+  var sel = document.getElementById('wx-pref');
+  var group = null, region = '';
+  PREFS.forEach(function (p, i) {
+    if (p[0] !== region) { region = p[0]; group = document.createElement('optgroup'); group.label = region; sel.appendChild(group); }
+    var o = document.createElement('option');
+    o.value = String(i); o.textContent = p[1];
+    group.appendChild(o);
+  });
+  // 既定は東京。選択はこの端末のブラウザにだけ保存する(サーバーへは送らない)
+  var DEF = '12', saved;
+  try { saved = localStorage.getItem('bw-wx-pref'); } catch (e) {}
+  sel.value = (saved !== null && saved !== undefined && PREFS[saved]) ? saved : DEF;
+  renderWeather(+sel.value);
+  sel.addEventListener('change', function () {
+    renderWeather(+this.value);
+    try { localStorage.setItem('bw-wx-pref', this.value); } catch (e) {}
+  });
+})();
+
+/* ---------- 電車遅延(全国主要路線) ---------- */
+(function trainLive() {
+  var body = document.getElementById('tr-body'), badge = document.getElementById('tr-count');
+  body.innerHTML = '<div class="tr-empty">読み込み中…</div>';
+  fetch(API_BASE + '?type=train')
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var n = j.count || 0;
+      badge.textContent = String(n);
+      badge.className = 'sc-count' + (n ? '' : ' zero');
+      if (!n) {
+        body.innerHTML = '<div class="tr-empty"><span class="ok-dot"></span>現在、全国の主要路線に遅延情報はありません。</div>';
+        return;
+      }
+      body.innerHTML = (j.lines || []).map(function (x) {
+        return '<div class="tr-row"><span class="tr-kind train">電車</span>'
+             + '<span class="ln">' + wEsc(x.name) + '<span style="color:#8b98a8">（' + wEsc(x.company) + '）</span></span>'
+             + '<span class="tr-badge warn">遅延</span></div>';
+      }).join('')
+      + (n > (j.lines || []).length ? '<div class="tr-empty">ほか <span class="num">' + (n - j.lines.length) + '</span> 路線で遅延があります。</div>' : '');
+    })
+    .catch(function () {
+      badge.textContent = '–';
+      body.innerHTML = '<div class="tr-empty">遅延情報を取得できませんでした。</div>';
+    });
+})();
+
+/* ============================================================
+   ブログ描画
+   ------------------------------------------------------------
+   公開記事は data/posts.json から読む。
+   記事の追加は Googleフォーム → 運営が承認 → build-posts.ps1 が
+   posts.json を再生成してコミットする。サイト側に投稿機能はない。
+   ============================================================ */
+(function blog() {
+  var CATS = [
+    ['yomimono', '休日の読み物',          'YOMIMONO'],
+    ['aruaru',   '銀行あるある',          'ARUARU'],
+    ['keieisha', '中小企業経営者の独り言',        'KEIEISHA'],
+    ['tegami',   '元バンカーからの手紙',  'TEGAMI'],
+    ['tarumono', '銀行員たるもの',        'TARUMONO'],
+    ['kaiketsu', '銀行員の課題解決',      'KAIKETSU'],
+    ['yume',     'たまには夢を語りたい',  'YUME'],
+    ['guchi',    'たまにはグチを言いたい','GUCHI']
+  ];
+  var host = document.getElementById('posts');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function catOf(slug) { for (var i = 0; i < CATS.length; i++) if (CATS[i][0] === slug) return CATS[i]; return CATS[0]; }
+  function readMin(text) { return Math.max(1, Math.round(String(text || '').replace(/\s/g, '').length / 500)); }
+  function fmtDate(iso) {
+    var d = new Date(iso + 'T00:00:00');
+    if (isNaN(d)) return iso;
+    return iso.replace(/-/g, '.') + ' ' + ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+  }
+  function bodyHtml(t) {
+    return String(t || '').split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean)
+      .map(function (p) { return '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>'; }).join('');
+  }
+  function byDateDesc(a, b) { return String(b.date).localeCompare(String(a.date)); }
+
+  var all = [];
+
+  function postHtml(p, titleOnly) {
+    var c = catOf(p.category);
+    return '<article class="post cat-' + c[0] + (titleOnly ? ' post-titleonly' : '') + '" data-compact="' + (titleOnly ? '1' : '0') + '">'
+      + '<span class="post-mark font-brand-en" aria-hidden="true">' + c[2] + '</span>'
+      + '<div class="post-meta"><span class="post-cat">' + esc(c[1]) + '</span>'
+      + '<span class="post-date">' + esc(fmtDate(p.date)) + '</span></div>'
+      + '<h2><a href="#">' + esc(p.title) + '</a></h2>'
+      + '<div class="body">' + bodyHtml(p.body) + '</div>'
+      + '<div class="post-foot">'
+      + '<a href="#" class="post-more">続きを読む <span aria-hidden="true">&rarr;</span></a>'
+      + '<span class="post-read">読了 約<span class="num">' + readMin(p.body) + '</span><span class="unit">分</span></span>'
+      + '</div></article>';
+  }
+
+  /* 開閉の配線。
+     通常カード: 本文3行畳み(CSS) ⇄ 全文。3行に収まる記事はボタンを隠す。
+     タイトルのみカード(data-compact=1): タイトル ⇄ 全文。タイトルクリックでも開閉する。 */
+  function wirePosts(container) {
+    Array.prototype.forEach.call(container.querySelectorAll('.post'), function (post) {
+      var body = post.querySelector('.body');
+      var more = post.querySelector('.post-more');
+      var title = post.querySelector('h2 a');
+      var compact = post.getAttribute('data-compact') === '1';
+
+      function setMoreLabel(open) {
+        more.innerHTML = open
+          ? 'たたむ <span aria-hidden="true">&uarr;</span>'
+          : '続きを読む <span aria-hidden="true">&rarr;</span>';
+      }
+      function openCompact() {
+        post.classList.remove('post-titleonly'); post.classList.add('expanded');
+        setMoreLabel(true);
+      }
+      function closeCompact() {
+        post.classList.add('post-titleonly'); post.classList.remove('expanded');
+        post.scrollIntoView({ block: 'nearest' });
+      }
+      function toggleCard() {
+        var open = post.classList.toggle('expanded');
+        setMoreLabel(open);
+        if (!open) post.scrollIntoView({ block: 'nearest' });
+      }
+
+      title.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (compact) { post.classList.contains('post-titleonly') ? openCompact() : closeCompact(); }
+        else { toggleCard(); }
+      });
+      more.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (compact) { closeCompact(); } else { toggleCard(); }
+      });
+      if (!compact && body.scrollHeight <= body.clientHeight + 4) more.hidden = true;
+    });
+  }
+
+  /* 新着: 先頭3件は本文3行付きカード、4〜10件目はタイトルのみ行。
+     11件目以降は過去記事へ。(2026-08-12確定) */
+  function renderLatest() {
+    var html = all.slice(0, 3).map(function (p) { return postHtml(p, false); }).join('')
+      + all.slice(3, 10).map(function (p) { return postHtml(p, true); }).join('');
+    if (all.length > 10) {
+      html += '<p class="latest-archive-link"><a href="#archive">過去記事をすべて見る（全<span class="num">'
+        + all.length + '</span><span class="unit">件</span>） <span aria-hidden="true">&rarr;</span></a></p>';
+    }
+    host.innerHTML = html;
+    wirePosts(host);
+  }
+
+  /* 過去記事: 中央カラムにタイトルのみで全件並べる。カテゴリ絞り込み対応。 */
+  function renderArchive(slug) {
+    var list = slug ? all.filter(function (p) { return p.category === slug; }) : all;
+    var c = slug ? catOf(slug) : null;
+    host.innerHTML =
+      '<div class="archive-head">'
+      + '<a href="#" class="archive-back">&larr; 新着に戻る</a>'
+      + '<span class="archive-title">過去記事' + (c ? '：' + esc(c[1]) : '（すべて）')
+      + '　全<span class="num">' + list.length + '</span><span class="unit">件</span></span>'
+      + '</div>'
+      + list.map(function (p) { return postHtml(p, true); }).join('')
+      + (list.length ? '' : '<p class="archive-empty">このカテゴリの記事はまだありません。</p>');
+    wirePosts(host);
+    host.querySelector('.archive-back').addEventListener('click', function (e) {
+      e.preventDefault();
+      location.hash = '';
+    });
+  }
+
+  function route() {
+    var h = location.hash;
+    if (h.indexOf('#archive') === 0) {
+      var slug = h.indexOf('#archive-') === 0 ? h.slice(9) : '';
+      renderArchive(CATS.some(function (c) { return c[0] === slug; }) ? slug : null);
+      document.querySelector('.col-center').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      renderLatest();
+    }
+  }
+  window.addEventListener('hashchange', route);
+
+  /* 左カラム「過去記事(カテゴリ別)」を実データに接続する。
+     帯クリック=全件一覧、カテゴリ行クリック=絞り込み一覧。件数も実数に更新。 */
+  function wireArchiveCard() {
+    var card = document.getElementById('card-archive');
+    if (!card) return;
+    var head = card.querySelector('.sc-head');
+    head.style.cursor = 'pointer';
+    head.addEventListener('click', function () { location.hash = '#archive'; });
+    Array.prototype.forEach.call(card.querySelectorAll('.cat-row'), function (row) {
+      var dot = row.querySelector('.cat-dot');
+      var slug = null;
+      if (dot) Array.prototype.forEach.call(dot.classList, function (cl) { if (cl !== 'cat-dot') slug = cl; });
+      var cnt = row.querySelector('.cnt');
+      if (cnt && slug) cnt.textContent = String(all.filter(function (p) { return p.category === slug; }).length);
+      row.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (slug) location.hash = '#archive-' + slug;
+      });
+    });
+  }
+
+  // 公開記事を data/posts.json から読み込む
+  fetch('../data/posts.json', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : { posts: [] }; })
+    .then(function (j) {
+      all = (j.posts || []).slice().sort(byDateDesc);
+      wireArchiveCard();
+      route();
+    })
+    .catch(function () { host.innerHTML = ''; });
+})();
+</script>
+
+</body>
+</html>
