@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026081219" />
+<link rel="stylesheet" href="css/style.css?v=2026081220" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -589,10 +589,10 @@ function renderTransit(i) {
     });
   }
 
-  /* 新着: 先頭3件はカード、4〜10件目はタイトルのみ。11件目以降は過去記事へ。 */
+  /* 新着: 10件までタイトルのみで表示。本文はタイトルクリックで展開する。
+     11件目以降は過去記事へ。(2026-08-12: カード表示を廃止し全件格納に変更) */
   function renderLatest() {
-    var html = all.slice(0, 3).map(function (p) { return postHtml(p, false); }).join('')
-      + all.slice(3, 10).map(function (p) { return postHtml(p, true); }).join('');
+    var html = all.slice(0, 10).map(function (p) { return postHtml(p, true); }).join('');
     if (all.length > 10) {
       html += '<p class="latest-archive-link"><a href="#archive">過去記事をすべて見る（全<span class="num">'
         + all.length + '</span><span class="unit">件</span>） <span aria-hidden="true">&rarr;</span></a></p>';
