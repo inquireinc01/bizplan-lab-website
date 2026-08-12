@@ -501,11 +501,16 @@ img { max-width: 100%; height: auto; display: block; }
 .post h2 a:hover { text-decoration: underline; text-underline-offset: 5px; }
 /* 本文は白 94%。#3B6EA5(最も明るいカテゴリ色)でもコントラスト 4.9:1 で AA を満たす */
 .post .body { position: relative; z-index: 1; font-size: var(--fs-3); line-height: 2.05; color: rgba(255,255,255,.94); }
-/* 本文は5行で畳む。「続きを読む」で全文を展開する(開閉JSは index.html 側) */
+/* 本文は3行で畳む。「続きを読む」で全文を展開する(開閉JSは index.html 側)。
+   畳み中は段落・改行を無効化して連続テキストにする。3行に多くの内容が入り、
+   記事の中身を想定しやすくするため(2026-08-12決定)。 */
 .post:not(.expanded) .body {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
 }
+.post:not(.expanded) .body p { display: inline; }
+.post:not(.expanded) .body p::after { content: " "; }
 .post .body p + p { margin-top: .9em; }
+.post:not(.expanded) .body p + p { margin-top: 0; }
 .post-foot {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
