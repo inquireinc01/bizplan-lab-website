@@ -16,7 +16,6 @@
 .mkt-wide .idx-row .l { font-size: var(--fs-4); }
 .mkt-wide .idx-row .v { font-size: var(--fs-5); }
 .mkt-wide .idx-row .c { font-size: var(--fs-3); }
-.mkt-note { font-size: var(--fs-1); color: var(--color-slate-light); line-height: 1.8; margin-top: 10px; }
 
 /* スマホ: 市場データ → カレンダー・天気・遅延 → メルマガ(最下部) の順に並べる */
 @media (max-width: 820px) {
@@ -26,7 +25,6 @@
   #card-calendar { order: 20; }
   #card-weather  { order: 30; }
   #card-transit  { order: 40; }
-  .side-note     { order: 50; }
   .mm-card       { order: 100; }
 }
 </style>
@@ -120,8 +118,6 @@
           <div class="sc-body" id="wd-rates"></div>
         </div>
 
-        <p class="mkt-note">株価指数は前日終値、為替は欧州中央銀行の参照レート（前営業日）、金利は運営が日次目安で更新しています。表示は訪問時に自動取得します。</p>
-
       </div>
     </div>
 
@@ -167,10 +163,6 @@
             <span class="sc-en font-brand-en" aria-hidden="true">Train</span>
           </div>
           <div class="sc-body" id="tr-body"></div>
-        </div>
-
-        <div class="side-note">
-          表示は訪問時に自動取得します。出典 — 天気：気象庁予報データ／電車遅延：全国主要路線の遅延情報（数分間隔）／カレンダーの祝日：内閣府データ。
         </div>
 
       </div>
