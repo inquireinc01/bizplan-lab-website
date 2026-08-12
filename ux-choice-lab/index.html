@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UX CHOICE LAB — UI/UXデザイン 2択テスト（2コース・全120問）</title>
+<title>UI/UX 2択テスト | UX Choice Lab</title>
 <style>
-  /* ===== BizPlanLabo visual system ===== */
+  /* ===== BizPlanLabo（管理者ページ準拠）visual system ===== */
   :root{
     --ink:#0f2a4a; --ink-dark:#091a30; --ink-light:#1c3f68;
     --paper:#f8f9fb; --paper-deep:#eef1f4; --white:#ffffff;
@@ -17,7 +17,7 @@
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--paper); color:#2b323d; min-width:320px;
+    background:#fff; color:#2b323d; min-width:320px;
     font-family:Arial,"BIZ UDPGothic","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
     font-size:16px; font-weight:700; line-height:1.7;
   }
@@ -25,33 +25,22 @@
   [hidden]{display:none !important;}
   button:focus-visible{outline:3px solid var(--blue); outline-offset:3px;}
   ::selection{background:var(--ink); color:#fff;}
+  .font-brand-en{font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Yu Gothic UI Semilight","Segoe UI",Arial,sans-serif; font-weight:350; font-stretch:condensed;}
 
-  /* ===== ブランドヘッダー ===== */
-  .brand-bar{
-    position:sticky; top:0; z-index:40; width:100%; height:88px;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 max(28px,calc((100vw - 1180px)/2));
-    border-bottom:1px solid rgba(15,42,74,.09);
-    background:rgba(255,255,255,.97); backdrop-filter:blur(8px);
+  /* ===== サイトヘッダー（admin.html準拠：ロゴ画像） ===== */
+  .site-header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,.97); backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(0,0,0,.06);
   }
-  .brand{display:inline-flex; align-items:center; gap:17px; border:0; background:transparent; padding:0; cursor:pointer; text-align:left;}
-  .brand-company{
-    display:grid; min-width:170px; color:#111821;
-    font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Arial Narrow",Arial,sans-serif;
-    font-size:21px; font-weight:400; line-height:1.05;
+  .site-header .inner{
+    max-width:1280px; margin:0 auto; padding:0 20px;
+    min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:16px;
   }
-  .brand-company small{
-    width:max-content; margin-top:4px; padding:3px 8px 2px;
-    background:#8b9db2; color:#fff; font-size:10px; font-weight:400; letter-spacing:.06em; line-height:1.2;
-    font-family:inherit;
-  }
-  .brand-product{
-    padding-left:17px; border-left:1px solid var(--line); color:var(--ink);
-    font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;
-    font-size:16px; font-weight:600; letter-spacing:.12em; white-space:nowrap;
-  }
+  .logo-btn{border:0; background:transparent; padding:0; cursor:pointer; display:flex; align-items:center; flex-shrink:0;}
+  .logo-btn img{height:44px; width:auto; display:block;}
   .edition{
-    padding:8px 15px; border:1px solid var(--line); border-radius:999px;
+    padding:8px 15px; border:1px solid var(--line); border-radius:9999px;
     background:var(--paper); color:var(--muted);
     font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;
     font-size:12px; font-weight:600; letter-spacing:.16em;
@@ -61,132 +50,101 @@
   .progress-copy span{color:var(--blue); font-size:11px; letter-spacing:.16em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; font-weight:600;}
   .progress-copy b{color:var(--ink); font:900 21px Arial,sans-serif;}
   .progress-copy em{color:var(--muted); font-size:13px; font-style:normal;}
-  .progress-track{position:relative; height:8px; border-radius:999px; background:var(--line); overflow:hidden; margin-bottom:6px;}
-  .progress-track i{display:block; height:100%; border-radius:999px; background:var(--blue); transition:width .35s ease;}
+  .progress-track{position:relative; height:8px; border-radius:9999px; background:var(--line); overflow:hidden; margin-bottom:6px;}
+  .progress-track i{display:block; height:100%; border-radius:9999px; background:var(--blue); transition:width .35s ease;}
 
-  /* ===== イントロ：ヒーロー ===== */
-  .hero{
-    position:relative; width:min(1180px,calc(100% - 56px)); margin:0 auto;
-    display:grid; grid-template-columns:1.02fr .98fr; align-items:center; gap:64px; padding:60px 0 66px;
+  /* ===== ページヒーロー帯（admin.html準拠：hero-pattern） ===== */
+  .hero-pattern{
+    position:relative; overflow:hidden;
+    background:linear-gradient(135deg,var(--ink-dark) 0%,var(--ink) 55%,var(--ink-light) 100%);
+    padding:1.9rem 1.25rem 2.1rem;
   }
-  .hero::before{
-    content:""; position:absolute; z-index:-1; border-radius:50%;
-    width:500px; height:500px; top:80px; right:-260px; background:var(--acid); opacity:.7; filter:blur(1px);
+  .hero-pattern::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse at 30% 30%,black 0%,transparent 70%);
+    -webkit-mask-image:radial-gradient(ellipse at 30% 30%,black 0%,transparent 70%);
   }
-  .hero::after{
-    content:""; position:absolute; z-index:-1; border-radius:50%;
-    width:150px; height:150px; left:-90px; bottom:28px; border:26px solid var(--blue); opacity:.07;
+  .hero-pattern::after{
+    content:""; position:absolute; right:-10%; top:-20%; width:60%; height:140%;
+    background:radial-gradient(circle,rgba(59,110,165,.16) 0%,transparent 65%);
   }
-  .kicker{display:flex; gap:9px; margin-bottom:25px;}
-  .kicker span{padding:6px 11px; border-radius:999px; background:var(--acid); color:var(--blue-dark); font-size:12px; font-weight:700; letter-spacing:.04em;}
-  .kicker span:nth-child(2){background:var(--ink); color:#fff;}
-  .kicker span:nth-child(3){background:var(--green-soft); color:var(--green-dark);}
-  .hero h1{color:var(--ink); font-size:clamp(46px,5.9vw,76px); font-weight:900; line-height:1.14; letter-spacing:-.055em;}
-  .hero h1 em{position:relative; z-index:1; font-style:normal;}
-  .hero h1 em::after{content:""; position:absolute; z-index:-1; left:-2px; right:-5px; bottom:3px; height:.24em; border-radius:3px; background:#cddced;}
-  .hero-lead{max-width:580px; margin:30px 0 25px; color:var(--gray-600); font-size:17px; font-weight:700; line-height:1.95;}
-  .hero-meta{display:flex; gap:34px; margin-bottom:31px;}
-  .hero-meta span{display:flex; align-items:baseline; gap:5px; color:var(--muted); font-size:14px; font-weight:800;}
-  .hero-meta b{color:var(--ink); font:900 30px/1 Arial,sans-serif;}
-  .start-button,.next-button,.ghost-button{
-    position:relative; overflow:hidden; border:0; border-radius:12px; cursor:pointer; font-weight:900;
-    transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease, background-color .2s ease;
-  }
-  .start-button{
-    display:inline-flex; align-items:center; justify-content:space-between; gap:32px;
-    min-width:270px; min-height:62px; padding:0 23px 0 26px;
-    background:var(--ink); color:#fff; box-shadow:0 10px 24px rgba(15,42,74,.22); font-size:16px;
-  }
-  .start-button::after{
-    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
-    background:linear-gradient(115deg,transparent,rgba(255,255,255,.35),transparent);
-    transform:skewX(-20deg); transition:left .65s ease; pointer-events:none;
-  }
-  .start-button:hover::after{left:130%;}
-  .start-button span{color:#dce8f5; font-size:24px;}
-  .start-button:hover,.next-button:hover,.ghost-button:hover{transform:translateY(-3px); box-shadow:0 14px 28px rgba(15,42,74,.25);}
+  .hero-inner{position:relative; z-index:10; max-width:1280px; margin:0 auto; padding:0 8px;}
+  .hero-kicker{color:rgba(255,255,255,.7); font-size:11px; font-weight:700; letter-spacing:.25em; text-transform:uppercase; margin-bottom:.4rem;}
+  .hero-pattern h1{color:#fff; font-weight:900; font-size:1.45rem; line-height:1.35;}
+  .hero-sub{color:rgba(255,255,255,.75); font-size:.85rem; font-weight:400; margin-top:.3rem;}
 
-  .hero-demo{position:relative; height:560px; display:grid; place-items:center;}
-  .hero-demo::before{
-    content:""; position:absolute; width:460px; height:460px; border-radius:50%;
-    background:linear-gradient(135deg,#091a30,#0f2a4a 55%,#1c3f68);
-  }
-  .demo-paper{position:absolute; width:min(398px,calc(100vw - 64px)); min-height:490px; border:1px solid var(--line); border-radius:16px;}
-  .paper-back{background:#8b9db2; box-shadow:0 18px 36px rgba(9,26,48,.25); transform:translate(18px,16px);}
-  .paper-back span{position:absolute; right:20px; bottom:6px; color:rgba(255,255,255,.4); font:900 90px/1 Arial,sans-serif;}
-  .paper-front{padding:28px; border-color:rgba(255,255,255,.38); background:#fff; box-shadow:0 20px 45px rgba(9,26,48,.25);}
-  .demo-top{display:flex; justify-content:space-between; padding-bottom:16px; border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; letter-spacing:.14em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; font-weight:600;}
-  .paper-front > strong{display:block; margin:23px 0 20px; color:var(--ink); font-size:25px; line-height:1.4;}
-  .demo-product{display:grid; grid-template-columns:110px 1fr; gap:18px; align-items:center;}
-  .demo-art{height:110px; display:grid; place-content:center; text-align:center; border-radius:10px; background:var(--paper-deep); color:var(--muted); font:900 17px/1.3 Arial,sans-serif; letter-spacing:.16em;}
-  .demo-art small{font-size:9px;}
-  .demo-product > div:last-child{display:grid; gap:8px;}
-  .demo-product b{font-size:15px; color:var(--ink);}
-  .demo-product > div span{font:800 14px Arial,sans-serif;}
-  .demo-options{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;}
-  .demo-options > span{min-height:52px; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--line); border-radius:9px; font-size:13px; font-weight:800;}
-  .demo-options .demo-correct{border:1.5px solid var(--blue); background:var(--acid); color:var(--ink);}
-  .paper-note{margin-top:20px; padding:12px; border-radius:8px; background:var(--ink); color:#fff; font-size:11px; text-align:center; letter-spacing:.06em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;}
-
-  /* ===== コース選択 ===== */
-  .course-section{padding:80px max(24px,calc((100vw - 1180px)/2)) 96px; background:#f2f5f8;}
-  .section-heading{display:grid; grid-template-columns:180px 1fr; align-items:start; gap:24px; margin-bottom:44px;}
-  .section-heading > span{padding-top:12px; color:var(--blue); font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; font-size:12px; font-weight:600; letter-spacing:.18em;}
-  .section-heading h2{max-width:760px; color:var(--ink); font-size:clamp(32px,4.6vw,52px); line-height:1.3; letter-spacing:-.05em; font-weight:900;}
-  .course-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  /* ===== コース選択（admin.htmlのカード様式準拠） ===== */
+  .course-section{padding:2.5rem 1.25rem 4.5rem; background:#fff;}
+  .course-inner{max-width:1280px; margin:0 auto;}
+  .course-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px;}
+  @media(max-width:920px){.course-grid{grid-template-columns:1fr;}}
   .course-card{
-    display:flex; flex-direction:column; padding:32px; text-align:left;
-    border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 8px 24px rgba(15,42,74,.06);
+    position:relative; display:flex; flex-direction:column; text-align:left; overflow:hidden;
+    background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:32px 32px 34px; padding-top:36px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05);
+    transition:transform .25s ease, box-shadow .25s ease;
   }
-  .course-en{color:var(--blue); font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; font-size:12px; font-weight:600; letter-spacing:.18em; margin-bottom:8px;}
-  .course-card h3{color:var(--ink); font-size:26px; font-weight:900; line-height:1.35; margin-bottom:10px;}
-  .course-desc{color:var(--gray-600); font-size:14.5px; font-weight:400; line-height:1.9; margin-bottom:16px;}
-  .course-meta{display:flex; gap:24px; margin-bottom:16px;}
-  .course-meta span{display:flex; align-items:baseline; gap:4px; color:var(--muted); font-size:13px; font-weight:800;}
-  .course-meta b{color:var(--ink); font:900 24px/1 Arial,sans-serif;}
-  .gchips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:22px;}
-  .gchips span{padding:4px 11px; border-radius:999px; background:var(--acid); color:var(--blue-dark); font-size:11.5px; font-weight:700;}
+  .course-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(15,42,74,.1);}
+  .course-card .watermark{
+    position:absolute; right:-4px; bottom:-16px; font-size:60px; font-weight:900; letter-spacing:0;
+    color:var(--red); opacity:.1; pointer-events:none; user-select:none; line-height:1;
+  }
+  .course-card .hoverbar{
+    position:absolute; top:0; left:0; right:0; height:6px; background:var(--red);
+    transform:scaleX(0); transform-origin:left; transition:transform .3s ease;
+  }
+  .course-card:hover .hoverbar{transform:scaleX(1);}
+  .course-num{font-size:3rem; font-weight:900; line-height:1; letter-spacing:-.02em; color:var(--ink);}
+  .course-num i{font-style:normal; color:var(--red);}
+  .course-numbar{width:2rem; height:3px; margin-top:.75rem; border-radius:9999px; background:var(--red);}
+  .course-en{margin:1.25rem 0 .5rem; color:var(--red); font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;}
+  .course-card h2{color:var(--ink); font-size:1.5rem; font-weight:900; line-height:1.3; margin-bottom:.75rem;}
+  .course-desc{color:var(--gray-600); font-size:.875rem; font-weight:400; line-height:1.8; margin-bottom:1rem;}
+  .course-meta{display:flex; gap:22px; margin-bottom:.9rem;}
+  .course-meta span{display:flex; align-items:baseline; gap:4px; color:var(--muted); font-size:12px; font-weight:700;}
+  .course-meta b{color:var(--ink); font:900 22px/1 Arial,sans-serif;}
+  .gchips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.4rem;}
+  .gchips span{padding:3px 10px; border-radius:9999px; background:var(--acid); color:var(--blue-dark); font-size:11px; font-weight:700;}
   .course-foot{margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .course-best{color:var(--muted); font-size:13px; font-weight:700;}
+  .course-best{color:var(--muted); font-size:12.5px; font-weight:700;}
   .course-best strong{color:var(--ink);}
   .course-start{
-    display:inline-flex; align-items:center; gap:18px; min-height:54px; padding:0 22px;
-    border:0; border-radius:12px; background:var(--ink); color:#fff; font-size:15px; font-weight:900; cursor:pointer;
-    box-shadow:0 8px 20px rgba(15,42,74,.2); overflow:hidden; position:relative;
-    transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease;
+    display:inline-flex; align-items:center; gap:6px; padding:9px 18px;
+    border:1px solid var(--ink); border-radius:9999px; background:#fff; color:var(--ink);
+    font-size:13px; font-weight:700; cursor:pointer;
+    transition:background-color .2s ease, color .2s ease, transform .25s ease, box-shadow .25s ease;
   }
-  .course-start::after{
-    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
-    background:linear-gradient(115deg,transparent,rgba(255,255,255,.35),transparent);
-    transform:skewX(-20deg); transition:left .65s ease; pointer-events:none;
-  }
-  .course-start:hover{transform:translateY(-3px); box-shadow:0 14px 28px rgba(15,42,74,.25);}
-  .course-start:hover::after{left:130%;}
-  .course-start span{color:#dce8f5; font-size:20px;}
+  .course-start:hover{background:var(--ink); color:#fff; transform:translateY(-2px); box-shadow:0 8px 18px rgba(15,42,74,.14);}
   .context-note{
-    max-width:960px; display:grid; grid-template-columns:32px auto 1fr; align-items:start; gap:12px;
-    margin-top:36px; padding:20px 22px; border:1px solid #d4e0ec; border-radius:12px; background:#fff;
+    max-width:1280px; display:grid; grid-template-columns:32px auto 1fr; align-items:start; gap:12px;
+    margin:36px auto 0; padding:20px 22px; border:1px solid #d4e0ec; border-radius:12px; background:var(--paper);
     color:var(--muted); font-size:14px; font-weight:400; line-height:1.8;
   }
   .context-note > span{display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--acid); color:var(--blue-dark); font-weight:900;}
   .context-note b{color:var(--ink); white-space:nowrap;}
 
   /* ===== クイズ ===== */
-  .question-shell{width:min(1120px,calc(100% - 56px)); margin:0 auto; padding:60px 0 80px;}
+  .quiz-page{background:var(--paper);}
+  .question-shell{max-width:1120px; margin:0 auto; padding:48px 20px 80px;}
   .question-heading{margin:0 auto 40px; text-align:center;}
   .question-meta{display:flex; align-items:center; justify-content:center; gap:11px; margin-bottom:20px; color:var(--muted); font-size:13px; font-weight:800;}
-  .question-meta span:first-child{padding:6px 12px; border-radius:999px; background:var(--acid); color:var(--blue-dark);}
+  .question-meta span:first-child{padding:6px 12px; border-radius:9999px; background:var(--acid); color:var(--blue-dark);}
   .question-meta i{width:3px; height:3px; background:var(--blue);}
-  .question-heading h1{margin-bottom:15px; color:var(--ink); font-size:clamp(30px,4vw,44px); line-height:1.35; letter-spacing:-.05em; font-weight:900;}
-  .question-heading p{color:var(--muted); font-size:17px; font-weight:400; line-height:1.8;}
+  .question-heading h1{margin-bottom:15px; color:var(--ink); font-size:clamp(28px,3.6vw,40px); line-height:1.35; letter-spacing:-.04em; font-weight:900;}
+  .question-heading h1::after{content:""; display:block; width:3.5rem; height:4px; background:var(--blue); margin:.7rem auto 0; border-radius:2px;}
+  .question-heading p{color:var(--muted); font-size:17px; font-weight:400; line-height:1.8; margin-top:12px;}
 
   .choice-grid{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
   .choice-card{
     position:relative; min-width:0; padding:0; overflow:hidden; text-align:left; cursor:pointer;
-    border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 8px 24px rgba(15,42,74,.07);
-    transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease, border-color .18s ease;
+    border:1px solid #e5e7eb; border-radius:.75rem; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);
+    transition:transform .25s ease, box-shadow .25s ease, opacity .18s ease, border-color .18s ease;
   }
-  .choice-card:not(:disabled):hover{transform:translateY(-3px); border-color:#b7c9dc; box-shadow:0 16px 34px rgba(15,42,74,.14);}
+  .choice-card:not(:disabled):hover{transform:translateY(-4px); border-color:#b7c9dc; box-shadow:0 16px 32px rgba(15,42,74,.1);}
   .choice-card.is-correct{border:2px solid var(--green); box-shadow:0 12px 28px rgba(69,97,85,.15);}
   .choice-card.is-wrong{border:2px solid var(--red);}
   .choice-card.is-muted{opacity:.62;}
@@ -210,7 +168,7 @@
 
   .feedback-panel{
     display:none; grid-template-columns:150px 1fr auto; gap:28px; align-items:center;
-    margin-top:36px; padding:26px 28px; border:1px solid var(--line); border-radius:16px;
+    margin-top:36px; padding:26px 28px; border:1px solid var(--line); border-radius:.75rem;
     background:#fff; box-shadow:0 12px 30px rgba(15,42,74,.1);
     animation:feedback-in .3s ease both;
   }
@@ -225,20 +183,31 @@
   .feedback-copy > div{display:flex; align-items:center; gap:12px;}
   .feedback-copy > div span{
     padding:4px 7px; border-radius:4px; background:var(--acid); color:var(--blue-dark);
-    font:600 10px "Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; letter-spacing:.12em; white-space:nowrap;
+    font-size:10px; font-weight:700; letter-spacing:.12em; white-space:nowrap;
+    font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;
   }
   .feedback-copy > div strong{color:var(--ink); font-size:14px; line-height:1.6;}
   .next-button{
     min-width:185px; min-height:54px; padding:0 19px;
     display:flex; justify-content:space-between; align-items:center; gap:16px;
-    background:var(--ink); color:#fff; box-shadow:0 8px 18px rgba(15,42,74,.18); font-size:14px;
+    border:0; border-radius:.75rem; background:var(--ink); color:#fff; cursor:pointer;
+    box-shadow:0 8px 18px rgba(15,42,74,.18); font-size:14px; font-weight:900;
+    position:relative; overflow:hidden; isolation:isolate;
+    transition:transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s cubic-bezier(.22,1,.36,1), background-color .2s ease;
   }
+  .next-button::after{
+    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(115deg,transparent,rgba(255,255,255,.4),transparent);
+    transform:skewX(-20deg); transition:left .65s ease; pointer-events:none;
+  }
+  .next-button:hover{background:var(--ink-light); transform:translateY(-3px); box-shadow:0 14px 28px rgba(15,42,74,.32);}
+  .next-button:hover::after{left:130%;}
   .next-button span{color:#dce8f5; font-size:19px;}
 
   /* ===== リザルト ===== */
   .result-hero{
-    width:min(980px,calc(100% - 48px)); min-height:520px; margin:0 auto;
-    display:grid; grid-template-columns:340px 1fr; gap:60px; align-items:center; padding:60px 0;
+    max-width:980px; min-height:480px; margin:0 auto;
+    display:grid; grid-template-columns:340px 1fr; gap:60px; align-items:center; padding:56px 20px;
   }
   .score-ring{
     position:relative; width:310px; aspect-ratio:1; display:grid; place-items:center; border-radius:50%;
@@ -247,21 +216,34 @@
   }
   .score-ring::before{content:""; position:absolute; width:76%; aspect-ratio:1; border-radius:50%; background:#fff; border:1px solid var(--line);}
   .score-ring > div{z-index:1; display:grid; justify-items:center;}
-  .score-ring span{color:var(--muted); font:600 12px "Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; letter-spacing:.18em;}
+  .score-ring span{color:var(--muted); font-size:12px; font-weight:600; letter-spacing:.18em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;}
   .score-ring strong{color:var(--ink); font:900 86px/.95 Arial,sans-serif; letter-spacing:-.08em;}
   .score-ring small{color:var(--muted); font:800 19px Arial,sans-serif;}
-  .result-level{display:inline-block; padding:8px 13px; border-radius:999px; background:var(--acid); color:var(--blue-dark); font:600 11px "Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; letter-spacing:.18em;}
-  .result-copy h1{max-width:600px; margin:22px 0 16px; color:var(--ink); font-size:clamp(30px,4.8vw,52px); line-height:1.25; letter-spacing:-.05em; font-weight:900;}
+  .result-level{display:inline-block; padding:8px 13px; border-radius:9999px; background:var(--acid); color:var(--blue-dark); font-size:11px; font-weight:700; letter-spacing:.18em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;}
+  .result-copy h1{max-width:600px; margin:22px 0 16px; color:var(--ink); font-size:clamp(28px,4.4vw,46px); line-height:1.3; letter-spacing:-.04em; font-weight:900;}
   .result-copy > p{color:var(--muted); font-size:15px; font-weight:700;}
   .result-actions{display:flex; gap:14px; margin-top:30px;}
-  .ghost-button{min-height:58px; padding:0 22px; border:1px solid #aeb8c4; background:#fff; font-size:15px;}
+  .retry-button{
+    display:inline-flex; align-items:center; gap:18px; min-height:56px; padding:0 24px;
+    border:0; border-radius:.75rem; background:var(--ink); color:#fff; font-size:15px; font-weight:900; cursor:pointer;
+    box-shadow:0 8px 20px rgba(15,42,74,.2);
+    transition:transform .25s ease, box-shadow .25s ease, background-color .2s ease;
+  }
+  .retry-button:hover{background:var(--ink-light); transform:translateY(-3px); box-shadow:0 14px 28px rgba(15,42,74,.25);}
+  .retry-button span{color:#dce8f5; font-size:19px;}
+  .ghost-button{
+    min-height:56px; padding:0 22px; border:1px solid #aeb8c4; border-radius:.75rem; background:#fff;
+    font-size:15px; font-weight:700; cursor:pointer;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .ghost-button:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(15,42,74,.12);}
 
-  .breakdown-section,.review-section{padding:80px max(24px,calc((100vw - 980px)/2));}
+  .breakdown-section,.review-section{padding:72px max(24px,calc((100vw - 980px)/2));}
   .breakdown-section{background:linear-gradient(135deg,#091a30,#0f2a4a 60%,#1c3f68); color:#fff;}
   .section-heading.compact{display:block; margin-bottom:34px;}
-  .section-heading.compact > span{display:block; padding:0; margin-bottom:12px;}
+  .section-heading.compact > span{display:block; margin-bottom:12px; font-size:12px; font-weight:700; letter-spacing:.18em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;}
   .breakdown-section .section-heading > span{color:#9cc4ec;}
-  .breakdown-section h2{color:#fff; font-size:clamp(28px,4vw,42px); font-weight:900;}
+  .breakdown-section h2{color:#fff; font-size:clamp(26px,3.6vw,38px); font-weight:900;}
   .section-heading.compact p{margin:12px 0 0; color:#b9c6d6; font-size:13px; font-weight:400;}
   .breakdown-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .breakdown-card{padding:18px 20px; border:1px solid rgba(255,255,255,.16); border-radius:12px; background:rgba(255,255,255,.04);}
@@ -269,12 +251,12 @@
   .breakdown-card b{font:900 20px Arial,sans-serif;}
   .breakdown-card strong{font-size:15px;}
   .breakdown-card > div span{color:#d7e3ef; font:800 14px Arial,sans-serif;}
-  .skill-track{position:relative; height:8px; border-radius:999px; background:rgba(255,255,255,.17); overflow:hidden;}
-  .skill-track i{display:block; height:100%; border-radius:999px; background:#8fa9c5; transition:width .5s ease;}
+  .skill-track{position:relative; height:8px; border-radius:9999px; background:rgba(255,255,255,.17); overflow:hidden;}
+  .skill-track i{display:block; height:100%; border-radius:9999px; background:#8fa9c5; transition:width .5s ease;}
 
   .review-section{background:#f5f7fa;}
   .review-section .section-heading > span{color:var(--blue);}
-  .review-section h2{color:var(--ink); font-size:clamp(28px,4vw,42px); font-weight:900;}
+  .review-section h2{color:var(--ink); font-size:clamp(26px,3.6vw,38px); font-weight:900;}
   .review-section .section-heading p{color:var(--muted);}
   .review-list{display:grid; gap:12px;}
   .review-card{display:grid; grid-template-columns:65px 1fr; gap:18px; padding:25px; border:1px solid var(--line); border-radius:12px; background:#fff;}
@@ -283,7 +265,11 @@
   .review-card h3{margin:5px 0 8px; color:var(--ink); font-size:19px;}
   .review-card p{margin:0 0 12px; font-size:14px; font-weight:400; line-height:1.8;}
   .review-card .takeaway{display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink);}
-  .review-card .takeaway span{padding:4px 6px; border-radius:4px; background:var(--acid); color:var(--blue-dark); font:600 10px "Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; letter-spacing:.1em;}
+  .review-card .takeaway span{padding:4px 6px; border-radius:4px; background:var(--acid); color:var(--blue-dark); font-size:10px; font-weight:700; letter-spacing:.1em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;}
+
+  /* ===== フッター（サイト準拠） ===== */
+  footer.site{background:#091a30; color:#fff; padding:32px 20px;}
+  footer.site p{max-width:1280px; margin:0 auto; font-size:13px; color:#8d97a3; font-weight:400;}
 
   /* ===== モックアップ部品（実物のWebパーツ） ===== */
   .mock{width:100%; max-width:320px; background:#fff; border:1px solid #e2e6ea; border-radius:8px; padding:14px; font-size:13px; font-weight:400; box-shadow:0 1px 2px rgba(15,42,74,.08); position:relative; zoom:1.2;}
@@ -361,12 +347,6 @@
 
   /* ===== レスポンシブ ===== */
   @media(max-width:920px){
-    .hero{grid-template-columns:1fr; padding-top:48px;}
-    .hero-copy{text-align:center;}
-    .kicker,.hero-meta{justify-content:center;}
-    .hero-lead{margin-left:auto; margin-right:auto;}
-    .hero-demo{height:520px;}
-    .course-grid{grid-template-columns:1fr;}
     .feedback-panel{grid-template-columns:120px 1fr;}
     .next-button{grid-column:1 / -1; justify-self:end;}
     .result-hero{grid-template-columns:290px 1fr; gap:38px;}
@@ -374,27 +354,19 @@
     .score-ring strong{font-size:70px;}
   }
   @media(max-width:720px){
-    .brand-bar{height:72px; padding:0 16px;}
-    .brand{gap:9px;}
-    .brand-company{min-width:0; font-size:15px;}
-    .brand-product{padding-left:9px; font-size:12px;}
+    .site-header .inner{min-height:64px;}
+    .logo-btn img{height:34px;}
     .edition{font-size:9px; padding:6px 8px;}
-    .hero,.question-shell,.result-hero{width:min(100% - 28px,560px);}
-    .hero{padding:44px 0 60px;}
-    .hero h1{font-size:clamp(38px,12vw,58px);}
-    .hero-demo{height:460px;}
-    .hero-demo::before{width:340px; height:340px;}
-    .demo-paper{min-height:430px;}
-    .section-heading{grid-template-columns:1fr; gap:10px;}
-    .course-card{padding:22px;}
-    .course-card h3{font-size:21px;}
+    .progress-wrap{width:52%; grid-template-columns:1fr; gap:5px;}
+    .progress-copy{justify-content:flex-end;}
+    .course-card{padding:22px; padding-top:26px;}
+    .course-card h2{font-size:1.25rem;}
     .context-note{grid-template-columns:28px 1fr;}
     .context-note b{white-space:normal;}
     .context-note > span{grid-row:1 / 3;}
-    .progress-wrap{width:52%; grid-template-columns:1fr; gap:5px;}
-    .progress-copy{justify-content:flex-end;}
-    .question-shell{padding-top:38px;}
+    .question-shell{padding-top:36px;}
     .question-heading{text-align:left;}
+    .question-heading h1::after{margin-left:0;}
     .question-meta{justify-content:flex-start; flex-wrap:wrap;}
     .choice-grid{grid-template-columns:1fr; gap:22px;}
     .preview-stage{min-height:270px; padding:22px;}
@@ -414,52 +386,36 @@
 </head>
 <body>
 
-<header class="brand-bar">
-  <button class="brand" id="brandHome" aria-label="UX Choice Lab ホームへ">
-    <span class="brand-company">TK&amp;Company Inc.<small>feat. BizPlanLaboratory</small></span>
-    <span class="brand-product">UX CHOICE LAB</span>
-  </button>
-  <span class="edition" id="editionChip">2 COURSES · 120 QUESTIONS</span>
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-copy"><span id="progressLabel"></span><b id="progressNum"></b></div>
-    <div class="progress-track"><i id="progressFill" style="width:0%"></i></div>
+<!-- ===== サイトヘッダー（管理者ページ準拠） ===== -->
+<header class="site-header">
+  <div class="inner">
+    <button class="logo-btn" id="brandHome" aria-label="コース選択へ戻る">
+      <img src="logo-horizontal.png" alt="TK&amp;Company Inc. feat. BizPlanLaboratory">
+    </button>
+    <span class="edition" id="editionChip">UX CHOICE LAB</span>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-copy"><span id="progressLabel"></span><b id="progressNum"></b></div>
+      <div class="progress-track"><i id="progressFill" style="width:0%"></i></div>
+    </div>
   </div>
 </header>
 
-<!-- ===== イントロ ===== -->
-<main class="intro-page" id="introPage">
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="kicker"><span>観察して</span><span>選んで</span><span>理由を知る</span></p>
-      <h1>そのUI、<br><em>なぜ</em>使いやすい？</h1>
-      <p class="hero-lead">実際のWebパーツを見比べながら、UI/UXの判断軸を身につける2択テスト。ネットショップ編と財務分析ツール編、2つのコースから選べます。</p>
-      <div class="hero-meta">
-        <span><b>2</b> コース</span><span><b>120</b> 問</span><span><b>14</b> 分野</span>
-      </div>
-      <a href="#courses" style="text-decoration:none"><span class="start-button">コースを選ぶ <span>↓</span></span></a>
-    </div>
-    <div class="hero-demo" aria-label="問題例">
-      <div class="demo-paper paper-back"><span>02</span></div>
-      <div class="demo-paper paper-front">
-        <div class="demo-top"><span>QUESTION 01</span><span>EC / CTA</span></div>
-        <strong>どちらが<br>結果を想像しやすい？</strong>
-        <div class="demo-product">
-          <div class="demo-art">WIRELESS<br><small>EARPHONE</small></div>
-          <div><b>ワイヤレスイヤホン</b><span>¥12,800</span></div>
-        </div>
-        <div class="demo-options"><span>追加する</span><span class="demo-correct">カートに入れる <b>✓</b></span></div>
-        <div class="paper-note">Be specific about the result.</div>
-      </div>
-    </div>
-  </section>
+<!-- ===== ページヒーロー帯 ===== -->
+<section class="hero-pattern">
+  <div class="hero-inner">
+    <p class="font-brand-en hero-kicker">UX CHOICE LAB</p>
+    <h1 id="bandTitle">UI/UX 2択テスト</h1>
+    <p class="hero-sub" id="bandSub">実際のWebパーツを見比べて、UI/UXの判断軸を身につける2択テストです。コースを選んで始めてください。</p>
+  </div>
+</section>
 
+<!-- ===== イントロ（コース選択） ===== -->
+<main class="intro-page" id="introPage">
   <section class="course-section" id="courses">
-    <div class="section-heading">
-      <span>SELECT COURSE</span>
-      <h2>2つのコースで、<br>「なんとなく」を言語化する。</h2>
+    <div class="course-inner">
+      <div class="course-grid" id="courseGrid"></div>
+      <p class="context-note"><span>!</span><b>このテストの「正解」について</b> UXの判断は目的や利用者によって変わります。各問では前提となる利用シーンを明示し、その条件下でより適切な選択肢を解説します。</p>
     </div>
-    <div class="course-grid" id="courseGrid"></div>
-    <p class="context-note"><span>!</span><b>このテストの「正解」について</b> UXの判断は目的や利用者によって変わります。各問では前提となる利用シーンを明示し、その条件下でより適切な選択肢を解説します。</p>
   </section>
 </main>
 
@@ -502,7 +458,7 @@
       <h1 id="resultMessage"></h1>
       <p id="resultSub"></p>
       <div class="result-actions">
-        <button class="start-button" id="btnRetry">もう一度挑戦 <span>↻</span></button>
+        <button class="retry-button" id="btnRetry">もう一度挑戦 <span>↻</span></button>
         <button class="ghost-button" id="btnHome">コース選択へ戻る</button>
       </div>
     </div>
@@ -516,6 +472,10 @@
     <div class="review-list" id="reviewList"></div>
   </section>
 </main>
+
+<footer class="site">
+  <p class="font-brand-en">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
+</footer>
 
 <script src="data-shop.js"></script>
 <script src="data-finance.js"></script>
@@ -536,26 +496,43 @@ function setPhase(phase){
   $("resultPage").hidden = phase !== "result";
   $("editionChip").style.display = phase === "quiz" ? "none" : "";
   $("progressWrap").style.display = phase === "quiz" ? "grid" : "none";
-  $("editionChip").textContent = phase === "result" ? "RESULT REPORT" : "2 COURSES · 120 QUESTIONS";
+  $("editionChip").textContent = phase === "result" ? "RESULT REPORT" : "UX CHOICE LAB";
+  if(phase === "intro"){
+    $("bandTitle").textContent = "UI/UX 2択テスト";
+    $("bandSub").textContent = "実際のWebパーツを見比べて、UI/UXの判断軸を身につける2択テストです。コースを選んで始めてください。";
+  }else if(phase === "quiz"){
+    $("bandTitle").textContent = course.title;
+    $("bandSub").textContent = course.desc;
+  }else{
+    $("bandTitle").textContent = "テスト結果";
+    $("bandSub").textContent = `${course.title}（全${course.questions.length}問）の結果です。`;
+  }
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
 function renderIntro(){
   const grid = $("courseGrid");
   grid.innerHTML = "";
+  const marks = ["SHOP","FINANCE"];
   COURSES.forEach((c,i)=>{
     const best = localStorage.getItem(bestKey(c));
     const card = document.createElement("div");
     card.className = "course-card";
     card.innerHTML = `
-      <div class="course-en">COURSE 0${i+1} — ${c.en}</div>
-      <h3>${c.title}<span style="color:var(--blue)">（${c.questions.length}問）</span></h3>
+      <span class="watermark font-brand-en">${marks[i]}</span>
+      <span class="hoverbar"></span>
+      <div>
+        <div class="course-num">Course.<i>${i+1}</i></div>
+        <div class="course-numbar"></div>
+      </div>
+      <p class="course-en font-brand-en">${c.en}</p>
+      <h2>${c.title}</h2>
       <p class="course-desc">${c.desc}</p>
       <div class="course-meta"><span><b>${c.questions.length}</b> 問</span><span><b>${c.minutes}</b> 分</span><span><b>${c.groups.length}</b> 分野</span></div>
       <div class="gchips">${c.groups.map(g=>`<span>${g.name}</span>`).join("")}</div>
       <div class="course-foot">
         <span class="course-best">${best !== null ? `自己ベスト：<strong>${best} / ${c.questions.length}</strong>` : "未挑戦"}</span>
-        <button class="course-start" data-course="${i}">このコースを始める <span>→</span></button>
+        <button class="course-start" data-course="${i}">テストを始める <span aria-hidden="true">→</span></button>
       </div>`;
     grid.appendChild(card);
   });
