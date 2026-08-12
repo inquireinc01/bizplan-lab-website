@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026081202" />
+<link rel="stylesheet" href="css/style.css?v=2026081212" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -19,15 +19,9 @@
   <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
     <div class="flex items-center justify-between gap-5 min-h-[78px] py-2.5 flex-wrap">
 
-      <a href="index.html" class="flex flex-col shrink-0 no-underline">
-        <span class="font-brand-en text-[11px] font-bold tracking-[.34em] uppercase text-gray-400">Bankers Weekend</span>
-        <span class="text-[24px] sm:text-[30px] font-black text-[#0f2a4a] leading-tight tracking-[.08em]">銀行員の休日</span>
+      <a href="index.html" class="flex items-center shrink-0 no-underline">
+        <img src="images/logo.png?v=100" alt="銀行員の休日 — Bankers Weekend" class="h-[46px] sm:h-[54px] w-auto" />
       </a>
-
-      <!-- 管理者モード（既定は非表示。Ctrl + Shift + D で出し入れする） -->
-      <button type="button" id="admin-toggle" class="admin-btn ml-auto" hidden>
-        <span class="dot" aria-hidden="true"></span>管理者モード
-      </button>
 
     </div>
   </div>
@@ -133,7 +127,7 @@
         <span class="text-[14px] text-gray-500">新着記事</span>
       </div>
 
-      <!-- 記事は data/posts.json から描画する（下書きは localStorage から先頭に差し込む） -->
+      <!-- 記事は data/posts.json から描画する（更新は Googleフォーム → 運営承認 → build-posts.ps1） -->
       <div id="posts"></div>
       <p class="text-center text-[12px] text-gray-400 pt-1 pb-2">記事は<strong class="text-gray-500">ダミー</strong>です。本文は <code>data/posts.json</code> から読み込んでいます。</p>
 
@@ -344,71 +338,6 @@
   </div>
 </footer>
 
-<!-- ===== 管理者モード：記事投稿フォーム ===== -->
-<div id="admin-overlay" class="admin-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-title" hidden>
-  <div class="admin-modal">
-    <div class="admin-head">
-      <span class="t" id="admin-title">記事を投稿する</span>
-      <button type="button" id="admin-close" class="admin-close" aria-label="閉じる">&times;</button>
-    </div>
-    <div class="admin-body">
-
-      <p class="admin-warn">
-        <strong>これは認証ではありません。</strong>同じキー（Ctrl + Shift + D）を押せば誰でも開けます。
-        保存先はこの端末のブラウザだけで、サーバーには何も送りません。
-        本公開は<strong>「JSONを書き出す」</strong>で保存したファイルをリポジトリに入れて行います。
-      </p>
-
-      <form id="admin-form" novalidate>
-        <div class="admin-row">
-          <div class="admin-field">
-            <label class="admin-label" for="ap-cat">カテゴリ</label>
-            <select id="ap-cat" class="admin-select"></select>
-          </div>
-          <div class="admin-field">
-            <label class="admin-label" for="ap-date">公開日</label>
-            <input type="date" id="ap-date" class="admin-input" />
-          </div>
-        </div>
-
-        <div class="admin-field">
-          <label class="admin-label" for="ap-title">タイトル</label>
-          <input type="text" id="ap-title" class="admin-input" placeholder="例：日曜の夜に、来週の予定を見ない" />
-        </div>
-
-        <div class="admin-field">
-          <label class="admin-label" for="ap-body">本文</label>
-          <textarea id="ap-body" class="admin-textarea" placeholder="空行で段落を分けます。"></textarea>
-          <p class="admin-meta" id="ap-count">0 字／読了 約 1 分</p>
-        </div>
-
-        <div class="admin-field" style="max-width:220px">
-          <label class="admin-label" for="ap-pass">投稿パスワード</label>
-          <input type="password" id="ap-pass" class="admin-input" autocomplete="current-password" placeholder="••••" />
-          <p class="admin-meta" id="ap-pass-msg" hidden style="color:#a83d3d">パスワードが違います。</p>
-        </div>
-
-        <div class="admin-actions">
-          <button type="submit" class="btn-primary">記事を追加</button>
-          <button type="button" id="ap-export" class="admin-ghost">posts.json を書き出す</button>
-          <span id="ap-msg" class="admin-msg" hidden></span>
-        </div>
-      </form>
-
-      <p class="admin-meta" style="margin-top:10px;line-height:1.8">
-        <strong>公開までの流れ：</strong>記事を追加 → 「posts.json を書き出す」→ ダウンロードしたファイルで
-        <code>site/data/posts.json</code> を置き換えてコミット → 公開されたら、この画面で下書きを削除。
-      </p>
-
-      <div class="admin-list">
-        <div class="admin-list-head" id="ap-list-head">保存済みの記事</div>
-        <div id="ap-list"></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <script>
 // メルマガ登録(フェーズ0はフォーム挙動のみ。送信先は未接続)
 document.getElementById('mm-form').addEventListener('submit', function (e) {
@@ -556,20 +485,13 @@ function renderTransit(i) {
 })();
 
 /* ============================================================
-   ブログ描画 ＋ 管理者モード（Ctrl + Shift + D）
+   ブログ描画
    ------------------------------------------------------------
-   公開記事は data/posts.json から読む（方式A）。
-   管理者モードで書いた記事は、この端末の localStorage にだけ入る「下書き」で、
-   記事一覧の先頭に「ローカル保存」バッジ付きで表示される。
-   公開は「posts.json を書き出す」→ data/posts.json を置き換えてコミット、で行う。
-
-   ※投稿パスワードは静的サイト上のJSに書いてあるので、ソースを見れば分かる。
-     これは認証ではなく、誤操作を防ぐための確認でしかない。
-     ただし投稿先はこの端末のブラウザだけなので、破られても公開サイトは書き換わらない。
+   公開記事は data/posts.json から読む。
+   記事の追加は Googleフォーム → 運営が承認 → build-posts.ps1 が
+   posts.json を再生成してコミットする。サイト側に投稿機能はない。
    ============================================================ */
 (function blog() {
-  var PASS = 'tkco';
-  var KEY = 'bw-posts';
   var CATS = [
     ['yomimono', '休日の読み物',          'YOMIMONO'],
     ['aruaru',   '銀行あるある',          'ARUARU'],
@@ -580,36 +502,13 @@ function renderTransit(i) {
     ['yume',     'たまには夢を語りたい',  'YUME'],
     ['guchi',    'たまにはグチを言いたい','GUCHI']
   ];
-  var published = [];
-
-  var host    = document.getElementById('posts');
-  var overlay = document.getElementById('admin-overlay');
-  var toggle  = document.getElementById('admin-toggle');
-  var form    = document.getElementById('admin-form');
-  var elCat   = document.getElementById('ap-cat');
-  var elDate  = document.getElementById('ap-date');
-  var elTitle = document.getElementById('ap-title');
-  var elBody  = document.getElementById('ap-body');
-  var elPass  = document.getElementById('ap-pass');
-  var elPassMsg = document.getElementById('ap-pass-msg');
-  var elCount = document.getElementById('ap-count');
-  var elMsg   = document.getElementById('ap-msg');
-  var elList  = document.getElementById('ap-list');
-  var elListHead = document.getElementById('ap-list-head');
+  var host = document.getElementById('posts');
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-  function load() {
-    try {
-      return JSON.parse(localStorage.getItem(KEY) || '[]').map(function (p) {
-        return { category: p.category || p.cat, date: p.date, title: p.title, body: p.body };
-      });
-    } catch (e) { return []; }
-  }
-  function save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
   function catOf(slug) { for (var i = 0; i < CATS.length; i++) if (CATS[i][0] === slug) return CATS[i]; return CATS[0]; }
   function readMin(text) { return Math.max(1, Math.round(String(text || '').replace(/\s/g, '').length / 500)); }
   function fmtDate(iso) {
@@ -621,146 +520,29 @@ function renderTransit(i) {
     return String(t || '').split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean)
       .map(function (p) { return '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>'; }).join('');
   }
-  function todayISO() {
-    var d = new Date(), z = function (n) { return (n < 10 ? '0' : '') + n; };
-    return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
-  }
   function byDateDesc(a, b) { return String(b.date).localeCompare(String(a.date)); }
 
-  function postHtml(p, draft) {
+  function postHtml(p) {
     var c = catOf(p.category);
     return '<article class="post cat-' + c[0] + '">'
       + '<span class="post-mark font-brand-en" aria-hidden="true">' + c[2] + '</span>'
       + '<div class="post-meta"><span class="post-cat">' + esc(c[1]) + '</span>'
-      + '<span class="post-date">' + esc(fmtDate(p.date)) + '</span>'
-      + (draft ? '<span class="post-local">ローカル保存</span>' : '') + '</div>'
-      + '<h2>' + (draft ? esc(p.title) : '<a href="#">' + esc(p.title) + '</a>') + '</h2>'
+      + '<span class="post-date">' + esc(fmtDate(p.date)) + '</span></div>'
+      + '<h2><a href="#">' + esc(p.title) + '</a></h2>'
       + '<div class="body">' + bodyHtml(p.body) + '</div>'
       + '<div class="post-foot">'
-      + (draft ? '<span class="post-more">未公開</span>'
-               : '<a href="#" class="post-more">続きを読む <span aria-hidden="true">&rarr;</span></a>')
+      + '<a href="#" class="post-more">続きを読む <span aria-hidden="true">&rarr;</span></a>'
       + '<span class="post-read">読了 約<span class="num">' + readMin(p.body) + '</span><span class="unit">分</span></span>'
       + '</div></article>';
-  }
-
-  function renderAll() {
-    var drafts = load();
-    host.innerHTML =
-      drafts.map(function (p) { return postHtml(p, true); }).join('') +
-      published.map(function (p) { return postHtml(p, false); }).join('');
   }
 
   // 公開記事を data/posts.json から読み込む
   fetch('data/posts.json', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.json() : { posts: [] }; })
-    .then(function (j) { published = (j.posts || []).slice().sort(byDateDesc); })
-    .catch(function () { published = []; })
-    .then(function () { renderAll(); });
-
-  /* ---------- ここから管理者モード ---------- */
-  if (!overlay) return;
-
-  function renderList() {
-    var posts = load();
-    elListHead.textContent = '保存済みの下書き（' + posts.length + '件）';
-    if (!posts.length) { elList.innerHTML = '<p class="admin-meta">まだありません。</p>'; return; }
-    elList.innerHTML = posts.map(function (p, i) {
-      return '<div class="admin-item"><span class="ti">' + esc(catOf(p.category)[1]) + '／' + esc(p.title) + '</span>'
-        + '<button type="button" class="admin-del" data-i="' + i + '">削除</button></div>';
-    }).join('');
-  }
-
-  CATS.forEach(function (c) {
-    var o = document.createElement('option');
-    o.value = c[0]; o.textContent = c[1]; elCat.appendChild(o);
-  });
-  elDate.value = todayISO();
-
-  elBody.addEventListener('input', function () {
-    var n = this.value.replace(/\s/g, '').length;
-    elCount.textContent = n.toLocaleString('ja-JP') + ' 字／読了 約 ' + readMin(this.value) + ' 分';
-  });
-  elPass.addEventListener('input', function () { this.style.borderColor = ''; elPassMsg.hidden = true; });
-
-  function openAdmin(on) {
-    if (on) { overlay.hidden = false; overlay.classList.add('open'); elTitle.focus(); }
-    else { overlay.classList.remove('open'); overlay.hidden = true; }
-  }
-  function showAdminBtn(on) {
-    toggle.hidden = !on;
-    if (!on) openAdmin(false);
-    try { sessionStorage.setItem('bw-admin', on ? '1' : '0'); } catch (e) {}
-  }
-
-  document.addEventListener('keydown', function (e) {
-    if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
-      e.preventDefault();
-      showAdminBtn(toggle.hidden);
-    }
-    if (e.key === 'Escape' && overlay.classList.contains('open')) openAdmin(false);
-  });
-  try { if (sessionStorage.getItem('bw-admin') === '1') toggle.hidden = false; } catch (e) {}
-
-  toggle.addEventListener('click', function () { openAdmin(true); });
-  document.getElementById('admin-close').addEventListener('click', function () { openAdmin(false); });
-  overlay.addEventListener('click', function (e) { if (e.target === overlay) openAdmin(false); });
-
-  function flash(text) {
-    elMsg.textContent = text; elMsg.hidden = false;
-    setTimeout(function () { elMsg.hidden = true; }, 4500);
-  }
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (elPass.value !== PASS) {
-      elPass.style.borderColor = '#a83d3d'; elPassMsg.hidden = false; elPass.focus();
-      return;
-    }
-    var t = elTitle.value.trim(), b = elBody.value.trim();
-    if (!t) { elTitle.style.borderColor = '#a83d3d'; elTitle.focus(); return; }
-    if (!b) { elBody.style.borderColor = '#a83d3d'; elBody.focus(); return; }
-    elTitle.style.borderColor = ''; elBody.style.borderColor = '';
-    var posts = load();
-    posts.unshift({ category: elCat.value, date: elDate.value || todayISO(), title: t, body: b });
-    save(posts);
-    elTitle.value = ''; elBody.value = ''; elPass.value = '';
-    elCount.textContent = '0 字／読了 約 1 分';
-    renderAll(); renderList();
-    flash('下書きに追加しました。記事一覧の先頭に出ています。');
-  });
-
-  // 削除は window.confirm() を使わず、1回目のクリックでボタン自身が警告表示に変わる
-  elList.addEventListener('click', function (e) {
-    var btn = e.target.closest('.admin-del');
-    if (!btn) return;
-    if (!btn.classList.contains('is-confirming')) {
-      Array.prototype.forEach.call(elList.querySelectorAll('.admin-del'), function (b) {
-        b.classList.remove('is-confirming'); b.textContent = '削除';
-      });
-      btn.classList.add('is-confirming'); btn.textContent = '本当に削除？';
-      return;
-    }
-    var posts = load();
-    posts.splice(+btn.dataset.i, 1);
-    save(posts); renderAll(); renderList();
-  });
-
-  // 公開分＋下書きをまとめて posts.json として書き出す（そのまま data/ に置ける）
-  document.getElementById('ap-export').addEventListener('click', function () {
-    var all = load().concat(published).sort(byDateDesc).map(function (p) {
-      return { category: p.category, date: p.date, title: p.title, body: p.body };
-    });
-    if (!all.length) { flash('書き出す記事がありません。'); return; }
-    var blob = new Blob([JSON.stringify({ updated: todayISO(), posts: all }, null, 2) + '\n'], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'posts.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    flash('posts.json（全 ' + all.length + ' 件）を書き出しました。');
-  });
-
-  renderList();
+    .then(function (j) {
+      host.innerHTML = (j.posts || []).slice().sort(byDateDesc).map(postHtml).join('');
+    })
+    .catch(function () { host.innerHTML = ''; });
 })();
 </script>
 
