@@ -39,12 +39,6 @@
   }
   .logo-btn{border:0; background:transparent; padding:0; cursor:pointer; display:flex; align-items:center; flex-shrink:0;}
   .logo-btn img{height:44px; width:auto; display:block;}
-  .edition{
-    padding:8px 15px; border:1px solid var(--line); border-radius:9999px;
-    background:var(--paper); color:var(--muted);
-    font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif;
-    font-size:12px; font-weight:600; letter-spacing:.16em;
-  }
   .progress-wrap{width:min(430px,48%); display:none; grid-template-columns:auto 1fr; align-items:end; gap:18px;}
   .progress-copy{display:flex; align-items:baseline; gap:12px;}
   .progress-copy span{color:var(--blue); font-size:11px; letter-spacing:.16em; font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,Arial,sans-serif; font-weight:600;}
@@ -109,7 +103,7 @@
   .course-meta b{color:var(--ink); font:900 22px/1 Arial,sans-serif;}
   .gchips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.4rem;}
   .gchips span{padding:3px 10px; border-radius:9999px; background:var(--acid); color:var(--blue-dark); font-size:11px; font-weight:700;}
-  .course-foot{margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .course-foot{margin-top:auto; display:flex; flex-direction:column; align-items:flex-start; gap:8px;}
   .course-best{color:var(--muted); font-size:12.5px; font-weight:700;}
   .course-best strong{color:var(--ink);}
   .course-start{
@@ -356,7 +350,6 @@
   @media(max-width:720px){
     .site-header .inner{min-height:64px;}
     .logo-btn img{height:34px;}
-    .edition{font-size:9px; padding:6px 8px;}
     .progress-wrap{width:52%; grid-template-columns:1fr; gap:5px;}
     .progress-copy{justify-content:flex-end;}
     .course-card{padding:22px; padding-top:26px;}
@@ -392,7 +385,6 @@
     <button class="logo-btn" id="brandHome" aria-label="コース選択へ戻る">
       <img src="logo-horizontal.png" alt="TK&amp;Company Inc. feat. BizPlanLaboratory">
     </button>
-    <span class="edition" id="editionChip">UX CHOICE LAB</span>
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-copy"><span id="progressLabel"></span><b id="progressNum"></b></div>
       <div class="progress-track"><i id="progressFill" style="width:0%"></i></div>
@@ -499,9 +491,7 @@ function setPhase(phase){
   $("introPage").hidden = phase !== "intro";
   $("quizPage").hidden = phase !== "quiz";
   $("resultPage").hidden = phase !== "result";
-  $("editionChip").style.display = phase === "quiz" ? "none" : "";
   $("progressWrap").style.display = phase === "quiz" ? "grid" : "none";
-  $("editionChip").textContent = phase === "result" ? "RESULT REPORT" : "UX CHOICE LAB";
   if(phase === "intro"){
     $("bandTitle").textContent = "UI/UX 2択テスト";
     $("bandSub").textContent = "実際のWebパーツを見比べて、UI/UXの判断軸を身につける2択テストです。コースを選んで始めてください。";
