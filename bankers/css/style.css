@@ -238,7 +238,6 @@ img { max-width: 100%; height: auto; display: block; }
   #card-totonoeru { order: 10; }
   #card-yasumu    { order: 20; }
   .col-center     { order: 30; }
-  #card-popular   { order: 40; }
   #card-archive   { order: 50; }
   #card-calendar  { order: 60; }
   #card-market    { order: 70; }
