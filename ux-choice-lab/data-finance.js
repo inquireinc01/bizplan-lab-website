@@ -43,7 +43,7 @@ window.COURSE_FINANCE = {
   context:"主要指標を並べたタイルです。整って見えるのはどちらでしょう？",
   la:"同じ高さ・同じ余白", lb:"高さも余白もバラバラ",
   good:`<div class="mock" style="display:flex;gap:8px"><div style="flex:1;border:1px solid #dde3e8;border-radius:8px;padding:10px;text-align:left"><div class="ms">売上高</div><div style="font-size:16px;font-weight:700;font-family:Arial;color:#0f2a4a">3.2<span style="font-size:10px">億円</span></div></div><div style="flex:1;border:1px solid #dde3e8;border-radius:8px;padding:10px"><div class="ms">営業利益</div><div style="font-size:16px;font-weight:700;font-family:Arial;color:#0f2a4a">4,200<span style="font-size:10px">万円</span></div></div><div style="flex:1;border:1px solid #dde3e8;border-radius:8px;padding:10px"><div class="ms">利益率</div><div style="font-size:16px;font-weight:700;font-family:Arial;color:#0f2a4a">13.1<span style="font-size:10px">%</span></div></div></div>`,
-  bad:`<div class="mock" style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1.4;border:1px solid #dde3e8;border-radius:8px;padding:16px"><div class="ms">売上高</div><div style="font-size:20px;font-weight:700;font-family:Arial;color:#0f2a4a">3.2億円</div><div class="ms">前期比+12%</div></div><div style="flex:1;border:2px solid #dde3e8;border-radius:14px;padding:6px"><div class="ms">営業利益</div><div style="font-size:13px;font-weight:700;font-family:Arial;color:#0f2a4a">4,200万円</div></div><div style="flex:.8;border:1px solid #dde3e8;padding:12px 6px"><div class="ms">利益率</div><div style="font-size:15px;font-weight:700;font-family:Arial;color:#0f2a4a">13.1%</div></div></div>`,
+  bad:`<div class="mock" style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1.4;border:1px solid #dde3e8;border-radius:8px;padding:16px"><div class="ms">売上高</div><div style="font-size:20px;font-weight:700;font-family:Arial;color:#0f2a4a">3.2<span style="font-size:11px">億円</span></div><div class="ms">前期比+12%</div></div><div style="flex:1;border:2px solid #dde3e8;border-radius:14px;padding:6px"><div class="ms">営業利益</div><div style="font-size:13px;font-weight:700;font-family:Arial;color:#0f2a4a">4,200<span style="font-size:9px">万円</span></div></div><div style="flex:.8;border:1px solid #dde3e8;padding:12px 6px"><div class="ms">利益率</div><div style="font-size:15px;font-weight:700;font-family:Arial;color:#0f2a4a">13.1%</div></div></div>`,
   principle:"同格の情報は、同じ寸法・同じ書式で並べる",
   explain:"高さ・余白・角丸がバラバラのタイルは、それだけで「重要度が違うのか？」という誤ったメッセージを発します。同格の指標は同じ寸法・同じ文字サイズで並べることで、比較のしやすさと画面の秩序が生まれます。"
 },
@@ -406,7 +406,7 @@ window.COURSE_FINANCE = {
   title:"大きな金額の入力単位",
   context:"売上3億円を入力してもらう場面です。桁の間違いが起きにくいのはどちらでしょう？",
   la:"万円単位＋換算表示", lb:"円単位でゼロを12個",
-  good:`<div class="mock"><label class="ml">売上高</label><div class="msuffix"><input class="mi" value="30,000" readonly><span class="sfx">万円</span></div><div class="mok" style="color:#2d5580">= 3億円</div></div>`,
+  good:`<div class="mock"><label class="ml">売上高</label><div class="msuffix"><input class="mi" value="30,000" readonly><span class="sfx">万円</span></div><div class="mok" style="color:#2d5580">= 3<span style="font-size:9px">億円</span></div></div>`,
   bad:`<div class="mock"><label class="ml">売上高（円）</label><input class="mi" value="300000000" readonly><div class="ms" style="margin-top:4px">※ゼロを数えて入力してください</div></div>`,
   principle:"入力単位は利用者が普段使う桁感覚に合わせる",
   explain:"中小企業の経営数値は「万円」で会話されるのが普通です。円単位でゼロを9個も打たせると、1桁間違いが頻発し、しかも見た目では気づけません。万円単位で受け付けて「= 3億円」と換算を添えれば、入力も確認も一瞬です。"
@@ -557,7 +557,7 @@ window.COURSE_FINANCE = {
   title:"数値の視覚的階層",
   context:"総合結果と内訳数値の見せ方です。何が結論か伝わるのはどちらでしょう？",
   la:"主役を大きく内訳は小さく", lb:"全数値が同じサイズ",
-  good:`<div class="mock" style="text-align:center"><div class="ms">実質的な会社の値段（株価）</div><div style="font-family:Arial;font-weight:700;color:#0f2a4a"><span style="font-size:26px">4億2,800</span><span style="font-size:13px;color:#56626f">万円</span></div><hr class="mhr"><div style="display:flex;justify-content:space-around;font-size:10px;color:#56626f"><span>類似業種比準<br><b style="font-family:Arial;font-size:12px;color:#2b323d">3.8億円</b></span><span>純資産価額<br><b style="font-family:Arial;font-size:12px;color:#2b323d">4.6億円</b></span></div></div>`,
+  good:`<div class="mock" style="text-align:center"><div class="ms">実質的な会社の値段（株価）</div><div style="font-family:Arial;font-weight:700;color:#0f2a4a"><span style="font-size:26px">4</span><span style="font-size:14px;color:#56626f">億</span><span style="font-size:26px">2,800</span><span style="font-size:13px;color:#56626f">万円</span></div><hr class="mhr"><div style="display:flex;justify-content:space-around;font-size:10px;color:#56626f"><span>類似業種比準<br><b style="font-family:Arial;font-size:12px;color:#2b323d">3.8<span style="font-size:9px">億円</span></b></span><span>純資産価額<br><b style="font-family:Arial;font-size:12px;color:#2b323d">4.6<span style="font-size:9px">億円</span></b></span></div></div>`,
   bad:`<div class="mock" style="text-align:center"><div style="font-size:14px;font-weight:700;font-family:Arial;color:#2b323d;line-height:2">実質株価　4億2,800万円<br>類似業種比準　3億8,000万円<br>純資産価額　4億6,000万円</div></div>`,
   principle:"最重要の数値を1つ決めて、サイズで主役にする",
   explain:"すべての数値が同じ大きさだと、どれが結論でどれが根拠なのか分かりません。「この画面で持ち帰ってほしい数字」を1つ決めて大きく置き、内訳や参考値は小さく従わせます。数値の大小関係＝情報の重要度、と一致させるのが原則です。"

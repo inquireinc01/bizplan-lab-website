@@ -511,8 +511,8 @@ window.COURSE_SENSE = {
   title:"専門用語の裸出し",
   context:"試算結果の項目名です。専門家でない社長にも伝わるのはどちらでしょう？",
   la:"相手の言葉に橋を架ける", lb:"正式名称をそのまま",
-  good:`<div class="mock"><div class="ms" style="margin-bottom:2px">会社の値段（株価評価額）</div><div style="font-family:Arial;font-weight:700;color:#0f2a4a"><span style="font-size:22px">4億2,800</span><span style="font-size:12px;color:#56626f">万円</span></div><div class="ms" style="margin-top:4px">国税庁の方式（類似業種比準×純資産の併用）で算定</div></div>`,
-  bad:`<div class="mock"><div class="ms" style="margin-bottom:2px">類似業種比準方式及び純資産価額方式の併用方式による評価額（L=0.75）</div><div style="font-family:Arial;font-weight:700;color:#0f2a4a"><span style="font-size:22px">4億2,800</span><span style="font-size:12px;color:#56626f">万円</span></div></div>`,
+  good:`<div class="mock"><div class="ms" style="margin-bottom:2px">会社の値段（株価評価額）</div><div style="font-family:Arial;font-weight:700;color:#0f2a4a"><span style="font-size:22px">4</span><span style="font-size:13px;color:#56626f">億</span><span style="font-size:22px">2,800</span><span style="font-size:13px;color:#56626f">万円</span></div><div class="ms" style="margin-top:4px">国税庁の方式（類似業種比準×純資産の併用）で算定</div></div>`,
+  bad:`<div class="mock"><div class="ms" style="margin-bottom:2px">類似業種比準方式及び純資産価額方式の併用方式による評価額（L=0.75）</div><div style="font-family:Arial;font-weight:700;color:#0f2a4a"><span style="font-size:22px">4</span><span style="font-size:13px;color:#56626f">億</span><span style="font-size:22px">2,800</span><span style="font-size:13px;color:#56626f">万円</span></div></div>`,
   principle:"専門用語には、相手の言葉の橋を架ける",
   explain:"正式名称は正確ですが、読み手が翻訳できなければ情報は届いていません。「会社の値段（株価評価額）」のように相手の言葉を先に置き、正式名称は括弧や補足に降ろす。正確さと分かりやすさは、順番を工夫すれば両立できます。"
 },

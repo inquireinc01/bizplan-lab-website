@@ -113,7 +113,7 @@
   .course-best{color:var(--muted); font-size:12.5px; font-weight:700;}
   .course-best strong{color:var(--ink);}
   .course-start{
-    display:inline-flex; align-items:center; gap:6px; padding:9px 18px;
+    display:inline-flex; align-items:center; gap:6px; padding:9px 18px; white-space:nowrap;
     border:1px solid var(--ink); border-radius:9999px; background:#fff; color:var(--ink);
     font-size:13px; font-weight:700; cursor:pointer;
     transition:background-color .2s ease, color .2s ease, transform .25s ease, box-shadow .25s ease;
@@ -188,8 +188,8 @@
   }
   .feedback-copy > div strong{color:var(--ink); font-size:14px; line-height:1.6;}
   .next-button{
-    min-width:185px; min-height:54px; padding:0 19px;
-    display:flex; justify-content:space-between; align-items:center; gap:16px;
+    min-width:185px; min-height:54px; padding:0 26px; white-space:nowrap;
+    display:flex; justify-content:center; align-items:center; gap:16px;
     border:0; border-radius:.75rem; background:var(--ink); color:#fff; cursor:pointer;
     box-shadow:0 8px 18px rgba(15,42,74,.18); font-size:14px; font-weight:900;
     position:relative; overflow:hidden; isolation:isolate;
@@ -224,7 +224,7 @@
   .result-copy > p{color:var(--muted); font-size:15px; font-weight:700;}
   .result-actions{display:flex; gap:14px; margin-top:30px;}
   .retry-button{
-    display:inline-flex; align-items:center; gap:18px; min-height:56px; padding:0 24px;
+    display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; min-height:56px; padding:0 24px;
     border:0; border-radius:.75rem; background:var(--ink); color:#fff; font-size:15px; font-weight:900; cursor:pointer;
     box-shadow:0 8px 20px rgba(15,42,74,.2);
     transition:transform .25s ease, box-shadow .25s ease, background-color .2s ease;
@@ -232,7 +232,7 @@
   .retry-button:hover{background:var(--ink-light); transform:translateY(-3px); box-shadow:0 14px 28px rgba(15,42,74,.25);}
   .retry-button span{color:#dce8f5; font-size:19px;}
   .ghost-button{
-    min-height:56px; padding:0 22px; border:1px solid #aeb8c4; border-radius:.75rem; background:#fff;
+    min-height:56px; padding:0 22px; white-space:nowrap; border:1px solid #aeb8c4; border-radius:.75rem; background:#fff;
     font-size:15px; font-weight:700; cursor:pointer;
     transition:transform .25s ease, box-shadow .25s ease;
   }
@@ -444,7 +444,7 @@
         <p id="fbExplain"></p>
         <div><span>TAKEAWAY</span><strong id="fbPrinciple"></strong></div>
       </div>
-      <button class="next-button" id="btnNext">次の問題へ <span>→</span></button>
+      <button class="next-button" id="btnNext">次の問題へ</button>
     </div>
   </section>
 </main>
@@ -458,8 +458,8 @@
       <h1 id="resultMessage"></h1>
       <p id="resultSub"></p>
       <div class="result-actions">
-        <button class="retry-button" id="btnReview" hidden>間違えた問題だけ復習する <span>→</span></button>
-        <button class="retry-button" id="btnRetry">もう一度挑戦 <span>↻</span></button>
+        <button class="retry-button" id="btnReview" hidden>間違えた問題だけ復習する</button>
+        <button class="retry-button" id="btnRetry">もう一度挑戦する</button>
         <button class="ghost-button" id="btnHome">コース選択へ戻る</button>
       </div>
     </div>
@@ -568,7 +568,7 @@ function renderQuestion(){
   ["markA","markB"].forEach(id=>{ $(id).hidden = true; $(id).className = "result-mark"; });
   $("feedbackPanel").className = "feedback-panel";
   $("kbdHint").style.display = "";
-  $("btnNext").innerHTML = (idx === total - 1 ? "結果を見る" : "次の問題へ") + " <span>→</span>";
+  $("btnNext").textContent = idx === total - 1 ? "結果を見る" : "次の問題へ";
 }
 
 function choose(pick){ // 0=A, 1=B
