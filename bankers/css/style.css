@@ -467,7 +467,8 @@ img { max-width: 100%; height: auto; display: block; }
   position: relative; overflow: hidden;
   background: var(--post-color, var(--color-navy));
   border: none; border-radius: .75rem; color: #fff;
-  padding: 28px 32px 26px; margin-bottom: 20px;
+  /* 上下はバランス良く詰める(2026-08-12指示)。左右は据え置き */
+  padding: 17px 32px 15px; margin-bottom: 12px;
   transition: transform .25s ease, box-shadow .25s ease;
 }
 .post:hover { transform: translateY(-3px); box-shadow: 0 18px 34px rgba(15,42,74,.22); }
@@ -487,7 +488,7 @@ img { max-width: 100%; height: auto; display: block; }
   color: rgba(255,255,255,.10); pointer-events: none; user-select: none; white-space: nowrap;
 }
 
-.post-meta { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.post-meta { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 7px; }
 /* カード自体が色付きなので、ラベルは半透明の白ベタに置き換える */
 .post-cat {
   font-size: var(--fs-3); font-weight: 700; letter-spacing: .14em; line-height: 1.5;
@@ -497,7 +498,7 @@ img { max-width: 100%; height: auto; display: block; }
 .post-date { font-family: Arial, sans-serif; font-size: var(--fs-3); font-weight: 700; color: rgba(255,255,255,.9); letter-spacing: .12em; }
 .post h2 {
   position: relative; z-index: 1;
-  font-size: var(--fs-6); color: #fff; line-height: 1.55; letter-spacing: .04em; margin-bottom: 14px;
+  font-size: var(--fs-6); color: #fff; line-height: 1.5; letter-spacing: .04em; margin-bottom: 8px;
 }
 .post h2 a { color: #fff; text-decoration: none; }
 .post h2 a:hover { text-decoration: underline; text-underline-offset: 5px; }
@@ -516,11 +517,11 @@ img { max-width: 100%; height: auto; display: block; }
 .post-foot {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,.22);
+  margin-top: 11px; padding-top: 9px; border-top: 1px solid rgba(255,255,255,.22);
 }
 .post-more {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: var(--fs-3); font-weight: 700; padding: 9px 22px; border-radius: 9999px;
+  font-size: var(--fs-3); font-weight: 700; padding: 6px 18px; border-radius: 9999px;
   border: 1px solid rgba(255,255,255,.6); color: #fff; background: transparent;
   text-decoration: none; transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
