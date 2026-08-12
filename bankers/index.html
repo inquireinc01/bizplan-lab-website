@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026081212" />
+<link rel="stylesheet" href="css/style.css?v=2026081213" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -64,7 +64,7 @@
         </div>
 
         <!-- コンテンツカード -->
-        <a href="totonoeru.html" class="content-card lift-card">
+        <a href="totonoeru.html" id="card-totonoeru" class="content-card lift-card">
           <span class="cc-bar" style="background-color:#3b6ea5"></span>
           <span class="cc-mark font-brand-en" aria-hidden="true">TOTONOE</span>
           <span class="cc-kicker font-brand-en">Prepare</span>
@@ -73,7 +73,7 @@
           <span class="cc-go" aria-hidden="true">&rarr;</span>
         </a>
 
-        <a href="yasumu.html" class="content-card lift-card">
+        <a href="yasumu.html" id="card-yasumu" class="content-card lift-card">
           <span class="cc-bar" style="background-color:#5c8272"></span>
           <span class="cc-mark font-brand-en" aria-hidden="true">YASUMU</span>
           <span class="cc-kicker font-brand-en">Rest</span>
@@ -83,7 +83,7 @@
         </a>
 
         <!-- 人気記事 -->
-        <div class="side-card">
+        <div class="side-card" id="card-popular">
           <div class="sc-head">
             <span class="sc-ja">人気記事</span>
             <span class="sc-en font-brand-en" aria-hidden="true">Popular</span>
@@ -98,7 +98,7 @@
         </div>
 
         <!-- 過去記事カテゴリ別 -->
-        <div class="side-card">
+        <div class="side-card" id="card-archive">
           <div class="sc-head">
             <span class="sc-ja">過去記事（カテゴリ別）</span>
             <span class="sc-en font-brand-en" aria-hidden="true">Archive</span>
@@ -138,7 +138,7 @@
       <div class="side-stack flex flex-col gap-3">
 
         <!-- カレンダー -->
-        <div class="side-card">
+        <div class="side-card m-fold" id="card-calendar">
           <div class="sc-head">
             <span class="sc-ja">カレンダー</span>
             <span class="sc-en font-brand-en" aria-hidden="true">Calendar</span>
@@ -191,7 +191,7 @@
         </div>
 
         <!-- 指数・金利 -->
-        <div class="side-card">
+        <div class="side-card m-fold" id="card-market">
           <div class="sc-head">
             <span class="sc-ja">指数・金利</span>
             <span class="sc-en font-brand-en" aria-hidden="true">Market</span>
@@ -240,7 +240,7 @@
         </div>
 
         <!-- 天気予報(都道府県切替) -->
-        <div class="side-card">
+        <div class="side-card m-fold" id="card-weather">
           <div class="sc-head">
             <span class="sc-ja">天気予報</span>
             <select id="wx-pref" class="sc-select" aria-label="天気予報の都道府県"></select>
@@ -250,7 +250,7 @@
         </div>
 
         <!-- 交通アラート(都道府県切替・遅延/欠航/渋滞のみ) -->
-        <div class="side-card">
+        <div class="side-card m-fold" id="card-transit">
           <div class="sc-head">
             <span class="sc-ja">交通アラート</span>
             <span id="tr-count" class="sc-count zero">0</span>
@@ -339,6 +339,15 @@
 </footer>
 
 <script>
+// スマホの格納式カード(.m-fold)をタップで開閉する。
+// PCではCSS側が常時展開なので、openクラスが付いても見た目は変わらない。
+Array.prototype.forEach.call(document.querySelectorAll('.m-fold > .sc-head'), function (head) {
+  head.addEventListener('click', function (e) {
+    if (e.target.closest('select')) return; // 都道府県セレクタの操作では開閉しない
+    head.parentElement.classList.toggle('open');
+  });
+});
+
 // メルマガ登録(フェーズ0はフォーム挙動のみ。送信先は未接続)
 document.getElementById('mm-form').addEventListener('submit', function (e) {
   e.preventDefault();
