@@ -593,14 +593,17 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0 6px; border-radius: 3px; margin-left: 6px; white-space: nowrap;
 }
 
-/* ---------- タイトルのみ表示(新着4件目以降・過去記事一覧) ----------
-   タイトルクリックで全文へ開き、たたむと元に戻る(配線は index.html 側) */
-.post-titleonly { padding: 9px 15px 11px; }
+/* ---------- タイトルのみ表示(新着・過去記事一覧) ----------
+   タイトルクリックで全文へ開き、たたむと元に戻る(配線は index.html 側)。
+   一覧性を優先して縦幅は最小限に詰める(2026-08-12指示) */
+.post-titleonly { padding: 7px 14px 8px; margin-bottom: 8px; }
 .post-titleonly .post-mark,
 .post-titleonly .body,
 .post-titleonly .post-foot { display: none; }
-.post-titleonly .post-meta { margin-bottom: 3px; }
-.post-titleonly h2 { font-size: var(--fs-4); margin: 0; line-height: 1.6; }
+.post-titleonly .post-meta { margin-bottom: 2px; gap: 8px; }
+.post-titleonly .post-cat { font-size: var(--fs-1); padding: 2px 10px; letter-spacing: .1em; }
+.post-titleonly .post-date { font-size: var(--fs-1); }
+.post-titleonly h2 { font-size: var(--fs-4); margin: 0; line-height: 1.55; }
 .post h2 a { cursor: pointer; }
 
 /* 新着の下の「過去記事をすべて見る」 */
