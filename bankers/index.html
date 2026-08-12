@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026081214" />
+<link rel="stylesheet" href="css/style.css?v=2026081215" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -545,11 +545,31 @@ function renderTransit(i) {
       + '</div></article>';
   }
 
+  // 本文は5行に畳んであるので(CSS側の line-clamp)、「続きを読む」で開閉する。
+  // 5行に収まっている記事はボタン自体を隠す。
+  function wireReadMore() {
+    Array.prototype.forEach.call(host.querySelectorAll('.post'), function (post) {
+      var body = post.querySelector('.body');
+      var more = post.querySelector('.post-more');
+      if (!body || !more) return;
+      if (body.scrollHeight <= body.clientHeight + 4) { more.hidden = true; return; }
+      more.addEventListener('click', function (e) {
+        e.preventDefault();
+        var open = post.classList.toggle('expanded');
+        more.innerHTML = open
+          ? 'たたむ <span aria-hidden="true">&uarr;</span>'
+          : '続きを読む <span aria-hidden="true">&rarr;</span>';
+        if (!open) post.scrollIntoView({ block: 'nearest' });
+      });
+    });
+  }
+
   // 公開記事を data/posts.json から読み込む
   fetch('data/posts.json', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.json() : { posts: [] }; })
     .then(function (j) {
       host.innerHTML = (j.posts || []).slice().sort(byDateDesc).map(postHtml).join('');
+      wireReadMore();
     })
     .catch(function () { host.innerHTML = ''; });
 })();

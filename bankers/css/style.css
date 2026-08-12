@@ -501,6 +501,11 @@ img { max-width: 100%; height: auto; display: block; }
 .post h2 a:hover { text-decoration: underline; text-underline-offset: 5px; }
 /* 本文は白 94%。#3B6EA5(最も明るいカテゴリ色)でもコントラスト 4.9:1 で AA を満たす */
 .post .body { position: relative; z-index: 1; font-size: var(--fs-3); line-height: 2.05; color: rgba(255,255,255,.94); }
+/* 本文は5行で畳む。「続きを読む」で全文を展開する(開閉JSは index.html 側) */
+.post:not(.expanded) .body {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;
+}
+.post .body p + p { margin-top: .9em; }
 .post-foot {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
