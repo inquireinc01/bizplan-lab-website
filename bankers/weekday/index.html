@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="../css/style.css?v=2026081229" />
 <style>
 /* 平日ページ専用: 中央カラムの市場データはメインコンテンツなので行を大きく組む */
-.mkt-wide .idx-row { padding: 10px 2px; }
+.mkt-wide .idx-row { padding: 3px 2px; }
 .mkt-wide .idx-row .l { font-size: var(--fs-4); }
 .mkt-wide .idx-row .v { font-size: var(--fs-5); }
 .mkt-wide .idx-row .c { font-size: var(--fs-3); }
@@ -138,15 +138,7 @@
 
         <div class="side-card">
           <div class="sc-head">
-            <span class="sc-ja">雇用統計</span>
-            <span class="sc-en font-brand-en" aria-hidden="true">Employment</span>
-          </div>
-          <div class="sc-body" id="wd-hr"></div>
-        </div>
-
-        <div class="side-card">
-          <div class="sc-head">
-            <span class="sc-ja">政府発表</span>
+            <span class="sc-ja">政府統計</span>
             <span class="sc-en font-brand-en" aria-hidden="true">Government</span>
           </div>
           <div class="sc-body" id="wd-gov"></div>
@@ -321,8 +313,7 @@ function isoDate(d) {
 (function marketMain() {
   var els = { jp: document.getElementById('wd-jp'), us: document.getElementById('wd-us'),
               cmd: document.getElementById('wd-cmd'), re: document.getElementById('wd-re'),
-              am: document.getElementById('wd-am'), hr: document.getElementById('wd-hr'),
-              gov: document.getElementById('wd-gov'),
+              am: document.getElementById('wd-am'), gov: document.getElementById('wd-gov'),
               rates: document.getElementById('wd-rates') };
   var elFx = document.getElementById('wd-fx');
   var fx = { usd: null, eur: null, aud: null };
@@ -342,7 +333,7 @@ function isoDate(d) {
   }
   function fmt(n, d) { var dg = d === undefined ? 2 : d; return Number(n).toLocaleString('ja-JP', { minimumFractionDigits: dg, maximumFractionDigits: dg }); }
   function loading(el) { el.innerHTML = row('読み込み中…', ''); }
-  ['jp','us','cmd','re','am','hr','gov','rates'].forEach(function (g) { loading(els[g]); }); loading(elFx);
+  ['jp','us','cmd','re','am','gov','rates'].forEach(function (g) { loading(els[g]); }); loading(elFx);
   function paintFx() {
     var html = '';
     if (fx.usd) html += row('ドル円', fx.usd.v.toFixed(2), chgNum(fx.usd.v, fx.usd.p, false));
@@ -353,8 +344,8 @@ function isoDate(d) {
   fetch(API_BASE + '?type=market')
     .then(function (r) { return r.json(); })
     .then(function (j) {
-      ['jp', 'us', 'cmd', 're', 'am', 'hr', 'gov'].forEach(function (g) {
-        var list = j[g] || [];
+      ['jp', 'us', 'cmd', 're', 'am', 'gov'].forEach(function (g) {
+        var list = g === 'gov' ? (j.hr || []).concat(j.gov || []) : (j[g] || []);
         els[g].innerHTML = list.length
           ? list.map(function (x) {
               if (x.close == null) return row(wEsc(x.label), wEsc(x.text || ''), chgText(x.change));
