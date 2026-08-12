@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026081218" />
+<link rel="stylesheet" href="css/style.css?v=2026081219" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -113,7 +113,7 @@
             <a href="#" class="cat-row"><span class="n"><span class="cat-dot yume"></span>たまには夢を語りたい</span><span class="cnt">1</span></a>
             <a href="#" class="cat-row"><span class="n"><span class="cat-dot guchi"></span>たまにはグチを言いたい</span><span class="cnt">2</span></a>
           </div>
-          <div class="sc-note">記事はダミーです。カテゴリと件数はフェーズ0の運用開始後に実データへ差し替えます。</div>
+          <div class="sc-note">帯を押すと全件一覧、カテゴリを押すと絞り込み一覧を表示します。件数は実データです。</div>
         </div>
 
       </div>
@@ -129,7 +129,7 @@
 
       <!-- 記事は data/posts.json から描画する（更新は Googleフォーム → 運営承認 → build-posts.ps1） -->
       <div id="posts"></div>
-      <p class="text-center text-[12px] text-gray-400 pt-1 pb-2">記事は<strong class="text-gray-500">ダミー</strong>です。本文は <code>data/posts.json</code> から読み込んでいます。</p>
+      <p class="text-center text-[12px] text-gray-400 pt-1 pb-2">一部の記事は運用開始前のサンプルです。</p>
 
     </div>
 
@@ -531,9 +531,11 @@ function renderTransit(i) {
   }
   function byDateDesc(a, b) { return String(b.date).localeCompare(String(a.date)); }
 
-  function postHtml(p) {
+  var all = [];
+
+  function postHtml(p, titleOnly) {
     var c = catOf(p.category);
-    return '<article class="post cat-' + c[0] + '">'
+    return '<article class="post cat-' + c[0] + (titleOnly ? ' post-titleonly' : '') + '" data-compact="' + (titleOnly ? '1' : '0') + '">'
       + '<span class="post-mark font-brand-en" aria-hidden="true">' + c[2] + '</span>'
       + '<div class="post-meta"><span class="post-cat">' + esc(c[1]) + '</span>'
       + '<span class="post-date">' + esc(fmtDate(p.date)) + '</span></div>'
@@ -545,21 +547,108 @@ function renderTransit(i) {
       + '</div></article>';
   }
 
-  // 本文は5行に畳んであるので(CSS側の line-clamp)、「続きを読む」で開閉する。
-  // 5行に収まっている記事はボタン自体を隠す。
-  function wireReadMore() {
-    Array.prototype.forEach.call(host.querySelectorAll('.post'), function (post) {
+  /* 開閉の配線。
+     通常カード: 本文3行畳み(CSS) ⇄ 全文。3行に収まる記事はボタンを隠す。
+     タイトルのみカード(data-compact=1): タイトル ⇄ 全文。タイトルクリックでも開閉する。 */
+  function wirePosts(container) {
+    Array.prototype.forEach.call(container.querySelectorAll('.post'), function (post) {
       var body = post.querySelector('.body');
       var more = post.querySelector('.post-more');
-      if (!body || !more) return;
-      if (body.scrollHeight <= body.clientHeight + 4) { more.hidden = true; return; }
-      more.addEventListener('click', function (e) {
-        e.preventDefault();
-        var open = post.classList.toggle('expanded');
+      var title = post.querySelector('h2 a');
+      var compact = post.getAttribute('data-compact') === '1';
+
+      function setMoreLabel(open) {
         more.innerHTML = open
           ? 'たたむ <span aria-hidden="true">&uarr;</span>'
           : '続きを読む <span aria-hidden="true">&rarr;</span>';
+      }
+      function openCompact() {
+        post.classList.remove('post-titleonly'); post.classList.add('expanded');
+        setMoreLabel(true);
+      }
+      function closeCompact() {
+        post.classList.add('post-titleonly'); post.classList.remove('expanded');
+        post.scrollIntoView({ block: 'nearest' });
+      }
+      function toggleCard() {
+        var open = post.classList.toggle('expanded');
+        setMoreLabel(open);
         if (!open) post.scrollIntoView({ block: 'nearest' });
+      }
+
+      title.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (compact) { post.classList.contains('post-titleonly') ? openCompact() : closeCompact(); }
+        else { toggleCard(); }
+      });
+      more.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (compact) { closeCompact(); } else { toggleCard(); }
+      });
+      if (!compact && body.scrollHeight <= body.clientHeight + 4) more.hidden = true;
+    });
+  }
+
+  /* 新着: 先頭3件はカード、4〜10件目はタイトルのみ。11件目以降は過去記事へ。 */
+  function renderLatest() {
+    var html = all.slice(0, 3).map(function (p) { return postHtml(p, false); }).join('')
+      + all.slice(3, 10).map(function (p) { return postHtml(p, true); }).join('');
+    if (all.length > 10) {
+      html += '<p class="latest-archive-link"><a href="#archive">過去記事をすべて見る（全<span class="num">'
+        + all.length + '</span><span class="unit">件</span>） <span aria-hidden="true">&rarr;</span></a></p>';
+    }
+    host.innerHTML = html;
+    wirePosts(host);
+  }
+
+  /* 過去記事: 中央カラムにタイトルのみで全件並べる。カテゴリ絞り込み対応。 */
+  function renderArchive(slug) {
+    var list = slug ? all.filter(function (p) { return p.category === slug; }) : all;
+    var c = slug ? catOf(slug) : null;
+    host.innerHTML =
+      '<div class="archive-head">'
+      + '<a href="#" class="archive-back">&larr; 新着に戻る</a>'
+      + '<span class="archive-title">過去記事' + (c ? '：' + esc(c[1]) : '（すべて）')
+      + '　全<span class="num">' + list.length + '</span><span class="unit">件</span></span>'
+      + '</div>'
+      + list.map(function (p) { return postHtml(p, true); }).join('')
+      + (list.length ? '' : '<p class="archive-empty">このカテゴリの記事はまだありません。</p>');
+    wirePosts(host);
+    host.querySelector('.archive-back').addEventListener('click', function (e) {
+      e.preventDefault();
+      location.hash = '';
+    });
+  }
+
+  function route() {
+    var h = location.hash;
+    if (h.indexOf('#archive') === 0) {
+      var slug = h.indexOf('#archive-') === 0 ? h.slice(9) : '';
+      renderArchive(CATS.some(function (c) { return c[0] === slug; }) ? slug : null);
+      document.querySelector('.col-center').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      renderLatest();
+    }
+  }
+  window.addEventListener('hashchange', route);
+
+  /* 左カラム「過去記事(カテゴリ別)」を実データに接続する。
+     帯クリック=全件一覧、カテゴリ行クリック=絞り込み一覧。件数も実数に更新。 */
+  function wireArchiveCard() {
+    var card = document.getElementById('card-archive');
+    if (!card) return;
+    var head = card.querySelector('.sc-head');
+    head.style.cursor = 'pointer';
+    head.addEventListener('click', function () { location.hash = '#archive'; });
+    Array.prototype.forEach.call(card.querySelectorAll('.cat-row'), function (row) {
+      var dot = row.querySelector('.cat-dot');
+      var slug = null;
+      if (dot) Array.prototype.forEach.call(dot.classList, function (cl) { if (cl !== 'cat-dot') slug = cl; });
+      var cnt = row.querySelector('.cnt');
+      if (cnt && slug) cnt.textContent = String(all.filter(function (p) { return p.category === slug; }).length);
+      row.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (slug) location.hash = '#archive-' + slug;
       });
     });
   }
@@ -568,8 +657,9 @@ function renderTransit(i) {
   fetch('data/posts.json', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.json() : { posts: [] }; })
     .then(function (j) {
-      host.innerHTML = (j.posts || []).slice().sort(byDateDesc).map(postHtml).join('');
-      wireReadMore();
+      all = (j.posts || []).slice().sort(byDateDesc);
+      wireArchiveCard();
+      route();
     })
     .catch(function () { host.innerHTML = ''; });
 })();

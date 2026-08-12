@@ -593,6 +593,31 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0 6px; border-radius: 3px; margin-left: 6px; white-space: nowrap;
 }
 
+/* ---------- タイトルのみ表示(新着4件目以降・過去記事一覧) ----------
+   タイトルクリックで全文へ開き、たたむと元に戻る(配線は index.html 側) */
+.post-titleonly { padding: 9px 15px 11px; }
+.post-titleonly .post-mark,
+.post-titleonly .body,
+.post-titleonly .post-foot { display: none; }
+.post-titleonly .post-meta { margin-bottom: 3px; }
+.post-titleonly h2 { font-size: var(--fs-4); margin: 0; line-height: 1.6; }
+.post h2 a { cursor: pointer; }
+
+/* 新着の下の「過去記事をすべて見る」 */
+.latest-archive-link { text-align: center; padding: 6px 0 2px; font-size: var(--fs-2); }
+.latest-archive-link a { color: var(--color-slate); font-weight: 700; text-decoration: none; }
+.latest-archive-link a:hover { color: var(--color-navy); text-decoration: underline; }
+
+/* 過去記事一覧のヘッダ行 */
+.archive-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 2px 2px 6px;
+}
+.archive-back { font-size: var(--fs-2); font-weight: 700; color: var(--color-slate); text-decoration: none; }
+.archive-back:hover { color: var(--color-navy); text-decoration: underline; }
+.archive-title { font-size: var(--fs-2); font-weight: 700; color: var(--color-slate); }
+.archive-empty { font-size: var(--fs-2); color: var(--color-slate-light); padding: 8px 2px; }
+
 /* ---------- パンくず ---------- */
 .crumb { font-size: var(--fs-2); color: var(--color-slate-light); }
 .crumb a { color: var(--color-slate); text-decoration: none; }
