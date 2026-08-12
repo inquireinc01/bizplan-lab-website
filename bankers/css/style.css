@@ -240,11 +240,9 @@ img { max-width: 100%; height: auto; display: block; }
   .col-center     { order: 30; }
   #card-archive   { order: 50; }
   #card-calendar  { order: 60; }
-  #card-market    { order: 70; }
   #card-weather   { order: 80; }
   #card-transit   { order: 90; }
   .side-note      { order: 95; }
-  .mm-card        { order: 100; }
 
   /* 格納式カード: 帯だけ見せて、タップで開閉(開閉JSは index.html 側) */
   .m-fold > .sc-head { cursor: pointer; padding-right: 34px; }

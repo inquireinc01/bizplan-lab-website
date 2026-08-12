@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="../css/style.css?v=2026081226" />
+<link rel="stylesheet" href="../css/style.css?v=2026081227" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -44,24 +44,6 @@
     <!-- ============ 左カラム 1/4 ============ -->
     <div class="col-left">
       <div class="flex flex-col gap-4">
-
-        <!-- メールマガジン登録 -->
-        <div class="side-card mm-card">
-          <div class="sc-head">
-            <span class="sc-ja">メールマガジン</span>
-            <span class="sc-en font-brand-en" aria-hidden="true">Weekday</span>
-          </div>
-          <div class="sc-body">
-            <div class="mm-name">銀行員の平日</div>
-            <p class="mm-lede">平日の朝、指数・金利・ニュースを1通に。</p>
-            <form id="mm-form" class="mm-form" novalidate>
-              <input type="email" id="mm-email" class="mm-input" placeholder="mail@example.com" autocomplete="email" aria-label="メールアドレス" />
-              <button type="submit" class="btn-primary mm-btn">登録無料</button>
-            </form>
-            <a href="#" id="mm-sample" class="mm-sample">サンプルを見る <span aria-hidden="true">&rarr;</span></a>
-            <div id="mm-done" class="mm-done" hidden>ご登録ありがとうございます。次の平日の朝からお届けします。</div>
-          </div>
-        </div>
 
         <!-- コンテンツカード -->
         <a href="totonoeru.html" id="card-totonoeru" class="content-card lift-card">
@@ -143,16 +125,6 @@
           </div>
         </div>
 
-        <!-- 指数・金利 -->
-        <div class="side-card m-fold" id="card-market">
-          <div class="sc-head">
-            <span class="sc-ja">指数・金利</span>
-            <span class="sc-en font-brand-en" aria-hidden="true">Market</span>
-          </div>
-          <!-- 値はすべて訪問時に取得(株価=前日終値・為替=前営業日参照レート・金利=指標シート) -->
-          <div class="sc-body" id="mkt-body"></div>
-        </div>
-
         <!-- 天気予報(都道府県切替) -->
         <div class="side-card m-fold" id="card-weather">
           <div class="sc-head">
@@ -175,7 +147,7 @@
 
         <!-- 右カラム共通の注記(出典) -->
         <div class="side-note">
-          表示は訪問時に自動取得します。出典 — 天気：気象庁予報データ／為替：欧州中央銀行参照レート（前営業日）／株価指数：前日終値／金利：運営更新（日次目安）／電車遅延：全国主要路線の遅延情報（数分間隔）。
+          表示は訪問時に自動取得します。出典 — 天気：気象庁予報データ／電車遅延：全国主要路線の遅延情報（数分間隔）／カレンダーの祝日：内閣府データ。指数・金利・メールマガジンは「銀行員の平日」へ移動しました。
         </div>
 
       </div>
@@ -261,26 +233,8 @@ Array.prototype.forEach.call(document.querySelectorAll('.m-fold > .sc-head'), fu
   });
 });
 
-// メルマガ登録(フェーズ0はフォーム挙動のみ。送信先は未接続)
-document.getElementById('mm-form').addEventListener('submit', function (e) {
-  e.preventDefault();
-  var input = document.getElementById('mm-email');
-  var value = input.value.trim();
-  if (!value || value.indexOf('@') < 0) {
-    input.style.borderColor = '#a83d3d';
-    input.focus();
-    return;
-  }
-  document.getElementById('mm-form').hidden = true;
-  document.getElementById('mm-sample').hidden = true;
-  document.getElementById('mm-done').hidden = false;
-});
-document.getElementById('mm-email').addEventListener('change', function () {
-  this.style.borderColor = '';
-});
-
 /* ============================================================
-   ライブウィジェット — カレンダー／指数・金利／天気／電車遅延
+   ライブウィジェット — カレンダー／天気／電車遅延
    ------------------------------------------------------------
    すべて訪問時に取得する。出典:
    ・カレンダー: JSで当月生成。祝日は holidays-jp の公開JSON
@@ -356,60 +310,6 @@ function isoDate(d) {
     .then(function (r) { return r.json(); })
     .then(function (j) { holidays = j || {}; paint(); })
     .catch(function () {});
-})();
-
-/* ---------- 指数・金利(株価=前日終値・為替=前営業日・金利=指標シート) ---------- */
-(function marketLive() {
-  var body = document.getElementById('mkt-body');
-  var eq = null, fx = { usd: null, eur: null }, rates = null;
-  function chg(cur, prev, pct) {
-    var d = pct ? (cur - prev) / prev * 100 : (cur - prev);
-    var cls = d > 0.0005 ? 'up' : d < -0.0005 ? 'down' : 'flat';
-    var sign = d > 0 ? '+' : '';
-    return '<span class="c ' + cls + '">' + sign + d.toFixed(2) + (pct ? '%' : '') + '</span>';
-  }
-  function row(l, v, c) {
-    return '<div class="idx-row"><span class="l">' + l + '</span><span class="r"><span class="v">' + v + '</span>' + (c || '') + '</span></div>';
-  }
-  function paint() {
-    var html = '<div class="idx-group font-brand-en">Equity</div>';
-    if (eq === null) html += row('読み込み中…', '');
-    else if (!eq.length) html += row('取得できませんでした', '');
-    else eq.forEach(function (x) {
-      html += row(wEsc(x.label), Number(x.close).toLocaleString('ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), chg(x.close, x.prev, true));
-    });
-    html += '<div class="idx-group font-brand-en">FX</div>';
-    if (fx.usd) html += row('USD／JPY', fx.usd.v.toFixed(2), chg(fx.usd.v, fx.usd.p, false));
-    if (fx.eur) html += row('EUR／JPY', fx.eur.v.toFixed(2), chg(fx.eur.v, fx.eur.p, false));
-    if (!fx.usd && !fx.eur) html += row('読み込み中…', '');
-    html += '<div class="idx-group font-brand-en">Rates</div>';
-    if (rates === null) html += row('読み込み中…', '');
-    else if (!rates.length) html += row('取得できませんでした', '');
-    else rates.forEach(function (x) {
-      var d = x.delta ? '<span class="c flat">' + wEsc(x.delta) + '</span>' : '';
-      html += row(wEsc(x.label), wEsc(x.value) + '<span class="unit">%</span>', d);
-    });
-    body.innerHTML = html;
-  }
-  paint();
-  fetch(API_BASE + '?type=market')
-    .then(function (r) { return r.json(); })
-    .then(function (j) { eq = j.equity || []; rates = j.rates || []; paint(); })
-    .catch(function () { eq = []; rates = []; paint(); });
-  ['USD', 'EUR'].forEach(function (base) {
-    var from = isoDate(new Date(Date.now() - 10 * 86400000));
-    fetch('https://api.frankfurter.dev/v1/' + from + '..?base=' + base + '&symbols=JPY')
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        var ds = Object.keys(j.rates || {}).sort();
-        if (ds.length >= 2) {
-          var v = j.rates[ds[ds.length - 1]].JPY, p = j.rates[ds[ds.length - 2]].JPY;
-          fx[base.toLowerCase()] = { v: v, p: p };
-          paint();
-        }
-      })
-      .catch(function () {});
-  });
 })();
 
 /* ---------- 天気予報(気象庁・都道府県切替) ---------- */
