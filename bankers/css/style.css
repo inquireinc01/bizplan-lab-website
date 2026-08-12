@@ -512,6 +512,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .post:not(.expanded) .body p { display: inline; }
 .post:not(.expanded) .body p::after { content: " "; }
+/* 段落内の単一改行(<br>)も畳み中は無効化して、完全な連続テキストにする */
+.post:not(.expanded) .body br { display: none; }
 .post .body p + p { margin-top: .9em; }
 .post:not(.expanded) .body p + p { margin-top: 0; }
 .post-foot {
