@@ -597,10 +597,11 @@ img { max-width: 100%; height: auto; display: block; }
 /* ---------- タイトルのみ表示(新着・過去記事一覧) ----------
    タイトルクリックで全文へ開き、たたむと元に戻る(配線は index.html 側)。
    一覧性を優先して縦幅は最小限に詰める(2026-08-12指示) */
-.post-titleonly { padding: 7px 14px 8px; margin-bottom: 8px; }
-.post-titleonly .post-mark,
-.post-titleonly .body,
-.post-titleonly .post-foot { display: none; }
+.post.post-titleonly { padding: 7px 14px 8px; margin-bottom: 8px; }
+/* .post:not(.expanded) .body の3行クランプ(特異度0,3,0)に負けないよう .post を重ねる */
+.post.post-titleonly .post-mark,
+.post.post-titleonly .body,
+.post.post-titleonly .post-foot { display: none; }
 .post-titleonly .post-meta { margin-bottom: 2px; gap: 8px; }
 .post-titleonly .post-cat { font-size: var(--fs-1); padding: 2px 10px; letter-spacing: .1em; }
 .post-titleonly .post-date { font-size: var(--fs-1); }
