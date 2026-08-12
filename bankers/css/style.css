@@ -1,0 +1,646 @@
+/* ============================================================
+   銀行員の休日 — サイト共通スタイル
+   BizPlanLaboratory Site のデザイン規約を踏襲
+   ・和文は BIZ UDPGothic / 数字は Arial(.num) / 英字装飾は Bahnschrift(.font-brand-en)
+   ・単位は数字より小さく(.unit) / 数字は必ずカンマ区切り
+   ・.btn-primary は角丸+ネイビー固定+専用シャインホバー
+   ・window.confirm() は使わない / help-tip は tabindex=-1
+   ============================================================ */
+
+:root {
+  --color-navy: #0f2a4a;
+  --color-navy-dark: #091a30;
+  --color-navy-light: #1c3f68;
+  --color-slate: #55677d;
+  --color-slate-light: #8b98a8;
+  --color-slate-soft: #eef1f4;
+  --color-blue: #3b6ea5;
+  --color-blue-dark: #2d5580;
+  --color-blue-soft: #e8eef5;
+  --color-red: #a83d3d;
+  --color-red-soft: #f6e9e9;
+  --color-green-gray: #5c8272;
+  --color-green-gray-soft: #e7efeb;
+  --color-orange: #826f5c;
+  --color-orange-soft: #f1ece7;
+  --color-off-white: #f8f9fb;
+  --color-gray-200: #e5e7eb;
+  --line: #e3e8ee;
+
+  /* ============================================================
+     フォントサイズ 7段階ルール
+     親サイト(bizplan-lab-website)の全HTMLを集計した実使用上位7サイズ。
+     14px(1,210回) / 12px(373) / 11px(116) / 16px(81) / 24px(73) / 20px(37) / 30px(35)
+     この7つ以外は使わない。中間値(10.5px・12.5px・13.5px 等)を作らないこと。
+     例外は「飾り英字」だけ。.hero-brand-mark / .foot-mark / .post-mark / .pc-mark /
+     .cc-mark は文字ではなく図版として扱い、clamp() で可変させる。
+     ============================================================ */
+  --fs-1: 11px;   /* キッカー・英字ラベル・注記・バッジ */
+  --fs-2: 12px;   /* 補助テキスト・メタ・一覧の行 */
+  --fs-3: 14px;   /* 本文(基準) */
+  --fs-4: 16px;   /* 強調本文・リード */
+  --fs-5: 20px;   /* 小見出し */
+  --fs-6: 24px;   /* 見出し */
+  --fs-7: 30px;   /* 大見出し・ロゴ */
+
+  /* ---------- ブログ カテゴリカラー ----------
+     カラーパレットの「統一トーン展開(#3B6EA5と同じ彩度)」に従い、彩度は 47% で固定し
+     色相のみを振り分ける。ただし HSL の明度を揃えても、輝度計算(WCAG)では緑・黄系が
+     大きく明るく出るため、そのままだと白抜き文字が読めない
+     (例: スモーキーグリーン #3BA53B は白文字で 3.16:1 ＝ AA 不適合)。
+     そこで色相ごとに明度だけを下げ、白文字コントラストを 5.3〜7.4:1 に揃えた。
+     結果、どのカテゴリも同じ強さで見え、かつ全色 WCAG AA(4.5:1) を満たす。
+     パレットの統一トーン展開は色相が8つ(0/30/50/120/176/210/270/330)あり、
+     カテゴリ8つとちょうど1対1で対応する。 */
+  --cat-yomimono: #29706C;  /* 休日の読み物         色相176° ティール 白文字 5.79:1 */
+  --cat-aruaru:   #706429;  /* 銀行あるある         色相 50° オリーブ 白文字 5.93:1 */
+  --cat-keieisha: #6E3BA5;  /* 経営者の独り言       色相270° パープル 白文字 7.42:1 */
+  --cat-tegami:   #7F572E;  /* 元バンカーからの手紙 色相 30° ブラウン 白文字 6.35:1 */
+  --cat-tarumono: #3B6EA5;  /* 銀行員たるもの       色相210° ブルー   白文字 5.30:1 ＝パレット基準色 */
+  --cat-kaiketsu: #3B7029;  /* 銀行員の課題解決     色相105° グリーン 白文字 5.94:1 */
+  --cat-yume:     #A53B70;  /* たまには夢を語りたい 色相330° ピンク   白文字 6.07:1 */
+  --cat-guchi:    #A53B3B;  /* たまにはグチを言いたい 色相 0° レッド   白文字 6.40:1 */
+}
+
+/* ---------- 和文は BIZ UDPGothic を最優先 ---------- */
+body {
+  font-family: "BIZ UDPGothic", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: var(--fs-3);
+  background: var(--color-off-white);
+  color: #2b2f36;
+}
+
+/* BIZ UDPGothic は 400/700 のみ。font-black(900) は合成太字になって輪郭が濁るため
+   実体のある 700 に固定し、字面サイズと字間で強さを出す */
+.font-black, h1, h2, h3 { font-weight: 700 !important; }
+
+/* 数字は Arial、単位は数字より小さく */
+.num { font-family: Arial, Helvetica, sans-serif; font-weight: 700; letter-spacing: .01em; }
+/* 「単位は数字より小さく」は別ルールなので 7段階の対象外(親サイズ比で決まる)。
+   ただし 11px の中に置くと 8.4px まで落ちて読めなくなるため 10px を下限にする。 */
+.unit { font-size: max(10px, .78em); font-weight: 400; margin-left: .12em; }
+
+/* 英字ブランドマーク・装飾 */
+.font-brand-en {
+  font-family: "Bahnschrift SemiLight Condensed", Bahnschrift, "Yu Gothic UI Semilight", "Segoe UI", Arial, sans-serif !important;
+  font-weight: 350 !important;
+  font-stretch: condensed !important;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* ============================================================
+   ヒーロー帯 — 飾り英字は図版扱い(7段階ルールの対象外)
+   ============================================================ */
+.hero-pattern {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy) 55%, var(--color-navy-light) 100%);
+  overflow: hidden;
+}
+.hero-pattern::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 30% 30%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 30%, black 0%, transparent 70%);
+}
+.hero-pattern::after {
+  content: ""; position: absolute; right: -10%; top: -20%;
+  width: 60%; height: 140%;
+  background: radial-gradient(circle, rgba(59,110,165,.18) 0%, transparent 65%);
+}
+.hero-brand-mark {
+  position: absolute; margin: 0;
+  font-family: "Bahnschrift SemiLight Condensed", Bahnschrift, "Segoe UI", Arial, sans-serif;
+  font-weight: 350; font-stretch: condensed; line-height: .82;
+  white-space: nowrap; pointer-events: none; user-select: none;
+}
+.hero-brand-mark--tl {
+  left: .05em; top: -.16em;
+  font-size: clamp(48px, 8vw, 104px);
+  letter-spacing: -.005em; color: rgba(255,255,255,.15);
+}
+.hero-brand-mark--br {
+  right: .05em; bottom: -.2em;
+  font-size: clamp(58px, 10vw, 132px);
+  letter-spacing: -.005em; color: rgba(255,255,255,.15);
+}
+
+/* ---------- カード ---------- */
+.lift-card { transition: transform .25s ease, box-shadow .25s ease; }
+.lift-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(15,42,74,.10); }
+
+/* ---------- ボタン(全体ルール: 角丸+ネイビー固定+専用シャインホバー) ---------- */
+.btn-primary {
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: .75rem;
+  background-color: var(--color-navy); color: #fff;
+  transition: transform .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s cubic-bezier(.22,1,.36,1), background-color .2s ease;
+}
+.btn-primary::after {
+  content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255,255,255,.4), transparent);
+  transform: skewX(-20deg); transition: left .65s ease; pointer-events: none;
+}
+.btn-primary:hover { background-color: var(--color-navy-light); transform: translateY(-3px); box-shadow: 0 14px 28px rgba(15,42,74,.32); }
+.btn-primary:hover::after { left: 130%; }
+.btn-primary:active { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(15,42,74,.22); }
+.btn-primary:disabled { background-color: #b7bfc9; color: #f0f2f5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-primary:disabled::after { display: none; }
+
+/* ---------- フォーム ---------- */
+.form-input {
+  border: 1.5px solid var(--color-gray-200);
+  transition: border-color .2s ease, box-shadow .2s ease;
+  font-weight: 400;
+}
+.form-input:focus { outline: none; border-color: var(--color-navy); box-shadow: 0 0 0 3px rgba(15,42,74,.10); }
+.form-input::placeholder { color: #adb5bf; }
+
+/* ---------- ヘルプチップ(Tabキーは止まらない: HTML側で tabindex="-1") ---------- */
+.help-tip {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 9999px;
+  background: var(--color-slate-soft); color: var(--color-slate);
+  font-size: var(--fs-1); font-weight: 700; cursor: help; border: none; padding: 0;
+  vertical-align: middle; margin-left: .3rem; line-height: 1;
+}
+.help-tip:hover { background: var(--color-navy); color: #fff; }
+.help-tip .tip-body {
+  display: none; position: absolute; top: calc(100% + 8px); right: 0;
+  width: 260px; background: var(--color-navy-dark); color: #e8eef5;
+  font-size: var(--fs-2); font-weight: 400; line-height: 1.75; text-align: left;
+  padding: 12px 14px; border-radius: 6px; z-index: 60; cursor: default;
+  box-shadow: 0 10px 24px rgba(9,26,48,.28);
+}
+.help-tip:hover .tip-body, .help-tip:focus .tip-body { display: block; }
+
+/* ============================================================
+   メールマガジン登録カード
+   トップは左カラム最上部、下層ページは本文末尾に置く。
+   .side-card の構造をそのまま使うので、ネイビー帯・飾り英字・.btn-primary(ネイビー固定)が
+   他のパネルと完全に揃う。
+   ============================================================ */
+/* 縦幅を最小に抑える。行間・余白はすべて詰めてある */
+.mm-card .sc-body { padding: 10px 12px 11px; }
+.mm-name { font-size: var(--fs-5); font-weight: 700; color: var(--color-navy); letter-spacing: .05em; line-height: 1.25; }
+.mm-lede { font-size: var(--fs-2); color: #6b7684; line-height: 1.55; margin-top: 3px; }
+.mm-form { display: flex; flex-direction: column; gap: 6px; margin-top: 9px; }
+.mm-input {
+  width: 100%; font-size: var(--fs-3); padding: 7px 11px; border-radius: .5rem;
+  border: 1.5px solid var(--color-gray-200); background: #fff;
+}
+.mm-input:focus { outline: none; border-color: var(--color-navy); box-shadow: 0 0 0 3px rgba(15,42,74,.10); }
+.mm-btn { width: 100%; font-size: var(--fs-3); font-weight: 700; padding: 8px 16px; }
+.mm-sample {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 7px;
+  font-size: var(--fs-2); font-weight: 700; color: var(--color-blue-dark);
+  text-decoration: none; border-bottom: 1px solid transparent;
+  transition: border-color .2s ease, color .2s ease;
+}
+.mm-sample:hover { color: var(--color-navy); border-bottom-color: var(--color-navy); }
+.mm-done {
+  font-size: var(--fs-2); color: #237a54; font-weight: 700; line-height: 1.75;
+  background: var(--color-green-gray-soft); padding: 10px 12px; border-radius: .5rem; margin-top: 12px;
+}
+
+/* ============================================================
+   3カラムレイアウト(左1/4 : 中央1/2 : 右1/4)
+   ============================================================ */
+.layout-3col {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1180px) {
+  .layout-3col { grid-template-columns: 1fr 1.7fr; }
+  .layout-3col .col-right { grid-column: 1 / -1; }
+  .col-right .side-stack { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+}
+@media (max-width: 820px) {
+  .layout-3col { grid-template-columns: 1fr; }
+  .col-right .side-stack { grid-template-columns: 1fr; }
+}
+/* 左右カラムは sticky にしない。
+   カラムの高さがビューポートを超えると下端(カテゴリ一覧・交通情報)が
+   永久に画面外へ固定されてしまうため。記事が増えるほど確実に起きる。 */
+.col-left, .col-right { position: static; }
+
+/* ---------- 左: コンテンツカード(押せるボタンとして見せる) ----------
+   背景はパレットのブルーグレー(--color-slate #55677d)。飾り英字・見出しとも白抜き。
+   白文字コントラストは見出し 5.80:1 / 本文 4.79:1 / キッカー 4.9:1 で全て WCAG AA。
+   上端の色帯は常時表示して、整える(ブルー)と休む(グリーン)を識別させる。 */
+.content-card {
+  position: relative; display: block; overflow: hidden;
+  background: var(--color-slate); border: none; border-radius: .75rem;
+  padding: 17px 18px 16px; text-decoration: none; color: #fff;
+  transition: background-color .2s ease, transform .25s ease, box-shadow .25s ease;
+}
+.content-card:hover { background: var(--color-navy); }
+.content-card .cc-mark {
+  position: absolute; right: -6px; bottom: -20px;
+  font-size: 62px; font-weight: 700; line-height: 1;
+  color: #fff; opacity: .16; pointer-events: none; user-select: none; letter-spacing: -.01em;
+}
+/* 色帯は常時表示(ホバーで出す方式だと、押せる要素だと気づかれない) */
+.content-card .cc-bar { position: absolute; top: 0; left: 0; right: 0; height: 5px; }
+.content-card .cc-kicker {
+  position: relative; z-index: 1;
+  font-size: var(--fs-1); font-weight: 700; letter-spacing: .3em;
+  text-transform: uppercase; color: rgba(255,255,255,.85);
+}
+.content-card .cc-title {
+  position: relative; z-index: 1;
+  font-size: var(--fs-6); font-weight: 700; color: #fff; margin-top: 6px; letter-spacing: .05em;
+}
+.content-card .cc-desc {
+  position: relative; z-index: 1;
+  font-size: var(--fs-2); color: rgba(255,255,255,.86); line-height: 1.75;
+  margin-top: 7px; padding-right: 34px;
+}
+/* 右下の矢印ボタン。押せることの一番わかりやすい合図 */
+.cc-go {
+  position: absolute; right: 15px; bottom: 14px; z-index: 1;
+  width: 28px; height: 28px; border-radius: 9999px;
+  border: 1.5px solid rgba(255,255,255,.65); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-2); line-height: 1;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.content-card:hover .cc-go { background: #fff; border-color: #fff; color: var(--color-navy); }
+
+/* ============================================================
+   右カラム サイドパネル
+   ============================================================ */
+.side-card { background: #fff; border: 1px solid var(--line); border-radius: .75rem; overflow: hidden; }
+.side-card > .sc-head {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: flex-start;
+  padding: 9px 12px; background: var(--color-navy); color: #fff;
+}
+.side-card > .sc-head .sc-ja { position: relative; z-index: 1; font-size: var(--fs-3); font-weight: 700; letter-spacing: .08em; }
+/* 帯の中に置く都道府県セレクタ(天気・交通アラート) */
+.sc-select {
+  position: relative; z-index: 1; margin-left: auto; max-width: 116px;
+  font-family: inherit; font-size: var(--fs-1); font-weight: 700; line-height: 1.4;
+  color: #fff; background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.28); border-radius: 4px;
+  padding: 2px 4px; cursor: pointer;
+}
+.sc-select:focus { outline: none; border-color: #fff; background: rgba(255,255,255,.24); }
+.sc-select option, .sc-select optgroup { color: #1d2733; background: #fff; }
+/* アラート件数バッジ */
+.sc-count {
+  position: relative; z-index: 1; margin-left: 8px;
+  font-family: Arial, sans-serif; font-size: var(--fs-1); font-weight: 700;
+  background: var(--color-red); color: #fff; border-radius: 9999px; padding: 1px 9px;
+}
+.sc-count.zero { background: rgba(255,255,255,.18); color: rgba(255,255,255,.75); }
+/* 飾り英字は他のカード(.cc-mark / .post-mark / .pc-mark)と同じ扱い。
+   ネイビー帯の右下に大きく置き、帯の外へ見切れさせる */
+.side-card > .sc-head .sc-en {
+  position: absolute; right: -7px; bottom: -17px;
+  font-size: 58px; line-height: 1; letter-spacing: -.012em;
+  color: rgba(255,255,255,.17); text-transform: uppercase;
+  pointer-events: none; user-select: none; white-space: nowrap;
+}
+.side-card > .sc-body { padding: 9px 12px; }
+/* カード内に置く注記(左カラムの過去記事カードなど) */
+.sc-note {
+  padding: 8px 12px 9px; font-size: var(--fs-1); line-height: 1.7;
+  color: var(--color-slate); background: var(--color-slate-soft); border-top: 1px solid var(--line);
+}
+/* 右カラムは個別パネルに注記を置かず、末尾の .side-note に一本化する
+   (注記が4枚ぶん積み上がると一覧性が落ちるため) */
+.side-note {
+  padding: 9px 12px; font-size: var(--fs-1); line-height: 1.7;
+  color: var(--color-slate); background: #fff;
+  border: 1px solid var(--line); border-left: 3px solid var(--color-orange); border-radius: .5rem;
+}
+.side-note strong { color: var(--color-red); }
+
+/* ---------- カレンダー ---------- */
+.cal { width: 100%; border-collapse: collapse; }
+.cal th { font-size: var(--fs-1); font-weight: 700; color: var(--color-slate-light); padding: 2px 0 5px; text-align: center; }
+.cal th.sun, .cal td.sun .d { color: var(--color-red); }
+.cal th.sat, .cal td.sat .d { color: var(--color-blue-dark); }
+.cal td { text-align: center; padding: 0; }
+.cal .d {
+  display: block; font-family: Arial, sans-serif; font-size: var(--fs-2); font-weight: 700;
+  line-height: 23px; height: 23px; border-radius: 4px; color: #414c59;
+}
+.cal td.today .d { background: var(--color-navy); color: #fff; }
+.cal td.holiday .d { color: var(--color-red); }
+.cal td.empty .d { color: transparent; }
+.cal-head {
+  display: flex; align-items: baseline; gap: 7px; margin-bottom: 6px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+.cal-head .y { font-family: Arial, sans-serif; font-size: var(--fs-1); color: var(--color-slate-light); font-weight: 700; }
+.cal-head .m { font-family: Arial, sans-serif; font-size: var(--fs-5); font-weight: 700; color: var(--color-navy); line-height: 1; }
+
+/* ---------- 指数・金利(値と前日比は同一行) ---------- */
+.idx-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
+  padding: 2.5px 0; border-bottom: 1px dotted var(--line);
+}
+.idx-row:last-child { border-bottom: none; }
+.idx-row .l { font-size: var(--fs-2); color: #5c6875; white-space: nowrap; }
+.idx-row .r { white-space: nowrap; text-align: right; }
+.idx-row .v { font-family: Arial, sans-serif; font-size: var(--fs-3); font-weight: 700; color: var(--color-navy); }
+.idx-row .c { font-family: Arial, sans-serif; font-size: var(--fs-1); font-weight: 700; margin-left: 5px; }
+.c.up { color: #237a54; }
+.c.down { color: var(--color-red); }
+.c.flat { color: var(--color-slate-light); }
+.idx-group {
+  font-size: var(--fs-1); line-height: 1.2; letter-spacing: .22em; color: var(--color-slate-light);
+  font-weight: 700; padding: 7px 0 2px; text-transform: uppercase;
+  border-bottom: 1px solid var(--line); margin-bottom: 2px;
+}
+.idx-group:first-child { padding-top: 0; }
+
+/* ---------- 天気 ---------- */
+.wx-row { display: flex; align-items: center; gap: 8px; padding: 3.5px 0; border-bottom: 1px dotted var(--line); }
+.wx-row:last-child { border-bottom: none; }
+.wx-row .day { font-size: var(--fs-2); color: #5c6875; width: 44px; flex: 0 0 44px; }
+.wx-row .ico { font-size: var(--fs-4); line-height: 1; width: 22px; text-align: center; }
+.wx-row .desc { font-size: var(--fs-2); color: #414c59; flex: 1; }
+.wx-row .tmp { font-family: Arial, sans-serif; font-size: var(--fs-3); font-weight: 700; white-space: nowrap; }
+.wx-row .tmp .hi { color: var(--color-red); }
+.wx-row .tmp .lo { color: var(--color-blue-dark); }
+
+/* ---------- 交通アラート(遅延・欠航・渋滞のみ表示) ---------- */
+.tr-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 0; border-bottom: 1px dotted var(--line); font-size: var(--fs-2);
+}
+.tr-row:last-child { border-bottom: none; }
+.tr-row .ln { flex: 1; color: #414c59; min-width: 0; }
+/* 種別チップ(電車・飛行機・道路) */
+.tr-kind {
+  flex: 0 0 auto; font-size: var(--fs-1); font-weight: 700;
+  padding: 1px 6px; border-radius: 3px; white-space: nowrap;
+}
+.tr-kind.train { background: var(--color-blue-soft); color: var(--color-blue-dark); }
+.tr-kind.air   { background: #e2eeec; color: #24605c; }
+.tr-kind.road  { background: var(--color-orange-soft); color: #6b5744; }
+/* 状態バッジ */
+.tr-badge { flex: 0 0 auto; font-size: var(--fs-1); font-weight: 700; padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+.tr-badge.warn { background: var(--color-orange-soft); color: #6b5744; }
+.tr-badge.ng { background: var(--color-red-soft); color: var(--color-red); }
+/* 乱れなしの状態。煽らないよう、静かな表現にする */
+.tr-empty {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--fs-2); color: var(--color-slate); line-height: 1.7; padding: 6px 0;
+}
+.tr-empty .ok-dot { width: 9px; height: 9px; border-radius: 9999px; background: var(--color-green-gray); flex: 0 0 9px; }
+
+/* ---------- 左下: 人気記事 / カテゴリ ---------- */
+.pop-row { display: flex; gap: 9px; padding: 8px 0; border-bottom: 1px dotted var(--line); text-decoration: none; }
+.pop-row:last-child { border-bottom: none; }
+.pop-row .rank {
+  flex: 0 0 21px; width: 21px; height: 21px; line-height: 21px; text-align: center;
+  font-family: Arial, sans-serif; font-size: var(--fs-1); font-weight: 700;
+  background: var(--color-slate-soft); color: var(--color-slate); border-radius: 4px;
+}
+.pop-row:nth-child(1) .rank { background: var(--color-navy); color: #fff; }
+.pop-row .t { font-size: var(--fs-2); line-height: 1.7; color: #414c59; }
+.pop-row:hover .t { color: var(--color-blue-dark); text-decoration: underline; }
+
+.cat-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 0; border-bottom: 1px dotted var(--line); text-decoration: none; font-size: var(--fs-2);
+}
+.cat-row:last-child { border-bottom: none; }
+.cat-row .n { color: #414c59; display: flex; align-items: center; gap: 8px; }
+.cat-row:hover .n { color: var(--color-blue-dark); }
+.cat-row .cnt { font-family: Arial, sans-serif; font-size: var(--fs-1); font-weight: 700; color: var(--color-slate-light); }
+
+/* ============================================================
+   ブログ記事カード — カード全体をカテゴリカラーでベタ塗り、文字は白抜き
+   カテゴリカラーは白文字コントラスト 5.3〜7.4:1 に揃えてあるため、
+   本文サイズでも全色 WCAG AA を満たす
+   ============================================================ */
+.sec-kicker {
+  font-size: var(--fs-3); font-weight: 700; letter-spacing: .34em;
+  text-transform: uppercase; color: #b3bdc9; line-height: 1;
+}
+.post {
+  position: relative; overflow: hidden;
+  background: var(--post-color, var(--color-navy));
+  border: none; border-radius: .75rem; color: #fff;
+  padding: 28px 32px 26px; margin-bottom: 20px;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.post:hover { transform: translateY(-3px); box-shadow: 0 18px 34px rgba(15,42,74,.22); }
+.post.cat-yomimono { --post-color: var(--cat-yomimono); }
+.post.cat-aruaru   { --post-color: var(--cat-aruaru); }
+.post.cat-keieisha { --post-color: var(--cat-keieisha); }
+.post.cat-tegami   { --post-color: var(--cat-tegami); }
+.post.cat-tarumono { --post-color: var(--cat-tarumono); }
+.post.cat-kaiketsu { --post-color: var(--cat-kaiketsu); }
+.post.cat-yume     { --post-color: var(--cat-yume); }
+.post.cat-guchi    { --post-color: var(--cat-guchi); }
+
+/* カード内の飾り英字(図版扱い) */
+.post-mark {
+  position: absolute; right: -.04em; bottom: -.28em;
+  font-size: clamp(64px, 9vw, 104px); line-height: .8;
+  color: rgba(255,255,255,.10); pointer-events: none; user-select: none; white-space: nowrap;
+}
+
+.post-meta { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+/* カード自体が色付きなので、ラベルは半透明の白ベタに置き換える */
+.post-cat {
+  font-size: var(--fs-3); font-weight: 700; letter-spacing: .14em; line-height: 1.5;
+  padding: 5px 16px; border-radius: 4px;
+  background: rgba(255,255,255,.20); color: #fff;
+}
+.post-date { font-family: Arial, sans-serif; font-size: var(--fs-3); font-weight: 700; color: rgba(255,255,255,.9); letter-spacing: .12em; }
+.post h2 {
+  position: relative; z-index: 1;
+  font-size: var(--fs-6); color: #fff; line-height: 1.55; letter-spacing: .04em; margin-bottom: 14px;
+}
+.post h2 a { color: #fff; text-decoration: none; }
+.post h2 a:hover { text-decoration: underline; text-underline-offset: 5px; }
+/* 本文は白 94%。#3B6EA5(最も明るいカテゴリ色)でもコントラスト 4.9:1 で AA を満たす */
+.post .body { position: relative; z-index: 1; font-size: var(--fs-3); line-height: 2.05; color: rgba(255,255,255,.94); }
+.post-foot {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,.22);
+}
+.post-more {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-3); font-weight: 700; padding: 9px 22px; border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,.6); color: #fff; background: transparent;
+  text-decoration: none; transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.post-more:hover { background: #fff; border-color: #fff; color: var(--post-color); }
+.post-read { font-size: var(--fs-3); color: rgba(255,255,255,.9); }
+
+/* カテゴリ識別ドット(過去記事一覧・フッターサイトマップ共通) */
+.cat-dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; flex: 0 0 9px; }
+.cat-dot.yomimono { background: var(--cat-yomimono); }
+.cat-dot.aruaru   { background: var(--cat-aruaru); }
+.cat-dot.keieisha { background: var(--cat-keieisha); }
+.cat-dot.tegami   { background: var(--cat-tegami); }
+.cat-dot.tarumono { background: var(--cat-tarumono); }
+.cat-dot.kaiketsu { background: var(--cat-kaiketsu); }
+.cat-dot.yume     { background: var(--cat-yume); }
+.cat-dot.guchi    { background: var(--cat-guchi); }
+
+/* ---------- 準備中カード ---------- */
+.prep-card {
+  position: relative; background: #fff; border: 1px solid var(--line); border-radius: .75rem;
+  padding: 26px 22px 22px; overflow: hidden; min-height: 190px;
+  display: flex; flex-direction: column;
+}
+.prep-card .pc-mark {
+  position: absolute; right: -8px; bottom: -30px;
+  font-size: 96px; font-weight: 700; line-height: 1;
+  opacity: .075; pointer-events: none; user-select: none;
+}
+.prep-card .pc-no { font-family: Arial, sans-serif; font-size: var(--fs-1); font-weight: 700; letter-spacing: .2em; color: var(--color-slate-light); }
+.prep-card .pc-title { font-size: var(--fs-5); font-weight: 700; color: var(--color-navy); margin-top: 8px; letter-spacing: .04em; }
+.prep-card .pc-desc { font-size: var(--fs-2); color: #6b7684; line-height: 1.9; margin-top: 10px; flex: 1; }
+.prep-badge {
+  align-self: flex-start; margin-top: 14px;
+  font-size: var(--fs-1); font-weight: 700; letter-spacing: .1em;
+  padding: 4px 13px; border-radius: 9999px;
+  background: var(--color-slate-soft); color: var(--color-slate);
+}
+
+/* ---------- ページ見出しの飾り英字 ---------- */
+.page-kicker {
+  font-size: var(--fs-4); font-weight: 700; letter-spacing: .38em;
+  text-transform: uppercase; line-height: 1; margin-bottom: 8px;
+}
+
+/* ---------- フッター ---------- */
+.site-foot { background: var(--color-navy-dark); color: #8fa6c2; position: relative; overflow: hidden; }
+.site-foot a { color: #b9c8da; text-decoration: none; }
+.site-foot a:hover { color: #fff; text-decoration: underline; }
+.foot-mark {
+  position: absolute; right: -.02em; bottom: -.3em;
+  font-size: clamp(60px, 11vw, 150px); line-height: .8;
+  color: rgba(255,255,255,.045); pointer-events: none; user-select: none; white-space: nowrap;
+}
+
+/* ---------- フッター サイトマップ ---------- */
+.foot-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 28px; }
+@media (max-width: 900px) { .foot-map { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .foot-map { grid-template-columns: 1fr; } }
+.fm-head {
+  font-size: var(--fs-1); letter-spacing: .26em; text-transform: uppercase; color: #6f87a5;
+  padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.fm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.fm-list li { font-size: var(--fs-2); line-height: 1.6; display: flex; align-items: center; gap: 8px; }
+/* 未公開ページはリンクにせず、準備中と明示する */
+.fm-soon { color: #5d7186; }
+.fm-soon::after {
+  content: "準備中"; font-size: var(--fs-1); letter-spacing: .06em;
+  color: #566b80; border: 1px solid rgba(255,255,255,.13);
+  padding: 0 6px; border-radius: 3px; margin-left: 6px; white-space: nowrap;
+}
+
+/* ============================================================
+   管理者モード（Ctrl + Shift + D で表示）
+   ------------------------------------------------------------
+   これは認証ではない。静的サイト上の「下書き作成ツール」であり、
+   同じキーを押せば誰でも開ける。保存先はこの端末のブラウザ(localStorage)だけで、
+   サーバーには何も送らない。本公開は書き出した JSON をリポジトリに入れて行う。
+   ============================================================ */
+.admin-btn {
+  font-size: var(--fs-2); font-weight: 700; letter-spacing: .06em;
+  padding: 7px 16px; border-radius: .5rem; cursor: pointer;
+  background: var(--color-navy-dark); color: #fff; border: 1px solid var(--color-navy-light);
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.admin-btn:hover { background: var(--color-navy); }
+.admin-btn .dot { width: 7px; height: 7px; border-radius: 9999px; background: #6ec59a; }
+
+.admin-overlay {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  background: rgba(9,26,48,.58); padding: 32px 18px; overflow-y: auto;
+}
+.admin-overlay.open { display: block; }
+.admin-modal {
+  background: #fff; border-radius: .75rem; overflow: hidden;
+  width: 100%; max-width: 700px; margin: 0 auto;
+  box-shadow: 0 28px 60px rgba(9,26,48,.35);
+}
+.admin-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--color-navy); color: #fff; padding: 11px 16px;
+}
+.admin-head .t { font-size: var(--fs-3); font-weight: 700; letter-spacing: .08em; }
+.admin-close {
+  background: none; border: none; color: rgba(255,255,255,.8); cursor: pointer;
+  font-size: var(--fs-4); line-height: 1; padding: 2px 6px;
+}
+.admin-close:hover { color: #fff; }
+.admin-body { padding: 16px 18px 18px; }
+.admin-warn {
+  font-size: var(--fs-1); line-height: 1.7; color: #6b5744;
+  background: var(--color-orange-soft); border-left: 3px solid var(--color-orange);
+  padding: 8px 11px; border-radius: .4rem; margin-bottom: 14px;
+}
+.admin-field { margin-bottom: 11px; }
+.admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .admin-row { grid-template-columns: 1fr; } }
+.admin-label {
+  display: block; margin-bottom: 4px;
+  font-size: var(--fs-1); font-weight: 700; letter-spacing: .1em; color: var(--color-slate);
+}
+.admin-input, .admin-select, .admin-textarea {
+  width: 100%; font-family: inherit; font-size: var(--fs-3);
+  padding: 8px 11px; border: 1.5px solid var(--color-gray-200); border-radius: .5rem;
+  background: #fff; color: #2b2f36;
+}
+.admin-input:focus, .admin-select:focus, .admin-textarea:focus {
+  outline: none; border-color: var(--color-navy); box-shadow: 0 0 0 3px rgba(15,42,74,.10);
+}
+.admin-textarea { min-height: 168px; line-height: 1.95; resize: vertical; }
+.admin-meta { font-size: var(--fs-1); color: var(--color-slate-light); margin-top: 4px; }
+.admin-actions {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 15px; padding-top: 14px; border-top: 1px solid var(--line);
+}
+.admin-actions .btn-primary { font-size: var(--fs-3); font-weight: 700; padding: 9px 22px; }
+.admin-ghost {
+  font-size: var(--fs-2); font-weight: 700; padding: 9px 16px; border-radius: .5rem;
+  background: #fff; color: var(--color-navy); border: 1px solid var(--color-navy); cursor: pointer;
+}
+.admin-ghost:hover { background: var(--color-navy); color: #fff; }
+.admin-msg { font-size: var(--fs-2); font-weight: 700; color: #237a54; }
+.admin-list { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
+.admin-list-head { font-size: var(--fs-1); font-weight: 700; letter-spacing: .1em; color: var(--color-slate); margin-bottom: 6px; }
+.admin-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px dotted var(--line); font-size: var(--fs-2);
+}
+.admin-item:last-child { border-bottom: none; }
+.admin-item .ti { flex: 1; color: #414c59; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* window.confirm() は使わず、1回目のクリックでボタン自身が警告表示に変わる */
+.admin-del {
+  flex: 0 0 auto; font-size: var(--fs-1); font-weight: 700; cursor: pointer;
+  background: #fff; color: var(--color-red); border: 1px solid var(--color-red);
+  border-radius: 4px; padding: 2px 9px;
+}
+.admin-del.is-confirming { background: var(--color-red); color: #fff; }
+/* ローカル保存中の記事であることを記事カード上で明示する */
+.post-local {
+  font-size: var(--fs-1); font-weight: 700; letter-spacing: .1em;
+  background: rgba(0,0,0,.22); color: #fff; padding: 4px 11px; border-radius: 4px;
+}
+
+/* ---------- パンくず ---------- */
+.crumb { font-size: var(--fs-2); color: var(--color-slate-light); }
+.crumb a { color: var(--color-slate); text-decoration: none; }
+.crumb a:hover { color: var(--color-navy); text-decoration: underline; }

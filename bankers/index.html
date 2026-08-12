@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<title>銀行員の休日 | あなたの休日が、ちゃんと休日でありますように。</title>
+<meta name="description" content="銀行員・金融機関職員のためのポータル。資格・実務・キャリアを一箇所に。所属は聞きません。あなたの休日が、ちゃんと休日でありますように。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=2026081202" />
+</head>
+<body class="bg-[#f8f9fb] text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between gap-5 min-h-[78px] py-2.5 flex-wrap">
+
+      <a href="index.html" class="flex flex-col shrink-0 no-underline">
+        <span class="font-brand-en text-[11px] font-bold tracking-[.34em] uppercase text-gray-400">Bankers Weekend</span>
+        <span class="text-[24px] sm:text-[30px] font-black text-[#0f2a4a] leading-tight tracking-[.08em]">銀行員の休日</span>
+      </a>
+
+      <!-- 管理者モード（既定は非表示。Ctrl + Shift + D で出し入れする） -->
+      <button type="button" id="admin-toggle" class="admin-btn ml-auto" hidden>
+        <span class="dot" aria-hidden="true"></span>管理者モード
+      </button>
+
+    </div>
+  </div>
+</header>
+
+<!-- ===== ヒーロー(ブランド帯) ===== -->
+<section class="hero-pattern relative overflow-hidden h-[86px] sm:h-[104px]">
+  <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">WEEKEND</span>
+  <span class="hero-brand-mark hero-brand-mark--br" aria-hidden="true">BANKERS</span>
+  <div class="relative z-10 max-w-[1400px] mx-auto px-5 sm:px-8 h-full flex items-center">
+    <h1 class="text-white text-[16px] sm:text-[20px] font-bold tracking-[.12em] pl-3.5 border-l-[3px] border-[#3b6ea5]">
+      あなたの休日が、ちゃんと休日でありますように。
+    </h1>
+  </div>
+</section>
+
+<main class="max-w-[1400px] mx-auto px-5 sm:px-8 py-7">
+  <div class="layout-3col">
+
+    <!-- ============ 左カラム 1/4 ============ -->
+    <div class="col-left">
+      <div class="flex flex-col gap-4">
+
+        <!-- メールマガジン登録 -->
+        <div class="side-card mm-card">
+          <div class="sc-head">
+            <span class="sc-ja">メールマガジン</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Weekday</span>
+          </div>
+          <div class="sc-body">
+            <div class="mm-name">銀行員の平日</div>
+            <p class="mm-lede">平日の朝、指数・金利・ニュースを1通に。</p>
+            <form id="mm-form" class="mm-form" novalidate>
+              <input type="email" id="mm-email" class="mm-input" placeholder="mail@example.com" autocomplete="email" aria-label="メールアドレス" />
+              <button type="submit" class="btn-primary mm-btn">登録無料</button>
+            </form>
+            <a href="#" id="mm-sample" class="mm-sample">サンプルを見る <span aria-hidden="true">&rarr;</span></a>
+            <div id="mm-done" class="mm-done" hidden>ご登録ありがとうございます。次の平日の朝からお届けします。</div>
+          </div>
+        </div>
+
+        <!-- コンテンツカード -->
+        <a href="totonoeru.html" class="content-card lift-card">
+          <span class="cc-bar" style="background-color:#3b6ea5"></span>
+          <span class="cc-mark font-brand-en" aria-hidden="true">TOTONOE</span>
+          <span class="cc-kicker font-brand-en">Prepare</span>
+          <div class="cc-title">今週も整える</div>
+          <p class="cc-desc">来週のために、休日のうちに少しだけ。知識・営業・キャリア・マナーの道具箱。</p>
+          <span class="cc-go" aria-hidden="true">&rarr;</span>
+        </a>
+
+        <a href="yasumu.html" class="content-card lift-card">
+          <span class="cc-bar" style="background-color:#5c8272"></span>
+          <span class="cc-mark font-brand-en" aria-hidden="true">YASUMU</span>
+          <span class="cc-kicker font-brand-en">Rest</span>
+          <div class="cc-title">今週は休む</div>
+          <p class="cc-desc">体を戻す、肩の力を抜く、人付き合いを楽にする。休日の使い方の話。</p>
+          <span class="cc-go" aria-hidden="true">&rarr;</span>
+        </a>
+
+        <!-- 人気記事 -->
+        <div class="side-card">
+          <div class="sc-head">
+            <span class="sc-ja">人気記事</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Popular</span>
+          </div>
+          <div class="sc-body">
+            <a href="#" class="pop-row"><span class="rank">1</span><span class="t">支店長が席を立った瞬間、全員の姿勢が戻る</span></a>
+            <a href="#" class="pop-row"><span class="rank">2</span><span class="t">日曜の夜に、来週の予定を見ない</span></a>
+            <a href="#" class="pop-row"><span class="rank">3</span><span class="t">「ご融資いかがですか」をやめた日</span></a>
+            <a href="#" class="pop-row"><span class="rank">4</span><span class="t"><span class="num">30</span><span class="unit">年</span>勤めて、覚えているのは数字ではなかった</span></a>
+            <a href="#" class="pop-row"><span class="rank">5</span><span class="t">銀行はもう来なくていい、と言われた日</span></a>
+          </div>
+        </div>
+
+        <!-- 過去記事カテゴリ別 -->
+        <div class="side-card">
+          <div class="sc-head">
+            <span class="sc-ja">過去記事（カテゴリ別）</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Archive</span>
+          </div>
+          <div class="sc-body">
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot yomimono"></span>休日の読み物</span><span class="cnt">4</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot aruaru"></span>銀行あるある</span><span class="cnt">3</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot keieisha"></span>経営者の独り言</span><span class="cnt">2</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot tegami"></span>元バンカーからの手紙</span><span class="cnt">2</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot tarumono"></span>銀行員たるもの</span><span class="cnt">3</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot kaiketsu"></span>銀行員の課題解決</span><span class="cnt">5</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot yume"></span>たまには夢を語りたい</span><span class="cnt">1</span></a>
+            <a href="#" class="cat-row"><span class="n"><span class="cat-dot guchi"></span>たまにはグチを言いたい</span><span class="cnt">2</span></a>
+          </div>
+          <div class="sc-note">記事はダミーです。カテゴリと件数はフェーズ0の運用開始後に実データへ差し替えます。</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ 中央カラム 1/2 ============ -->
+    <div class="col-center">
+
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="sec-kicker font-brand-en">Latest Posts</span>
+        <span class="text-[14px] text-gray-500">新着記事</span>
+      </div>
+
+      <!-- 記事は data/posts.json から描画する（下書きは localStorage から先頭に差し込む） -->
+      <div id="posts"></div>
+      <p class="text-center text-[12px] text-gray-400 pt-1 pb-2">記事は<strong class="text-gray-500">ダミー</strong>です。本文は <code>data/posts.json</code> から読み込んでいます。</p>
+
+    </div>
+
+    <!-- ============ 右カラム 1/4 ============ -->
+    <div class="col-right">
+      <div class="side-stack flex flex-col gap-3">
+
+        <!-- カレンダー -->
+        <div class="side-card">
+          <div class="sc-head">
+            <span class="sc-ja">カレンダー</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Calendar</span>
+          </div>
+          <div class="sc-body">
+            <div class="cal-head">
+              <span class="m">8</span>
+              <span class="y">2026</span>
+            </div>
+            <table class="cal">
+              <thead>
+                <tr><th class="sun">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th class="sat">土</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="empty"><span class="d">0</span></td><td class="empty"><span class="d">0</span></td>
+                  <td class="empty"><span class="d">0</span></td><td class="empty"><span class="d">0</span></td>
+                  <td class="empty"><span class="d">0</span></td><td class="empty"><span class="d">0</span></td>
+                  <td class="sat"><span class="d">1</span></td>
+                </tr>
+                <tr>
+                  <td class="sun"><span class="d">2</span></td><td><span class="d">3</span></td><td><span class="d">4</span></td>
+                  <td><span class="d">5</span></td><td><span class="d">6</span></td><td><span class="d">7</span></td>
+                  <td class="sat"><span class="d">8</span></td>
+                </tr>
+                <tr>
+                  <td class="sun"><span class="d">9</span></td><td><span class="d">10</span></td>
+                  <td class="holiday"><span class="d">11</span></td><td class="today"><span class="d">12</span></td>
+                  <td><span class="d">13</span></td><td><span class="d">14</span></td><td class="sat"><span class="d">15</span></td>
+                </tr>
+                <tr>
+                  <td class="sun"><span class="d">16</span></td><td><span class="d">17</span></td><td><span class="d">18</span></td>
+                  <td><span class="d">19</span></td><td><span class="d">20</span></td><td><span class="d">21</span></td>
+                  <td class="sat"><span class="d">22</span></td>
+                </tr>
+                <tr>
+                  <td class="sun"><span class="d">23</span></td><td><span class="d">24</span></td><td><span class="d">25</span></td>
+                  <td><span class="d">26</span></td><td><span class="d">27</span></td><td><span class="d">28</span></td>
+                  <td class="sat"><span class="d">29</span></td>
+                </tr>
+                <tr>
+                  <td class="sun"><span class="d">30</span></td><td><span class="d">31</span></td>
+                  <td class="empty"><span class="d">0</span></td><td class="empty"><span class="d">0</span></td>
+                  <td class="empty"><span class="d">0</span></td><td class="empty"><span class="d">0</span></td>
+                  <td class="empty"><span class="d">0</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 指数・金利 -->
+        <div class="side-card">
+          <div class="sc-head">
+            <span class="sc-ja">指数・金利</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">Market</span>
+          </div>
+          <div class="sc-body">
+
+            <div class="idx-group font-brand-en">Equity</div>
+            <div class="idx-row">
+              <span class="l">日経平均</span>
+              <span class="r"><span class="v">41,250.36</span><span class="c up">+0.76%</span></span>
+            </div>
+            <div class="idx-row">
+              <span class="l">TOPIX</span>
+              <span class="r"><span class="v">2,884.12</span><span class="c up">+0.66%</span></span>
+            </div>
+
+            <div class="idx-group font-brand-en">FX</div>
+            <div class="idx-row">
+              <span class="l">USD／JPY</span>
+              <span class="r"><span class="v">152.84</span><span class="c down">-0.31</span></span>
+            </div>
+            <div class="idx-row">
+              <span class="l">EUR／JPY</span>
+              <span class="r"><span class="v">166.21</span><span class="c up">+0.44</span></span>
+            </div>
+
+            <div class="idx-group font-brand-en">Rates</div>
+            <div class="idx-row">
+              <span class="l">無担保コールO/N</span>
+              <span class="r"><span class="v">0.477<span class="unit">%</span></span><span class="c flat">±0</span></span>
+            </div>
+            <div class="idx-row">
+              <span class="l">短期プライム</span>
+              <span class="r"><span class="v">1.875<span class="unit">%</span></span><span class="c flat">±0</span></span>
+            </div>
+            <div class="idx-row">
+              <span class="l">TIBOR 3M</span>
+              <span class="r"><span class="v">0.812<span class="unit">%</span></span><span class="c up">+0.004</span></span>
+            </div>
+            <div class="idx-row">
+              <span class="l">10年国債</span>
+              <span class="r"><span class="v">1.485<span class="unit">%</span></span><span class="c up">+0.015</span></span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 天気予報(都道府県切替) -->
+        <div class="side-card">
+          <div class="sc-head">
+            <span class="sc-ja">天気予報</span>
+            <select id="wx-pref" class="sc-select" aria-label="天気予報の都道府県"></select>
+            <span class="sc-en font-brand-en" aria-hidden="true">Weather</span>
+          </div>
+          <div class="sc-body" id="wx-body"></div>
+        </div>
+
+        <!-- 交通アラート(都道府県切替・遅延/欠航/渋滞のみ) -->
+        <div class="side-card">
+          <div class="sc-head">
+            <span class="sc-ja">交通アラート</span>
+            <span id="tr-count" class="sc-count zero">0</span>
+            <select id="tr-pref" class="sc-select" aria-label="交通アラートの都道府県"></select>
+            <span class="sc-en font-brand-en" aria-hidden="true">Alert</span>
+          </div>
+          <div class="sc-body" id="tr-body"></div>
+        </div>
+
+        <!-- 右カラム共通の注記(4パネル分を一本化) -->
+        <div class="side-note">
+          <strong>指数・金利・天気・交通アラートの表示値はすべてダミーです。</strong>路線・空港・道路の名称は実在のものですが、遅延／欠航／渋滞の状態は都道府県ごとに固定生成しているだけで実際の運行状況ではありません。実データの取得方法・出典・更新時刻の表示は未確定。カレンダーはフェーズ0で<strong style="color:inherit">資格業務効率化・ITスキル</strong>（申込開始・申込締切・試験日）に改修します。
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="site-foot mt-8">
+  <span class="foot-mark font-brand-en" aria-hidden="true">BANKERS WEEKEND</span>
+  <div class="relative z-10 max-w-[1400px] mx-auto px-5 sm:px-8 py-8">
+    <div class="mb-8">
+      <div class="font-brand-en text-[11px] font-bold tracking-[.34em] uppercase text-[#6f87a5]">Bankers Weekend</div>
+      <div class="text-[20px] font-black text-white tracking-[.08em] mt-1">銀行員の休日</div>
+    </div>
+
+    <!-- サイトマップ -->
+    <nav class="foot-map" aria-label="サイトマップ">
+      <div>
+        <div class="fm-head font-brand-en">今週も整える</div>
+        <ul class="fm-list">
+          <li><a href="totonoeru.html">一覧を見る</a></li>
+          <li class="fm-soon">金融知識・実務ノウハウ</li>
+          <li class="fm-soon">業務効率化・ITスキル</li>
+          <li class="fm-soon">営業戦略・顧客対応</li>
+          <li class="fm-soon">キャリア形成・自己研鑽</li>
+          <li class="fm-soon">ビジネスマナー・基本動作</li>
+          <li class="fm-soon">身だしなみ・印象管理</li>
+        </ul>
+      </div>
+      <div>
+        <div class="fm-head font-brand-en">今週は休む</div>
+        <ul class="fm-list">
+          <li><a href="yasumu.html">一覧を見る</a></li>
+          <li class="fm-soon">コンディショニング・自己啓発</li>
+          <li class="fm-soon">息抜き・雑談ネタ</li>
+          <li class="fm-soon">処世術・社内人間関係</li>
+          <li class="fm-soon">会食・飲み会プロデュース</li>
+          <li class="fm-soon">ゴルフ・社内イベント</li>
+          <li class="fm-soon">気配り・贈答品</li>
+        </ul>
+      </div>
+      <div>
+        <div class="fm-head font-brand-en">ブログ</div>
+        <ul class="fm-list">
+          <li><a href="index.html">新着記事</a></li>
+          <li><span class="cat-dot yomimono"></span><a href="#">休日の読み物</a></li>
+          <li><span class="cat-dot aruaru"></span><a href="#">銀行あるある</a></li>
+          <li><span class="cat-dot keieisha"></span><a href="#">経営者の独り言</a></li>
+          <li><span class="cat-dot tegami"></span><a href="#">元バンカーからの手紙</a></li>
+          <li><span class="cat-dot tarumono"></span><a href="#">銀行員たるもの</a></li>
+          <li><span class="cat-dot kaiketsu"></span><a href="#">銀行員の課題解決</a></li>
+          <li><span class="cat-dot yume"></span><a href="#">たまには夢を語りたい</a></li>
+          <li><span class="cat-dot guchi"></span><a href="#">たまにはグチを言いたい</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="fm-head font-brand-en">サイト情報</div>
+        <ul class="fm-list">
+          <li><a href="index.html">ホーム</a></li>
+          <li class="fm-soon">メールマガジン 銀行員の平日</li>
+          <li class="fm-soon">このサイトについて</li>
+          <li class="fm-soon">運営している人間について</li>
+          <li class="fm-soon">お問い合わせ</li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="mt-8 pt-4 border-t border-white/10 text-[11px]">
+      &copy; <span class="num">2026</span> 銀行員の休日 — Phase 0 プロトタイプ
+    </div>
+  </div>
+</footer>
+
+<!-- ===== 管理者モード：記事投稿フォーム ===== -->
+<div id="admin-overlay" class="admin-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-title" hidden>
+  <div class="admin-modal">
+    <div class="admin-head">
+      <span class="t" id="admin-title">記事を投稿する</span>
+      <button type="button" id="admin-close" class="admin-close" aria-label="閉じる">&times;</button>
+    </div>
+    <div class="admin-body">
+
+      <p class="admin-warn">
+        <strong>これは認証ではありません。</strong>同じキー（Ctrl + Shift + D）を押せば誰でも開けます。
+        保存先はこの端末のブラウザだけで、サーバーには何も送りません。
+        本公開は<strong>「JSONを書き出す」</strong>で保存したファイルをリポジトリに入れて行います。
+      </p>
+
+      <form id="admin-form" novalidate>
+        <div class="admin-row">
+          <div class="admin-field">
+            <label class="admin-label" for="ap-cat">カテゴリ</label>
+            <select id="ap-cat" class="admin-select"></select>
+          </div>
+          <div class="admin-field">
+            <label class="admin-label" for="ap-date">公開日</label>
+            <input type="date" id="ap-date" class="admin-input" />
+          </div>
+        </div>
+
+        <div class="admin-field">
+          <label class="admin-label" for="ap-title">タイトル</label>
+          <input type="text" id="ap-title" class="admin-input" placeholder="例：日曜の夜に、来週の予定を見ない" />
+        </div>
+
+        <div class="admin-field">
+          <label class="admin-label" for="ap-body">本文</label>
+          <textarea id="ap-body" class="admin-textarea" placeholder="空行で段落を分けます。"></textarea>
+          <p class="admin-meta" id="ap-count">0 字／読了 約 1 分</p>
+        </div>
+
+        <div class="admin-field" style="max-width:220px">
+          <label class="admin-label" for="ap-pass">投稿パスワード</label>
+          <input type="password" id="ap-pass" class="admin-input" autocomplete="current-password" placeholder="••••" />
+          <p class="admin-meta" id="ap-pass-msg" hidden style="color:#a83d3d">パスワードが違います。</p>
+        </div>
+
+        <div class="admin-actions">
+          <button type="submit" class="btn-primary">記事を追加</button>
+          <button type="button" id="ap-export" class="admin-ghost">posts.json を書き出す</button>
+          <span id="ap-msg" class="admin-msg" hidden></span>
+        </div>
+      </form>
+
+      <p class="admin-meta" style="margin-top:10px;line-height:1.8">
+        <strong>公開までの流れ：</strong>記事を追加 → 「posts.json を書き出す」→ ダウンロードしたファイルで
+        <code>site/data/posts.json</code> を置き換えてコミット → 公開されたら、この画面で下書きを削除。
+      </p>
+
+      <div class="admin-list">
+        <div class="admin-list-head" id="ap-list-head">保存済みの記事</div>
+        <div id="ap-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// メルマガ登録(フェーズ0はフォーム挙動のみ。送信先は未接続)
+document.getElementById('mm-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var input = document.getElementById('mm-email');
+  var value = input.value.trim();
+  if (!value || value.indexOf('@') < 0) {
+    input.style.borderColor = '#a83d3d';
+    input.focus();
+    return;
+  }
+  document.getElementById('mm-form').hidden = true;
+  document.getElementById('mm-sample').hidden = true;
+  document.getElementById('mm-done').hidden = false;
+});
+document.getElementById('mm-email').addEventListener('change', function () {
+  this.style.borderColor = '';
+});
+
+/* ============================================================
+   天気予報／交通アラート — 都道府県切替
+   ------------------------------------------------------------
+   フェーズ0のダミー実装。路線・空港・道路の名称は実在のものだが、
+   遅延／欠航／渋滞の状態は都道府県インデックスから決定的に生成しているだけで、
+   実際の運行状況ではない。実データ接続時にこの生成部だけ差し替える。
+   ============================================================ */
+// [地方, 都道府県, 鉄道, 空港(空文字=なし), 道路]
+var PREFS = [
+  ['北海道・東北','北海道','函館本線','新千歳空港','道央自動車道'],
+  ['北海道・東北','青森','奥羽本線','青森空港','東北自動車道'],
+  ['北海道・東北','岩手','東北本線','いわて花巻空港','東北自動車道'],
+  ['北海道・東北','宮城','仙石線','仙台空港','東北自動車道'],
+  ['北海道・東北','秋田','奥羽本線','秋田空港','秋田自動車道'],
+  ['北海道・東北','山形','奥羽本線','山形空港','山形自動車道'],
+  ['北海道・東北','福島','磐越西線','福島空港','東北自動車道'],
+  ['関東','茨城','常磐線','茨城空港','常磐自動車道'],
+  ['関東','栃木','宇都宮線','','東北自動車道'],
+  ['関東','群馬','高崎線','','関越自動車道'],
+  ['関東','埼玉','埼京線','','関越自動車道'],
+  ['関東','千葉','総武線','成田空港','東関東自動車道'],
+  ['関東','東京','中央線（快速）','羽田空港','首都高速3号渋谷線'],
+  ['関東','神奈川','東海道線','','東名高速道路'],
+  ['中部','新潟','信越本線','新潟空港','北陸自動車道'],
+  ['中部','富山','あいの風とやま鉄道','富山空港','北陸自動車道'],
+  ['中部','石川','北陸本線','小松空港','北陸自動車道'],
+  ['中部','福井','北陸本線','','北陸自動車道'],
+  ['中部','山梨','中央本線','','中央自動車道'],
+  ['中部','長野','篠ノ井線','松本空港','長野自動車道'],
+  ['中部','岐阜','高山本線','','東海環状自動車道'],
+  ['中部','静岡','東海道線','富士山静岡空港','新東名高速道路'],
+  ['中部','愛知','名鉄名古屋本線','中部国際空港','名神高速道路'],
+  ['近畿','三重','近鉄名古屋線','','伊勢自動車道'],
+  ['近畿','滋賀','琵琶湖線','','名神高速道路'],
+  ['近畿','京都','山陰本線','','名神高速道路'],
+  ['近畿','大阪','大阪環状線','伊丹空港','阪神高速環状線'],
+  ['近畿','兵庫','JR神戸線','神戸空港','中国自動車道'],
+  ['近畿','奈良','大和路線','','西名阪自動車道'],
+  ['近畿','和歌山','阪和線','南紀白浜空港','阪和自動車道'],
+  ['中国','鳥取','山陰本線','鳥取空港','山陰自動車道'],
+  ['中国','島根','山陰本線','出雲空港','山陰自動車道'],
+  ['中国','岡山','山陽本線','岡山空港','山陽自動車道'],
+  ['中国','広島','山陽本線','広島空港','山陽自動車道'],
+  ['中国','山口','山陽本線','山口宇部空港','中国自動車道'],
+  ['四国','徳島','高徳線','徳島空港','徳島自動車道'],
+  ['四国','香川','予讃線','高松空港','高松自動車道'],
+  ['四国','愛媛','予讃線','松山空港','松山自動車道'],
+  ['四国','高知','土讃線','高知空港','高知自動車道'],
+  ['九州・沖縄','福岡','鹿児島本線','福岡空港','九州自動車道'],
+  ['九州・沖縄','佐賀','長崎本線','佐賀空港','長崎自動車道'],
+  ['九州・沖縄','長崎','長崎本線','長崎空港','長崎自動車道'],
+  ['九州・沖縄','熊本','豊肥本線','熊本空港','九州自動車道'],
+  ['九州・沖縄','大分','日豊本線','大分空港','東九州自動車道'],
+  ['九州・沖縄','宮崎','日豊本線','宮崎空港','東九州自動車道'],
+  ['九州・沖縄','鹿児島','鹿児島本線','鹿児島空港','九州自動車道'],
+  ['九州・沖縄','沖縄','ゆいレール','那覇空港','沖縄自動車道']
+];
+var WX_PATTERN = [['☀','晴れ'],['⛅','晴れ時々曇り'],['☁','曇り'],['☂','曇り一時雨'],['🌦','雨のち晴れ'],['⛈','雷を伴う雨']];
+var WX_TEMP = { '北海道・東北':[27,20], '関東':[34,26], '中部':[33,25], '近畿':[34,26], '中国':[33,25], '四国':[33,25], '九州・沖縄':[34,27] };
+var DAYS = ['今日','明日','明後日'];
+
+function buildPrefOptions(sel) {
+  var group = null, region = '';
+  PREFS.forEach(function (p, i) {
+    if (p[0] !== region) { region = p[0]; group = document.createElement('optgroup'); group.label = region; sel.appendChild(group); }
+    var o = document.createElement('option');
+    o.value = String(i); o.textContent = p[1];
+    group.appendChild(o);
+  });
+}
+
+function renderWeather(i) {
+  var p = PREFS[i], base = WX_TEMP[p[0]], html = '';
+  for (var d = 0; d < 3; d++) {
+    var w = WX_PATTERN[(i + d * 2) % WX_PATTERN.length];
+    var hi = base[0] - d - (i % 3), lo = base[1] - (d % 2) - (i % 2);
+    html += '<div class="wx-row"><span class="day">' + DAYS[d] + '</span>'
+          + '<span class="ico">' + w[0] + '</span><span class="desc">' + w[1] + '</span>'
+          + '<span class="tmp"><span class="hi">' + hi + '</span> / <span class="lo">' + lo + '</span><span class="unit">℃</span></span></div>';
+  }
+  document.getElementById('wx-body').innerHTML = html;
+}
+
+// 遅延・欠航・渋滞のみを返す(平常時は空配列)
+function alertsFor(i) {
+  var p = PREFS[i], out = [], m = i % 5;
+  if (m === 1 || m === 2) out.push(['train', '電車', p[2], '遅延', 'warn']);
+  if ((m === 3 || m === 4) && p[3]) out.push(['air', '飛行機', p[3] + ' 発着', '欠航', 'ng']);
+  if (m === 2 || m === 4) out.push(['road', '道路', p[4], '渋滞', 'warn']);
+  return out;
+}
+
+function renderTransit(i) {
+  var list = alertsFor(i), body = document.getElementById('tr-body'), badge = document.getElementById('tr-count');
+  badge.textContent = String(list.length);
+  badge.className = 'sc-count' + (list.length ? '' : ' zero');
+  if (!list.length) {
+    body.innerHTML = '<div class="tr-empty"><span class="ok-dot"></span>電車・飛行機・道路とも、大きな乱れはありません。</div>';
+    return;
+  }
+  body.innerHTML = list.map(function (a) {
+    return '<div class="tr-row"><span class="tr-kind ' + a[0] + '">' + a[1] + '</span>'
+         + '<span class="ln">' + a[2] + '</span>'
+         + '<span class="tr-badge ' + a[4] + '">' + a[3] + '</span></div>';
+  }).join('');
+}
+
+(function initRegionPanels() {
+  var wxSel = document.getElementById('wx-pref'), trSel = document.getElementById('tr-pref');
+  buildPrefOptions(wxSel); buildPrefOptions(trSel);
+  // 既定は東京。選択はこの端末のブラウザにだけ保存する(サーバーへは送らない)
+  var DEF = '12';
+  var wxSaved, trSaved;
+  try { wxSaved = localStorage.getItem('bw-wx-pref'); trSaved = localStorage.getItem('bw-tr-pref'); } catch (e) {}
+  wxSel.value = (wxSaved !== null && wxSaved !== undefined && PREFS[wxSaved]) ? wxSaved : DEF;
+  trSel.value = (trSaved !== null && trSaved !== undefined && PREFS[trSaved]) ? trSaved : DEF;
+  renderWeather(+wxSel.value); renderTransit(+trSel.value);
+  wxSel.addEventListener('change', function () {
+    renderWeather(+this.value);
+    try { localStorage.setItem('bw-wx-pref', this.value); } catch (e) {}
+  });
+  trSel.addEventListener('change', function () {
+    renderTransit(+this.value);
+    try { localStorage.setItem('bw-tr-pref', this.value); } catch (e) {}
+  });
+})();
+
+/* ============================================================
+   ブログ描画 ＋ 管理者モード（Ctrl + Shift + D）
+   ------------------------------------------------------------
+   公開記事は data/posts.json から読む（方式A）。
+   管理者モードで書いた記事は、この端末の localStorage にだけ入る「下書き」で、
+   記事一覧の先頭に「ローカル保存」バッジ付きで表示される。
+   公開は「posts.json を書き出す」→ data/posts.json を置き換えてコミット、で行う。
+
+   ※投稿パスワードは静的サイト上のJSに書いてあるので、ソースを見れば分かる。
+     これは認証ではなく、誤操作を防ぐための確認でしかない。
+     ただし投稿先はこの端末のブラウザだけなので、破られても公開サイトは書き換わらない。
+   ============================================================ */
+(function blog() {
+  var PASS = 'tkco';
+  var KEY = 'bw-posts';
+  var CATS = [
+    ['yomimono', '休日の読み物',          'YOMIMONO'],
+    ['aruaru',   '銀行あるある',          'ARUARU'],
+    ['keieisha', '経営者の独り言',        'KEIEISHA'],
+    ['tegami',   '元バンカーからの手紙',  'TEGAMI'],
+    ['tarumono', '銀行員たるもの',        'TARUMONO'],
+    ['kaiketsu', '銀行員の課題解決',      'KAIKETSU'],
+    ['yume',     'たまには夢を語りたい',  'YUME'],
+    ['guchi',    'たまにはグチを言いたい','GUCHI']
+  ];
+  var published = [];
+
+  var host    = document.getElementById('posts');
+  var overlay = document.getElementById('admin-overlay');
+  var toggle  = document.getElementById('admin-toggle');
+  var form    = document.getElementById('admin-form');
+  var elCat   = document.getElementById('ap-cat');
+  var elDate  = document.getElementById('ap-date');
+  var elTitle = document.getElementById('ap-title');
+  var elBody  = document.getElementById('ap-body');
+  var elPass  = document.getElementById('ap-pass');
+  var elPassMsg = document.getElementById('ap-pass-msg');
+  var elCount = document.getElementById('ap-count');
+  var elMsg   = document.getElementById('ap-msg');
+  var elList  = document.getElementById('ap-list');
+  var elListHead = document.getElementById('ap-list-head');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function load() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) || '[]').map(function (p) {
+        return { category: p.category || p.cat, date: p.date, title: p.title, body: p.body };
+      });
+    } catch (e) { return []; }
+  }
+  function save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+  function catOf(slug) { for (var i = 0; i < CATS.length; i++) if (CATS[i][0] === slug) return CATS[i]; return CATS[0]; }
+  function readMin(text) { return Math.max(1, Math.round(String(text || '').replace(/\s/g, '').length / 500)); }
+  function fmtDate(iso) {
+    var d = new Date(iso + 'T00:00:00');
+    if (isNaN(d)) return iso;
+    return iso.replace(/-/g, '.') + ' ' + ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+  }
+  function bodyHtml(t) {
+    return String(t || '').split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean)
+      .map(function (p) { return '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>'; }).join('');
+  }
+  function todayISO() {
+    var d = new Date(), z = function (n) { return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
+  }
+  function byDateDesc(a, b) { return String(b.date).localeCompare(String(a.date)); }
+
+  function postHtml(p, draft) {
+    var c = catOf(p.category);
+    return '<article class="post cat-' + c[0] + '">'
+      + '<span class="post-mark font-brand-en" aria-hidden="true">' + c[2] + '</span>'
+      + '<div class="post-meta"><span class="post-cat">' + esc(c[1]) + '</span>'
+      + '<span class="post-date">' + esc(fmtDate(p.date)) + '</span>'
+      + (draft ? '<span class="post-local">ローカル保存</span>' : '') + '</div>'
+      + '<h2>' + (draft ? esc(p.title) : '<a href="#">' + esc(p.title) + '</a>') + '</h2>'
+      + '<div class="body">' + bodyHtml(p.body) + '</div>'
+      + '<div class="post-foot">'
+      + (draft ? '<span class="post-more">未公開</span>'
+               : '<a href="#" class="post-more">続きを読む <span aria-hidden="true">&rarr;</span></a>')
+      + '<span class="post-read">読了 約<span class="num">' + readMin(p.body) + '</span><span class="unit">分</span></span>'
+      + '</div></article>';
+  }
+
+  function renderAll() {
+    var drafts = load();
+    host.innerHTML =
+      drafts.map(function (p) { return postHtml(p, true); }).join('') +
+      published.map(function (p) { return postHtml(p, false); }).join('');
+  }
+
+  // 公開記事を data/posts.json から読み込む
+  fetch('data/posts.json', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : { posts: [] }; })
+    .then(function (j) { published = (j.posts || []).slice().sort(byDateDesc); })
+    .catch(function () { published = []; })
+    .then(function () { renderAll(); });
+
+  /* ---------- ここから管理者モード ---------- */
+  if (!overlay) return;
+
+  function renderList() {
+    var posts = load();
+    elListHead.textContent = '保存済みの下書き（' + posts.length + '件）';
+    if (!posts.length) { elList.innerHTML = '<p class="admin-meta">まだありません。</p>'; return; }
+    elList.innerHTML = posts.map(function (p, i) {
+      return '<div class="admin-item"><span class="ti">' + esc(catOf(p.category)[1]) + '／' + esc(p.title) + '</span>'
+        + '<button type="button" class="admin-del" data-i="' + i + '">削除</button></div>';
+    }).join('');
+  }
+
+  CATS.forEach(function (c) {
+    var o = document.createElement('option');
+    o.value = c[0]; o.textContent = c[1]; elCat.appendChild(o);
+  });
+  elDate.value = todayISO();
+
+  elBody.addEventListener('input', function () {
+    var n = this.value.replace(/\s/g, '').length;
+    elCount.textContent = n.toLocaleString('ja-JP') + ' 字／読了 約 ' + readMin(this.value) + ' 分';
+  });
+  elPass.addEventListener('input', function () { this.style.borderColor = ''; elPassMsg.hidden = true; });
+
+  function openAdmin(on) {
+    if (on) { overlay.hidden = false; overlay.classList.add('open'); elTitle.focus(); }
+    else { overlay.classList.remove('open'); overlay.hidden = true; }
+  }
+  function showAdminBtn(on) {
+    toggle.hidden = !on;
+    if (!on) openAdmin(false);
+    try { sessionStorage.setItem('bw-admin', on ? '1' : '0'); } catch (e) {}
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+      e.preventDefault();
+      showAdminBtn(toggle.hidden);
+    }
+    if (e.key === 'Escape' && overlay.classList.contains('open')) openAdmin(false);
+  });
+  try { if (sessionStorage.getItem('bw-admin') === '1') toggle.hidden = false; } catch (e) {}
+
+  toggle.addEventListener('click', function () { openAdmin(true); });
+  document.getElementById('admin-close').addEventListener('click', function () { openAdmin(false); });
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) openAdmin(false); });
+
+  function flash(text) {
+    elMsg.textContent = text; elMsg.hidden = false;
+    setTimeout(function () { elMsg.hidden = true; }, 4500);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (elPass.value !== PASS) {
+      elPass.style.borderColor = '#a83d3d'; elPassMsg.hidden = false; elPass.focus();
+      return;
+    }
+    var t = elTitle.value.trim(), b = elBody.value.trim();
+    if (!t) { elTitle.style.borderColor = '#a83d3d'; elTitle.focus(); return; }
+    if (!b) { elBody.style.borderColor = '#a83d3d'; elBody.focus(); return; }
+    elTitle.style.borderColor = ''; elBody.style.borderColor = '';
+    var posts = load();
+    posts.unshift({ category: elCat.value, date: elDate.value || todayISO(), title: t, body: b });
+    save(posts);
+    elTitle.value = ''; elBody.value = ''; elPass.value = '';
+    elCount.textContent = '0 字／読了 約 1 分';
+    renderAll(); renderList();
+    flash('下書きに追加しました。記事一覧の先頭に出ています。');
+  });
+
+  // 削除は window.confirm() を使わず、1回目のクリックでボタン自身が警告表示に変わる
+  elList.addEventListener('click', function (e) {
+    var btn = e.target.closest('.admin-del');
+    if (!btn) return;
+    if (!btn.classList.contains('is-confirming')) {
+      Array.prototype.forEach.call(elList.querySelectorAll('.admin-del'), function (b) {
+        b.classList.remove('is-confirming'); b.textContent = '削除';
+      });
+      btn.classList.add('is-confirming'); btn.textContent = '本当に削除？';
+      return;
+    }
+    var posts = load();
+    posts.splice(+btn.dataset.i, 1);
+    save(posts); renderAll(); renderList();
+  });
+
+  // 公開分＋下書きをまとめて posts.json として書き出す（そのまま data/ に置ける）
+  document.getElementById('ap-export').addEventListener('click', function () {
+    var all = load().concat(published).sort(byDateDesc).map(function (p) {
+      return { category: p.category, date: p.date, title: p.title, body: p.body };
+    });
+    if (!all.length) { flash('書き出す記事がありません。'); return; }
+    var blob = new Blob([JSON.stringify({ updated: todayISO(), posts: all }, null, 2) + '\n'], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'posts.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    flash('posts.json（全 ' + all.length + ' 件）を書き出しました。');
+  });
+
+  renderList();
+})();
+</script>
+
+</body>
+</html>
