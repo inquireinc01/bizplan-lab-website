@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="../css/style.css?v=2026081229" />
+<link rel="stylesheet" href="../css/style.css?v=2026081230" />
 <style>
 /* 平日ページ専用: 中央カラムの市場データはメインコンテンツなので行を大きく組む */
 .mkt-wide .idx-row { padding: 3px 2px; }
@@ -25,8 +25,14 @@
   #card-calendar { order: 20; }
   #card-weather  { order: 30; }
   #card-transit  { order: 40; }
+  #card-subsidy  { order: 50; }
   .mm-card       { order: 100; }
 }
+.sub-row { display: block; padding: 7px 2px 8px; border-bottom: 1px dotted var(--line); text-decoration: none; }
+.sub-row:last-child { border-bottom: none; }
+.sub-row .t { display: block; font-size: var(--fs-2); font-weight: 700; color: #2b2f36; line-height: 1.6; }
+.sub-row:hover .t { color: var(--color-navy); text-decoration: underline; }
+.sub-row .m { display: block; font-size: var(--fs-1); color: var(--color-slate-light); margin-top: 2px; }
 </style>
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
@@ -79,6 +85,16 @@
             <a href="#" id="mm-sample" class="mm-sample">サンプルを見る <span aria-hidden="true">&rarr;</span></a>
             <div id="mm-done" class="mm-done" hidden>ご登録ありがとうございます。次の平日の朝からお届けします。</div>
           </div>
+        </div>
+
+        <!-- 補助金・助成金(jGrants公開API・締切が近い順・都道府県絞り込み) -->
+        <div class="side-card" id="card-subsidy">
+          <div class="sc-head">
+            <span class="sc-ja">補助金・助成金</span>
+            <select id="sub-pref" class="sc-select" aria-label="補助金の対象地域"></select>
+            <span class="sc-en font-brand-en" aria-hidden="true">Subsidy</span>
+          </div>
+          <div class="sc-body" id="sub-body"></div>
         </div>
 
       </div>
@@ -477,6 +493,59 @@ function renderWeather(i) {
       badge.textContent = '–';
       body.innerHTML = '<div class="tr-empty">遅延情報を取得できませんでした。</div>';
     });
+})();
+
+/* ---------- 補助金・助成金(jGrants・都道府県絞り込み) ---------- */
+(function subsidy() {
+  var body = document.getElementById('sub-body');
+  var sel = document.getElementById('sub-pref');
+  var all = [];
+  var opt0 = document.createElement('option'); opt0.value = '-1'; opt0.textContent = '全国'; sel.appendChild(opt0);
+  var group = null, region = '';
+  PREFS.forEach(function (p, i) {
+    if (p[0] !== region) { region = p[0]; group = document.createElement('optgroup'); group.label = region; sel.appendChild(group); }
+    var o = document.createElement('option'); o.value = String(i); o.textContent = p[1]; group.appendChild(o);
+  });
+  function fullName(name) {
+    if (name === '北海道') return '北海道';
+    if (name === '東京') return '東京都';
+    if (name === '大阪' || name === '京都') return name + '府';
+    return name + '県';
+  }
+  function fmtMax(n) {
+    if (!n) return '';
+    if (n >= 100000000) return '上限 ' + (Math.round(n / 10000000) / 10) + '億円';
+    return '上限 ' + (n / 10000).toLocaleString('ja-JP') + '万円';
+  }
+  function paint() {
+    var i = +sel.value;
+    var list = all;
+    if (i >= 0) {
+      var fn = fullName(PREFS[i][1]);
+      list = all.filter(function (x) { return x.area === '全国' || x.area.indexOf(fn) >= 0; });
+    }
+    list = list.slice(0, 8);
+    if (!list.length) { body.innerHTML = '<div class="tr-empty">該当する公募が見つかりませんでした。</div>'; return; }
+    body.innerHTML = list.map(function (x) {
+      var meta = [];
+      if (x.end) meta.push('締切 ' + x.end.replace(/-/g, '/'));
+      var mx = fmtMax(x.max); if (mx) meta.push(mx);
+      return '<a class="sub-row" href="https://www.jgrants-portal.go.jp/subsidy/' + encodeURIComponent(x.id) + '" target="_blank" rel="noopener">'
+        + '<span class="t">' + wEsc(x.title) + '</span>'
+        + '<span class="m">' + wEsc(meta.join('・')) + '</span></a>';
+    }).join('');
+  }
+  body.innerHTML = '<div class="tr-empty">読み込み中…</div>';
+  var saved; try { saved = localStorage.getItem('bw-sub-pref'); } catch (e) {}
+  sel.value = (saved !== null && saved !== undefined && (saved === '-1' || PREFS[saved])) ? saved : '-1';
+  fetch(API_BASE + '?type=subsidy')
+    .then(function (r) { return r.json(); })
+    .then(function (j) { all = j.items || []; paint(); })
+    .catch(function () { body.innerHTML = '<div class="tr-empty">補助金情報を取得できませんでした。</div>'; });
+  sel.addEventListener('change', function () {
+    paint();
+    try { localStorage.setItem('bw-sub-pref', this.value); } catch (e) {}
+  });
 })();
 </script>
 

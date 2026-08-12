@@ -62,6 +62,7 @@
   --cat-kaiketsu: #3B7029;  /* 銀行員の課題解決     色相105° グリーン       白文字 5.9:1 */
   --cat-yume:     #4A5FA5;  /* たまには夢を語りたい 色相227° インディゴ     白文字 6.0:1 */
   --cat-guchi:    #2E7D52;  /* たまにはグチを言いたい 色相147° シーグリーン  白文字 5.0:1 */
+  --cat-sonota:   #A85A1E;  /* その他               色相 28° オレンジ       白文字 5.1:1 */
 }
 
 /* ---------- 和文は BIZ UDPGothic を最優先 ---------- */
@@ -486,6 +487,7 @@ img { max-width: 100%; height: auto; display: block; }
 .post.cat-kaiketsu { --post-color: var(--cat-kaiketsu); }
 .post.cat-yume     { --post-color: var(--cat-yume); }
 .post.cat-guchi    { --post-color: var(--cat-guchi); }
+.post.cat-sonota   { --post-color: var(--cat-sonota); }
 
 /* カード内の飾り英字(図版扱い) */
 .post-mark {
@@ -546,6 +548,7 @@ img { max-width: 100%; height: auto; display: block; }
 .cat-dot.kaiketsu { background: var(--cat-kaiketsu); }
 .cat-dot.yume     { background: var(--cat-yume); }
 .cat-dot.guchi    { background: var(--cat-guchi); }
+.cat-dot.sonota   { background: var(--cat-sonota); }
 
 /* ---------- 準備中カード ---------- */
 .prep-card {
