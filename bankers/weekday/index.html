@@ -524,7 +524,7 @@ function renderWeather(i) {
       var fn = fullName(PREFS[i][1]);
       list = all.filter(function (x) { return x.area === '全国' || x.area.indexOf(fn) >= 0; });
     }
-    list = list.slice(0, 8);
+    list = list.slice(0, 15);
     if (!list.length) { body.innerHTML = '<div class="tr-empty">該当する公募が見つかりませんでした。</div>'; return; }
     body.innerHTML = list.map(function (x) {
       var meta = [];
