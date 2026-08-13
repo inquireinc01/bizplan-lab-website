@@ -326,15 +326,16 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .side-card > .sc-head .sc-ja { position: relative; z-index: 1; font-size: var(--fs-3); font-weight: 700; letter-spacing: .08em; }
 /* 帯の中に置く都道府県セレクタ(天気・交通アラート) */
+/* 視認性優先: 透過ではなく白ベタ＋紺ボールド(2026-08-13指示) */
 .sc-select {
   position: relative; z-index: 1; margin-left: auto; max-width: 116px;
   font-family: inherit; font-size: var(--fs-1); font-weight: 700; line-height: 1.4;
-  color: #fff; background: rgba(255,255,255,.14);
-  border: 1px solid rgba(255,255,255,.28); border-radius: 4px;
+  color: var(--color-navy); background: #fff;
+  border: 1px solid rgba(255,255,255,.45); border-radius: 4px;
   padding: 2px 4px; cursor: pointer;
 }
-.sc-select:focus { outline: none; border-color: #fff; background: rgba(255,255,255,.24); }
-.sc-select option, .sc-select optgroup { color: #1d2733; background: #fff; }
+.sc-select:focus { outline: none; border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+.sc-select option, .sc-select optgroup { color: var(--color-navy); font-weight: 700; background: #fff; }
 /* アラート件数バッジ */
 .sc-count {
   position: relative; z-index: 1; margin-left: 8px;
