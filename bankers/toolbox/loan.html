@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ローン返済シミュレーション | 銀行員の道具箱</title>
+<meta name="description" content="元利均等・元金均等の毎月返済額と総返済額を試算。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../css/style.css?v=2026081233" />
+<style>
+/* ツールページ共通(bizplanlabo規約: 入力確定時再計算・？チップ・カンマ区切り・単位小さく) */
+.tool-grid { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start; }
+@media (min-width: 900px) { .tool-grid { grid-template-columns: 1.15fr 1fr; } }
+.tool-card { background: #fff; border: 1px solid var(--line); border-radius: .75rem; overflow: hidden; }
+.tool-card .tc-head {
+  display: flex; align-items: center; padding: 10px 16px;
+  background: var(--color-navy); color: #fff;
+  font-size: var(--fs-3); font-weight: 700; letter-spacing: .08em;
+}
+.tool-card .tc-body { padding: 16px 18px 18px; }
+.fld { margin-bottom: 13px; }
+.fld label { display: block; font-size: var(--fs-2); font-weight: 700; color: var(--color-slate); margin-bottom: 5px; letter-spacing: .04em; }
+.fld .row { display: flex; align-items: center; gap: 8px; }
+.fld input[type="text"] {
+  width: 100%; font-family: Arial, sans-serif; font-size: var(--fs-4); font-weight: 700;
+  text-align: right; padding: 8px 11px; color: #2b2f36;
+  border: 1.5px solid var(--color-gray-200); border-radius: .5rem; background: #fff;
+}
+.fld input[type="text"]:focus { outline: none; border-color: var(--color-navy); box-shadow: 0 0 0 3px rgba(15,42,74,.10); }
+.fld input.miss { border-color: #d9a0a0; background: #fdf1f1; }
+.fld input::placeholder { color: #adb5bf; font-weight: 400; font-family: "BIZ UDPGothic", sans-serif; }
+.fld .unit-l { flex: 0 0 auto; font-size: var(--fs-2); color: var(--color-slate); }
+.fld select {
+  width: 100%; font-family: inherit; font-size: var(--fs-3); font-weight: 700; color: var(--color-navy);
+  padding: 8px 11px; border: 1.5px solid var(--color-gray-200); border-radius: .5rem; background: #fff; cursor: pointer;
+}
+.fld select:focus { outline: none; border-color: var(--color-navy); box-shadow: 0 0 0 3px rgba(15,42,74,.10); }
+.res-note { font-size: var(--fs-2); font-weight: 700; color: #a83d3d; padding: 4px 0 10px; }
+.res-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 9px 2px; border-bottom: 1px dotted var(--line); }
+.res-row:last-child { border-bottom: none; }
+.res-row .l { font-size: var(--fs-3); color: var(--color-slate); }
+.res-row .v { font-size: var(--fs-5); }
+.res-row.big .v { font-size: var(--fs-6); color: var(--color-navy); }
+.res-row .v .num { letter-spacing: .01em; }
+.tool-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.btn-clear {
+  font-size: var(--fs-2); font-weight: 700; padding: 8px 16px; border-radius: .5rem; cursor: pointer;
+  background: #fff; color: var(--color-navy); border: 1px solid var(--color-navy);
+}
+.btn-clear:hover { background: var(--color-navy); color: #fff; }
+.tool-back { font-size: var(--fs-2); font-weight: 700; color: var(--color-slate); text-decoration: none; }
+.tool-back:hover { color: var(--color-navy); text-decoration: underline; }
+</style>
+</head>
+<body class="bg-[#f8f9fb] text-[#2b2f36]">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between gap-5 min-h-[78px] py-2.5 flex-wrap">
+      <a href="index.html" class="flex items-center shrink-0 no-underline">
+        <img src="../images/logo-toolbox.png?v=101" alt="銀行員の道具箱 — Bankers Toolbox" class="h-[46px] sm:h-[54px] w-auto" />
+      </a>
+      <nav class="flex items-center gap-4 sm:gap-5" aria-label="シリーズ内リンク">
+        <a href="../weekend/" class="opacity-70 hover:opacity-100 transition-opacity" title="銀行員の休日"><img src="../images/logo.png?v=103" alt="銀行員の休日" class="h-[26px] w-auto" /></a>
+        <a href="../weekday/" class="opacity-70 hover:opacity-100 transition-opacity" title="銀行員の平日"><img src="../images/logo-weekday.png?v=101" alt="銀行員の平日" class="h-[26px] w-auto" /></a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- ===== ヒーロー(若葉グラデーション) ===== -->
+<section class="hero-pattern hero-pattern--toolbox relative overflow-hidden h-[86px] sm:h-[104px]">
+  <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">TOOL.2</span>
+  <span class="hero-brand-mark hero-brand-mark--br" aria-hidden="true">LOAN</span>
+  <div class="relative z-10 max-w-[1100px] mx-auto px-5 sm:px-8 h-full flex items-center">
+    <h1 class="text-white text-[16px] sm:text-[20px] font-bold tracking-[.12em] pl-3.5 border-l-[3px] border-[#a8d8a8]">
+      ローン返済シミュレーション
+    </h1>
+  </div>
+</section>
+
+<main class="max-w-[1100px] mx-auto px-5 sm:px-8 py-8 sm:py-10">
+
+  <div class="mb-5 flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <span class="text-5xl font-black leading-none tracking-tight" style="color:#2e6b2e">Tool.<span style="color:#0f2a4a">2</span></span>
+      <div class="w-8 h-[3px] mt-3 rounded-full" style="background-color:#2e7a99"></div>
+    </div>
+    <a href="index.html" class="tool-back">&larr; 道具箱トップへ戻る</a>
+  </div>
+
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-head">入力</div>
+      <div class="tc-body">
+        <div class="fld">
+          <label for="p">借入金額</label>
+          <div class="row"><input type="text" id="p" inputmode="decimal" placeholder="入力例：30,000,000" /><span class="unit-l">円</span></div>
+        </div>
+        <div class="fld">
+          <label for="r">年利率</label>
+          <div class="row"><input type="text" id="r" inputmode="decimal" placeholder="入力例：1.8" data-dec="1" /><span class="unit-l">％</span></div>
+        </div>
+        <div class="fld">
+          <label for="t">返済期間</label>
+          <div class="row"><input type="text" id="t" inputmode="decimal" placeholder="入力例：35" /><span class="unit-l">年</span></div>
+        </div>
+        <div class="fld">
+          <label for="m">返済方式<button type="button" class="help-tip" aria-label="解説">?<span class="tip-body">元利均等は毎月の返済額が一定。元金均等は毎月の元金が一定で、返済額は初回が最も多く徐々に減ります。総利息は元金均等のほうが少なくなります。</span></button></label>
+          <select id="m"><option value="level">元利均等返済</option><option value="principal">元金均等返済</option></select>
+        </div>
+
+        <div class="tool-actions">
+          <button type="button" id="btn-clear" class="btn-clear">入力データクリア</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-head">計算結果</div>
+      <div class="tc-body">
+        <div id="res-note" class="res-note" hidden></div>
+        <div class="res-row big"><span class="l">毎月返済額(初回)</span><span class="v" id="r1">&mdash;</span></div>
+        <div class="res-row"><span class="l">毎月返済額(最終回)</span><span class="v" id="r2">&mdash;</span></div>
+        <div class="res-row"><span class="l">年間返済額(初年度)</span><span class="v" id="r3">&mdash;</span></div>
+        <div class="res-row"><span class="l">総返済額</span><span class="v" id="r4">&mdash;</span></div>
+        <div class="res-row"><span class="l">総利息</span><span class="v" id="r5">&mdash;</span></div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <p class="text-[11px] text-gray-400 mt-6 leading-relaxed">本ツールはサンプル版の概算計算です。実際の取引・申告・契約にあたっては、正式な条件・税率・料率をご確認ください。</p>
+
+</main>
+
+<footer class="border-t border-gray-200 mt-4">
+  <div class="max-w-[1400px] mx-auto px-5 sm:px-8 py-6 text-center">
+    <p class="text-[12px] text-gray-400 tracking-[.08em]"><a href="../" class="hover:text-[#0f2a4a]">銀行員シリーズ</a>&nbsp;&nbsp;&copy; 2026 Bankers Toolbox</p>
+  </div>
+</footer>
+
+<script>
+/* 共通ヘルパー(bizplanlabo規約: 確定時再計算・カンマ整形・あと◯項目) */
+function num(el) { var v = String(el.value).replace(/[,\s円%年ヶ月]/g, ''); return v === '' ? null : Number(v); }
+function fmt(n, d) { d = d || 0; return Number(n).toLocaleString('ja-JP', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+function setV(id, html) { document.getElementById(id).innerHTML = html; }
+function yen(n) { return '<span class="num">' + fmt(Math.round(n)) + '</span><span class="unit">円</span>'; }
+function pct(n, d) { return '<span class="num">' + fmt(n, d === undefined ? 2 : d) + '</span><span class="unit">%</span>'; }
+function commaField(el) {
+  var n = num(el);
+  if (n === null || isNaN(n)) return;
+  var d = (String(el.value).indexOf('.') >= 0 && el.dataset.dec === '1') ? Math.min(String(el.value).split('.')[1].replace(/[^0-9]/g,'').length, 3) : 0;
+  el.value = fmt(n, d);
+}
+// 「？」チップはTabで止まらない(全体ルール)
+Array.prototype.forEach.call(document.querySelectorAll('.help-tip'), function (t) { t.setAttribute('tabindex', '-1'); });
+
+var REQ = ['p','r','t'];
+function recalc() {
+  var missing = 0;
+  REQ.forEach(function (id) {
+    var el = document.getElementById(id);
+    var v = num(el);
+    if (v === null || isNaN(v)) { el.classList.add('miss'); missing++; }
+    else el.classList.remove('miss');
+  });
+  var note = document.getElementById('res-note');
+  if (missing > 0) {
+    note.hidden = false;
+    note.textContent = 'あと' + missing + '項目入力してください';
+    clearResults();
+    return;
+  }
+  note.hidden = true;
+  compute();
+}
+document.addEventListener('change', function (e) {
+  if (e.target.matches('input[type="text"]')) commaField(e.target);
+  if (e.target.matches('input, select')) recalc();
+});
+document.getElementById('btn-clear').addEventListener('click', function () {
+  Array.prototype.forEach.call(document.querySelectorAll('input[type="text"]'), function (i) { i.value = ''; i.classList.remove('miss'); });
+  Array.prototype.forEach.call(document.querySelectorAll('select'), function (s) { s.selectedIndex = 0; });
+  document.getElementById('res-note').hidden = true;
+  clearResults();
+});
+
+function compute() {
+  var P = num(document.getElementById('p'));
+  var r = num(document.getElementById('r')) / 100 / 12;
+  var nM = num(document.getElementById('t')) * 12;
+  var mode = document.getElementById('m').value;
+  var first, last, total;
+  if (mode === 'level') {
+    var M = r === 0 ? P / nM : P * r / (1 - Math.pow(1 + r, -nM));
+    first = M; last = M; total = M * nM;
+  } else {
+    var base = P / nM;
+    first = base + P * r;
+    last = base + base * r;
+    total = base * nM + P * r * (nM + 1) / 2;
+  }
+  var year1 = 0;
+  if (mode === 'level') { year1 = first * 12; }
+  else { for (var k = 0; k < 12 && k < nM; k++) { year1 += P / nM + (P - P / nM * k) * r; } }
+  setV('r1', yen(first));
+  setV('r2', yen(last));
+  setV('r3', yen(year1));
+  setV('r4', yen(total));
+  setV('r5', yen(total - P));
+}
+function clearResults() { ['r1','r2','r3','r4','r5'].forEach(function (i) { setV(i, '&mdash;'); }); }
+clearResults();
+</script>
+
+</body>
+</html>
