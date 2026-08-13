@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="../css/style.css?v=2026081230" />
+<link rel="stylesheet" href="../css/style.css?v=2026081231" />
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
 
@@ -103,6 +103,20 @@
     <!-- ============ 右カラム 1/4 ============ -->
     <div class="col-right">
       <div class="side-stack flex flex-col gap-3">
+
+        <!-- 匿名掲示板(外部サービス上で運営。リスク切り分けのため外部であることを明記) -->
+        <div class="side-card" id="card-bbs">
+          <div class="sc-head">
+            <span class="sc-ja">匿名掲示板</span>
+            <span class="sc-when">外部サイト</span>
+            <span class="sc-en font-brand-en" aria-hidden="true">BBS</span>
+          </div>
+          <div class="sc-body">
+            <p class="bbs-lede">銀行員同士の雑談・情報交換のための匿名掲示板です。</p>
+            <a href="#" id="bbs-link" class="btn-primary bbs-btn" aria-disabled="true">掲示板を開く（準備中）<span aria-hidden="true">&rarr;</span></a>
+            <p class="bbs-note">掲示板は外部サービス上で運営されており、書き込み・閲覧は外部サービスの利用規約と管理に従います。当サイトは掲示板の内容について管理・責任を負いません。顧客情報・行内情報・個人が特定される内容の書き込みは固くお断りします。</p>
+          </div>
+        </div>
 
         <!-- カレンダー -->
         <div class="side-card m-fold" id="card-calendar">

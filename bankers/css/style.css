@@ -249,6 +249,7 @@ img { max-width: 100%; height: auto; display: block; }
   #card-yasumu    { order: 20; }
   .col-center     { order: 30; }
   #card-archive   { order: 50; }
+  #card-bbs       { order: 55; }
   #card-calendar  { order: 60; }
   #card-weather   { order: 80; }
   #card-transit   { order: 90; }
@@ -633,6 +634,18 @@ img { max-width: 100%; height: auto; display: block; }
 .archive-back:hover { color: var(--color-navy); text-decoration: underline; }
 .archive-title { font-size: var(--fs-2); font-weight: 700; color: var(--color-slate); }
 .archive-empty { font-size: var(--fs-2); color: var(--color-slate-light); padding: 8px 2px; }
+
+/* ---------- 匿名掲示板カード(外部サービスへの案内) ---------- */
+.sc-when { position: relative; z-index: 1; margin-left: auto; font-size: var(--fs-1); font-weight: 700; letter-spacing: .08em; color: rgba(255,255,255,.62); }
+.bbs-lede { font-size: var(--fs-2); line-height: 1.8; color: #414c59; }
+.bbs-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; margin-top: 10px; padding: 9px 12px;
+  font-size: var(--fs-2); font-weight: 700; letter-spacing: .06em;
+  color: #fff; text-decoration: none;
+}
+.bbs-btn[aria-disabled="true"] { pointer-events: none; opacity: .55; }
+.bbs-note { font-size: var(--fs-1); line-height: 1.8; color: var(--color-slate-light); margin-top: 10px; }
 
 /* ---------- パンくず ---------- */
 .crumb { font-size: var(--fs-2); color: var(--color-slate-light); }
