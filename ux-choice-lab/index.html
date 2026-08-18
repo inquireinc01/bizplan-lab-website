@@ -481,6 +481,7 @@
   <p class="font-brand-en">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
 </footer>
 
+<script src="data-basics.js"></script>
 <script src="data-shop.js"></script>
 <script src="data-finance.js"></script>
 <script src="data-sense.js"></script>
@@ -488,7 +489,8 @@
 <script src="data-space.js"></script>
 <script>
 // ======= アプリ本体 =======
-const COURSES = [window.COURSE_SHOP, window.COURSE_FINANCE, window.COURSE_SENSE, window.COURSE_COLOR, window.COURSE_SPACE];
+// コース順：基礎（色の基本）→ ネットショップ → 財務ツール → センス → 色彩ラベル → 余白と文字
+const COURSES = [window.COURSE_BASICS, window.COURSE_SHOP, window.COURSE_FINANCE, window.COURSE_SENSE, window.COURSE_COLOR, window.COURSE_SPACE];
 const $ = id => document.getElementById(id);
 let course = null;       // 現在のコース
 let quizSet = [];        // 今回出題する問題（復習モードでは間違えた問題のみ）
@@ -521,7 +523,7 @@ function setPhase(phase){
 function renderIntro(){
   const grid = $("courseGrid");
   grid.innerHTML = "";
-  const marks = ["SHOP","FINANCE","SENSE","COLOR","SPACE"];
+  const marks = ["BASICS","SHOP","FINANCE","SENSE","COLOR","SPACE"];
   COURSES.forEach((c,i)=>{
     const best = localStorage.getItem(bestKey(c));
     const card = document.createElement("div");
