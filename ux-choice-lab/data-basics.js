@@ -1,323 +1,730 @@
-// UX CHOICE LAB — コース6: カラーコーディネートの基本学習（30問）
-// 色相・明度・彩度の「定義」から始め、色相環・トーン・配色技法・心理・実践へ段階的に積み上げる基礎コース。
-// すべての色にHEX＋HSLを表記し、色の見え方に関わらず数値で学べる。
+// UX CHOICE LAB — コース1: カラーコーディネートの基本学習（54問・スライド付き）
+// 各問題は「要点スライド（slide）→2択テスト」の順で表示。すべての色にHEX＋HSLを表記。
+// ヘルパー：スライド用の色見本行
+const _sw = (arr) => `<div class="sw-row">${arr.map(([c,l])=>`<div class="sw"><i style="background:${c}"></i><b>${l}</b></div>`).join("")}</div>`;
+
 window.COURSE_BASICS = {
   id: "basics",
   title: "カラーコーディネートの基本学習",
   en: "COLOR BASICS",
-  desc: "色相・明度・彩度とは何か、から始める30問。色の三属性、色相環、トーン、代表的な配色技法、色の心理効果までを、テスト形式で基礎から順に積み上げます。応用の「色彩ラベル編」の前に。",
-  minutes: "約15",
+  desc: "色相・明度・彩度とは何か、から始める54問。各問の前に要点スライドが出て、すぐ2択で定着させます。色の三属性、色相環、12のトーン、配色技法、色の意味と心理まで、基礎を体系的に網羅します。",
+  minutes: "約35",
+  slides: true,
   groups: [
     {name:"色の三属性", icon:"3", note:"色相・明度・彩度"},
     {name:"色相環のしくみ", icon:"○", note:"色の位置関係"},
-    {name:"トーンと色の性格", icon:"◑", note:"明度×彩度の組み合わせ"},
+    {name:"トーンと色の性格", icon:"◑", note:"明度×彩度の12種"},
     {name:"配色の技法", icon:"◐", note:"型を知る"},
-    {name:"色の心理と実践", icon:"◉", note:"意味と使い方"}
+    {name:"色の意味と連想", icon:"◉", note:"色ごとのメッセージ"},
+    {name:"色の見え方と実践", icon:"◎", note:"錯視と手順"}
   ],
   questions: [
-// ---------- 色の三属性（7問） ----------
+// ================= 色の三属性（8問） =================
 {
   g:"色の三属性", cat:"色を言葉にする",
+  slide:{ title:"色相（Hue）——「何色か」", lead:"色相は、赤・橙・黄・緑・青・紫のような「色みの種類」です。HSL表記では0〜360°の角度で表し、色相環を一周します。明るさや鮮やかさとは独立した、色を語る最初の座標です。",
+    visual:_sw([["#d64541","赤 0°"],["#e08a2e","橙 30°"],["#d9c227","黄 55°"],["#3f9a4d","緑 130°"],["#3b6ea5","青 210°"],["#7b3fa8","紫 275°"]]),
+    points:["色相＝色みの種類（赤・青・黄…）","0°が赤、120°が緑、240°が青、360°で赤に戻る","明るさ・鮮やかさとは別の軸"] },
   title:"色相（Hue）とは",
   context:"「色相」が表しているものはどちらでしょう？",
   la:"赤・青・黄などの「色みの違い」", lb:"色の「明るさ」",
-  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#d9c227"></span><span class="chip lg" style="background:#3f9a4d"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#7b3fa8"></span></div><div class="cl">赤 H0° → 橙 H30° → 黄 H55° → 緑 H130° → 青 H210° → 紫 H275°<br>明るさ・鮮やかさはほぼ同じで、<b style="display:inline">色みだけ</b>が違う</div></div>`,
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#d9c227"></span><span class="chip lg" style="background:#3f9a4d"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#7b3fa8"></span></div><div class="cl">赤 H0° → 橙 H30° → 黄 H55° → 緑 H130° → 青 H210° → 紫 H275°<br>明るさ・鮮やかさはほぼ同じで、色みだけが違う</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#1a1a1a"></span><span class="chip lg" style="background:#4d4d4d"></span><span class="chip lg" style="background:#808080"></span><span class="chip lg" style="background:#b3b3b3"></span><span class="chip lg" style="background:#e6e6e6"></span></div><div class="cl">L 10% → 30% → 50% → 70% → 90%<br>これは「明るさ」の違い。色みは変わっていない</div></div>`,
   principle:"色相＝赤・青・黄といった「色みの種類」。角度（0〜360°）で表す",
-  explain:"色相（Hue）は、赤・橙・黄・緑・青・紫のような「何色か」を表す属性です。HSLでは0〜360°の角度で表し、0°が赤、120°が緑、240°が青。明るさや鮮やかさとは独立した軸で、色を語るときの最初の座標です。"
+  explain:"色相（Hue）は「何色か」を表す属性で、HSLでは0〜360°の角度で表します。0°が赤、120°が緑、240°が青。明るさや鮮やかさとは独立した軸で、色を語るときの最初の座標です。"
 },
 {
   g:"色の三属性", cat:"色を言葉にする",
+  slide:{ title:"明度（Lightness）——「どれだけ明るいか」", lead:"明度は色の明るさです。0%が黒、100%が白、50%がその色相の最も鮮やかな中間点。同じ青でも明度を上げれば水色、下げれば紺になります。文字の読みやすさ（コントラスト）は、ほぼこの明度差で決まります。",
+    visual:_sw([["#0a1a30","L 11%"],["#1c3f68","L 26%"],["#3b6ea5","L 44%"],["#7ea3cc","L 65%"],["#c9dbee","L 86%"]]),
+    points:["明度＝明るさ。0%＝黒、100%＝白","色相を変えずに明度だけ動かすと「濃淡」ができる","可読性・コントラストは明度差で決まる"] },
   title:"明度（Lightness）とは",
   context:"「明度」が表しているものはどちらでしょう？",
   la:"色の「明るさ・暗さ」", lb:"色の「鮮やかさ」",
-  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0a1a30"></span><span class="chip lg" style="background:#1c3f68"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#7ea3cc"></span><span class="chip lg" style="background:#c9dbee"></span></div><div class="cl">同じ青（H 210°）で、L 11% → 26% → 44% → 65% → 86%<br>色みは同じまま、<b style="display:inline">明るさだけ</b>が変わる</div></div>`,
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0a1a30"></span><span class="chip lg" style="background:#1c3f68"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#7ea3cc"></span><span class="chip lg" style="background:#c9dbee"></span></div><div class="cl">同じ青（H 210°）で、L 11% → 26% → 44% → 65% → 86%<br>色みは同じまま、明るさだけが変わる</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#808080"></span><span class="chip lg" style="background:#6b7a90"></span><span class="chip lg" style="background:#5673a0"></span><span class="chip lg" style="background:#416cb0"></span><span class="chip lg" style="background:#2c65c0"></span></div><div class="cl">同じ青・同じ明るさで、S 0% → 20% → 40% → 60% → 80%<br>これは「鮮やかさ」の違い</div></div>`,
   principle:"明度＝色の明るさ。0%が黒、100%が白",
-  explain:"明度（Lightness）は「どれだけ明るいか」で、0%が黒、100%が白、50%がその色相の最も鮮やかな中間点です。同じ青でも明度を上げれば水色に、下げれば紺になります。可読性やコントラストは、ほぼこの明度差で決まります。"
+  explain:"明度（Lightness）は「どれだけ明るいか」で、0%が黒、100%が白。同じ青でも明度を上げれば水色に、下げれば紺になります。可読性やコントラストは、ほぼこの明度差で決まります。"
 },
 {
   g:"色の三属性", cat:"色を言葉にする",
+  slide:{ title:"彩度（Saturation）——「どれだけ鮮やかか」", lead:"彩度は色の鮮やかさです。0%は灰色（無彩色）、100%が最も純度の高い色。彩度を下げると「くすんだ・落ち着いた」、上げると「派手・元気」な印象になります。上品さは多くの場合、彩度を少し下げることで生まれます。",
+    visual:_sw([["#8a8a8a","S 0%"],["#9a7f7f","S 20%"],["#b06e6e","S 40%"],["#c65858","S 60%"],["#e03c3c","S 80%"]]),
+    points:["彩度＝鮮やかさ。0%＝灰色、100%＝最も鮮やか","下げると落ち着き・上品、上げると派手・元気","「派手すぎる」と感じたら、まず彩度を10〜20%下げる"] },
   title:"彩度（Saturation）とは",
   context:"「彩度」が表しているものはどちらでしょう？",
   la:"色の「鮮やかさ・くすみ」", lb:"色の「明るさ」",
-  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#8a8a8a"></span><span class="chip lg" style="background:#9a7f7f"></span><span class="chip lg" style="background:#b06e6e"></span><span class="chip lg" style="background:#c65858"></span><span class="chip lg" style="background:#e03c3c"></span></div><div class="cl">同じ赤（H 0°）・同じ明るさ（L 55%）で、S 0% → 20% → 40% → 60% → 80%<br>灰色から<b style="display:inline">鮮やかな赤</b>へ</div></div>`,
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#8a8a8a"></span><span class="chip lg" style="background:#9a7f7f"></span><span class="chip lg" style="background:#b06e6e"></span><span class="chip lg" style="background:#c65858"></span><span class="chip lg" style="background:#e03c3c"></span></div><div class="cl">同じ赤（H 0°）・同じ明るさ（L 55%）で、S 0% → 20% → 40% → 60% → 80%<br>灰色から鮮やかな赤へ</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3a0f0f"></span><span class="chip lg" style="background:#7a2020"></span><span class="chip lg" style="background:#c03a3a"></span><span class="chip lg" style="background:#e08a8a"></span><span class="chip lg" style="background:#f5d5d5"></span></div><div class="cl">同じ赤で L 14% → 30% → 49% → 71% → 90%<br>これは「明るさ」の違い</div></div>`,
   principle:"彩度＝色の鮮やかさ。0%が灰色、100%が最も鮮やか",
-  explain:"彩度（Saturation）は「どれだけ鮮やかか」で、0%は無彩色（灰色）、100%は最も純度の高い色です。彩度を下げると「くすんだ・落ち着いた」印象に、上げると「派手・元気」になります。上品さは多くの場合、彩度を少し下げることで生まれます。"
+  explain:"彩度（Saturation）は「どれだけ鮮やかか」で、0%は無彩色（灰色）、100%は最も純度の高い色です。彩度を下げると落ち着いた印象に、上げると派手になります。上品さは彩度を少し下げることで生まれます。"
 },
 {
   g:"色の三属性", cat:"HSLの読み方",
+  slide:{ title:"HSLを読む——3つの数字で色を語る", lead:"HSLは「何色か（H）／どれだけ鮮やかか（S）／どれだけ明るいか（L）」の順に並んだ表記です。読めるようになると、色見本がなくても色を想像でき、配色の議論が「なんとなく」から「数値」に変わります。",
+    visual:`<div style="display:flex;align-items:center;gap:16px"><span class="chip lg" style="background:#3b6ea5;width:56px;height:56px"></span><div class="cl" style="font-size:12px"><b>#3b6ea5</b>H 211°（青）／ S 48%（ほどよく鮮やか）／ L 44%（中間よりやや暗め）<br>→「やや落ち着いた中間の青」</div></div>`,
+    points:["H＝色相（角度）、S＝彩度（%）、L＝明度（%）","H 0°赤・60°黄・120°緑・180°シアン・240°青・300°マゼンタ","S 50%前後・L 40%前後は「業務向けの落ち着いた色」の目安"] },
   title:"HSL値を読む",
   context:"「#3b6ea5 ＝ H 211° / S 48% / L 44%」という色は、どんな色でしょう？",
   la:"やや落ち着いた中間の青", lb:"鮮やかで明るい黄色",
   good:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#3b6ea5"></span><div class="cl"><b>ブルー</b>#3b6ea5<br>H 211°（青）／ S 48%（中程度に鮮やか）／ L 44%（中間の明るさ）</div></div></div>`,
   bad:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#f0d020"></span><div class="cl"><b>イエロー</b>#f0d020<br>H 51°（黄）／ S 87%（鮮やか）／ L 53%（明るめ）</div></div><div class="ms">これは別の色（H 51°の黄）</div></div>`,
   principle:"HSLは「何色か（H）／どれだけ鮮やかか（S）／どれだけ明るいか（L）」の順",
-  explain:"HSLを読めると、色見本がなくても色を想像できます。H 211°は青の領域、S 48%は「ほどよく鮮やか」、L 44%は「中間よりやや暗め」。この3つの数字で色を語る癖をつけると、配色の議論が「なんとなく」から「数値」に変わります。"
+  explain:"HSLを読めると、色見本がなくても色を想像できます。H 211°は青の領域、S 48%は「ほどよく鮮やか」、L 44%は「中間よりやや暗め」。この3つの数字で色を語る癖をつけると、配色の議論が数値で行えます。"
 },
 {
   g:"色の三属性", cat:"色の分類",
+  slide:{ title:"有彩色と無彩色", lead:"白・灰・黒は彩度0%で色相を持たない「無彩色」。ピンクや水色は薄くても色みを持つ「有彩色」です。無彩色はどんな有彩色とも喧嘩しないため、配色の土台（背景・文字）に使うのが基本です。",
+    visual:_sw([["#ffffff","白"],["#bfbfbf","灰"],["#808080","灰"],["#404040","灰"],["#000000","黒"]]),
+    points:["無彩色＝S 0%（白・灰・黒）","薄い色でも色みがあれば有彩色（ピンク・水色…）","無彩色は「舞台」、有彩色は「主役」"] },
   title:"有彩色と無彩色",
   context:"「無彩色」に分類されるのはどちらのグループでしょう？",
   la:"白・グレー・黒", lb:"薄いピンク・水色・ベージュ",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#ffffff"></span><span class="chip lg" style="background:#bfbfbf"></span><span class="chip lg" style="background:#808080"></span><span class="chip lg" style="background:#404040"></span><span class="chip lg" style="background:#000000"></span></div><div class="cl">すべて S 0%——色相を持たない色（白・灰・黒）</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#efe0c7"></span></div><div class="cl">S 67% / S 67% / S 56%——薄くても彩度があるので「有彩色」</div></div>`,
   principle:"無彩色＝彩度0%の白・灰・黒。薄い色でも色みがあれば有彩色",
-  explain:"白・灰・黒は彩度が0%で色相を持たない「無彩色」。ピンクや水色は薄くても色みを持つ「有彩色」です。無彩色はどんな有彩色とも喧嘩しないため、配色の土台（背景・文字）に使うのが基本。有彩色を「主役」、無彩色を「舞台」と考えます。"
+  explain:"白・灰・黒は彩度0%で色相を持たない無彩色。ピンクや水色は薄くても色みを持つ有彩色です。無彩色はどんな有彩色とも喧嘩しないため、配色の土台に使うのが基本。有彩色を「主役」、無彩色を「舞台」と考えます。"
 },
 {
   g:"色の三属性", cat:"色の温度感",
+  slide:{ title:"暖色と寒色", lead:"色相環の赤〜黄（H 0〜60°）は炎や太陽を連想させる「暖色」、青〜青紫（H 180〜260°）は水や空を連想させる「寒色」です。暖色は膨張して前に出て見え（進出色）、寒色は引き締まって後ろに下がります（後退色）。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#d64541","赤"],["#e08a2e","橙"],["#d9c227","黄"]])}<div class="ms" style="text-align:center;margin-top:6px">暖色：活動的・温かい・前に出る</div></div><div>${_sw([["#3b6ea5","青"],["#2e9a8f","青緑"],["#5b5bb8","青紫"]])}<div class="ms" style="text-align:center;margin-top:6px">寒色：冷静・信頼・後ろに下がる</div></div></div>`,
+    points:["暖色＝H 0〜60°：温かい・活動的・進出","寒色＝H 180〜260°：冷静・信頼・後退","目立たせたい要素に暖色を使う理由はここにある"] },
   title:"暖色と寒色",
   context:"「暖色」に分類されるのはどちらのグループでしょう？",
   la:"赤・橙・黄", lb:"青・青緑・青紫",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#d9c227"></span></div><div class="cl">H 0°〜60°付近——炎や太陽を連想させる「暖色」<br>前に出て見え、活動的・温かい印象</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#2e9a8f"></span><span class="chip lg" style="background:#5b5bb8"></span></div><div class="cl">H 180°〜260°付近——水や空を連想させる「寒色」<br>後ろに下がって見え、冷静・信頼の印象</div></div>`,
   principle:"赤〜黄が暖色、青系が寒色。暖色は前に出て、寒色は後ろに下がる",
-  explain:"色相環の赤〜黄（H 0〜60°）は温かさ・活力を、青〜青紫（H 180〜260°）は冷静さ・信頼を感じさせます。暖色は膨張して前に出て見え（進出色）、寒色は引き締まって後ろに下がります（後退色）。目立たせたい要素に暖色を使う理由はここにあります。"
+  explain:"色相環の赤〜黄は温かさ・活力を、青〜青紫は冷静さ・信頼を感じさせます。暖色は膨張して前に出て見え（進出色）、寒色は引き締まって後ろに下がります（後退色）。目立たせたい要素に暖色を使う理由はここにあります。"
 },
 {
   g:"色の三属性", cat:"色の温度感",
+  slide:{ title:"中性色——緑と紫", lead:"緑（黄と青の間）と紫（赤と青の間）は、暖色と寒色の境目にある中性色です。黄寄りの緑は暖かく、青寄りの緑は冷たく見えるなど、隣り合う色で印象が変わります。暖色にも寒色にも合わせやすい「つなぎ役」です。",
+    visual:_sw([["#3f9a4d","緑 130°"],["#7b3fa8","紫 275°"]]),
+    points:["中性色＝緑と紫。暖色・寒色のどちらでもない","隣の色に温度感が引っ張られる","暖色と寒色の間をつなぐ役に便利"] },
   title:"中性色",
   context:"暖色でも寒色でもない「中性色」はどちらでしょう？",
   la:"緑・紫", lb:"橙・青",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3f9a4d"></span><span class="chip lg" style="background:#7b3fa8"></span></div><div class="cl">緑 H 130° ／ 紫 H 275°<br>暖色と寒色の中間に位置し、組み合わせ次第でどちらにも寄る</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#3b6ea5"></span></div><div class="cl">橙 H 30°（暖色）／ 青 H 210°（寒色）<br>温度感がはっきりした色</div></div>`,
   principle:"緑と紫は「中性色」——隣の色に温度感が引っ張られる",
-  explain:"緑（黄と青の間）と紫（赤と青の間）は、暖色と寒色の境目にある中性色です。黄寄りの緑は暖かく、青寄りの緑は冷たく見えるなど、隣り合う色で印象が変わります。中性色は暖色にも寒色にも合わせやすい「つなぎ役」として重宝します。"
+  explain:"緑と紫は暖色と寒色の境目にある中性色です。黄寄りの緑は暖かく、青寄りの緑は冷たく見えるなど、隣り合う色で印象が変わります。中性色は暖色にも寒色にも合わせやすい「つなぎ役」として重宝します。"
 },
-// ---------- 色相環のしくみ（6問） ----------
+{
+  g:"色の三属性", cat:"色の分類",
+  slide:{ title:"清色と濁色", lead:"純色に白だけを混ぜた色（明清色）や黒だけを混ぜた色（暗清色）を「清色」、灰色を混ぜた色を「濁色」と呼びます。清色は澄んで爽やか、濁色は落ち着いて渋い印象。「くすませたい」ときは灰色を混ぜる＝彩度を下げる操作です。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#f4c7d0","白＋赤"],["#d64541","純色"],["#5a1a1a","黒＋赤"]])}<div class="ms" style="text-align:center;margin-top:6px">清色：澄んでいる</div></div><div>${_sw([["#b08585","灰＋赤"]])}<div class="ms" style="text-align:center;margin-top:6px">濁色：くすんでいる</div></div></div>`,
+    points:["清色＝純色＋白 or 純色＋黒（濁りがない）","濁色＝純色＋灰（くすみ・渋み）","清色は爽やか・若々しい、濁色は落ち着き・大人"] },
+  title:"清色と濁色",
+  context:"「大人っぽく落ち着いた印象」を作りたいとき、使うべき色はどちらでしょう？",
+  la:"濁色（灰みを含む）", lb:"清色（澄んだ色）",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#b08585"></span><span class="chip lg" style="background:#85a0b0"></span><span class="chip lg" style="background:#a0b085"></span></div><div class="cl">灰色を混ぜた「濁色」：S 20〜25% / L 60%<br>渋く落ち着いた大人の印象</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#d0efd0"></span></div><div class="cl">白を混ぜた「明清色」：澄んで爽やか、若々しい印象</div></div>`,
+  principle:"清色は爽やか・若々しい、濁色は落ち着き・大人——印象で使い分ける",
+  explain:"純色に白か黒だけを混ぜた清色は澄んで爽やか、灰色を混ぜた濁色は落ち着いて渋い印象になります。「大人っぽく」「上品に」と言われたら濁色（彩度を下げる）、「爽やかに」「若々しく」なら清色。狙う印象で選び分けます。"
+},
+// ================= 色相環のしくみ（8問） =================
 {
   g:"色相環のしくみ", cat:"色相環を読む",
+  slide:{ title:"色相環——色を輪に並べる", lead:"色相を角度順に円形に並べたものが色相環です。隣り合う色は似ていて、向かい合う色は正反対。この輪の上の「距離」が、そのまま色の関係（似ている／対比する）を表します。配色の型はすべて、この輪の上の位置関係で説明できます。",
+    visual:_sw([["#d64541","0°"],["#e08a2e","30°"],["#d9c227","60°"],["#3f9a4d","120°"],["#2e9a8f","180°"],["#3b6ea5","210°"],["#5b5bb8","240°"],["#7b3fa8","275°"],["#c04080","320°"]]),
+    points:["色相環＝色相を角度順に並べた輪","隣＝似ている（類似色）、向かい＝正反対（補色）","輪の上の距離＝色の関係の距離"] },
   title:"隣り合う色（類似色）",
   context:"色相環で「隣り合う色（類似色）」の組み合わせはどちらでしょう？",
   la:"青と青緑", lb:"青と橙",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#2e9a8f"></span></div><div class="cl">青 H 210° と 青緑 H 175°：色相差 35°<br>近い色相＝穏やかで調和しやすい</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#e08a2e"></span></div><div class="cl">青 H 210° と 橙 H 30°：色相差 180°<br>これは正反対の「補色」</div></div>`,
   principle:"類似色＝色相環で隣り合う色（色相差30〜60°）。穏やかにまとまる",
-  explain:"色相環で隣り合う色同士を類似色と呼びます。共通の色みを含むため、並べても喧嘩せず、自然にまとまります。「統一感のある配色」の多くはこの類似色の組み合わせです。反面、変化に乏しいので、アクセントには別の色相が必要になります。"
+  explain:"色相環で隣り合う色同士を類似色と呼びます。共通の色みを含むため並べても喧嘩せず、自然にまとまります。「統一感のある配色」の多くはこの類似色の組み合わせです。"
 },
 {
   g:"色相環のしくみ", cat:"色相環を読む",
+  slide:{ title:"補色——向かい合う色", lead:"色相環で正反対（色相差180°）にある2色を補色と呼びます。赤と青緑、青と橙、黄と紫が代表例。互いを最も鮮やかに見せ合うため、アクセントに使うと強く目を引きます。ただし純色同士でぶつけると刺激が強すぎるので、片方のトーンを落として使うのが実践のコツです。",
+    visual:`<div style="display:flex;gap:20px">${_sw([["#d64541","赤"],["#2e9a8f","青緑"]])}${_sw([["#3b6ea5","青"],["#e08a2e","橙"]])}${_sw([["#d9c227","黄"],["#7b3fa8","紫"]])}</div>`,
+    points:["補色＝色相差180°の2色","最も対比が強く、引き立て合う","純色同士は刺激過多——片方のトーンを落とす"] },
   title:"向かい合う色（補色）",
   context:"色相環で「正反対（補色）」の関係にあるのはどちらの組み合わせでしょう？",
   la:"赤と青緑", lb:"赤と橙",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#2e9a8f"></span></div><div class="cl">赤 H 0° と 青緑 H 175°：色相差 約180°<br>互いを最も引き立て合う「補色」の関係</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#e08a2e"></span></div><div class="cl">赤 H 0° と 橙 H 30°：色相差 30°<br>これは隣り合う「類似色」</div></div>`,
   principle:"補色＝色相環で180°反対の色。最も対比が強く、引き立て合う",
-  explain:"色相環で正反対（色相差180°）にある2色を補色と呼びます。赤と青緑、青と橙、黄と紫が代表例。互いを最も鮮やかに見せ合うので、アクセントに使うと強く目を引きます。ただし純色同士でぶつけると刺激が強すぎるため、片方のトーンを落として使うのが実践のコツです。"
+  explain:"色相環で正反対にある2色を補色と呼びます。互いを最も鮮やかに見せ合うので、アクセントに使うと強く目を引きます。純色同士でぶつけると刺激が強すぎるため、片方のトーンを落として使うのが実践のコツです。"
 },
 {
   g:"色相環のしくみ", cat:"色相環を読む",
-  title:"混色の関係（隣の色ができる仕組み）",
+  slide:{ title:"混色の関係——隣の色ができる仕組み", lead:"色相環は、隣り合う色を混ぜると間の色が生まれる、という関係で並んでいます。赤と黄の間は橙、黄と青の間は緑、青と赤の間は紫。この構造を知っていると「青に少し緑を足す＝色相を反時計回りに動かす」のように、色の調整を角度で考えられます。",
+    visual:`<div style="display:flex;align-items:center;gap:8px">${_sw([["#d64541","赤"]])}<span style="color:#8d97a3;font-size:18px">+</span>${_sw([["#d9c227","黄"]])}<span style="color:#8d97a3;font-size:18px">=</span>${_sw([["#e08a2e","橙"]])}</div>`,
+    points:["隣同士を混ぜると、間の色相になる","赤＋黄＝橙、黄＋青＝緑、青＋赤＝紫","色の微調整は「色相を何度動かすか」で考える"] },
+  title:"混色の関係",
   context:"色相環で「赤」と「黄」の間に位置する色はどちらでしょう？",
   la:"橙", lb:"緑",
   good:`<div class="mock"><div style="display:flex;gap:5px;align-items:center;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#e08a2e"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#d9c227"></span></div><div class="cl">赤 H 0° → 橙 H 30° → 黄 H 55°<br>色相環は隣同士が連続的に混ざり合っている</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;align-items:center;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#3f9a4d"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#d9c227"></span></div><div class="cl">緑 H 130° は黄と青の間。赤と黄の間ではない</div></div>`,
   principle:"色相環は「隣の色を混ぜると間の色になる」連続した輪",
-  explain:"色相環は、隣り合う色を混ぜると間の色が生まれる、という関係で並んでいます。赤と黄の間は橙、黄と青の間は緑、青と赤の間は紫。この構造を知っていると、「青に少し緑を足す＝色相を反時計回りに動かす」のように、色の調整を角度で考えられます。"
+  explain:"色相環は隣り合う色を混ぜると間の色が生まれる関係で並んでいます。赤と黄の間は橙、黄と青の間は緑、青と赤の間は紫。この構造を知っていると、色の調整を角度で考えられます。"
 },
 {
   g:"色相環のしくみ", cat:"色相環を読む",
+  slide:{ title:"三原色と二次色", lead:"伝統的な色相環は、赤・黄・青の三原色を等間隔に置き、その間に混色の橙・緑・紫（二次色）を配置して12色に展開したものです。この6色の位置関係を頭に入れておくだけで、「向かい＝補色」「隣＝類似色」がすぐ分かるようになります。",
+    visual:`<div style="display:flex;gap:20px"><div>${_sw([["#d64541","赤"],["#d9c227","黄"],["#3b6ea5","青"]])}<div class="ms" style="text-align:center;margin-top:6px">三原色</div></div><div>${_sw([["#e08a2e","橙"],["#3f9a4d","緑"],["#7b3fa8","紫"]])}<div class="ms" style="text-align:center;margin-top:6px">二次色</div></div></div>`,
+    points:["三原色＝赤・黄・青（混ぜて作れない色）","二次色＝橙・緑・紫（三原色の中間）","この6色が色相環の骨格"] },
   title:"三原色と二次色",
   context:"「赤・黄・青」の混色で作られる二次色の組み合わせはどちらでしょう？",
   la:"橙・緑・紫", lb:"ピンク・水色・ベージュ",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#3f9a4d"></span><span class="chip lg" style="background:#7b3fa8"></span></div><div class="cl">橙＝赤＋黄 ／ 緑＝黄＋青 ／ 紫＝青＋赤<br>三原色の中間にできる「二次色」</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#efe0c7"></span></div><div class="cl">これらは赤・青・黄の「明度を上げた」色（薄くしただけ）</div></div>`,
   principle:"色相環は三原色（赤・黄・青）と、その間の二次色（橙・緑・紫）で骨格ができる",
-  explain:"伝統的な色相環は、赤・黄・青の三原色を等間隔に置き、その間に混色の橙・緑・紫（二次色）を配置して12色に展開したものです。この6色の位置関係を頭に入れておくだけで、「向かい＝補色」「隣＝類似色」がすぐ分かるようになります。"
+  explain:"伝統的な色相環は、赤・黄・青の三原色を等間隔に置き、その間に橙・緑・紫（二次色）を配置して12色に展開したものです。この6色の位置関係を覚えるだけで、補色・類似色がすぐ分かります。"
 },
 {
   g:"色相環のしくみ", cat:"色相の距離感",
+  slide:{ title:"色相差と印象", lead:"色相環上の距離は、そのまま印象の距離です。差が小さい（30°以内）と穏やかで上品、差が大きい（120°以上）と活発でエネルギッシュ。狙う印象に合わせて色相差を選ぶ——これが色相環を使う最大の目的です。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#3b6ea5","210°"],["#5b5bb8","240°"]])}<div class="ms" style="text-align:center;margin-top:6px">差30°：穏やか</div></div><div>${_sw([["#d9c227","55°"],["#7b3fa8","275°"]])}<div class="ms" style="text-align:center;margin-top:6px">差140°：活発</div></div></div>`,
+    points:["色相差 小（〜30°）＝穏やか・上品・統一","色相差 大（120°〜）＝活発・対比・賑やか","印象を先に決め、それに合う色相差を選ぶ"] },
   title:"色相差と印象",
   context:"色相差が「大きい」組み合わせが与える印象はどちらでしょう？",
   la:"対比が強く、活発・目立つ", lb:"穏やかで、統一感がある",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d9c227"></span><span class="chip lg" style="background:#7b3fa8"></span></div><div class="cl">黄 H 55° × 紫 H 275°：色相差 約140°<br>→ コントラストが強く、元気で目立つ</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#5b5bb8"></span></div><div class="cl">青 H 210° × 青紫 H 240°：色相差 30°<br>→ これは穏やかで統一感がある側</div></div>`,
   principle:"色相差が大きいほど活発・対比、小さいほど穏やか・統一",
-  explain:"色相環上の距離は、そのまま印象の距離です。差が小さい（30°以内）と穏やかで上品、差が大きい（120°以上）と活発でエネルギッシュ。狙う印象に合わせて色相差を選ぶ——これが色相環を使う最大の目的です。"
+  explain:"色相環上の距離は、そのまま印象の距離です。差が小さいと穏やかで上品、大きいと活発でエネルギッシュ。狙う印象に合わせて色相差を選ぶのが、色相環を使う最大の目的です。"
 },
 {
   g:"色相環のしくみ", cat:"色相の距離感",
+  slide:{ title:"統一感 vs 賑やかさ——最初に決めること", lead:"配色の第一歩は「統一感が欲しいのか、賑やかさが欲しいのか」を決めることです。統一感なら色相を60°以内に、賑やかさなら120°以上離す。この判断を先にしておくと、後の色選びで迷いません。多くのビジネス用途では統一感（近い色相）が基本です。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#0f2a4a","213°"],["#3b6ea5","211°"],["#2e9a8f","175°"]])}<div class="ms" style="text-align:center;margin-top:6px">幅40°：統一</div></div><div>${_sw([["#d64541","0°"],["#d9c227","55°"],["#3b6ea5","210°"]])}<div class="ms" style="text-align:center;margin-top:6px">120°間隔：賑やか</div></div></div>`,
+    points:["統一感＝色相を近づける（60°以内）","賑やかさ＝色相を離す（120°以上）","ビジネス用途は統一感が基本"] },
   title:"色相差と統一感",
   context:"「落ち着いた統一感」を出したいとき、色相の選び方として正しいのはどちらでしょう？",
   la:"色相差を60°以内に収める", lb:"色相環から均等に3色取る",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#2e9a8f"></span></div><div class="cl">H 213° / H 211° / H 175°：幅 約40°<br>同じ「青系」の家族としてまとまる</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#d9c227"></span><span class="chip lg" style="background:#3b6ea5"></span></div><div class="cl">H 0° / H 55° / H 210°：120°ずつ離れた3色（トライアド）<br>元気で賑やかだが、統一感とは逆方向</div></div>`,
   principle:"統一感＝色相を近づける。賑やかさ＝色相を離す",
-  explain:"配色の第一歩は「統一感が欲しいのか、賑やかさが欲しいのか」を決めること。統一感なら色相を60°以内に、賑やかさなら120°以上離す。この判断を先にしておくと、後の色選びで迷いません。多くのビジネス用途では、統一感（近い色相）が基本になります。"
+  explain:"配色の第一歩は「統一感が欲しいのか、賑やかさが欲しいのか」を決めること。統一感なら色相を60°以内に、賑やかさなら120°以上離す。多くのビジネス用途では統一感が基本になります。"
 },
-// ---------- トーンと色の性格（6問） ----------
+{
+  g:"色相環のしくみ", cat:"色相の距離感",
+  slide:{ title:"色相の「回転方向」で印象を微調整", lead:"同じ青でも、緑側（反時計回り）に回すと爽やか・自然に、紫側（時計回り）に回すと知的・神秘的になります。色相をわずかに回転させるだけで、色の性格を微調整できます。「もう少し優しい青に」は、色相を10〜20°動かす操作です。",
+    visual:_sw([["#2e9a8f","青緑 175°"],["#3b8fb5","195°"],["#3b6ea5","青 210°"],["#4a5fb5","225°"],["#5b5bb8","青紫 240°"]]),
+    points:["色相を少し回すだけで性格が変わる","青→緑側：爽やか・自然、青→紫側：知的・神秘","「もう少し◯◯な色に」は色相の10〜20°回転で叶う"] },
+  title:"色相の回転と印象",
+  context:"ネイビー基調のサイトに「爽やかさ」を少し足したいとき、色相をどちらに動かすと良いでしょう？",
+  la:"緑側（H 210°→190°）", lb:"紫側（H 210°→235°）",
+  good:`<div class="mock"><div style="display:flex;gap:5px;align-items:center;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#3b8fb5"></span></div><div class="cl">H 210° → H 195°：緑側へ回転<br>水・空・清涼感の連想が加わり「爽やか」に</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;align-items:center;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#4a5fb5"></span></div><div class="cl">H 210° → H 235°：紫側へ回転<br>知的・重厚・神秘の方向。爽やかさとは逆</div></div>`,
+  principle:"色相を数十度回すだけで性格が変わる——青は緑側で爽やか、紫側で知的",
+  explain:"同じ「青」でも、色相を緑側に回すと爽やか・自然に、紫側に回すと知的・神秘的になります。ブランド色を大きく変えずに印象を微調整したいとき、色相を10〜20°回すのは最も安全で効果的な操作です。"
+},
+// ================= トーンと色の性格（12問） =================
 {
   g:"トーンと色の性格", cat:"トーンの考え方",
+  slide:{ title:"トーン——明度×彩度で決まる「色の調子」", lead:"トーンは「明るい・暗い」と「鮮やか・くすんだ」の組み合わせで決まる、色の性格です。色相が違っても、トーンが同じ色同士は「同じ家族」に見えます。「パステル調」「ダークトーン」といった言葉は、色相ではなくトーンを指しています。",
+    visual:_sw([["#f4c7d0","348°"],["#f6e0c0","33°"],["#c7e0f4","210°"],["#d0efd0","120°"]]),
+    points:["トーン＝明度と彩度の組み合わせ","色相が違ってもトーンが同じなら「同じ家族」","日本ではPCCSの12トーンが標準的な分類"] },
   title:"トーンとは何か",
   context:"「トーン」が指しているものはどちらでしょう？",
   la:"明度と彩度の組み合わせ", lb:"色相の種類",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#f6e0c0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#d0efd0"></span></div><div class="cl">色相はバラバラ（H 348° / 33° / 210° / 120°）だが<br>すべて S 55〜70% / L 85〜88%——同じ「ペールトーン」</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#3f9a4d"></span><span class="chip lg" style="background:#3b6ea5"></span></div><div class="cl">これは色相の違い（赤・緑・青）。トーンとは別の軸</div></div>`,
   principle:"トーン＝明度×彩度で決まる「色の調子」。色相とは独立している",
-  explain:"トーンは「明るい・暗い」と「鮮やか・くすんだ」の組み合わせで決まる、色の性格です。色相が違っても、トーンが同じ色同士は「同じ家族」に見えます。「パステル調」「ダークトーン」といった言葉は、色相ではなくトーンを指しています。"
+  explain:"トーンは明度と彩度の組み合わせで決まる色の性格です。色相が違っても、トーンが同じ色同士は「同じ家族」に見えます。「パステル調」「ダークトーン」といった言葉は、色相ではなくトーンを指しています。"
 },
 {
-  g:"トーンと色の性格", cat:"トーンの種類",
-  title:"ビビッド（鮮やか）とペール（淡い）",
-  context:"「ペールトーン（薄く淡い）」はどちらでしょう？",
-  la:"高明度・中彩度", lb:"中明度・高彩度",
-  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#d0efd0"></span></div><div class="cl">L 85〜88% / S 55〜70%<br>優しい・軽い・柔らかい印象の「ペールトーン」</div></div>`,
-  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#e03c3c"></span><span class="chip lg" style="background:#2c65c0"></span><span class="chip lg" style="background:#2fb050"></span></div><div class="cl">L 50〜55% / S 60〜80%<br>元気・派手・強い印象の「ビビッドトーン」</div></div>`,
-  principle:"ビビッド＝中明度×高彩度（派手）、ペール＝高明度×中彩度（優しい）",
-  explain:"代表的なトーンを2つ覚えるなら、ビビッド（鮮やか）とペール（淡い）です。ビビッドは目立ちますが疲れやすく、面積を絞って使います。ペールは優しく背景にも使えますが、主張は弱くなります。同じ色相でも、トーンで印象は正反対になります。"
+  g:"トーンと色の性格", cat:"12のトーン",
+  slide:{ title:"ビビッド（v）——最も鮮やか", lead:"純色に近い、最も彩度の高いトーンです。派手・元気・目立つ・強い。目を引く力は最強ですが、大面積に使うと疲れるため、アクセントやアイコンなど小面積に限定して使います。",
+    visual:_sw([["#e03c3c","赤"],["#f0a020","橙"],["#f0d020","黄"],["#2fb050","緑"],["#2c65c0","青"],["#8a30c0","紫"]]),
+    points:["ビビッド＝高彩度・中明度","派手・元気・強い","小面積のアクセントに"] },
+  title:"ビビッドトーン",
+  context:"ビビッドトーン（鮮やか）の適切な使いどころはどちらでしょう？",
+  la:"小さなアクセントやバッジ", lb:"ページ全体の背景",
+  good:`<div class="mock"><div style="border:1px solid #dde3e8;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:6px"><span style="background:#e03c3c;color:#fff;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700">NEW</span><b style="font-size:12px;color:#0f2a4a">新機能のお知らせ</b></div></div><div class="cl" style="margin-top:8px">ビビッドは面積を絞ると強く効く</div></div>`,
+  bad:`<div class="mock" style="background:#e03c3c;color:#fff"><div style="font-size:12px;font-weight:700">お知らせ一覧</div><div style="font-size:11px;margin-top:4px">背景全面がビビッド——目が疲れ、内容が読まれない</div></div>`,
+  principle:"ビビッドは「小さく・少なく」——強い色ほど面積を絞る",
+  explain:"ビビッドトーンは目を引く力が最強ですが、面積が大きいと刺激過多になります。バッジ・アイコン・重要ボタンなど、画面の1〜5%の小面積に限定すると、その強さが「注目」として正しく働きます。"
 },
 {
-  g:"トーンと色の性格", cat:"トーンの種類",
-  title:"ダーク（暗い）とダル（くすんだ）",
+  g:"トーンと色の性格", cat:"12のトーン",
+  slide:{ title:"ブライト（b）とストロング（s）", lead:"ブライトはビビッドに少し白を足した「明るく健康的」なトーン、ストロングはビビッドに少し灰を足した「濃く力強い」トーンです。どちらも彩度は高めで元気ですが、ブライトは軽やか、ストロングは重みがあります。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#ff7f7f","赤"],["#7fbfff","青"],["#7fdf9f","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ブライト：明るく健康的</div></div><div>${_sw([["#c03030","赤"],["#2050a0","青"],["#209040","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ストロング：濃く力強い</div></div></div>`,
+    points:["ブライト＝ビビッド＋少し白：明るい・健康的・若い","ストロング＝ビビッド＋少し灰：濃い・力強い・情熱的","どちらも彩度高め。明度で軽重が分かれる"] },
+  title:"ブライトとストロング",
+  context:"「若々しく健康的で明るい」印象を出したいとき、選ぶトーンはどちらでしょう？",
+  la:"ブライトトーン", lb:"ストロングトーン",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#ff7f7f"></span><span class="chip lg" style="background:#7fbfff"></span><span class="chip lg" style="background:#7fdf9f"></span></div><div class="cl">L 70〜75% / S 100%<br>ビビッドに白を足した「ブライト」——明るく健康的、若々しい</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#c03030"></span><span class="chip lg" style="background:#2050a0"></span><span class="chip lg" style="background:#209040"></span></div><div class="cl">L 38〜47% / S 60〜67%<br>ビビッドに灰を足した「ストロング」——濃く力強い、情熱的</div></div>`,
+  principle:"ブライトは明るく健康的、ストロングは濃く力強い——同じ高彩度でも明度で分かれる",
+  explain:"ブライトはビビッドに白を足した明るいトーンで、健康的・若々しい印象。ストロングはビビッドに灰を足した濃いトーンで、力強い・情熱的な印象。彩度は似ていても、明度の差で軽重が分かれます。"
+},
+{
+  g:"トーンと色の性格", cat:"12のトーン",
+  slide:{ title:"ディープ（dp）とダーク（dk）", lead:"ディープは濃く深みのあるトーン、ダークはさらに暗く重厚なトーンです。伝統・格式・高級・信頼・落ち着きを演出します。金融・法律・コンサルなどのブランドカラーにネイビーやダークグリーンが多いのは、このトーンの持つ「重さ＝信頼感」のためです。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#8a1a1a","赤"],["#1a3a7a","青"],["#1a5a2a","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ディープ：深い・伝統</div></div><div>${_sw([["#4a0f0f","赤"],["#0f1a3a","青"],["#0f2a1a","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ダーク：重厚・高級</div></div></div>`,
+    points:["ディープ＝濃く深い：伝統・格式・成熟","ダーク＝暗く重い：重厚・高級・信頼","金融・法律・コンサルの定番トーン"] },
+  title:"ディープとダーク",
   context:"「落ち着き・信頼・高級感」を出したいとき、選ぶべきトーンはどちらでしょう？",
   la:"ダーク／ディープトーン", lb:"ブライトトーン",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#5c3a1e"></span><span class="chip lg" style="background:#1e4a2e"></span></div><div class="cl">L 17〜22% / S 40〜66%<br>重厚・落ち着き・格式——「ダーク／ディープトーン」</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#ff7f7f"></span><span class="chip lg" style="background:#7fbfff"></span><span class="chip lg" style="background:#7fdf9f"></span></div><div class="cl">L 70〜75% / S 100%<br>明るく健康的だがカジュアル——「ブライトトーン」</div></div>`,
   principle:"低明度のトーン（ダーク・ディープ）は重厚・信頼、高明度は軽快・親しみ",
-  explain:"明度が低いほど色は「重く」なり、信頼感・高級感・落ち着きを演出します。金融・法律・コンサルなどのブランドカラーにネイビーやダークグリーンが多いのはこのため。逆に明るいトーンは軽やかで親しみやすく、消費者向けサービスに向きます。"
+  explain:"明度が低いほど色は「重く」なり、信頼感・高級感・落ち着きを演出します。金融・法律・コンサルなどのブランドカラーにネイビーやダークグリーンが多いのはこのため。逆に明るいトーンは軽やかで親しみやすく、消費者向けに向きます。"
 },
 {
-  g:"トーンと色の性格", cat:"トーンの種類",
-  title:"グレイッシュ（灰みの）トーン",
+  g:"トーンと色の性格", cat:"12のトーン",
+  slide:{ title:"ライト（lt）とペール（p）", lead:"ライトは澄んで明るい「爽やか・楽しい」トーン、ペールはさらに白に近い「優しい・柔らかい・繊細」なトーンです。どちらも背景に使いやすく、女性向け・子ども向け・医療・食品などで多用されます。主張は弱いので、主役ではなく舞台に向きます。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#f4a0a8","赤"],["#a0c8f4","青"],["#a8e4b8","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ライト：爽やか・楽しい</div></div><div>${_sw([["#f4c7d0","赤"],["#c7e0f4","青"],["#d0efd0","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ペール：優しい・繊細</div></div></div>`,
+    points:["ライト＝明るく澄んだ：爽やか・楽しい・軽い","ペール＝白に近い：優しい・柔らか・繊細","背景に使いやすい。主張は弱い"] },
+  title:"ライトとペール",
+  context:"「優しく柔らかく繊細な」印象を出したいとき、選ぶトーンはどちらでしょう？",
+  la:"ペールトーン", lb:"ストロングトーン",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#d0efd0"></span></div><div class="cl">L 85〜88% / S 55〜70%<br>白に近い「ペール」——優しい・柔らか・繊細</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#c03030"></span><span class="chip lg" style="background:#2050a0"></span><span class="chip lg" style="background:#209040"></span></div><div class="cl">「ストロング」は濃く力強い方向。優しさとは逆</div></div>`,
+  principle:"ペール＝白に近い高明度：優しい・柔らかい。背景向き",
+  explain:"ペールトーンは白に近い明るいトーンで、優しい・柔らかい・繊細な印象を与えます。背景に使いやすく、医療・食品・子ども向けなどで多用されます。主張は弱いので、主役ではなく舞台として使います。"
+},
+{
+  g:"トーンと色の性格", cat:"12のトーン",
+  slide:{ title:"ソフト（sf）とダル（d）", lead:"ソフトは中明度・中彩度の「穏やか・落ち着き・ナチュラル」なトーン、ダルはやや暗くくすんだ「渋い・鈍い・大人」のトーンです。どちらも彩度が控えめで、長時間見ても疲れません。業務ツールや落ち着いたブランドの中間色に向きます。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#d08080","赤"],["#80a0d0","青"],["#88c098","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ソフト：穏やか・ナチュラル</div></div><div>${_sw([["#a06060","赤"],["#607090","青"],["#608870","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">ダル：渋い・大人</div></div></div>`,
+    points:["ソフト＝中明度・中彩度：穏やか・ナチュラル","ダル＝やや暗くくすむ：渋い・鈍い・大人","疲れない中間色。業務ツールに向く"] },
+  title:"ソフトとダル",
+  context:"「渋く落ち着いた大人の雰囲気」を出したいとき、選ぶトーンはどちらでしょう？",
+  la:"ダルトーン", lb:"ブライトトーン",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#a06060"></span><span class="chip lg" style="background:#607090"></span><span class="chip lg" style="background:#608870"></span></div><div class="cl">S 25〜30% / L 45〜50%<br>やや暗くくすんだ「ダル」——渋い・鈍い・大人</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#ff7f7f"></span><span class="chip lg" style="background:#7fbfff"></span><span class="chip lg" style="background:#7fdf9f"></span></div><div class="cl">「ブライト」は明るく元気な方向。渋さとは逆</div></div>`,
+  principle:"ダル＝くすんだ中明度：渋い・大人。ソフト＝穏やか・ナチュラル",
+  explain:"ダルトーンはやや暗くくすんだ中間色で、渋く落ち着いた大人の印象を与えます。ソフトはそれより明るく穏やか。どちらも彩度が控えめで長時間見ても疲れず、業務ツールや落ち着いたブランドの中間色に向きます。"
+},
+{
+  g:"トーンと色の性格", cat:"12のトーン",
+  slide:{ title:"グレイッシュ系——灰みのトーン", lead:"ライトグレイッシュ（ltg）・グレイッシュ（g）・ダークグレイッシュ（dkg）は、灰色を多く含む低彩度のトーンです。上品・シック・都会的・落ち着き。ほとんど灰色に見えるほど彩度が低いため、無彩色の代わりとして背景や文字色にも使えます。",
+    visual:`<div style="display:flex;gap:16px"><div>${_sw([["#d0c8c8","赤"],["#c8ccd0","青"]])}<div class="ms" style="text-align:center;margin-top:6px">ltg</div></div><div>${_sw([["#8a7d8f","紫"],["#7d8f8a","緑"]])}<div class="ms" style="text-align:center;margin-top:6px">g</div></div><div>${_sw([["#3a3538","赤"],["#35383a","青"]])}<div class="ms" style="text-align:center;margin-top:6px">dkg</div></div></div>`,
+    points:["グレイッシュ＝低彩度（S 5〜15%）","上品・シック・都会的","無彩色の代わりに使うと画面に色味の統一感が出る"] },
+  title:"グレイッシュトーン",
   context:"「くすんだ・大人っぽい・上品」な印象を出す色の作り方はどちらでしょう？",
   la:"彩度を下げる（灰色を混ぜる）", lb:"彩度を上げる",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#8a7d8f"></span><span class="chip lg" style="background:#7d8f8a"></span><span class="chip lg" style="background:#8f8a7d"></span></div><div class="cl">S 7〜10% / L 52〜55%<br>灰色に近づけた「グレイッシュトーン」——上品で大人びた印象</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#b03ad0"></span><span class="chip lg" style="background:#3ad0b0"></span><span class="chip lg" style="background:#d0b03a"></span></div><div class="cl">S 60〜62% / L 52%<br>彩度が高いと「元気・派手」の方向へ</div></div>`,
   principle:"彩度を下げる（灰みを足す）と、色は落ち着き上品になる",
-  explain:"「上品にしたい」ときの最も確実な操作は、彩度を下げることです。灰色を混ぜたようなグレイッシュトーンは、どんな色相でも大人っぽく落ち着いた印象になります。逆に「派手すぎる」と感じたら、色相を変える前に彩度を10〜20%下げてみてください。"
+  explain:"「上品にしたい」ときの最も確実な操作は、彩度を下げることです。灰色を混ぜたようなグレイッシュトーンは、どんな色相でも大人っぽく落ち着いた印象になります。「派手すぎる」と感じたら、色相を変える前に彩度を下げてみてください。"
+},
+{
+  g:"トーンと色の性格", cat:"トーンの地図",
+  slide:{ title:"トーンマップ——明度と彩度の地図", lead:"12のトーンは、縦軸に明度、横軸に彩度をとった地図の上に配置できます。右へ行くほど鮮やか（ビビッド）、左へ行くほど灰色（グレイッシュ）、上へ行くほど明るい（ペール）、下へ行くほど暗い（ダーク）。この地図の「どのあたりの色を使うか」を決めるのが、配色の最初の設計です。",
+    visual:`<div style="display:grid;grid-template-columns:auto auto auto;gap:6px;font-size:10px;font-weight:700;color:#4a5460;text-align:center"><span>ペール</span><span>ライト</span><span>ブライト</span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#a0c8f4"></span><span class="chip lg" style="background:#7fbfff"></span><span>ライトグレイッシュ</span><span>ソフト</span><span>ビビッド</span><span class="chip lg" style="background:#c8ccd0"></span><span class="chip lg" style="background:#80a0d0"></span><span class="chip lg" style="background:#2c65c0"></span><span>グレイッシュ</span><span>ダル</span><span>ストロング</span><span class="chip lg" style="background:#7d8590"></span><span class="chip lg" style="background:#607090"></span><span class="chip lg" style="background:#2050a0"></span></div>`,
+    points:["縦＝明度（上が明るい）、横＝彩度（右が鮮やか）","右上：明るく鮮やか、左下：暗くくすむ","「地図のどこを使うか」がトーン設計"] },
+  title:"トーンマップ",
+  context:"トーンマップで「右下（高彩度・低明度）」に位置するトーンの印象はどちらでしょう？",
+  la:"濃く力強い（ストロング・ディープ）", lb:"淡く優しい（ペール）",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#c03030"></span><span class="chip lg" style="background:#2050a0"></span><span class="chip lg" style="background:#8a1a1a"></span></div><div class="cl">高彩度×低明度＝濃く力強い・情熱・伝統<br>ストロング〜ディープの領域</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span></div><div class="cl">ペールは「左上〜上」（高明度・中低彩度）の領域</div></div>`,
+  principle:"トーンマップの位置＝印象。右上は明るく元気、左下は暗く渋い、右下は濃く強い",
+  explain:"12のトーンは明度×彩度の地図上に並びます。右（高彩度）ほど鮮やか、左（低彩度）ほど灰色、上（高明度）ほど明るく、下（低明度）ほど暗い。狙う印象がどの領域にあるかを決めれば、使うべきトーンが自動的に決まります。"
 },
 {
   g:"トーンと色の性格", cat:"トーンの操作",
+  slide:{ title:"派生色は「色相固定・トーン可変」で作る", lead:"ブランドカラーから見出し・ボタン・枠線・背景の色を作るとき、色相は動かさず、明度と彩度だけを変えます。こうしてできた5〜6色は必ず調和し、画面が「1つの色でできている」ように見えます。色相を動かすのは、アクセントを足すときだけです。",
+    visual:_sw([["#0f2a4a","L 17%"],["#2d5580","L 34%"],["#3b6ea5","L 44%"],["#8fa9c5","L 67%"],["#e8eef5","L 94%"]]),
+    points:["色相（H）は固定、明度（L）と彩度（S）を動かす","できた濃淡は必ず調和する","色相を変えるのはアクセント1色だけ"] },
   title:"同じ色相でトーンを変える",
   context:"ネイビー（H 213°）から派生色を作ります。「同じ家族の色」として使えるのはどちらでしょう？",
   la:"色相を固定して明度・彩度を変える", lb:"色相を変える",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#2d5580"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#8fa9c5"></span><span class="chip lg" style="background:#e8eef5"></span></div><div class="cl">すべて H 210〜213°で、L 17% → 34% → 44% → 67% → 94%<br>1つの色相の「濃淡ファミリー」</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#4a0f2a"></span><span class="chip lg" style="background:#2a4a0f"></span><span class="chip lg" style="background:#4a2a0f"></span></div><div class="cl">同じ明度・彩度で色相だけ変えた4色（H 213° / 335° / 90° / 25°）<br>家族ではなく「別の色」</div></div>`,
   principle:"派生色は「色相を固定して明度・彩度を動かす」——これが濃淡の作り方",
-  explain:"ブランドカラーから見出し・ボタン・枠線・背景の色を作るとき、色相は動かさず、明度と彩度だけを変えます。こうしてできた5〜6色は必ず調和し、画面が「1つの色でできている」ように見えます。色相を動かすのは、アクセントを足すときだけです。"
+  explain:"ブランドカラーから派生色を作るとき、色相は動かさず明度と彩度だけを変えます。こうしてできた5〜6色は必ず調和し、画面が1つの色でできているように見えます。色相を動かすのはアクセントを足すときだけです。"
 },
 {
   g:"トーンと色の性格", cat:"トーンの操作",
+  slide:{ title:"トーンを揃えれば、色数が増えてもまとまる", lead:"色数を増やすときの鉄則は「トーンを揃える」です。明度と彩度を近い値に固定して色相だけを変えれば、何色でも同じ世界の色になります。「たくさんの色を使ってもうるさくならない配色」の正体は、色相の選び方ではなくトーンの統一です。",
+    visual:_sw([["#c9a9b0","348°"],["#c9bfa9","41°"],["#a9bcc9","204°"],["#adc9a9","113°"]]),
+    points:["多色配色＝S・Lを固定して色相だけ動かす","トーンが揃えば4色でも8色でもまとまる","トーンが混ざると3色でもチグハグ"] },
   title:"トーンを揃える効果",
   context:"色相の異なる4色を並べます。まとまって見えるのはどちらでしょう？",
   la:"トーン（S・L）を揃える", lb:"トーンがバラバラ",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#c9a9b0"></span><span class="chip lg" style="background:#c9bfa9"></span><span class="chip lg" style="background:#a9bcc9"></span><span class="chip lg" style="background:#adc9a9"></span></div><div class="cl">H 348° / 41° / 204° / 113°——色相はバラバラ<br>だが S 23% / L 73%で揃っている→同じトーンで調和</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#5c3a1e"></span><span class="chip lg" style="background:#2c65c0"></span><span class="chip lg" style="background:#adc9a9"></span></div><div class="cl">ペール／ダーク／ビビッド／グレイッシュが混在<br>色相以前にトーンが揃っておらず、寄せ集めに見える</div></div>`,
   principle:"多色配色は「トーンを揃える」だけで8割まとまる",
-  explain:"色数を増やすときの鉄則は「トーンを揃える」です。明度と彩度を近い値に固定して色相だけを変えれば、何色でも同じ世界の色になります。「たくさんの色を使ってもうるさくならない配色」の正体は、色相の選び方ではなくトーンの統一です。"
+  explain:"色数を増やすときの鉄則はトーンを揃えること。明度と彩度を近い値に固定して色相だけを変えれば、何色でも同じ世界の色になります。多色でもうるさくならない配色の正体は、トーンの統一です。"
 },
-// ---------- 配色の技法（6問） ----------
+{
+  g:"トーンと色の性格", cat:"トーンの操作",
+  slide:{ title:"トーンで年齢層・性別のイメージが変わる", lead:"同じ色相でも、トーンによって想定される受け手が変わります。ブライト・ビビッドは子ども・若者向け、ライト・ペールは女性向け・優しさ、ダル・ダーク・グレイッシュは大人・男性・ビジネス向け。ターゲットを決めれば、使うべきトーンの領域は絞られます。",
+    visual:`<div style="display:flex;gap:16px"><div>${_sw([["#ff7f7f",""],["#7fbfff",""],["#f0d020",""]])}<div class="ms" style="text-align:center;margin-top:6px">子ども・若者</div></div><div>${_sw([["#f4c7d0",""],["#c7e0f4",""],["#f6e0c0",""]])}<div class="ms" style="text-align:center;margin-top:6px">優しさ・女性向け</div></div><div>${_sw([["#0f2a4a",""],["#607090",""],["#5c3a1e",""]])}<div class="ms" style="text-align:center;margin-top:6px">大人・ビジネス</div></div></div>`,
+    points:["ブライト・ビビッド＝子ども・若者・元気","ライト・ペール＝優しさ・柔らかさ","ダル・ダーク・グレイッシュ＝大人・ビジネス・格"] },
+  title:"トーンとターゲット",
+  context:"経営者向けの財務分析ツールにふさわしいトーンの領域はどちらでしょう？",
+  la:"ダーク〜ダル〜グレイッシュ", lb:"ブライト〜ビビッド",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#607090"></span><span class="chip lg" style="background:#8d97a3"></span></div><div class="cl">低〜中明度・低〜中彩度の領域<br>信頼・落ち着き・大人——経営者層に合う</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#ff7f7f"></span><span class="chip lg" style="background:#7fbfff"></span><span class="chip lg" style="background:#f0d020"></span></div><div class="cl">高明度・高彩度の領域<br>元気・若い・カジュアル——お金の判断をする場面には軽い</div></div>`,
+  principle:"ターゲットの年齢層・場面に合うトーン領域を選ぶ",
+  explain:"同じ色相でも、トーンによって想定される受け手が変わります。子ども・若者向けならブライト、優しさならペール、大人・ビジネスならダルやダーク。ターゲットを決めれば、使うべきトーンの領域は自然に絞られます。"
+},
+{
+  g:"トーンと色の性格", cat:"トーンの操作",
+  slide:{ title:"「派手すぎ」「地味すぎ」の直し方", lead:"配色の調整で最もよく使う操作は、彩度の上げ下げです。派手すぎるなら彩度を10〜20%下げる、地味すぎるなら1色だけ彩度を上げる。色相を変えるのは最終手段で、まずトーンで調整するのが定石です。",
+    visual:`<div style="display:flex;align-items:center;gap:8px">${_sw([["#e03c3c","S 80%"]])}<span style="color:#8d97a3">→</span>${_sw([["#c65858","S 60%"]])}<span style="color:#8d97a3">→</span>${_sw([["#b06e6e","S 40%"]])}</div>`,
+    points:["派手すぎ→彩度を下げる","地味すぎ→1色だけ彩度を上げる（全部は上げない）","色相を変えるのは最後の手段"] },
+  title:"派手さの調整",
+  context:"「配色が派手すぎる」と言われました。最初に試すべき操作はどちらでしょう？",
+  la:"全体の彩度を10〜20%下げる", lb:"色相を全部変える",
+  good:`<div class="mock"><div style="display:flex;gap:5px;align-items:center;margin-bottom:8px"><span class="chip lg" style="background:#e03c3c"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#b85050"></span></div><div class="cl">H 0°のまま、S 80% → S 45%<br>色相を保ったまま落ち着かせる——ブランドの一貫性も守れる</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;align-items:center;margin-bottom:8px"><span class="chip lg" style="background:#e03c3c"></span><span style="color:#8d97a3">→</span><span class="chip lg" style="background:#3b6ea5"></span></div><div class="cl">赤から青へ色相を変える——「派手さ」ではなく「色そのもの」が変わってしまう</div></div>`,
+  principle:"派手さ・地味さはトーン（主に彩度）で調整する。色相は最後の手段",
+  explain:"配色の調整で最もよく使う操作は彩度の上げ下げです。派手すぎるなら彩度を下げる、地味すぎるなら1色だけ彩度を上げる。色相を変えるとブランドの印象そのものが変わってしまうので、まずトーンで調整するのが定石です。"
+},
+// ================= 配色の技法（10問） =================
 {
   g:"配色の技法", cat:"配色の型",
-  title:"同一色相配色（モノクロマティック）",
+  slide:{ title:"同一色相配色（モノクロマティック）", lead:"1つの色相の明度・彩度違いだけで構成する配色です。絶対に喧嘩せず、最も上品にまとまります。業務ツールやコーポレートサイトの多くはこの型。単調に見えるという弱点は、無彩色（グレー）を混ぜたり、1色だけアクセントを足したりして補います。",
+    visual:_sw([["#0f2a4a",""],["#2d5580",""],["#3b6ea5",""],["#8fa9c5",""],["#e8eef5",""]]),
+    points:["1色相の濃淡だけで構成","統一感は最強、失敗しない","単調さは無彩色＋アクセント1色で補う"] },
+  title:"同一色相配色",
   context:"1つの色相の濃淡だけで構成する配色の特徴として正しいのはどちらでしょう？",
   la:"最もまとまりやすく失敗しにくい", lb:"最も対比が強く目立つ",
   good:`<div class="mock"><div style="background:#0f2a4a;color:#fff;border-radius:6px 6px 0 0;padding:8px 10px;font-size:11px;font-weight:700">見出し L 17%</div><div style="background:#e8eef5;padding:8px 10px;font-size:11px;color:#2d5580">本文エリア L 94% ／ 文字 L 34%</div><div style="background:#fff;border:1px solid #dde3e8;border-radius:0 0 6px 6px;padding:8px 10px;text-align:right"><span class="mb mb-p" style="padding:5px 12px;font-size:10px">ボタン L 44%</span></div><div class="cl" style="margin-top:8px">全て H 210〜213°。同一色相の濃淡だけで完結</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#2e9a8f"></span></div><div class="cl">「最も対比が強い」のは補色配色の特徴。同一色相配色は対比ではなく統一が持ち味</div></div>`,
   principle:"同一色相配色＝1色の濃淡だけ。統一感は最強、迷ったらこれ",
-  explain:"1つの色相の明度・彩度違いだけで構成する配色は、絶対に喧嘩せず、最も上品にまとまります。業務ツールやコーポレートサイトの多くはこの型です。単調に見えるという弱点は、無彩色（グレー）を混ぜたり、1色だけアクセントを足したりして補います。"
+  explain:"1つの色相の明度・彩度違いだけで構成する配色は、絶対に喧嘩せず、最も上品にまとまります。業務ツールやコーポレートサイトの多くはこの型です。単調さは無彩色やアクセント1色で補います。"
 },
 {
   g:"配色の技法", cat:"配色の型",
-  title:"類似色相配色（アナロガス）",
+  slide:{ title:"類似色相配色（アナロガス）", lead:"色相環で隣り合う色を2〜3つ使う配色は、自然界の色の移り変わり（空→海、葉→実）に近く、穏やかで心地よい印象になります。同一色相より変化があり、補色より落ち着く、バランスの良い型です。1色を主役に、残りを従にすると締まります。",
+    visual:_sw([["#3b6ea5","青"],["#2e9a8f","青緑"],["#3f9a4d","緑"]]),
+    points:["隣り合う2〜3色相（差30〜60°）","自然で穏やか、季節感が出る","1色を主役、残りを従に"] },
+  title:"類似色相配色",
   context:"「青・青緑・緑」のように隣り合う色相で構成する配色の印象はどちらでしょう？",
   la:"自然で穏やか、季節感が出る", lb:"人工的で強い緊張感",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#2e9a8f"></span><span class="chip lg" style="background:#3f9a4d"></span></div><div class="cl">H 210° / 175° / 130°——隣り合う3色相<br>海から森へ、のような自然のグラデーション感</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#d64541"></span><span class="chip lg" style="background:#2e9a8f"></span></div><div class="cl">「強い緊張感」は補色配色（色相差180°）の特徴</div></div>`,
   principle:"類似色相配色＝隣り合う2〜3色相。自然で穏やかな変化",
-  explain:"色相環で隣り合う色を2〜3つ使う配色は、自然界の色の移り変わり（空→海、葉→実）に近く、穏やかで心地よい印象になります。同一色相より変化があり、補色より落ち着く、バランスの良い型です。1色を主役に、残りを従にすると締まります。"
+  explain:"色相環で隣り合う色を2〜3つ使う配色は、自然界の色の移り変わりに近く、穏やかで心地よい印象になります。同一色相より変化があり、補色より落ち着く、バランスの良い型です。"
 },
 {
   g:"配色の技法", cat:"配色の型",
-  title:"補色配色（コンプリメンタリー）",
+  slide:{ title:"補色配色（コンプリメンタリー）の使い方", lead:"補色は最も引き立て合う組み合わせですが、同じ面積・同じ強さで並べると互いに主張して目が疲れます（ハレーション）。片方を大面積の主役に、もう片方を小面積のアクセントに——面積比を大きくつけることで、対比の効果だけを取り出せます。",
+    visual:`<div style="display:flex;height:44px;width:240px;border-radius:8px;overflow:hidden"><span style="flex:9;background:#0f2a4a"></span><span style="flex:1;background:#c77b3a"></span></div>`,
+    points:["補色は「主役と脇役」の面積差で使う","同量・同彩度はハレーション","片方のトーンを落とすとさらに扱いやすい"] },
+  title:"補色配色",
   context:"補色（青×橙）を実際の画面で使うとき、上手な使い方はどちらでしょう？",
   la:"片方を主に、もう片方を小さくアクセントに", lb:"2色を同じ面積で並べる",
   good:`<div class="mock" style="background:#0f2a4a;padding:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:8px">青系を大きく、橙は1点だけ</div><span style="display:inline-block;background:#c77b3a;color:#fff;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700">申し込む</span><div class="cl" style="margin-top:8px;background:rgba(255,255,255,.92)">ネイビー H 213°（大面積）× オレンジ H 28°（小面積）</div></div>`,
   bad:`<div class="mock" style="padding:0;overflow:hidden"><div style="display:flex;height:70px"><div style="flex:1;background:#2c65c0"></div><div style="flex:1;background:#ff7a1a"></div></div><div class="cl" style="margin:8px">青と橙を同じ面積・同じ彩度で——目がチカチカする（ハレーション）</div></div>`,
   principle:"補色は「主役と脇役」の面積差で使う。同量・同彩度は刺激が強すぎる",
-  explain:"補色は最も引き立て合う組み合わせですが、同じ面積・同じ強さで並べると互いに主張して目が疲れます（ハレーション）。片方を大面積の主役に、もう片方を小面積のアクセントに——面積比を大きくつけることで、対比の効果だけを取り出せます。"
+  explain:"補色は最も引き立て合う組み合わせですが、同じ面積・同じ強さで並べると目が疲れます。片方を大面積の主役に、もう片方を小面積のアクセントに——面積比を大きくつけることで、対比の効果だけを取り出せます。"
 },
 {
   g:"配色の技法", cat:"配色の型",
+  slide:{ title:"三色配色（トライアド）", lead:"色相環を3等分した3色（赤・黄・青など）を使う配色は、バランスが取れて元気な印象になります。ただし3色を等量に使うと幼稚に見えるので、主70%・副25%・アクセント5%のように面積差をつけるのが鉄則。賑やかさが欲しい場面向きです。",
+    visual:`<div style="display:flex;height:44px;width:240px;border-radius:8px;overflow:hidden"><span style="flex:70;background:#3b6ea5"></span><span style="flex:22;background:#d9c227"></span><span style="flex:8;background:#d64541"></span></div>`,
+    points:["120°間隔の3色","活発・華やか・バランス","面積比70:25:5が命。等量は幼稚"] },
   title:"三色配色（トライアド）",
   context:"色相環を3等分（120°ずつ）した3色を使う配色の特徴はどちらでしょう？",
   la:"バランスが良く元気だが、面積配分が重要", lb:"落ち着いた統一感が出る",
   good:`<div class="mock"><div style="display:flex;height:34px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:70;background:#3b6ea5"></span><span style="flex:22;background:#d9c227"></span><span style="flex:8;background:#d64541"></span></div><div class="cl">青 H 210° 70% ／ 黄 H 55% 22% ／ 赤 H 0° 8%<br>3色を等量にせず、主・副・アクセントの面積差で使う</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#3b6ea5"></span></div><div class="cl">「落ち着いた統一感」は同一・類似色相配色の特徴。トライアドは活発さが持ち味</div></div>`,
   principle:"トライアド＝120°間隔の3色。活発で華やか、面積比（70:25:5）が命",
-  explain:"色相環を3等分した3色（赤・黄・青など）を使う配色は、バランスが取れて元気な印象になります。ただし3色を等量に使うと幼稚に見えるので、主70%・副25%・アクセント5%のように面積差をつけるのが鉄則。子ども向けや祭事など、賑やかさが欲しい場面向きです。"
+  explain:"色相環を3等分した3色を使う配色は、バランスが取れて元気な印象になります。3色を等量に使うと幼稚に見えるので、面積差をつけるのが鉄則。子ども向けや祭事など、賑やかさが欲しい場面向きです。"
 },
 {
   g:"配色の技法", cat:"配色の型",
-  title:"分裂補色配色（スプリット・コンプリメンタリー）",
+  slide:{ title:"分裂補色配色（スプリット・コンプリメンタリー）", lead:"補色は強すぎる、でも対比は欲しい——そんなときに使うのが分裂補色です。補色そのものではなく、その両隣の2色を組み合わせると、正面衝突のハレーションを避けながら、十分な対比が得られます。補色配色より扱いやすく、実務でよく使われる型です。",
+    visual:`<div style="display:flex;gap:16px;align-items:center">${_sw([["#3b6ea5","青 210°"]])}<span style="color:#8d97a3">×</span>${_sw([["#d9a227","黄橙 42°"],["#d6602e","赤橙 18°"]])}</div>`,
+    points:["補色（30°）ではなく、その両隣（42°と18°）","対比を残しつつ刺激を抑える","補色より扱いやすい実務向けの型"] },
+  title:"分裂補色配色",
   context:"「青」に対して、補色の橙そのものではなく「橙の両隣（黄橙と赤橙）」を組み合わせる技法の狙いはどちらでしょう？",
   la:"補色の対比を保ちつつ刺激を和らげる", lb:"色相を統一して穏やかにする",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span style="width:6px"></span><span class="chip lg" style="background:#d9a227"></span><span class="chip lg" style="background:#d6602e"></span></div><div class="cl">青 H 210° に対し、補色 H 30° の両隣（H 42° と H 18°）を採用<br>正面衝突を避けながら対比を残す</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#2e9a8f"></span></div><div class="cl">「色相を統一」は類似色相配色。分裂補色は対比を残す技法</div></div>`,
   principle:"分裂補色＝補色の両隣を使い、対比を残しつつ刺激を抑える",
-  explain:"補色は強すぎる、でも対比は欲しい——そんなときに使うのが分裂補色です。補色そのものではなく、その両隣の2色を組み合わせると、正面衝突のハレーションを避けながら、十分な対比が得られます。補色配色より扱いやすく、実務でよく使われる型です。"
+  explain:"補色そのものではなく、その両隣の2色を組み合わせると、正面衝突のハレーションを避けながら十分な対比が得られます。補色配色より扱いやすく、実務でよく使われる型です。"
+},
+{
+  g:"配色の技法", cat:"配色の型",
+  slide:{ title:"四色配色（テトラード）", lead:"色相環を4等分した4色（例：赤・黄・緑・青）を使う配色です。最も色数が多く華やかですが、そのぶん制御が難しい型。使うなら1色を主役に、残り3色は小面積に抑え、必ずトーンを揃えます。祭り・イベント・子ども向けなど賑やかさが目的の場面に限ります。",
+    visual:_sw([["#d64541","0°"],["#d9c227","90°"],["#3f9a4d","180°"],["#3b6ea5","270°"]]),
+    points:["90°間隔の4色。最も華やか","難易度が高い。1主役＋3小面積","トーンを揃えないと必ず破綻する"] },
+  title:"四色配色（テトラード）",
+  context:"色相環を4等分した4色を使うとき、破綻を防ぐために最も重要なことはどちらでしょう？",
+  la:"トーンを揃え、主役1色以外は小面積に", lb:"4色を同じ面積で均等に",
+  good:`<div class="mock"><div style="display:flex;height:34px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:70;background:#3b6ea5"></span><span style="flex:12;background:#5c8272"></span><span style="flex:10;background:#c9a227"></span><span style="flex:8;background:#a83d3d"></span></div><div class="cl">4色ともS 45〜60%に揃え、青70%を主役に残り3色は小面積<br>色数が多くても秩序が保たれる</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;height:34px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:1;background:#ff0000"></span><span style="flex:1;background:#ffff00"></span><span style="flex:1;background:#00ff00"></span><span style="flex:1;background:#0000ff"></span></div><div class="cl">純色4色を等分——最も騒がしく幼稚に見える配色</div></div>`,
+  principle:"テトラードは「トーン統一＋面積差」がなければ必ず破綻する",
+  explain:"色相環を4等分した4色は最も華やかですが、制御が最も難しい型です。使うなら1色を主役に残り3色は小面積に抑え、必ずトーンを揃えます。賑やかさが目的の場面以外では避けるのが無難です。"
+},
+{
+  g:"配色の技法", cat:"配色の技法（トーン系）",
+  slide:{ title:"トーン・オン・トーン／トーン・イン・トーン", lead:"トーン・オン・トーンは「同じ色相で明度差を大きくつける」配色（濃紺と水色など）、トーン・イン・トーンは「同じトーンで色相を変える」配色（ペールのピンクと水色など）。前者は統一感の中にメリハリ、後者は多色でも柔らかいまとまりを生みます。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#0f2a4a","L 17%"],["#c9dbee","L 86%"]])}<div class="ms" style="text-align:center;margin-top:6px">トーン・オン・トーン</div></div><div>${_sw([["#f4c7d0","348°"],["#c7e0f4","210°"],["#d0efd0","120°"]])}<div class="ms" style="text-align:center;margin-top:6px">トーン・イン・トーン</div></div></div>`,
+    points:["オン・トーン＝同色相・明度差大：メリハリ","イン・トーン＝同トーン・色相違い：柔らかい多色","どちらも「何かを揃える」ことで調和する"] },
+  title:"トーン・オン・トーン",
+  context:"「同じ色相で、明度差を大きくつける」配色技法はどちらでしょう？",
+  la:"トーン・オン・トーン", lb:"トーン・イン・トーン",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#c9dbee"></span></div><div class="cl">同じ青（H 210°）で L 17% と L 86%<br>色相を揃えて明度差で見せる「トーン・オン・トーン」</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#d0efd0"></span></div><div class="cl">これは同じトーンで色相を変えた「トーン・イン・トーン」</div></div>`,
+  principle:"オン・トーン＝同色相で明度差、イン・トーン＝同トーンで色相差",
+  explain:"トーン・オン・トーンは同じ色相で明度差を大きくつける配色で、統一感の中にメリハリが出ます。トーン・イン・トーンは同じトーンで色相を変える配色で、多色でも柔らかくまとまります。どちらも「何かを揃える」ことで調和を作る技法です。"
+},
+{
+  g:"配色の技法", cat:"配色の技法（トーン系）",
+  slide:{ title:"ドミナントカラー／ドミナントトーン", lead:"「ドミナント」は「支配的な」の意味。ドミナントカラーは1つの色相が画面を支配する配色（青系だけで統一）、ドミナントトーンは1つのトーンが支配する配色（全部ペール調）。どちらも「何かを揃えて支配させる」ことで、色数があってもまとまります。",
+    visual:`<div style="display:flex;gap:24px"><div>${_sw([["#0f2a4a",""],["#3b6ea5",""],["#8fa9c5",""],["#e8eef5",""]])}<div class="ms" style="text-align:center;margin-top:6px">ドミナントカラー（青が支配）</div></div><div>${_sw([["#f4c7d0",""],["#f6e0c0",""],["#c7e0f4",""],["#d0efd0",""]])}<div class="ms" style="text-align:center;margin-top:6px">ドミナントトーン（ペールが支配）</div></div></div>`,
+    points:["ドミナント＝支配的な。1つの要素で全体を統一","カラー：色相を揃える／トーン：調子を揃える","「揃える軸」を1つ決めるのが配色の基本動作"] },
+  title:"ドミナント配色",
+  context:"「全体をペール調（淡いトーン）で統一し、色相はいろいろ使う」配色は何と呼ばれるでしょう？",
+  la:"ドミナントトーン", lb:"ドミナントカラー",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#f4c7d0"></span><span class="chip lg" style="background:#f6e0c0"></span><span class="chip lg" style="background:#c7e0f4"></span><span class="chip lg" style="background:#d0efd0"></span></div><div class="cl">色相はバラバラ、トーンはすべてペール<br>「トーン」が支配している＝ドミナントトーン</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#3b6ea5"></span><span class="chip lg" style="background:#8fa9c5"></span></div><div class="cl">これは「色相（青）」が支配している＝ドミナントカラー</div></div>`,
+  principle:"ドミナントカラー＝色相で支配、ドミナントトーン＝トーンで支配",
+  explain:"ドミナントは「支配的な」の意味。1つの色相が全体を支配すればドミナントカラー、1つのトーンが支配すればドミナントトーン。どちらも「揃える軸を1つ決める」ことで、色数があってもまとまる技法です。"
+},
+{
+  g:"配色の技法", cat:"配色の技法（補助）",
+  slide:{ title:"セパレーション——色と色の間に仕切りを入れる", lead:"隣り合う2色が喧嘩する（補色同士、または似すぎて境目が曖昧）とき、間に白・黒・グレーなどの無彩色の細い線や余白を挟むと、両方の色が引き締まって見えます。これがセパレーション。ステンドグラスの黒い縁取りと同じ原理です。",
+    visual:`<div style="display:flex;gap:24px"><div style="display:flex;height:44px;width:110px;border-radius:6px;overflow:hidden"><span style="flex:1;background:#d64541"></span><span style="flex:1;background:#2e9a8f"></span></div><div style="display:flex;height:44px;width:110px;border-radius:6px;overflow:hidden"><span style="flex:1;background:#d64541"></span><span style="width:6px;background:#fff"></span><span style="flex:1;background:#2e9a8f"></span></div></div>`,
+    points:["喧嘩する2色の間に無彩色を挟む","白・黒・グレーの細い線や余白","両方の色が引き締まる（ステンドグラスの原理）"] },
+  title:"セパレーション",
+  context:"補色の赤と青緑を隣り合わせで使い、目がチカチカします。最も簡単な解決策はどちらでしょう？",
+  la:"間に白い線や余白を挟む", lb:"両方の彩度を最大にする",
+  good:`<div class="mock"><div style="display:flex;height:44px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:1;background:#d64541"></span><span style="width:6px;background:#fff"></span><span style="flex:1;background:#2e9a8f"></span></div><div class="cl">白い細線で分離（セパレーション）<br>ハレーションが消え、両方の色が引き締まる</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;height:44px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:1;background:#ff0000"></span><span style="flex:1;background:#00ffcc"></span></div><div class="cl">彩度を上げると、境目の振動（ハレーション）はさらに強くなる</div></div>`,
+  principle:"喧嘩する色の間には無彩色を挟む（セパレーション）",
+  explain:"隣り合う2色が喧嘩するとき、間に白・黒・グレーの細い線や余白を挟むと、両方の色が引き締まって見えます。ステンドグラスの黒い縁取りと同じ原理で、補色配色を実務で使うときの必須テクニックです。"
 },
 {
   g:"配色の技法", cat:"配色の骨格",
+  slide:{ title:"ベース・メイン・アクセントの3役（70:25:5）", lead:"どんな配色技法を使うにしても、色には役割があります。ベース（土台・最大面積・無彩色や淡色）、メイン（ブランドの顔・見出しやナビ）、アクセント（視線を集める・ボタンや強調・最小面積）。この70:25:5の比率は、良い配色に共通する骨格です。",
+    visual:`<div style="display:flex;height:44px;width:260px;border-radius:8px;overflow:hidden"><span style="flex:70;background:#f8f9fb;border:1px solid #dde3e8"></span><span style="flex:25;background:#0f2a4a"></span><span style="flex:5;background:#c77b3a"></span></div>`,
+    points:["ベース70%：背景・余白（無彩色・淡色）","メイン25%：ブランドの顔（見出し・ナビ）","アクセント5%：行動を促す（ボタン・強調）"] },
   title:"ベース・メイン・アクセントの3役",
   context:"配色を組み立てるときの「3つの役割」の面積比として適切なのはどちらでしょう？",
   la:"ベース70／メイン25／アクセント5", lb:"3色を等分（33%ずつ）",
   good:`<div class="mock"><div style="display:flex;height:34px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:70;background:#f8f9fb;border:1px solid #dde3e8"></span><span style="flex:25;background:#0f2a4a"></span><span style="flex:5;background:#c77b3a"></span></div><div class="cl"><b>ベース</b>70%：背景・余白（無彩色や淡色）<br><b>メイン</b>25%：ブランドの顔（見出し・ナビ）<br><b>アクセント</b>5%：行動を促す（ボタン・強調）</div></div>`,
   bad:`<div class="mock"><div style="display:flex;height:34px;border-radius:6px;overflow:hidden;margin-bottom:8px"><span style="flex:1;background:#f8f9fb;border:1px solid #dde3e8"></span><span style="flex:1;background:#0f2a4a"></span><span style="flex:1;background:#c77b3a"></span></div><div class="cl">等分にすると、どれが主役か分からずアクセントが効かない</div></div>`,
   principle:"配色は3役（ベース70：メイン25：アクセント5）で組み立てる",
-  explain:"どんな配色技法を使うにしても、色には役割があります。ベース（土台・最大面積）、メイン（ブランドの印象を決める）、アクセント（視線を集める・最小面積）。この70:25:5の比率は、良い配色に共通する骨格です。色を選ぶ前に、まず「どの色を何の役にするか」を決めます。"
+  explain:"どんな配色技法を使うにしても、色には役割があります。ベース（土台）、メイン（ブランドの顔）、アクセント（視線を集める）。この70:25:5の比率は良い配色に共通する骨格です。色を選ぶ前に「どの色を何の役にするか」を決めます。"
 },
-// ---------- 色の心理と実践（5問） ----------
+// ================= 色の意味と連想（10問） =================
 {
-  g:"色の心理と実践", cat:"色の連想",
-  title:"色が持つ意味",
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"赤——情熱・警告・食欲", lead:"赤は最も強いエネルギーを持つ色。情熱・活力・興奮・愛を表す一方で、危険・警告・禁止・赤字の色でもあります。食欲を増進させる効果もあり飲食店に多用されます。UIでは「エラー・削除・警告」に予約するのが基本で、装飾に使うと本当の警告が埋もれます。",
+    visual:_sw([["#d64541","赤"],["#a83d3d","ブリック"],["#e03c3c","ビビッド"]]),
+    points:["情熱・活力・興奮・愛／危険・警告・禁止","食欲増進（飲食店に多い）","UIでは警告・エラー専用に予約する"] },
+  title:"赤の意味",
+  context:"UIにおける「赤」の適切な使い方はどちらでしょう？",
+  la:"エラー・削除・警告に予約する", lb:"見出しや装飾にも自由に使う",
+  good:`<div class="mock"><div class="mtitle" style="margin-bottom:6px;color:#0f2a4a">入力内容の確認</div><div class="merr">売上高を入力してください</div><div class="mrow"><span class="mb mb-plain">キャンセル</span><span class="mb mb-danger">削除する</span></div><div class="cl" style="margin-top:8px">赤はエラーと危険な操作にだけ——出た瞬間に「注意」と分かる</div></div>`,
+  bad:`<div class="mock" style="border:2px solid #d64541"><div class="mtitle" style="margin-bottom:6px;color:#d64541">入力内容の確認</div><div style="font-size:11px;color:#d64541">売上高を入力してください</div><div class="cl" style="margin-top:8px">見出しも枠も赤——本当のエラーが埋もれる</div></div>`,
+  principle:"赤＝警告・エラー・危険。UIでは意味色として予約する",
+  explain:"赤は情熱・活力を表す一方、危険・警告・禁止・赤字の色でもあります。UIでは「エラー・削除・警告」に予約するのが基本。装飾に使ってしまうと、本当に注意が必要なときに赤が埋もれて機能しなくなります。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"橙——親しみ・活気・カジュアル", lead:"橙は赤の活力と黄の明るさを併せ持ち、親しみやすさ・元気・楽しさ・温かさを表します。食欲も刺激し、セール・お得感・行動喚起（CTA）ボタンにも多用されます。赤ほど攻撃的でなく黄ほど軽くない、使いやすい暖色です。",
+    visual:_sw([["#e08a2e","橙"],["#c77b3a","落ち着いた橙"],["#f0a020","明るい橙"]]),
+    points:["親しみ・元気・楽しさ・温かさ","セール・お得感・行動喚起","青系ブランドのアクセントとして定番（補色）"] },
+  title:"橙の意味",
+  context:"ネイビー基調のサイトで「申し込みボタン」に使うアクセントとして相性が良いのはどちらでしょう？",
+  la:"落ち着いた橙", lb:"同系の青",
+  good:`<div class="mock" style="background:#0f2a4a;padding:16px"><span style="display:inline-block;background:#c77b3a;color:#fff;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700">無料で試算する</span><div class="cl" style="margin-top:10px;background:rgba(255,255,255,.92)">橙 H 28°：青の補色側で目を引き、「親しみ・行動」の連想がCTAに合う</div></div>`,
+  bad:`<div class="mock" style="background:#0f2a4a;padding:16px"><span style="display:inline-block;background:#3b6ea5;color:#fff;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700">無料で試算する</span><div class="cl" style="margin-top:10px;background:rgba(255,255,255,.92)">同系の青：背景に溶けて、押すべきボタンが目立たない</div></div>`,
+  principle:"橙＝親しみ・活気・行動喚起。青系のアクセントに最適",
+  explain:"橙は親しみやすさ・元気・行動を表し、青系ブランドのアクセントとして定番です。補色関係にあるため目を引き、赤ほど攻撃的でないため「押してみよう」という前向きな行動を促します。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"黄——注意・希望・活力", lead:"黄は最も明るく、視認性が高い色。希望・活力・幸福・知性を表す一方で、注意・警戒（黄色信号・工事現場）の色でもあります。白背景では最も読みにくい色なので、文字色には不向き。黒との組み合わせ（踏切・標識）が最も目立つ配色として知られます。",
+    visual:_sw([["#d9c227","黄"],["#f0d020","ビビッド黄"],["#c9a227","マスタード"]]),
+    points:["希望・活力・幸福／注意・警戒","黒との組み合わせは最強の視認性","白背景の文字色には使えない（読めない）"] },
+  title:"黄の意味",
+  context:"「黄」の使い方として適切なのはどちらでしょう？",
+  la:"注意喚起のバッジ（黒文字と組み合わせ）", lb:"白背景の本文の文字色",
+  good:`<div class="mock"><div style="display:inline-block;background:#f0d020;color:#1a1a1a;border-radius:4px;padding:4px 10px;font-size:11px;font-weight:700">要確認</div><div class="cl" style="margin-top:8px">黄背景×黒文字——最も視認性が高い「注意」の配色</div></div>`,
+  bad:`<div class="mock"><div style="font-size:12px;color:#f0d020;font-weight:700">試算結果は概算です。詳細は税理士にご確認ください。</div><div class="cl" style="margin-top:8px">白背景に黄文字——明度差が小さく、ほぼ読めない</div></div>`,
+  principle:"黄＝注意・活力。黒と組めば最強、白背景の文字には不向き",
+  explain:"黄は最も明るく視認性が高い色ですが、白背景では最も読みにくい色でもあります。注意喚起には黒文字との組み合わせ（踏切・標識と同じ）で使い、白背景の文字色には使いません。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"緑——安心・自然・成長・成功", lead:"緑は自然・生命・成長・安らぎ・健康を表し、目に最も優しい色と言われます。UIでは「成功・完了・安全・OK」の意味色として使われます（赤の反対）。環境・医療・金融の「増益」など、ポジティブな状態を示す場面に向きます。",
+    visual:_sw([["#3f9a4d","緑"],["#5c8272","グリーングレー"],["#456155","深緑"]]),
+    points:["自然・生命・成長・安らぎ・健康","UIでは成功・完了・安全の意味色","赤（警告）の対になる色"] },
+  title:"緑の意味",
+  context:"UIで「保存が完了しました」というメッセージに使う色として適切なのはどちらでしょう？",
+  la:"緑系", lb:"赤系",
+  good:`<div class="mock"><div class="mok" style="font-size:12px;font-weight:700">✓ 保存が完了しました</div><div class="cl" style="margin-top:8px">緑 H 155°：成功・完了・安全の連想。安心して次に進める</div></div>`,
+  bad:`<div class="mock"><div style="font-size:12px;font-weight:700;color:#a83d3d">保存が完了しました</div><div class="cl" style="margin-top:8px">赤で成功を伝えると、ユーザーは一瞬「失敗した？」と誤読する</div></div>`,
+  principle:"緑＝成功・完了・安全・成長。赤の対として使う",
+  explain:"緑は自然・成長・安らぎを表し、UIでは「成功・完了・安全」の意味色として使われます。赤（警告）の反対の役割で、この対応を守ることで、ユーザーは色を見た瞬間に状態を判断できます。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"青——信頼・冷静・誠実・知性", lead:"青は世界で最も好まれる色で、信頼・冷静・誠実・知性・清潔を表します。銀行・保険・法律・IT・医療のブランドカラーに圧倒的に多いのはこのためです。食欲を減退させるため飲食には不向き。寒色の代表で、後退して見えるため背景にも使いやすい色です。",
+    visual:_sw([["#0f2a4a","ネイビー"],["#3b6ea5","ブルー"],["#2d5580","ダークブルー"]]),
+    points:["信頼・冷静・誠実・知性・清潔","金融・保険・法律・IT・医療の定番","飲食には不向き（食欲減退）"] },
+  title:"青の意味",
   context:"「信頼・誠実・冷静」を伝えたい金融サービスのブランドカラーとして適切なのはどちらでしょう？",
   la:"青系", lb:"赤系",
   good:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#0f2a4a"></span><div class="cl"><b>ネイビー</b>#0f2a4a　H 213°<br>青は「信頼・冷静・誠実・知性」の連想。銀行・保険・法律に多い</div></div></div>`,
   bad:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#d64541"></span><div class="cl"><b>レッド</b>#d64541　H 1°<br>赤は「情熱・警告・食欲・セール」の連想。金融の基調色には不向き</div></div></div>`,
-  principle:"色には文化的な連想がある——青＝信頼、赤＝情熱／警告、緑＝安心／自然、黄＝注意／活力",
-  explain:"色はそれ自体が意味を運びます。青は信頼と冷静、赤は情熱と警告、緑は安全と自然、黄は注意と活力、紫は高貴と神秘、黒は高級と重厚。ブランドカラーは「伝えたい価値」に合う色相から選びます。金融にネイビーが多いのは、偶然ではなく連想の一致です。"
+  principle:"青＝信頼・冷静・誠実。金融・法律・ITの定番",
+  explain:"青は世界で最も好まれる色で、信頼・冷静・誠実・知性を表します。金融・保険・法律・ITのブランドカラーに圧倒的に多いのは、伝えたい価値と色の連想が一致しているからです。"
 },
 {
-  g:"色の心理と実践", cat:"色の見え方",
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"紫——高貴・神秘・創造・上品", lead:"紫は歴史的に染料が貴重だったため、王族・高貴・格式の色とされてきました。神秘・創造性・芸術・スピリチュアルも表します。使い方が難しく、彩度が高いと安っぽく、暗いと重く、淡いと女性的になります。近年はAI・テック系のグラデーションで多用され、記号化しつつあります。",
+    visual:_sw([["#7b3fa8","紫"],["#5b4b8a","落ち着いた紫"],["#efe0ec","淡い紫"]]),
+    points:["高貴・格式・神秘・創造","扱いが難しい（安っぽくなりやすい）","AIテック系グラデで記号化している点に注意"] },
+  title:"紫の意味",
+  context:"「紫」を上品に使いたいとき、適切なトーンはどちらでしょう？",
+  la:"彩度を落とした深い紫", lb:"彩度100%の鮮やかな紫",
+  good:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#5b4b8a"></span><div class="cl"><b>ダスティパープル</b>#5b4b8a　H 255° / S 30% / L 42%<br>彩度を抑えた紫は、格式・上品・知的の方向へ</div></div></div>`,
+  bad:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#9400d3"></span><div class="cl"><b>ビビッドバイオレット</b>#9400d3　H 282° / S 100% / L 41%<br>純色に近い紫は派手で安っぽく、AIグラデの記号にも近い</div></div></div>`,
+  principle:"紫は彩度を落とすと高貴・上品、上げると安っぽい——扱いの難しい色",
+  explain:"紫は高貴・格式・神秘を表しますが、扱いが難しい色です。彩度が高いと安っぽく、AIテック系グラデーションの記号にも近づきます。上品に使うなら彩度を抑えた深い紫を、小面積で。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"黒・白・グレー——無彩色のメッセージ", lead:"黒は高級・重厚・権威・洗練（同時に死・恐怖）、白は清潔・純粋・シンプル・空白、グレーは中立・落ち着き・控えめ・都会的。無彩色は有彩色の邪魔をしないため、配色の70%を担う「舞台」です。黒の使い方ひとつで、高級にも重苦しくもなります。",
+    visual:_sw([["#000000","黒"],["#2b323d","チャコール"],["#8d97a3","グレー"],["#eef1f4","ライトグレー"],["#ffffff","白"]]),
+    points:["黒＝高級・重厚・権威（重すぎ注意）","白＝清潔・純粋・シンプル","グレー＝中立・控えめ・都会的。配色の舞台"] },
+  title:"無彩色の意味",
+  context:"「高級感」を出したいとき、黒の使い方として適切なのはどちらでしょう？",
+  la:"余白を活かし、黒は引き締めに", lb:"画面全体を黒で埋める",
+  good:`<div class="mock" style="padding:24px 18px;text-align:center"><div style="font-size:9px;letter-spacing:.3em;color:#8d97a3;margin-bottom:8px">PREMIUM</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">上質な時間を、あなたに。</div><div class="cl" style="margin-top:12px">白い余白の中に、黒の文字と細い線だけ——引き締まった高級感</div></div>`,
+  bad:`<div class="mock" style="background:#000;color:#fff;padding:14px"><div style="font-size:14px;font-weight:700">上質な時間を、あなたに。</div><div style="font-size:11px;margin-top:4px;opacity:.7">全面黒背景に白文字びっしり——重苦しく、読みにくい</div></div>`,
+  principle:"黒は「引き締め」に使うと高級、「塗りつぶし」に使うと重苦しい",
+  explain:"黒は高級・重厚・権威を表しますが、大面積で使うと重苦しく圧迫感が出ます。高級感を出すなら、白い余白を主役に、黒は文字と細い線での「引き締め」に使う。無彩色の使い方が、上品さの大部分を決めます。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"茶・ベージュ——自然・安定・温もり", lead:"茶色は大地・木・革を連想させ、安定・堅実・温もり・伝統・落ち着きを表します。ベージュはその淡いバージョンで、ナチュラル・上品・穏やか。飽きがこず、幅広い年齢層に受け入れられます。カフェ・食品・自然素材・和のデザインで多用されます。",
+    visual:_sw([["#5c3a1e","茶"],["#826f5c","トープ"],["#c9b8a0","ベージュ"],["#efe0c7","淡いベージュ"]]),
+    points:["茶＝安定・堅実・温もり・伝統","ベージュ＝ナチュラル・上品・穏やか","飽きがこない。幅広い層に受け入れられる"] },
+  title:"茶・ベージュの意味",
+  context:"「ナチュラルで穏やか、幅広い年齢層に受け入れられる」印象を出したい背景色はどちらでしょう？",
+  la:"淡いベージュ", lb:"ビビッドなピンク",
+  good:`<div class="mock" style="background:#efe0c7"><div style="font-size:12px;font-weight:700;color:#5c3a1e">季節の便り</div><div style="font-size:11px;color:#826f5c;margin-top:4px">淡いベージュ H 33° / S 56% / L 86%——穏やかで飽きのこない土台</div></div>`,
+  bad:`<div class="mock" style="background:#ff69b4"><div style="font-size:12px;font-weight:700;color:#fff">季節の便り</div><div style="font-size:11px;color:#fff;margin-top:4px">ビビッドピンク S 100%——若く元気だが、幅広い層向けには強すぎる</div></div>`,
+  principle:"茶・ベージュ＝自然・安定・穏やか。万人向けの土台色",
+  explain:"茶色は安定・堅実・温もりを、ベージュはナチュラル・上品・穏やかさを表します。飽きがこず幅広い年齢層に受け入れられるため、カフェ・食品・自然素材・和のデザインの土台色として多用されます。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"ピンク——優しさ・可愛らしさ・幸福", lead:"ピンクは赤に白を混ぜた色で、赤の情熱を和らげた「優しさ・愛情・幸福・可愛らしさ・若さ」を表します。女性向けの記号として使われがちですが、彩度と明度で印象は大きく変わり、くすんだピンク（ダスティローズ）は大人っぽく上品に、蛍光ピンクは若く派手になります。",
+    visual:_sw([["#f4c7d0","ペールピンク"],["#d08090","ローズ"],["#c9a9b0","ダスティローズ"],["#ff69b4","ホットピンク"]]),
+    points:["優しさ・愛情・幸福・可愛らしさ","トーンで印象が激変する色","くすませると大人の上品さに"] },
+  title:"ピンクの意味",
+  context:"「大人向けに上品なピンク」を使いたいとき、選ぶべきトーンはどちらでしょう？",
+  la:"くすんだダスティローズ", lb:"ホットピンク",
+  good:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#c9a9b0"></span><div class="cl"><b>ダスティローズ</b>#c9a9b0　H 348° / S 23% / L 73%<br>彩度を落としたピンクは大人っぽく上品に</div></div></div>`,
+  bad:`<div class="mock"><div class="msw"><span class="chip lg" style="background:#ff69b4"></span><div class="cl"><b>ホットピンク</b>#ff69b4　H 330° / S 100% / L 71%<br>高彩度のピンクは若く派手な方向へ</div></div></div>`,
+  principle:"ピンクはトーンで印象が激変する——大人向けなら彩度を落とす",
+  explain:"ピンクは優しさ・幸福・可愛らしさを表しますが、トーンで印象が大きく変わります。彩度を落としたダスティローズは大人っぽく上品に、高彩度のホットピンクは若く派手に。ターゲットに合わせてトーンを選びます。"
+},
+{
+  g:"色の意味と連想", cat:"色ごとのメッセージ",
+  slide:{ title:"金・銀——豪華・特別・受賞", lead:"金は富・豪華・栄光・特別・一位を、銀はモダン・洗練・二位・テクノロジーを表します。ただし画面上の「金色」は実際には黄土色〜山吹色にしかならず、テカりを再現しようとするとチープに見えます。「金っぽい色をベタ塗り」より、抑えた黄土色を小面積で使うのが上品です。",
+    visual:_sw([["#c9a227","ゴールド"],["#d4af37","メタリック風"],["#8d97a3","シルバー"]]),
+    points:["金＝豪華・特別・一位／銀＝洗練・二位","画面の金色は「黄土色」にしかならない","ベタ塗り・テカりはチープに。小面積で抑えて使う"] },
+  title:"金・銀の意味",
+  context:"「受賞・特別感」を伝えたいとき、金色の適切な使い方はどちらでしょう？",
+  la:"抑えた黄土色を小面積で", lb:"テカりのある金色を大面積で",
+  good:`<div class="mock" style="text-align:center"><div style="display:inline-block;background:#c9a227;color:#fff;border-radius:4px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.1em">AWARD 2026</div><div style="font-size:13px;font-weight:700;color:#0f2a4a;margin-top:8px">優秀賞を受賞しました</div><div class="cl" style="margin-top:8px">抑えたゴールドを小さなバッジに——特別感が品よく伝わる</div></div>`,
+  bad:`<div class="mock" style="background:linear-gradient(135deg,#f5d76e,#d4af37,#f5d76e);color:#5c3a1e;padding:16px;text-align:center"><div style="font-size:14px;font-weight:900;text-shadow:1px 1px 0 #fff">★ AWARD 2026 ★</div><div class="cl" style="margin-top:8px;background:rgba(255,255,255,.9)">テカり金の全面塗り——チープで、いわゆる「AIっぽい高級テンプレ」に</div></div>`,
+  principle:"金は「小さく抑えて」——大面積のテカり金はチープに見える",
+  explain:"金は豪華・特別・一位を表しますが、画面上の金色は黄土色にしかならず、テカりを再現しようとするとチープに見えます。抑えた黄土色を小面積のバッジや線に使うのが、特別感を品よく伝える方法です。"
+},
+// ================= 色の見え方と実践（7問） =================
+{
+  g:"色の見え方と実践", cat:"色の錯視",
+  slide:{ title:"面積効果——大きいと強く見える", lead:"小さな色見本で「ちょうどいい」と感じた色は、大面積に使うと明るさも鮮やかさも増して見えます。これが面積効果。背景やヒーロー帯に使う色は、見本で「少し薄いかな」と感じるくらいがちょうど良く、逆に小さなボタンやアイコンは見本より一段強い色でも大丈夫です。",
+    visual:`<div style="display:flex;align-items:center;gap:16px"><span class="chip" style="background:#7ea3cc"></span><div style="width:140px;height:60px;background:#7ea3cc;border-radius:8px"></div><div class="cl">同じ #7ea3cc<br>大面積のほうが明るく強く感じる</div></div>`,
+    points:["面積が大きいほど、明るい色はより明るく、暗い色はより暗く見える","背景色は見本より一段淡く選ぶ","小面積は見本より一段強くてもよい"] },
   title:"面積効果",
   context:"色見本で選んだ色を、実際に大面積の背景に使いました。起きることとして正しいのはどちらでしょう？",
   la:"見本より明るく鮮やかに見える", lb:"見本と全く同じに見える",
   good:`<div class="mock" style="padding:0;overflow:hidden"><div style="display:flex;align-items:center;gap:10px;padding:10px"><span class="chip" style="background:#7ea3cc"></span><span class="ms">小さな見本</span></div><div style="background:#7ea3cc;padding:22px;color:#0f2a4a;font-size:11px;font-weight:700">同じ #7ea3cc を大面積で——見本より明るく強く感じる</div><div class="cl" style="margin:8px">面積が大きいほど、明るい色はより明るく、暗い色はより暗く見える（面積効果）</div></div>`,
   bad:`<div class="mock" style="padding:14px"><div class="cl">「全く同じに見える」は誤り。人の目は面積によって色の感じ方が変わる</div></div>`,
   principle:"色は面積が大きいほど強く見える——背景色は見本より一段淡く選ぶ",
-  explain:"小さな色見本で「ちょうどいい」と感じた色は、大面積に使うと明るさも鮮やかさも増して見えます（面積効果）。背景やヒーロー帯に使う色は、見本で「少し薄いかな」と感じるくらいがちょうど良い。逆に小さなボタンやアイコンは、見本より一段強い色でも大丈夫です。"
+  explain:"小さな色見本で「ちょうどいい」と感じた色は、大面積に使うと明るさも鮮やかさも増して見えます。背景に使う色は見本で「少し薄いかな」と感じるくらいがちょうど良い。小さなボタンは逆に、見本より強い色でも大丈夫です。"
 },
 {
-  g:"色の心理と実践", cat:"色の見え方",
+  g:"色の見え方と実践", cat:"色の錯視",
+  slide:{ title:"同時対比——隣の色に影響される", lead:"同じ色でも、周囲が暗ければ明るく、明るければ暗く見えます。色相でも同じことが起き、灰色は隣の色の補色を帯びて見えます。だから色は「単体で良いか」ではなく「隣に置いたときにどう見えるか」で判断します。配色は必ず、実際の組み合わせで確認してください。",
+    visual:`<div style="display:flex;border-radius:8px;overflow:hidden"><div style="background:#fff;padding:16px 24px;display:grid;place-items:center;border:1px solid #dde3e8"><span class="chip" style="background:#808080;border:0"></span></div><div style="background:#1a1a1a;padding:16px 24px;display:grid;place-items:center"><span class="chip" style="background:#808080;border:0"></span></div></div>`,
+    points:["同じ色でも周囲で見え方が変わる","明るい地では暗く、暗い地では明るく","色は単体でなく「組み合わせ」で判断する"] },
   title:"同時対比",
   context:"同じグレーを、白い背景と黒い背景に置きました。見え方として正しいのはどちらでしょう？",
   la:"黒地の上のほうが明るく見える", lb:"どちらも同じ明るさに見える",
   good:`<div class="mock" style="padding:0;overflow:hidden"><div style="display:flex"><div style="flex:1;background:#ffffff;padding:16px;display:grid;place-items:center"><span class="chip" style="background:#808080;border:0"></span></div><div style="flex:1;background:#1a1a1a;padding:16px;display:grid;place-items:center"><span class="chip" style="background:#808080;border:0"></span></div></div><div class="cl" style="margin:8px">どちらも同じ #808080（L 50%）。黒地の上では明るく、白地の上では暗く見える</div></div>`,
   bad:`<div class="mock" style="padding:14px"><div class="cl">「同じに見える」は誤り。周囲の色との対比で、同じ色でも見え方が変わる</div></div>`,
   principle:"色は隣の色に影響される（同時対比）——単体ではなく組み合わせで判断する",
-  explain:"同じ色でも、周囲が暗ければ明るく、明るければ暗く見えます。色相でも同じことが起き、灰色は隣の色の補色を帯びて見えます。だから色は「単体で良いか」ではなく「隣に置いたときにどう見えるか」で判断します。配色は必ず、実際の組み合わせで確認してください。"
+  explain:"同じ色でも、周囲が暗ければ明るく、明るければ暗く見えます。だから色は「単体で良いか」ではなく「隣に置いたときにどう見えるか」で判断します。配色は必ず実際の組み合わせで確認してください。"
 },
 {
-  g:"色の心理と実践", cat:"実践の手順",
+  g:"色の見え方と実践", cat:"色の錯視",
+  slide:{ title:"進出色と後退色・膨張色と収縮色", lead:"暖色・明るい色・高彩度の色は手前に飛び出して大きく見え（進出・膨張）、寒色・暗い色・低彩度の色は奥に引っ込んで小さく見えます（後退・収縮）。同じサイズのボタンでも、赤は青より大きく手前に感じます。この性質を使えば、色だけで奥行きと強弱を作れます。",
+    visual:`<div style="display:flex;gap:16px;align-items:center"><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#3b6ea5"></span><div class="cl">同じ44px。橙は大きく手前に、青は小さく奥に見える</div></div>`,
+    points:["暖色・明・高彩度＝進出・膨張（手前・大きく）","寒色・暗・低彩度＝後退・収縮（奥・小さく）","色だけで奥行きと強弱を作れる"] },
+  title:"進出色と後退色",
+  context:"「手前に飛び出して大きく見える」性質を持つのはどちらの色でしょう？",
+  la:"暖色・明るい・高彩度", lb:"寒色・暗い・低彩度",
+  good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#e08a2e"></span><span class="chip lg" style="background:#f0d020"></span><span class="chip lg" style="background:#ff7f7f"></span></div><div class="cl">暖色・明るい・高彩度の色は前に出て、大きく見える（進出色・膨張色）</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#607090"></span><span class="chip lg" style="background:#5b5bb8"></span></div><div class="cl">寒色・暗い・低彩度の色は奥に下がり、小さく見える（後退色・収縮色）</div></div>`,
+  principle:"暖色・明・高彩度は進出・膨張、寒色・暗・低彩度は後退・収縮",
+  explain:"暖色・明るい色・高彩度の色は手前に飛び出して大きく見え、寒色・暗い色・低彩度の色は奥に引っ込んで小さく見えます。この性質を知っていれば、色だけで画面に奥行きと強弱を作れます。"
+},
+{
+  g:"色の見え方と実践", cat:"色の錯視",
+  slide:{ title:"軽い色・重い色", lead:"明るい色は軽く、暗い色は重く感じられます。同じ箱でも白は軽く黒は重く見え、実際に持ち上げたときの体感重量まで変わることが実験で確かめられています。画面では「暗い色を下・明るい色を上」に置くと安定し、逆にすると不安定で緊張感が出ます。",
+    visual:`<div style="display:flex;gap:24px"><div style="width:70px"><div style="height:24px;background:#c9dbee;border-radius:6px 6px 0 0"></div><div style="height:24px;background:#0f2a4a;border-radius:0 0 6px 6px"></div><div class="ms" style="text-align:center;margin-top:4px">安定</div></div><div style="width:70px"><div style="height:24px;background:#0f2a4a;border-radius:6px 6px 0 0"></div><div style="height:24px;background:#c9dbee;border-radius:0 0 6px 6px"></div><div class="ms" style="text-align:center;margin-top:4px">不安定</div></div></div>`,
+    points:["明るい色＝軽い、暗い色＝重い","暗を下・明を上で安定","逆にすると緊張感・動きが出る"] },
+  title:"色の軽重",
+  context:"画面の「安定感」を出したいとき、明暗の配置として適切なのはどちらでしょう？",
+  la:"暗い色を下、明るい色を上", lb:"暗い色を上、明るい色を下",
+  good:`<div class="mock" style="padding:0;overflow:hidden"><div style="background:#f8f9fb;padding:14px;font-size:12px;color:#0f2a4a;font-weight:700">明るいコンテンツエリア</div><div style="background:#0f2a4a;padding:10px 14px;font-size:10px;color:#fff">暗いフッター</div><div class="cl" style="margin:8px">重い色が下にあると、どっしり安定して見える</div></div>`,
+  bad:`<div class="mock" style="padding:0;overflow:hidden"><div style="background:#0f2a4a;padding:14px;font-size:12px;color:#fff;font-weight:700">暗いエリアが上に大きく</div><div style="background:#f8f9fb;padding:10px 14px;font-size:10px;color:#0f2a4a">明るいエリアが下に</div><div class="cl" style="margin:8px">頭でっかちで不安定——意図的な緊張感の演出以外では避ける</div></div>`,
+  principle:"暗い色は重い——下に置くと安定、上に置くと不安定",
+  explain:"明るい色は軽く、暗い色は重く感じられます。画面では暗い色を下（フッター）、明るい色を上に置くと安定します。逆にすると頭でっかちで不安定な印象になるため、意図的な緊張感の演出以外では避けます。"
+},
+{
+  g:"色の見え方と実践", cat:"色覚多様性",
+  slide:{ title:"色覚多様性——赤と緑の区別がつきにくい人がいる", lead:"日本人男性の約5%（20人に1人）、女性の約0.2%は、赤と緑の色相差を判別しにくい色覚を持ちます。しかし明度差は誰にでも見えます。区別させたい2色は明度で30pt以上離し、さらに記号や文字を添えれば、色の見え方に関わらず伝わります。判定方法は「モノクロにしても区別できるか」です。",
+    visual:`<div style="display:flex;gap:16px"><div><div style="display:flex;gap:4px"><span class="chip lg" style="background:#3a8a3f"></span><span class="chip lg" style="background:#b03a3a"></span></div><div class="ms" style="text-align:center;margin-top:4px">明度差 7pt：×</div></div><div><div style="display:flex;gap:4px"><span class="chip lg" style="background:#2f7a3a"></span><span class="chip lg" style="background:#e8b8b8"></span></div><div class="ms" style="text-align:center;margin-top:4px">明度差 49pt：○</div></div></div>`,
+    points:["男性の約5%は赤緑の色相差が見分けにくい","明度差は誰にでも見える——30pt以上離す","色＋記号・文字の二重化で伝える"] },
+  title:"色覚多様性への配慮",
+  context:"「良好」と「要改善」を色で示します。赤緑の区別がつきにくい人にも伝わるのはどちらでしょう？",
+  la:"明度差＋記号を併用", lb:"色相差のみ",
+  good:`<div class="mock"><div style="display:flex;gap:8px;margin-bottom:8px"><span style="flex:1;background:#2f7a3a;color:#fff;border-radius:6px;padding:8px;font-size:11px;font-weight:700;text-align:center">✓ 良好</span><span style="flex:1;background:#e8b8b8;color:#6b1f1f;border-radius:6px;padding:8px;font-size:11px;font-weight:700;text-align:center">！ 要改善</span></div><div class="cl">グリーン L 33% ／ ピンク L 82%<br>→ 明度差 49pt。モノクロでも濃淡で判別でき、記号でも区別できる</div></div>`,
+  bad:`<div class="mock"><div style="display:flex;gap:8px;margin-bottom:8px"><span style="flex:1;background:#3a8a3f;color:#fff;border-radius:6px;padding:8px;font-size:11px;font-weight:700;text-align:center">良好</span><span style="flex:1;background:#b03a3a;color:#fff;border-radius:6px;padding:8px;font-size:11px;font-weight:700;text-align:center">要改善</span></div><div class="cl">グリーン L 39% ／ レッド L 46%<br>→ 明度差 7pt。色相以外の手がかりがなく、モノクロでは同じ色に見える</div></div>`,
+  principle:"状態の区別は「明度差＋記号」で二重化する（色相差だけに頼らない）",
+  explain:"日本人男性の約5%は赤と緑の色相差を判別しにくいと言われます。しかし明度差は誰にでも見えます。区別させたい2色は明度で30pt以上離し、記号や文字を添えれば、色の見え方に関わらず伝わります。"
+},
+{
+  g:"色の見え方と実践", cat:"実践の手順",
+  slide:{ title:"配色を組み立てる順番", lead:"配色に迷わない人は、順番を守っています。①伝えたい印象を言葉にする→②印象に合う色相を1つ選ぶ→③印象に合うトーンを決める→④色相を固定して濃淡の派生色を作る→⑤補色側から小面積のアクセントを1色。この順番なら、色彩の知識が浅くても破綻しません。",
+    visual:`<div class="cl" style="font-size:12px;line-height:2"><b>1.</b> 印象を言葉に（信頼／親しみ／高級…）<br><b>2.</b> 印象に合う色相を1つ<br><b>3.</b> 印象に合うトーンを決める<br><b>4.</b> 色相固定で濃淡を作る<br><b>5.</b> 補色側からアクセント1色</div>`,
+    points:["印象→色相→トーン→派生→アクセント","色相を動かすのは最後の1色だけ","「好きな色を並べる」は最後まで取っておく"] },
   title:"配色を組み立てる順番",
   context:"新しいサービスの配色を決める手順として適切なのはどちらでしょう？",
   la:"印象→メイン色相→トーン→派生→アクセント", lb:"好きな色を思いつくまま並べる",
   good:`<div class="mock"><div class="cl" style="line-height:1.9"><b>1.</b> 伝えたい印象を言葉にする（信頼／親しみ／高級…）<br><b>2.</b> 印象に合う色相を1つ選ぶ（メイン）<br><b>3.</b> 印象に合うトーンを決める（暗め／淡め…）<br><b>4.</b> 色相を固定して濃淡の派生色を作る<br><b>5.</b> 補色側から小面積のアクセントを1色</div></div>`,
   bad:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#ff69b4"></span><span class="chip lg" style="background:#00ced1"></span><span class="chip lg" style="background:#ffa500"></span><span class="chip lg" style="background:#9400d3"></span></div><div class="cl">「好きな色」を根拠なく並べる——印象もトーンも揃わず、役割もない</div></div>`,
   principle:"配色は「印象→色相→トーン→派生→アクセント」の順で組み立てる",
-  explain:"配色に迷わない人は、順番を守っています。まず言葉で印象を決め、それに合う色相とトーンを選び、色相を固定して濃淡を作り、最後にアクセントを1色足す。この順番なら、色彩の知識が浅くても破綻しません。「好きな色を並べる」は最後まで残しておく贅沢です。"
+  explain:"配色に迷わない人は順番を守っています。まず言葉で印象を決め、それに合う色相とトーンを選び、色相を固定して濃淡を作り、最後にアクセントを1色足す。この順番なら知識が浅くても破綻しません。"
 },
 {
-  g:"色の心理と実践", cat:"実践の点検",
+  g:"色の見え方と実践", cat:"実践の点検",
+  slide:{ title:"最終チェック——モノクロにして明度差を確認する", lead:"配色ができたら、必ずグレースケールにして確認します。明度差で区別できる配色は、色覚の多様性にも、モノクロ印刷にも、日光下のスマホにも耐えます。色相や彩度は見え方に個人差がありますが、明度差はほぼ誰にでも見えます。これが色彩の基本学習の締めくくりです。",
+    visual:`<div><div style="display:flex;gap:5px;margin-bottom:5px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#c77b3a"></span><span class="chip lg" style="background:#e8eef5"></span></div><div style="display:flex;gap:5px"><span class="chip lg" style="background:#2c2c2c"></span><span class="chip lg" style="background:#8a8a8a"></span><span class="chip lg" style="background:#efefef"></span></div></div>`,
+    points:["完成したら彩度0にして見る","モノクロで区別できれば合格","色相・彩度は個人差、明度差は万人共通"] },
   title:"配色の最終チェック",
   context:"作った配色を公開する前に確認すべきことはどちらでしょう？",
   la:"モノクロで明度差を確認する", lb:"自分の画面で綺麗に見えればOK",
   good:`<div class="mock"><div style="display:flex;gap:5px;margin-bottom:5px"><span class="chip lg" style="background:#0f2a4a"></span><span class="chip lg" style="background:#c77b3a"></span><span class="chip lg" style="background:#e8eef5"></span></div><div style="display:flex;gap:5px;margin-bottom:8px"><span class="chip lg" style="background:#2c2c2c"></span><span class="chip lg" style="background:#8a8a8a"></span><span class="chip lg" style="background:#efefef"></span></div><div class="cl">上：配色 ／ 下：彩度0にした状態<br>L 17% / 50% / 94%——モノクロでも3色が区別できれば合格</div></div>`,
   bad:`<div class="mock"><div class="cl">自分の画面・自分の目だけで判断すると、色覚の違い・モノクロ印刷・屋外の画面で破綻することに気づけない</div></div>`,
   principle:"最後は彩度0にして「明度差だけで区別できるか」を確認する",
-  explain:"配色ができたら、必ずグレースケールにして確認します。明度差で区別できる配色は、色覚の多様性にも、モノクロ印刷にも、日光下のスマホにも耐えます。色相や彩度は見え方に個人差がありますが、明度差はほぼ誰にでも見えます。これが色彩の基本学習の締めくくりです。"
+  explain:"配色ができたら必ずグレースケールにして確認します。明度差で区別できる配色は、色覚の多様性にも、モノクロ印刷にも、日光下のスマホにも耐えます。明度差はほぼ誰にでも見える、最も信頼できる軸です。"
 },
 ]};
