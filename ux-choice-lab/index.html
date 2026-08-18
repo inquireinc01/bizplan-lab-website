@@ -347,6 +347,8 @@
   .cl b{display:block; color:#0f2a4a; font-size:11px;}
   .cl u{text-decoration:underline; text-decoration-color:#a83d3d; text-underline-offset:2px; font-weight:700; color:#0f2a4a;}
   .tag{display:inline-block; padding:4px 12px; border-radius:9999px; font-size:11px; font-weight:700;}
+  /* 余白と文字バランス編：本文見本 */
+  .sh{font-size:12px; font-weight:400; color:#4a5460; line-height:1.7;}
 
   /* ===== レスポンシブ ===== */
   @media(max-width:920px){
@@ -483,9 +485,10 @@
 <script src="data-finance.js"></script>
 <script src="data-sense.js"></script>
 <script src="data-color.js"></script>
+<script src="data-space.js"></script>
 <script>
 // ======= アプリ本体 =======
-const COURSES = [window.COURSE_SHOP, window.COURSE_FINANCE, window.COURSE_SENSE, window.COURSE_COLOR];
+const COURSES = [window.COURSE_SHOP, window.COURSE_FINANCE, window.COURSE_SENSE, window.COURSE_COLOR, window.COURSE_SPACE];
 const $ = id => document.getElementById(id);
 let course = null;       // 現在のコース
 let quizSet = [];        // 今回出題する問題（復習モードでは間違えた問題のみ）
@@ -518,7 +521,7 @@ function setPhase(phase){
 function renderIntro(){
   const grid = $("courseGrid");
   grid.innerHTML = "";
-  const marks = ["SHOP","FINANCE","SENSE","COLOR"];
+  const marks = ["SHOP","FINANCE","SENSE","COLOR","SPACE"];
   COURSES.forEach((c,i)=>{
     const best = localStorage.getItem(bestKey(c));
     const card = document.createElement("div");
