@@ -1029,27 +1029,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // グラフSVGを複製(アニメーションは無効化)
     const slot = document.getElementById('pChartSlot');
     slot.innerHTML = '';
+    // 画面のグラフを見たままのPNGにして貼る(色・寸法が確実に再現される)
     const chart = document.getElementById('trendChart');
-    if (chart) {
-      const clone = chart.cloneNode(true);
-      clone.removeAttribute('id');
-      clone.querySelectorAll('.chart-bar').forEach((r) => {
-        r.style.animation = 'none';
-      });
-      // A4ヨコいっぱいに拡大できるよう、固定サイズを外してviewBoxで伸縮させる
-      const svg = clone.tagName && clone.tagName.toLowerCase() === 'svg' ? clone : clone.querySelector('svg');
-      if (svg) {
-        if (!svg.getAttribute('viewBox') && svg.getAttribute('width') && svg.getAttribute('height')) {
-          svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
-        }
-        svg.removeAttribute('width');
-        svg.removeAttribute('height');
-        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      }
-      slot.appendChild(clone);
+    const chartSvg = chart && (chart.tagName.toLowerCase() === 'svg' ? chart : chart.querySelector('svg'));
+    if (chartSvg && window.bplChartToImage) {
+      window.bplChartToImage(chartSvg, slot, function () { window.print(); });
+    } else {
+      window.print();
     }
-
-    window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 

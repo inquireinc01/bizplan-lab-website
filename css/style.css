@@ -3904,6 +3904,11 @@ a.portal-feed-row:hover .portal-feed-text {
   .print-sheet table, .print-sheet svg { page-break-inside: avoid; }
   .print-sheet h2, .print-sheet .print-sec { page-break-after: avoid; }
 }
+/* 画面のカードをそのまま複製した印刷ブロック */
+.print-screen-clone > div { margin-bottom: 10px; }
+.print-screen-clone details summary { list-style: none; }
+.print-screen-clone details summary::-webkit-details-marker { display: none; }
+
 /* 非課税の印刷: 縦積みの指標カード */
 .print-stats-col > div {
   border: 1px solid #dde3e8;
@@ -3962,6 +3967,14 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-break { break-before: page; page-break-before: always; height: 0; }
 .print-chart-big { margin: 8px 0 6px; }
 .print-chart-big svg { width: 100%; height: auto; max-height: 132mm; display: block; }
+.print-chart-big img.print-chart-img, .print-chart img.print-chart-img {
+  width: 100%;
+  height: auto;
+  max-height: 132mm;
+  object-fit: contain;
+  object-position: left top;
+  display: block;
+}
 .print-cond-cols {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

@@ -379,6 +379,61 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  // ===== 画面のSVGグラフを「見たままのPNG画像」にして印刷スロットへ入れる共通ヘルパー =====
+  // SVGを単純に複製すると、CSSで与えている色・寸法が印刷側で失われることがある
+  // (自社株=全バーが灰色化 / 金庫株=白紙、の不具合の原因)。
+  // そこで描画済みのcomputed styleを各要素に焼き込み、実際の表示サイズで
+  // canvasに描いてPNG化する。画面と同じ見た目が保証される。
+  window.bplChartToImage = function (src, slot, done) {
+    try {
+      var rect = src.getBoundingClientRect();
+      if (!rect.width || !rect.height) { slot.innerHTML = ''; if (done) done(false); return; }
+      var clone = src.cloneNode(true);
+      var srcAll = [src].concat(Array.prototype.slice.call(src.querySelectorAll('*')));
+      var dstAll = [clone].concat(Array.prototype.slice.call(clone.querySelectorAll('*')));
+      var PROPS = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'opacity',
+        'fill-opacity', 'stroke-opacity', 'font-family', 'font-size', 'font-weight', 'font-stretch',
+        'text-anchor', 'dominant-baseline', 'letter-spacing', 'visibility', 'display'];
+      for (var i = 0; i < srcAll.length; i++) {
+        var cs = getComputedStyle(srcAll[i]);
+        for (var j = 0; j < PROPS.length; j++) {
+          try { dstAll[i].style.setProperty(PROPS[j], cs.getPropertyValue(PROPS[j])); } catch (e) {}
+        }
+      }
+      clone.removeAttribute('id');
+      clone.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });
+      clone.querySelectorAll('animate,animateTransform').forEach(function (el) { el.remove(); });
+      clone.setAttribute('width', rect.width);
+      clone.setAttribute('height', rect.height);
+      if (!clone.getAttribute('viewBox')) clone.setAttribute('viewBox', '0 0 ' + rect.width + ' ' + rect.height);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      var xml = new XMLSerializer().serializeToString(clone);
+      var img = new Image();
+      img.onload = function () {
+        var scale = 2; // 印刷でぼやけないよう2倍で描く
+        var c = document.createElement('canvas');
+        c.width = Math.round(rect.width * scale);
+        c.height = Math.round(rect.height * scale);
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        var out = new Image();
+        out.className = 'print-chart-img';
+        out.src = c.toDataURL('image/png');
+        slot.innerHTML = '';
+        slot.appendChild(out);
+        if (done) done(true);
+      };
+      img.onerror = function () { slot.innerHTML = ''; if (done) done(false); };
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
+    } catch (e) {
+      slot.innerHTML = '';
+      if (done) done(false);
+    }
+  };
+
   // ===== PDF出力(ブラウザ印刷)との連携: 全ページ共通 =====
   // 印刷中だけタイトルを「保存名_ツール名_日付」に差し替え、PDF保存時のファイル名を揃える。
   // 印刷シートのヘッダーには保存名の行を印字する(未入力なら出さない)。

@@ -572,30 +572,22 @@ document.addEventListener('DOMContentLoaded', function () {
       setCond('pCondStockInherit', man(rawOf('stockInheritanceValue')));
       setCond('pCondStockCorp', man(rawOf('stockCorpValue')));
 
-      // 1枚目: ウォーターフォール(A/B)のSVGを複製し、A4ヨコに合わせて伸縮させる
-      const cloneWf = (srcId, slotId) => {
+      // 1枚目: ウォーターフォール(A/B)を見たままのPNGにして貼り、両方できてから印刷する
+      let pending = 0;
+      const finish = () => { pending -= 1; if (pending <= 0) window.print(); };
+      const toImg = (srcId, slotId) => {
         const slot = document.getElementById(slotId);
+        const src = document.getElementById(srcId);
         if (!slot) return;
         slot.innerHTML = '';
-        const src = document.getElementById(srcId);
-        if (!src) return;
-        const clone = src.cloneNode(true);
-        clone.removeAttribute('id');
-        const svg = clone.tagName && clone.tagName.toLowerCase() === 'svg' ? clone : clone.querySelector('svg');
-        if (svg) {
-          if (!svg.getAttribute('viewBox') && svg.getAttribute('width') && svg.getAttribute('height')) {
-            svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
-          }
-          svg.removeAttribute('width');
-          svg.removeAttribute('height');
-          svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        if (src && window.bplChartToImage) {
+          pending += 1;
+          window.bplChartToImage(src, slot, finish);
         }
-        slot.appendChild(clone);
       };
-      cloneWf('tsWaterfall1', 'pWfSlotA');
-      cloneWf('tsWaterfall2', 'pWfSlotB');
-
-      window.print();
+      toImg('tsWaterfall1', 'pWfSlotA');
+      toImg('tsWaterfall2', 'pWfSlotB');
+      if (pending === 0) window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
 

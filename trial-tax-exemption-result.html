@@ -25,7 +25,7 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082513" />
+<link rel="stylesheet" href="css/style.css?v=2026082515" />
 <style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
@@ -416,27 +416,9 @@
     <div class="print-meta">作成日: <span id="pDate"></span></div>
   </div>
 
-  <!-- ===== 1枚目: 軽減効果とあと使える枠 ===== -->
+  <!-- ===== 1枚目: 画面の軽減効果カードをそのまま複製して印刷する(見えている画面通り) ===== -->
   <div class="print-sec">税負担の軽減効果</div>
-  <div class="print-wf-cols">
-    <div>
-      <div class="print-subsec">所得税・住民税の軽減額(毎年)</div>
-      <div class="print-chart-big" id="pTxChartIncome"></div>
-      <div class="print-stats" style="margin-top:8px">
-        <div><div class="k">控除上限の活用率</div><div class="v" id="pEffIncome"></div></div>
-        <div><div class="k">10年間の累計</div><div class="v" id="pEff10y"></div></div>
-        <div><div class="k">あと上乗せできる枠</div><div class="v" id="pRemIncome"></div></div>
-      </div>
-    </div>
-    <div>
-      <div class="print-subsec">相続税の軽減額</div>
-      <div class="print-chart-big" id="pTxChartInherit"></div>
-      <div class="print-stats" style="margin-top:8px">
-        <div><div class="k">非課税枠の活用率</div><div class="v" id="pEffInherit"></div></div>
-        <div><div class="k">あと使える非課税枠</div><div class="v" id="pRemInherit"></div></div>
-      </div>
-    </div>
-  </div>
+  <div class="print-screen-clone" id="pScreenGauges"></div>
 
   <!-- ===== 2枚目: 詳細と前提条件 ===== -->
   <div class="print-break"></div>
@@ -474,9 +456,9 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/data-backup.js?v=20260825q"></script>
+<script src="js/data-backup.js?v=20260825r"></script>
 <script src="js/tax-exemption-calc.js?v=20260727d"></script>
-<script src="js/tax-exemption-result.js?v=20260825a"></script>
+<script src="js/tax-exemption-result.js?v=20260825b"></script>
 <script>
 /* テスト配信版: 全データクリアの確定クリック時に印を置き、
    リロード/ページ遷移の後にデフォルトのダミー数値も含めて空にできるようにする */

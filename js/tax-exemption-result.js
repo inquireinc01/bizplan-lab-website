@@ -497,31 +497,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateEl = $('pDate');
     if (dateEl) dateEl.textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
 
-    // 1枚目: 画面の効果・残り枠をそのまま転記(見えているものを忠実に)
-    const copyTxt = (fromId, toId) => {
-      const from = $(fromId), to = $(toId);
-      if (from && to) to.textContent = from.textContent || '—';
-    };
-    copyTxt('txUseIncome', 'pEffIncome');
-    copyTxt('txSave10y', 'pEff10y');
-    copyTxt('txSaveIncomeTotal', 'pRemIncome');
-    copyTxt('txUseInherit', 'pEffInherit');
-    copyTxt('txSaveInheritTotal', 'pRemInherit');
-
-    // ゲージSVGを複製(A4ヨコに合わせて伸縮)
-    const cloneChart = (srcId, slotId) => {
-      const slot = $(slotId);
-      if (!slot) return;
+    // 1枚目: 画面のゲージカード(上段の「あといくら」+下段の軽減額)を丸ごと複製する。
+    // 印刷は見えている画面通りにする方針(2026-08-25指示)
+    const slot = $('pScreenGauges');
+    if (slot) {
       slot.innerHTML = '';
-      const src = $(srcId);
-      if (!src) return;
-      const clone = src.cloneNode(true);
-      clone.removeAttribute('id');
-      clone.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      slot.appendChild(clone);
-    };
-    cloneChart('txChartIncome', 'pTxChartIncome');
-    cloneChart('txChartInherit', 'pTxChartInherit');
+      const sec = document.querySelector('#txResultArea .calc-section');
+      if (sec) {
+        const grids = Array.prototype.filter.call(sec.children, (el) => el.classList && el.classList.contains('grid'));
+        grids.slice(0, 2).forEach((g) => {
+          const clone = g.cloneNode(true);
+          // idの重複を避け、?チップは印刷に不要なので除去。凡例(details)は開いた状態で印字
+          clone.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+          clone.querySelectorAll('.help-tip').forEach((el) => el.remove());
+          clone.querySelectorAll('details').forEach((el) => el.setAttribute('open', ''));
+          slot.appendChild(clone);
+        });
+      }
+    }
 
     window.print();
   }
