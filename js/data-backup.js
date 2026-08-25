@@ -238,17 +238,18 @@ document.addEventListener('DOMContentLoaded', function () {
         openModal(
           '入力データの読込み',
           '<span class="backup-modal-lead">読込み方法を選んでください</span>' +
-          '保存したファイルをメモ帳で開いて<b>全文を下の欄に貼り付けて</b>「読み込む」を押してください。' +
-          '<br>ファイルを直接選べる環境では「ファイルを選ぶ」も使えます。' +
+          '保存したファイル(.txt / .json)がある場合は<b>「ファイルを選ぶ」</b>からそのまま読み込めます。' +
+          '<br>ファイルを選べない環境では、メモ帳で開いた全文を下の欄に貼り付けて<b>「貼り付けたデータを読み込む」</b>を押してください。' +
           '<br><b>現在の入力内容は読み込んだ内容で上書きされます。</b>',
           {
             text: '',
             readOnly: false,
             placeholder: 'ここに保存したデータの全文を貼り付け',
             buttons: [
-              { text: '読み込む', primary: true, onClick: function (ta) {
+              { text: 'ファイルを選ぶ', primary: true, onClick: function () { if (fileInput) fileInput.click(); } },
+              { text: '貼り付けたデータを読み込む', onClick: function (ta) {
                   var text = ta.value.trim();
-                  if (!text) { modalMsg('データが貼り付けられていません。', false); return; }
+                  if (!text) { modalMsg('データが貼り付けられていません。下の欄に全文を貼り付けてください。', false); return; }
                   try {
                     var restored = applyBackupText(text);
                     if (!restored) { modalMsg('このページに該当する入力データが見つかりませんでした。保存したツールのページで読み込んでください。', false); return; }
@@ -258,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     modalMsg('読み込みに失敗しました。全文が正しく貼り付けられているか確認してください。', false);
                   }
                 } },
-              { text: 'ファイルを選ぶ', onClick: function () { if (fileInput) fileInput.click(); } },
               { text: '閉じる', onClick: function () { closeModal(); } },
             ],
           }

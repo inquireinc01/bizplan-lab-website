@@ -3964,6 +3964,7 @@ a.portal-feed-row:hover .portal-feed-text {
 .backup-modal-filename b { font-family: Consolas, monospace; color: var(--color-navy); word-break: break-all; }
 .backup-modal-text {
   width: 100%;
+  margin-top: 0.6rem;
   min-height: 11rem;
   flex: 1;
   border: 1.5px solid var(--color-gray-200);
