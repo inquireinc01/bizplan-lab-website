@@ -238,10 +238,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     btn.classList.add('backup-btn-ok');
                     btn.disabled = true;
                     modalMsg('「' + name + '」としてこのPC(ブラウザ内)に保存しました。「読込み」の一覧から呼び出せます。※ブラウザの履歴・キャッシュを削除すると消えることがあります。', true);
-                    setTimeout(function () {
-                      closeModal();
-                      showMsg('このPCに「' + name + '」を保存しました。');
-                    }, 1600);
+                    // 自動では閉じない(メッセージを読む時間を確保)。閉じた後もヒーロー側に保存名を残す
+                    showMsg('このPCに「' + name + '」を保存しました。');
                   } catch (e) {
                     modalMsg('このPCへの保存に失敗しました(保存領域が不足している可能性があります)。他の保存方法をお使いください。', false);
                   }
