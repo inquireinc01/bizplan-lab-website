@@ -65,6 +65,19 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
 
+  // ===== このPCに保存(ブラウザ内の名前付き保存) =====
+  // 顧客先の端末ではダウンロードもクリップボードもセキュリティポリシーで
+  // 塞がれている場合があるため、localStorageに名前付きで保存する経路を用意する。
+  // (この保存はブラウザ内にのみ残る。履歴・キャッシュの削除で消えることがある)
+  var SLOTS_KEY = 'bpl_slots_v1';
+  var SLOTS_MAX = 30;
+  function readSlots() {
+    try { var a = JSON.parse(localStorage.getItem(SLOTS_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function writeSlots(slots) {
+    localStorage.setItem(SLOTS_KEY, JSON.stringify(slots));
+  }
+
   // ===== 保存・読込みモーダル(1ページ1つを共有) =====
   var modal = null;
   function ensureModal() {
@@ -76,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '  <div class="backup-modal-head"><span class="backup-modal-title"></span>' +
       '    <button type="button" class="backup-modal-close" aria-label="閉じる">&times;</button></div>' +
       '  <p class="backup-modal-guide"></p>' +
+      '  <div class="backup-modal-slots hidden"></div>' +
       '  <div class="backup-modal-actions"></div>' +
       '  <p class="backup-modal-msg hidden"></p>' +
       '  <p class="backup-modal-filename hidden">推奨ファイル名: <b></b></p>' +
@@ -118,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     var msg = m.querySelector('.backup-modal-msg');
     msg.classList.add('hidden');
+    m.querySelector('.backup-modal-slots').classList.add('hidden');
     m.classList.remove('hidden');
     return m;
   }
@@ -201,15 +216,29 @@ document.addEventListener('DOMContentLoaded', function () {
         openModal(
           '入力データの保存',
           '<span class="backup-modal-lead">保存方法を選んでください</span>' +
-          '<b>「全文をコピー」</b>は下のデータをコピーし、ご自身でメモ帳に貼り付けて保存する方法です' +
-          '(会社のセキュリティでダウンロードが禁止されていても保存できます)。' +
-          '<br>通常の環境では「.txtで保存」または「.jsonで保存」でそのままダウンロードできます。',
+          '<b>「このPCに保存」</b>はこの端末のブラウザ内に名前を付けて保存します' +
+          '(ダウンロードやコピーが禁止されている環境でも使えます。読込みは同じ端末から)。' +
+          '<br><b>「全文をコピー」</b>は下のデータをコピーし、メモ帳に貼り付けて保存する方法です。' +
+          '<br>通常の環境では「.txtで保存」「.jsonで保存」でそのままダウンロードできます。',
           {
             text: text,
             readOnly: true,
             fileName: txtName,
             buttons: [
-              { text: '全文をコピー', primary: true, onClick: function (ta) {
+              { text: 'このPCに保存', primary: true, onClick: function (ta) {
+                  try {
+                    var slots = readSlots();
+                    var name = base + '_V' + ver;
+                    slots.unshift({ name: name, savedAt: new Date().toISOString(), page: location.pathname, label: getLabel(), data: JSON.parse(ta.value).data });
+                    while (slots.length > SLOTS_MAX) slots.pop();
+                    writeSlots(slots);
+                    commitOnce();
+                    modalMsg('このPC(ブラウザ内)に「' + name + '」として保存しました。「読込み」ボタンの一覧から呼び出せます。※ブラウザの履歴・キャッシュを削除すると消えることがあります。', true);
+                  } catch (e) {
+                    modalMsg('このPCへの保存に失敗しました(保存領域が不足している可能性があります)。他の保存方法をお使いください。', false);
+                  }
+                } },
+              { text: '全文をコピー', onClick: function (ta) {
                   copyText(ta, function (ok) {
                     if (ok) commitOnce();
                     modalMsg(ok ? 'コピーしました。メモ帳に貼り付けて「' + txtName + '」の名前で保存してください。'
@@ -235,11 +264,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (loadBtn) {
       loadBtn.addEventListener('click', function () {
-        openModal(
+        var m = openModal(
           '入力データの読込み',
           '<span class="backup-modal-lead">読込み方法を選んでください</span>' +
-          '保存したファイル(.txt / .json)がある場合は<b>「ファイルを選ぶ」</b>からそのまま読み込めます。' +
-          '<br>ファイルを選べない環境では、メモ帳で開いた全文を下の欄に貼り付けて<b>「貼り付けたデータを読み込む」</b>を押してください。' +
+          '<b>「このPCに保存」したデータは下の一覧から</b>読み込めます。' +
+          '<br>保存したファイル(.txt / .json)がある場合は<b>「ファイルを選ぶ」</b>から読み込めます。' +
+          '<br>ファイルを選べない環境では、メモ帳で開いた全文を最下部の欄に貼り付けて<b>「貼り付けたデータを読み込む」</b>を押してください。' +
           '<br><b>現在の入力内容は読み込んだ内容で上書きされます。</b>',
           {
             text: '',
@@ -263,7 +293,48 @@ document.addEventListener('DOMContentLoaded', function () {
             ],
           }
         );
+        renderSlots(m);
       });
+    }
+
+    // このページで使える「このPCに保存」の一覧を描画する(該当キーを含むものだけ)
+    function renderSlots(m) {
+      var box = m.querySelector('.backup-modal-slots');
+      var slots = readSlots().filter(function (sl) {
+        return sl && sl.data && Object.keys(sl.data).some(function (k) { return keys.indexOf(k) >= 0; });
+      });
+      if (!slots.length) { box.classList.add('hidden'); return; }
+      box.innerHTML = '';
+      slots.forEach(function (sl) {
+        var row = document.createElement('div');
+        row.className = 'backup-slot';
+        var d = (sl.savedAt || '').slice(0, 10);
+        row.innerHTML = '<span class="backup-slot-name"></span><span class="backup-slot-date">' + d + '</span>' +
+          '<button type="button" class="backup-slot-load">読み込む</button>' +
+          '<button type="button" class="backup-slot-del">削除</button>';
+        row.querySelector('.backup-slot-name').textContent = sl.name || '(名称なし)';
+        row.querySelector('.backup-slot-load').addEventListener('click', function () {
+          try {
+            var restored = applyBackupText(JSON.stringify({ label: sl.label || '', data: sl.data }));
+            if (!restored) { modalMsg('このページに該当する入力データが見つかりませんでした。', false); return; }
+            modalMsg('「' + sl.name + '」を読み込みました。ページを再読み込みします…', true);
+            setTimeout(function () { location.reload(); }, 700);
+          } catch (e) {
+            modalMsg('読み込みに失敗しました。', false);
+          }
+        });
+        // 削除は2回押しのトグル確認(全体ルール: window.confirmは使わない)
+        var delBtn = row.querySelector('.backup-slot-del');
+        var doDelete = function () {
+          var all = readSlots().filter(function (x) { return !(x && x.name === sl.name && x.savedAt === sl.savedAt); });
+          try { writeSlots(all); } catch (e) {}
+          renderSlots(m);
+        };
+        if (window.armClearBtn) { window.armClearBtn(delBtn, doDelete); }
+        else { delBtn.addEventListener('click', doDelete); }
+        box.appendChild(row);
+      });
+      box.classList.remove('hidden');
     }
 
     if (fileInput) {

@@ -3977,6 +3977,49 @@ a.portal-feed-row:hover .portal-feed-text {
   background-color: var(--color-off-white);
 }
 .backup-modal-text:focus { outline: none; border-color: var(--color-navy); background-color: #fff; }
+/* このPCに保存したデータの一覧(読込みダイアログ) */
+.backup-modal-slots {
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.55rem;
+  max-height: 10rem;
+  overflow-y: auto;
+  margin-top: 0.15rem;
+}
+.backup-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--color-gray-100);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+.backup-slot:last-child { border-bottom: none; }
+.backup-slot-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  color: var(--color-navy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.backup-slot-date { color: var(--color-gray-400); flex-shrink: 0; }
+.backup-slot-load, .backup-slot-del {
+  flex-shrink: 0;
+  border: 1px solid var(--color-navy);
+  color: var(--color-navy);
+  background-color: #fff;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.8rem;
+  cursor: pointer;
+}
+.backup-slot-load:hover { background-color: var(--color-blue-soft); }
+.backup-slot-del { border-color: var(--color-gray-200); color: var(--color-gray-400); }
+.backup-slot-del:hover { border-color: var(--color-red); color: var(--color-red); }
+
 .backup-modal-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
 .backup-btn {
   border: 1.5px solid var(--color-navy);
