@@ -742,6 +742,11 @@ document.addEventListener('DOMContentLoaded', function () {
           borderRect.setAttribute('y', offBalTop.toFixed(1));
           borderRect.setAttribute('height', (offBalBottom - offBalTop).toFixed(1));
         } else {
+          // 非表示に畳むときは下端を固定したまま高さを0にし、上端が下りてくる動きにする
+          // (色帯の「上から下にしまう」挙動と揃える。従来は上端固定で下から上に縮んで見えた)
+          const curY = parseFloat(borderRect.getAttribute('y')) || 0;
+          const curH = parseFloat(borderRect.getAttribute('height')) || 0;
+          borderRect.setAttribute('y', (curY + curH).toFixed(1));
           borderRect.setAttribute('height', '0');
         }
       }
