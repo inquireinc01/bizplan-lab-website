@@ -3904,6 +3904,25 @@ a.portal-feed-row:hover .portal-feed-text {
   .print-sheet table, .print-sheet svg { page-break-inside: avoid; }
   .print-sheet h2, .print-sheet .print-sec { page-break-after: avoid; }
 }
+/* 将来負債のA4ヨコ2ページ印刷 */
+.print-break { break-before: page; page-break-before: always; height: 0; }
+.print-chart-big { margin: 8px 0 6px; }
+.print-chart-big svg { width: 100%; height: auto; max-height: 132mm; display: block; }
+.print-cond-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 18px;
+  align-items: start;
+}
+.print-subsec {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0f2a4a;
+  border-left: 3px solid #3b6ea5;
+  padding-left: 7px;
+  margin: 0 0 6px;
+}
+
 /* 前提条件(入力値一覧): beforeprintで印刷シート末尾に自動生成 */
 .print-cond-auto { margin-top: 14px; }
 .print-cond-grid {

@@ -1067,12 +1067,41 @@ document.addEventListener('DOMContentLoaded', function () {
       set('pRemaining', man(r.remaining));
       set('pRatio', r.ratio === null ? '算出不可' : r.ratio.toFixed(1) + ' %');
 
+      // 2枚目: 簿外資産(備え)と次世代将来負債(未入力は0として表示)
+      const numRaw = (id) => {
+        const el = document.getElementById(id);
+        const v = parseFloat((el && el.value || '').replace(/,/g, ''));
+        return isNaN(v) ? 0 : v;
+      };
+      const lifeIns = numRaw('lifeInsurance');
+      const otherCov = numRaw('otherCoverage');
+      const shortfall = numRaw('shortfall');
+      set('pLifeIns', man(lifeIns));
+      set('pOtherCov', man(otherCov));
+      set('pShortfall', man(shortfall));
+      set('pOffBalTotal', man(lifeIns + otherCov + shortfall));
+      const nRet = numRaw('nextRetirement'), nSuc = numRaw('nextSuccession'), nOth = numRaw('nextOtherFuture');
+      set('pNextRetirement', man(nRet));
+      set('pNextSuccession', man(nSuc));
+      set('pNextOtherFuture', man(nOth));
+      set('pNextFutureLiab', man(nRet + nSuc + nOth));
+
       const slot = document.getElementById('pChartSlot');
       slot.innerHTML = '';
       const chart = document.getElementById('bsChart');
       if (chart) {
         const clone = chart.cloneNode(true);
         clone.removeAttribute('id');
+        // A4ヨコいっぱいに拡大できるよう、固定サイズを外してviewBoxで伸縮させる
+        const svg = clone.tagName && clone.tagName.toLowerCase() === 'svg' ? clone : clone.querySelector('svg');
+        if (svg) {
+          if (!svg.getAttribute('viewBox') && svg.getAttribute('width') && svg.getAttribute('height')) {
+            svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
+          }
+          svg.removeAttribute('width');
+          svg.removeAttribute('height');
+          svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        }
         slot.appendChild(clone);
       }
 

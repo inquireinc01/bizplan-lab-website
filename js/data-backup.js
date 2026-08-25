@@ -402,6 +402,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ページ上の見えている入力欄(ラベル付き)から毎回組み立てるため、
     // ツールごとの手作業や項目の追加漏れが起きない
     document.querySelectorAll('.print-sheet').forEach(function (sheet) {
+      if (sheet.hasAttribute('data-no-auto-cond')) return; // 専用の前提条件ページを持つツールでは自動一覧を出さない
       var oldCond = sheet.querySelector('.print-cond-auto');
       if (oldCond) oldCond.remove();
       var rows = [];

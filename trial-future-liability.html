@@ -25,7 +25,8 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082508" />
+<link rel="stylesheet" href="css/style.css?v=2026082509" />
+<style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -347,7 +348,7 @@
 </footer>
 
 <!-- ===== 印刷用シート(PDF出力) ===== -->
-<div class="print-sheet" id="printSheet">
+<div class="print-sheet" id="printSheet" data-no-auto-cond>
   <div class="print-head">
     <div class="print-brand">BizPlan Laboratory</div>
     <h1 class="print-title">
@@ -359,10 +360,9 @@
     <div class="print-meta">作成日: <span id="pDate"></span></div>
   </div>
 
-  <div class="print-cols">
-    <div>
-      <div class="print-sec">貸借対照表の比較(同一縮尺)</div>
-  <div class="print-chart" id="pChartSlot"></div>
+  <!-- ===== 1枚目: 伝えたい結果(比較グラフ)を大きく ===== -->
+  <div class="print-sec">貸借対照表の比較(同一縮尺)</div>
+  <div class="print-chart-big" id="pChartSlot"></div>
   <div class="print-legend">
     <span><i style="background:#1c3f68"></i>流動資産</span>
     <span><i style="background:#0f2a4a"></i>固定資産</span>
@@ -370,16 +370,16 @@
     <span><i style="background:#c7ccd3"></i>流動負債</span>
     <span><i style="background:#9aa1ab"></i>固定負債</span>
     <span><i style="background:#3b6ea5"></i>純資産</span>
-    <span><i style="background:rgba(168,61,61,0.3);border:1px dashed #a83d3d"></i>簿外(将来負債/準備資産)</span>
+    <span><i style="background:rgba(168,61,61,0.3);border:1px dashed #a83d3d"></i>簿外(将来負債/簿外資産)</span>
   </div>
-
   <div class="print-keymsg">将来発生する負債を簿外資産とあわせて把握することが、計画的な資金準備の出発点となります。</div>
 
-  <div class="print-foot">
-    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の資金計画の策定にあたっては、詳細な決算内容をもとにした専門的な検討が必要です。</p>
-    <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
-  </div>
-<div class="print-sec">会計上のバランスシート</div>
+  <!-- ===== 2枚目: 前提条件 ===== -->
+  <div class="print-break"></div>
+  <div class="print-sec">前提条件</div>
+  <div class="print-cond-cols">
+    <div>
+      <div class="print-subsec">会計上のバランスシート</div>
       <table class="print-table">
         <thead><tr><th class="lbl">科目</th><th>金額</th></tr></thead>
         <tbody>
@@ -395,7 +395,7 @@
       </table>
     </div>
     <div>
-      <div class="print-sec">今後発生が見込まれる将来負債</div>
+      <div class="print-subsec">今後発生が見込まれる将来負債</div>
       <table class="print-table">
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
@@ -405,18 +405,44 @@
           <tr class="highlight"><td class="lbl">将来負債合計(必要準備資金)</td><td id="pFutureLiab"></td></tr>
         </tbody>
       </table>
-      <div class="print-stats" style="margin-top:12px">
-        <div><div class="k">将来負債控除後の実質的な余力</div><div class="v" id="pRemaining"></div></div>
+      <div class="print-stats" style="margin-top:10px">
+        <div><div class="k">将来負債発生後の実質的な余力</div><div class="v" id="pRemaining"></div></div>
         <div><div class="k">純資産に占める将来負債の割合</div><div class="v" id="pRatio"></div></div>
       </div>
     </div>
+    <div>
+      <div class="print-subsec">簿外資産(将来負債への備え)</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">生命保険金</td><td id="pLifeIns"></td></tr>
+          <tr><td class="lbl">その他</td><td id="pOtherCov"></td></tr>
+          <tr><td class="lbl">不足分(自動計算)</td><td id="pShortfall"></td></tr>
+          <tr class="total"><td class="lbl">簿外資産合計</td><td id="pOffBalTotal"></td></tr>
+        </tbody>
+      </table>
+      <div class="print-subsec" style="margin-top:10px">次世代将来負債(任意入力)</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">退職金</td><td id="pNextRetirement"></td></tr>
+          <tr><td class="lbl">自社株買取</td><td id="pNextSuccession"></td></tr>
+          <tr><td class="lbl">その他</td><td id="pNextOtherFuture"></td></tr>
+          <tr class="total"><td class="lbl">次世代将来負債合計</td><td id="pNextFutureLiab"></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の資金計画の策定にあたっては、詳細な決算内容をもとにした専門的な検証が必要です。</p>
+    <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
   </div>
+</div>
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/data-backup.js?v=20260825p"></script>
-<script src="js/future-liability.js?v=20260825b"></script>
+<script src="js/data-backup.js?v=20260825q"></script>
+<script src="js/future-liability.js?v=20260825c"></script>
 </body>
 </html>
