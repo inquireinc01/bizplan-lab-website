@@ -3911,3 +3911,82 @@ a.portal-feed-row:hover .portal-feed-text {
   margin-top: 3px;
   font-weight: 700;
 }
+
+/* ===== 保存・読込みモーダル(data-backup.js): コピー&メモ帳貼り付け方式 ===== */
+.backup-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(9, 26, 48, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+.backup-modal.hidden { display: none; }
+.backup-modal-card {
+  background-color: #fff;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 34rem;
+  max-height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.25rem 1.25rem;
+  box-shadow: 0 24px 60px rgba(9, 26, 48, 0.35);
+}
+.backup-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.backup-modal-title { font-size: 1rem; font-weight: 700; color: var(--color-navy); }
+.backup-modal-close {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--color-gray-400);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+}
+.backup-modal-guide { font-size: 0.78rem; font-weight: 400; color: var(--color-gray-600); line-height: 1.7; margin-bottom: 0.5rem; }
+.backup-modal-guide b { color: var(--color-navy); }
+.backup-modal-filename { font-size: 0.75rem; font-weight: 400; color: var(--color-gray-600); margin-bottom: 0.4rem; }
+.backup-modal-filename b { font-family: Consolas, monospace; color: var(--color-navy); word-break: break-all; }
+.backup-modal-text {
+  width: 100%;
+  min-height: 11rem;
+  flex: 1;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 0.55rem;
+  font-family: Consolas, Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  padding: 0.6rem 0.7rem;
+  resize: vertical;
+  background-color: var(--color-off-white);
+}
+.backup-modal-text:focus { outline: none; border-color: var(--color-navy); background-color: #fff; }
+.backup-modal-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.backup-btn {
+  border: 1.5px solid var(--color-navy);
+  color: var(--color-navy);
+  background-color: #fff;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+}
+.backup-btn:hover { background-color: var(--color-blue-soft); }
+.backup-btn-primary { background-color: var(--color-navy); color: #fff; }
+.backup-btn-primary:hover { background-color: var(--color-navy-light); }
+.backup-modal-msg {
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 0.6rem;
+  color: var(--color-red);
+}
+.backup-modal-msg.is-ok { color: var(--color-blue-dark); }

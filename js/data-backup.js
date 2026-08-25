@@ -4,11 +4,15 @@ document.addEventListener('DOMContentLoaded', function () {
   //
   // 保存名(お客様名・案件名)は任意入力。入力すると
   //   1) 保存ファイル名   BizPlanLab_<ツール名>_<保存名>_<日付>.txt
-  //      (拡張子は.txt。顧客側のセキュリティが.jsonのダウンロードを弾く事例があるため。
-  //       中身はJSONテキストで、読込みは.txt/.jsonのどちらも受け付ける)
   //   2) PDF出力のファイル名(印刷中だけdocument.titleを差し替え)
   //   3) 印刷シートのヘッダー表記
   // に共通で使われる。未入力ならツール名+日付のみ。サイト内の全ツールで共有する。
+  //
+  // 保存・読込みはダイアログ(モーダル)方式(2026-08-25指示):
+  // 会社PCのセキュリティでWebからのダウンロード自体が禁止されている顧客がいるため、
+  // 保存はデータ全文をテキスト表示して「コピー→メモ帳に貼り付けて保存」を基本の経路にし、
+  // 通常環境向けに「ファイルとしてダウンロード」(.txt)も併設する。
+  // 読込みも「メモ帳から全文コピー→貼り付け」と「ファイルを選ぶ」の両対応。
 
   var LABEL_KEY = 'bpl_save_label_v1';
 
@@ -26,6 +30,91 @@ document.addEventListener('DOMContentLoaded', function () {
     var now = new Date();
     var pad = function (n) { return String(n).padStart(2, '0'); };
     return now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
+  }
+  function suggestedFileName(ext) {
+    var label = sanitize(getLabel());
+    return 'BizPlanLab_' + pageLabel() + (label ? '_' + label : '') + '_' + dateStamp() + '.' + (ext || 'txt');
+  }
+  function downloadText(text, fileName, mime) {
+    var blob = new Blob([text], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  // ===== 保存・読込みモーダル(1ページ1つを共有) =====
+  var modal = null;
+  function ensureModal() {
+    if (modal) return modal;
+    var wrap = document.createElement('div');
+    wrap.className = 'backup-modal hidden';
+    wrap.innerHTML =
+      '<div class="backup-modal-card">' +
+      '  <div class="backup-modal-head"><span class="backup-modal-title"></span>' +
+      '    <button type="button" class="backup-modal-close" aria-label="閉じる">&times;</button></div>' +
+      '  <p class="backup-modal-guide"></p>' +
+      '  <p class="backup-modal-filename hidden">推奨ファイル名: <b></b></p>' +
+      '  <textarea class="backup-modal-text" spellcheck="false"></textarea>' +
+      '  <div class="backup-modal-actions"></div>' +
+      '  <p class="backup-modal-msg hidden"></p>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) closeModal(); });
+    wrap.querySelector('.backup-modal-close').addEventListener('click', closeModal);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+    modal = wrap;
+    return wrap;
+  }
+  function closeModal() { if (modal) modal.classList.add('hidden'); }
+  function modalMsg(text, ok) {
+    var el = modal.querySelector('.backup-modal-msg');
+    el.textContent = text;
+    el.classList.remove('hidden');
+    el.classList.toggle('is-ok', !!ok);
+  }
+  function openModal(title, guide, opts) {
+    var m = ensureModal();
+    m.querySelector('.backup-modal-title').textContent = title;
+    m.querySelector('.backup-modal-guide').innerHTML = guide;
+    var fn = m.querySelector('.backup-modal-filename');
+    fn.classList.toggle('hidden', !opts.fileName);
+    if (opts.fileName) fn.querySelector('b').textContent = opts.fileName;
+    var ta = m.querySelector('.backup-modal-text');
+    ta.value = opts.text || '';
+    ta.readOnly = !!opts.readOnly;
+    ta.placeholder = opts.placeholder || '';
+    var actions = m.querySelector('.backup-modal-actions');
+    actions.innerHTML = '';
+    opts.buttons.forEach(function (b) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = b.primary ? 'backup-btn backup-btn-primary' : 'backup-btn';
+      btn.textContent = b.text;
+      btn.addEventListener('click', function () { b.onClick(ta, btn); });
+      actions.appendChild(btn);
+    });
+    var msg = m.querySelector('.backup-modal-msg');
+    msg.classList.add('hidden');
+    m.classList.remove('hidden');
+    return m;
+  }
+  function copyText(ta, done) {
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    var finish = function (ok) { done(ok); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(function () { finish(true); }, function () {
+        try { finish(document.execCommand('copy')); } catch (e) { finish(false); }
+      });
+    } else {
+      try { finish(document.execCommand('copy')); } catch (e) { finish(false); }
+    }
   }
 
   document.querySelectorAll('[data-backup-keys]').forEach(function (toolbar) {
@@ -53,59 +142,115 @@ document.addEventListener('DOMContentLoaded', function () {
       msg.classList.remove('hidden');
     }
 
+    function buildPayloadText() {
+      var payload = { app: 'BizPlanLaboratory', page: location.pathname, exportedAt: new Date().toISOString(), label: getLabel(), data: {} };
+      var hasData = false;
+      keys.forEach(function (k) {
+        var v = null;
+        try { v = localStorage.getItem(k); } catch (e) {}
+        if (v !== null) { payload.data[k] = v; hasData = true; }
+      });
+      return hasData ? JSON.stringify(payload, null, 2) : null;
+    }
+
+    // 貼り付け/ファイルのどちらから来たテキストも同じ手順で復元する
+    function applyBackupText(text) {
+      var parsed = JSON.parse(text);
+      var data = parsed && parsed.data ? parsed.data : parsed;
+      var restored = 0;
+      Object.keys(data).forEach(function (k) {
+        if (keys.indexOf(k) === -1) return; // このページで使うキーのみ復元
+        localStorage.setItem(k, data[k]);
+        restored++;
+      });
+      if (restored && parsed && typeof parsed.label === 'string' && parsed.label.trim()) {
+        try { localStorage.setItem(LABEL_KEY, parsed.label.trim()); } catch (e) {}
+      }
+      return restored;
+    }
+
     if (saveBtn) {
       saveBtn.addEventListener('click', function () {
-        var payload = { app: 'BizPlanLaboratory', page: location.pathname, exportedAt: new Date().toISOString(), label: getLabel(), data: {} };
-        var hasData = false;
-        keys.forEach(function (k) {
-          var v = null;
-          try { v = localStorage.getItem(k); } catch (e) {}
-          if (v !== null) { payload.data[k] = v; hasData = true; }
-        });
-        if (!hasData) { showMsg('保存する入力内容がありません。先に入力してください。'); return; }
-        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'text/plain' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        var label = sanitize(getLabel());
-        a.href = url;
-        a.download = 'BizPlanLab_' + pageLabel() + (label ? '_' + label : '') + '_' + dateStamp() + '.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-        showMsg('ファイルに保存しました。');
+        var text = buildPayloadText();
+        if (text === null) { showMsg('保存する入力内容がありません。先に入力してください。'); return; }
+        var txtName = suggestedFileName('txt');
+        openModal(
+          '入力データの保存',
+          '保存方法を選べます。<b>「全文をコピー」</b>は下のデータをコピーし、ご自身でメモ帳に貼り付けて保存する方法です' +
+          '(会社のセキュリティでダウンロードが禁止されていても保存できます)。' +
+          '<br>通常の環境では「.txtで保存」または「.jsonで保存」でそのままダウンロードできます。',
+          {
+            text: text,
+            readOnly: true,
+            fileName: txtName,
+            buttons: [
+              { text: '全文をコピー', primary: true, onClick: function (ta) {
+                  copyText(ta, function (ok) {
+                    modalMsg(ok ? 'コピーしました。メモ帳に貼り付けて「' + txtName + '」の名前で保存してください。'
+                               : '自動コピーできませんでした。全文が選択されているので、Ctrl+C でコピーしてください。', ok);
+                  });
+                } },
+              { text: '.txtで保存', onClick: function (ta) {
+                  downloadText(ta.value, suggestedFileName('txt'), 'text/plain');
+                  modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
+                } },
+              { text: '.jsonで保存', onClick: function (ta) {
+                  downloadText(ta.value, suggestedFileName('json'), 'application/json');
+                  modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
+                } },
+              { text: '閉じる', onClick: function () { closeModal(); } },
+            ],
+          }
+        );
       });
     }
 
-    if (loadBtn && fileInput) {
-      loadBtn.addEventListener('click', function () { fileInput.click(); });
+    if (loadBtn) {
+      loadBtn.addEventListener('click', function () {
+        openModal(
+          '入力データの読込み',
+          '保存したファイルをメモ帳で開いて<b>全文をコピーし、下に貼り付けて</b>「読み込む」を押してください。' +
+          '<br>ファイルを直接選べる環境では「ファイルを選ぶ」も使えます。' +
+          '<br><b>現在の入力内容は読み込んだ内容で上書きされます。</b>',
+          {
+            text: '',
+            readOnly: false,
+            placeholder: 'ここに保存したデータの全文を貼り付け',
+            buttons: [
+              { text: '読み込む', primary: true, onClick: function (ta) {
+                  var text = ta.value.trim();
+                  if (!text) { modalMsg('データが貼り付けられていません。', false); return; }
+                  try {
+                    var restored = applyBackupText(text);
+                    if (!restored) { modalMsg('このページに該当する入力データが見つかりませんでした。保存したツールのページで読み込んでください。', false); return; }
+                    modalMsg('読み込みました。ページを再読み込みします…', true);
+                    setTimeout(function () { location.reload(); }, 700);
+                  } catch (e) {
+                    modalMsg('読み込みに失敗しました。全文が正しく貼り付けられているか確認してください。', false);
+                  }
+                } },
+              { text: 'ファイルを選ぶ', onClick: function () { if (fileInput) fileInput.click(); } },
+              { text: '閉じる', onClick: function () { closeModal(); } },
+            ],
+          }
+        );
+      });
+    }
+
+    if (fileInput) {
       fileInput.addEventListener('change', function () {
         var file = fileInput.files && fileInput.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function () {
           try {
-            var parsed = JSON.parse(reader.result);
-            var data = parsed && parsed.data ? parsed.data : parsed;
-            var restored = 0;
-            Object.keys(data).forEach(function (k) {
-              if (keys.indexOf(k) === -1) return; // このページで使うキーのみ復元
-              localStorage.setItem(k, data[k]);
-              restored++;
-            });
-            if (!restored) {
-              showMsg('このページに該当する入力データがファイル内に見つかりませんでした。');
-              return;
-            }
-            // ファイルに保存名が入っていれば引き継ぐ
-            if (parsed && typeof parsed.label === 'string' && parsed.label.trim()) {
-              try { localStorage.setItem(LABEL_KEY, parsed.label.trim()); } catch (e2) {}
-            }
+            var restored = applyBackupText(reader.result);
+            if (!restored) { modalMsg('このページに該当する入力データがファイル内に見つかりませんでした。', false); return; }
             // window.alert()はアプリ内ブラウザで表示されないことがあるため使わない
-            showMsg('読み込みました。ページを再読み込みします…');
+            modalMsg('読み込みました。ページを再読み込みします…', true);
             setTimeout(function () { location.reload(); }, 700);
           } catch (e) {
-            showMsg('ファイルの読み込みに失敗しました。正しい保存ファイルか確認してください。');
+            modalMsg('ファイルの読み込みに失敗しました。正しい保存ファイルか確認してください。', false);
           }
         };
         reader.readAsText(file);
