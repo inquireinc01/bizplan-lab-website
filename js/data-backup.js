@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<b>「このPCに保存」</b>はこの端末のブラウザ内に名前を付けて保存します' +
           '(ダウンロードやコピーが禁止されている環境でも使えます。読込みは同じ端末から)。' +
           '<br><b>「全文をコピー」</b>は下のデータをコピーし、メモ帳に貼り付けて保存する方法です。' +
-          '<br>通常の環境では「.txtで保存」「.jsonで保存」でそのままダウンロードできます。',
+          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。',
           {
             text: text,
             readOnly: true,
@@ -248,11 +248,6 @@ document.addEventListener('DOMContentLoaded', function () {
               { text: '.txtで保存', onClick: function (ta) {
                   commitOnce();
                   downloadText(ta.value, fname('txt'), 'text/plain');
-                  modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
-                } },
-              { text: '.jsonで保存', onClick: function (ta) {
-                  commitOnce();
-                  downloadText(ta.value, fname('json'), 'application/json');
                   modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
                 } },
               { text: '閉じる', onClick: function () { closeModal(); } },
