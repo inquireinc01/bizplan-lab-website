@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tr.className = 'border-b border-gray-100 ss-holder';
     tr.innerHTML =
       '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" placeholder="氏名・法人名" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="ha js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" style="min-width:3.5rem" placeholder="任意" /></td>' +
       '<td class="px-1 py-1 ss-group-col"><input type="text" class="hg form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:7rem" placeholder="(株主名と同じ)" /></td>' +
       '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="株数" /></td>' +
       '<td class="px-2 py-2 text-right hr-display">-</td>' +
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 値はHTMLに埋め込まず、生成後にプロパティへ代入する。
     // 埋め込むと株主名の「"」等で属性が壊れ、再読込後に名前が欠ける(2026-08-25修正)
     tr.querySelector('.hn').value = d.name || '';
+    tr.querySelector('.ha').value = d.age || '';
     tr.querySelector('.hg').value = d.group || '';
     tr.querySelector('.hs').value = d.shares || '';
     tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); recalcHolders(); });
@@ -201,7 +203,88 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function recalcAll() { recalcEval(); recalcHolders(); checkSaizokuConsistency(); }
+  // ===== 残余利益方式: 割引率・加算年数の既定値(5%・5年)と手入力モード =====
+  var rimRateManual = false;
+  function applyRimRateState() {
+    var rateEl = document.getElementById('ssRimRate');
+    var yearsEl = document.getElementById('ssRimYears');
+    if (!rateEl || !yearsEl) return;
+    rateEl.readOnly = !rimRateManual;
+    yearsEl.readOnly = !rimRateManual;
+    rateEl.classList.toggle('bg-gray-50', !rimRateManual);
+    yearsEl.classList.toggle('bg-gray-50', !rimRateManual);
+    ['ssRimRateManualBtn', 'ssRimYearsManualBtn'].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.textContent = rimRateManual ? '既定値に戻す' : '手入力する';
+    });
+    if (!rimRateManual) {
+      rateEl.value = '5';
+      yearsEl.value = '5';
+    }
+  }
+  function onRimRateToggle(focusId) {
+    rimRateManual = !rimRateManual;
+    applyRimRateState();
+    recalcRim();
+    persistOnly();
+    if (rimRateManual) {
+      var el = document.getElementById(focusId);
+      if (el) { try { el.focus({ preventScroll: true }); el.select(); } catch (e) {} }
+    }
+  }
+  var rimRateManualBtn = document.getElementById('ssRimRateManualBtn');
+  if (rimRateManualBtn) rimRateManualBtn.addEventListener('click', function () { onRimRateToggle('ssRimRate'); });
+  var rimYearsManualBtn = document.getElementById('ssRimYearsManualBtn');
+  if (rimYearsManualBtn) rimYearsManualBtn.addEventListener('click', function () { onRimRateToggle('ssRimYears'); });
+
+  // ===== 残余利益方式: 現価係数と参考評価額の自動計算 =====
+  var MAX_RIM_YEN = 999999999999; // 金額の上限(兆円未満。中小企業の想定を大きく超える値はエラー)
+  function recalcRim() {
+    var coefEl = document.getElementById('ssRimCoef');
+    var valEl = document.getElementById('ssRimValue');
+    if (!coefEl || !valEl) return;
+    var errEl = document.getElementById('ssRimError');
+    var errs = [];
+    var mark = function (id, bad) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('input-error', !!bad);
+    };
+    var bookEl = document.getElementById('ssRimBook');
+    var profitEl = document.getElementById('ssRimProfit');
+    var book = num(bookEl && bookEl.value);
+    var profit = num(profitEl && profitEl.value);
+    var bookOver = !isNaN(book) && Math.abs(book) > MAX_RIM_YEN;
+    var profitOver = !isNaN(profit) && Math.abs(profit) > MAX_RIM_YEN;
+    mark('ssRimBook', bookOver);
+    mark('ssRimProfit', profitOver);
+    if (bookOver || profitOver) errs.push('金額は ' + fmt(MAX_RIM_YEN) + ' 円以内で入力してください。');
+
+    var r = num((document.getElementById('ssRimRate') || {}).value);
+    var n = num((document.getElementById('ssRimYears') || {}).value);
+    var rateBad = rimRateManual && !isNaN(r) && (r <= 0 || r > 100);
+    var yearsBad = rimRateManual && !isNaN(n) && (n < 1 || n > 100);
+    mark('ssRimRate', rateBad);
+    mark('ssRimYears', yearsBad);
+    if (rateBad) errs.push('割引率は 0.1〜100% で入力してください。');
+    if (yearsBad) errs.push('超過収益加算年数は 1〜100年 で入力してください。');
+
+    if (errEl) {
+      errEl.textContent = errs.join(' ');
+      errEl.classList.toggle('hidden', errs.length === 0);
+    }
+    if (isNaN(r) || r <= 0 || r > 100) r = 5; // 既定5%(範囲外は計算にも使わない)
+    if (isNaN(n) || n < 1 || n > 100) n = 5;  // 既定5年
+    n = Math.round(n);
+    var rr = r / 100;
+    var coef = (1 - Math.pow(1 + rr, -n)) / rr;
+    coefEl.value = coef.toFixed(2);
+    if (errs.length > 0) { valEl.value = ''; valEl.placeholder = '入力値を確認してください'; return; }
+    if (isNaN(book) || isNaN(profit)) { valEl.value = ''; valEl.placeholder = '簿価純資産と純利益を入力'; return; }
+    var value = book + (profit - book * rr) * coef;
+    valEl.value = fmt(value) + ' 円';
+  }
+
+  function recalcAll() { recalcEval(); recalcHolders(); checkSaizokuConsistency(); recalcRim(); }
 
   document.getElementById('ssAddHolder').addEventListener('click', function () { holderRow({}); recalcHolders(); });
   form.addEventListener('change', function () {
@@ -235,11 +318,23 @@ document.addEventListener('DOMContentLoaded', function () {
     holderBody.querySelectorAll('.ss-holder').forEach(function (r) {
       holders.push({
         name: r.querySelector('.hn').value,
+        age: r.querySelector('.ha').value,
         group: r.querySelector('.hg').value,
         shares: r.querySelector('.hs').value,
       });
     });
     data.ss_holders = JSON.stringify(holders);
+    // 残余利益方式(任意入力)。表示用の円と、結果ページ用の万円換算を両方保存する
+    ['ssRimBook', 'ssRimProfit', 'ssRimRate', 'ssRimYears'].forEach(function (id) {
+      data[id] = ((document.getElementById(id) || {}).value || '');
+    });
+    var rimBook = num((document.getElementById('ssRimBook') || {}).value);
+    var rimProfit = num((document.getElementById('ssRimProfit') || {}).value);
+    data.rim0_book = isNaN(rimBook) ? '' : String(rimBook / 10000);
+    data.rim0_profit = isNaN(rimProfit) ? '' : String(rimProfit / 10000);
+    data.rimRate = ((document.getElementById('ssRimRate') || {}).value || '');
+    data.rimYears = ((document.getElementById('ssRimYears') || {}).value || '');
+    data.ssRimRateManual = rimRateManual ? '1' : '0';
     return data;
   }
   function persistOnly() {
@@ -255,6 +350,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (s.ss_capital && document.getElementById('ssCapital')) document.getElementById('ssCapital').value = s.ss_capital;
     if (s.sharesOutstanding) document.getElementById('ssShares').value = s.sharesOutstanding;
     if (s.ss_parValue) document.getElementById('ssParValue').value = s.ss_parValue;
+    ['ssRimBook', 'ssRimProfit', 'ssRimRate', 'ssRimYears'].forEach(function (id) {
+      if (s[id] !== undefined && document.getElementById(id)) document.getElementById(id).value = s[id];
+    });
+    rimRateManual = s.ssRimRateManual === '1';
     EVAL_KEYS.forEach(function (key) {
       if (s['ssV_' + key] !== undefined && document.getElementById('ssV_' + key)) document.getElementById('ssV_' + key).value = s['ssV_' + key];
     });
@@ -423,10 +522,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // ===== 開発・デモ用: ?dummy=1 でダミーデータ一式を投入する =====
+  function seedDummyData() {
+    var F = {
+      ssShares: '200,000', ssCapital: '10,000,000',
+      ssV_saizoku: '300,000,000', ssV_ruiji: '300,000,000', ssV_junsisan: '600,000,000',
+      ssV_heiyo: '300,000,000', ssV_houjin: '450,000,000', ssV_haito: '5,000,000',
+      ssRimBook: '500,000,000', ssRimProfit: '50,000,000',
+    };
+    Object.keys(F).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = F[id];
+    });
+    holderBody.innerHTML = '';
+    holderRow({ name: '山田太郎', age: '60', group: '山田家', shares: '120,000' });
+    holderRow({ name: '山田花子', age: '58', group: '山田家', shares: '50,000' });
+    holderRow({ name: '佐藤一郎', age: '45', group: '', shares: '30,000' });
+    if (window.numReformatAll) window.numReformatAll();
+  }
+
   // ===== 初期化 =====
   var restored = restore();
   if (!restored) { seedEval(); seedHolders(); }
   seedCapital();
+  if (/[?&]dummy=1/.test(window.location.search)) {
+    seedDummyData();
+    persistOnly();
+  }
+  applyRimRateState();
   recalcAll();
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');

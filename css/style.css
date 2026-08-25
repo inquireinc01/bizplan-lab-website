@@ -2188,13 +2188,15 @@ img {
 #trendTable td.col-saizoku-a,
 #trendTable td.col-houjin-a,
 #trendTable td.col-ruiji-a,
-#trendTable td.col-junsisan-a {
+#trendTable td.col-junsisan-a,
+#trendTable td.col-rim-a {
   background-color: rgba(59, 110, 165, 0.05);
 }
 #trendTable td.col-saizoku-b,
 #trendTable td.col-houjin-b,
 #trendTable td.col-ruiji-b,
-#trendTable td.col-junsisan-b {
+#trendTable td.col-junsisan-b
+#trendTable td.col-rim-b {
   background-color: rgba(15, 42, 74, 0.05);
 }
 

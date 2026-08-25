@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082519" />
+<link rel="stylesheet" href="css/style.css?v=2026082520" />
 <style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
@@ -163,7 +163,7 @@
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-3">
           <div>
             <p class="font-brand-en text-[#3b6ea5] font-bold tracking-[0.2em] text-[11px] mb-1">STOCK VALUE PROJECTION</p>
-            <h3 class="font-black text-xl text-[#0f2a4a] flex items-center">自社株評価の推移予測<span class="help-tip" tabindex="0">?<span class="help-text">下の評価額をクリックして表示する指標を選べます(最大2つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。表示期間は右のプルダウンで30〜60年から選べ、下の評価額推移表も同じ期間で表示されます。</span></span>
+            <h3 class="font-black text-xl text-[#0f2a4a] flex items-center">自社株評価の推移予測<span class="help-tip" tabindex="0">?<span class="help-text">下の評価額をクリックして表示する指標を選べます(最大3つまで同時選択可)。バーにカーソルを合わせると各年の数値が表示されます。表示期間は右のプルダウンで30〜60年から選べ、下の評価額推移表も同じ期間で表示されます。</span></span>
               <select id="horizonSelect" class="form-input rounded-lg px-2 py-1 text-sm font-bold ml-3" style="width:auto">
                 <option value="30" selected>30年</option>
                 <option value="40">40年</option>
@@ -173,6 +173,9 @@
             </h3>
           </div>
           <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+            <button type="button" id="ageTableBtn" class="overlay-toggle overlay-toggle-navy">
+              <span class="dot"></span>年齢・株価表
+            </button>
             <button type="button" id="retirementToggleBtn" class="overlay-toggle overlay-toggle-navy">
               <span class="dot"></span>退職金
             </button>
@@ -185,13 +188,13 @@
           </div>
         </div>
 
-        <!-- 現在の評価額(総額)・クリックでグラフに表示する指標を選択(最大2つ、利益A/Bで10種類) -->
+        <!-- 現在の評価額(総額)・クリックでグラフに表示する指標を選択(最大3つ) -->
         <div id="metricTiles" class="mb-6">
           <div class="flex items-center gap-2 mb-1.5">
             <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#3b6ea5">シナリオA</span>
             <span class="help-tip" tabindex="0">?<span class="help-text">通常時（生命保険による対策なし）</span></span>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="saizoku_A" data-color="#6d7f92"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">相続税評価</p>
               <p id="cv_saizoku_A" class="tile-value text-sm font-bold leading-tight"></p>
@@ -208,6 +211,10 @@
               <p class="tile-label text-[11px] mb-0.5 leading-tight">純資産</p>
               <p id="cv_junsisan_A" class="tile-value text-sm font-bold leading-tight"></p>
             </button>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5" data-metric="rim_A" data-color="#c47070"><span class="tile-lamp"></span>
+              <p class="tile-label text-[11px] mb-0.5 leading-tight">残余利益方式</p>
+              <p id="cv_rim_A" class="tile-value text-sm font-bold leading-tight"></p>
+            </button>
             <!-- M&A評価: 次回バージョンで公開予定のため一時非表示 -->
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5 hidden" data-metric="manda_A" data-color="#9c5866"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] mb-0.5 leading-tight">M&amp;A評価</p>
@@ -218,7 +225,7 @@
             <span class="inline-block text-[11px] font-black text-white px-2 py-0.5 rounded" style="background-color:#0f2a4a">シナリオB</span>
             <span class="help-tip" tabindex="0">?<span class="help-text">生命保険で損金をつくった場合（対策後）</span></span>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-3 flex items-center" data-metric="saizoku_B" data-color="#2f4fa8"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] leading-tight">相続税評価</p>
               <p id="cv_saizoku_B" class="tile-value text-sm font-bold leading-tight hidden"></p>
@@ -234,6 +241,10 @@
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-3 flex items-center" data-metric="junsisan_B" data-color="#6b7075"><span class="tile-lamp"></span>
               <p class="tile-label text-[11px] leading-tight">純資産</p>
               <p id="cv_junsisan_B" class="tile-value text-sm font-bold leading-tight hidden"></p>
+            </button>
+            <button type="button" class="metric-tile text-left rounded-lg px-3 py-3 flex items-center" data-metric="rim_B" data-color="#9e2f2f"><span class="tile-lamp"></span>
+              <p class="tile-label text-[11px] leading-tight">残余利益方式</p>
+              <p id="cv_rim_B" class="tile-value text-sm font-bold leading-tight hidden"></p>
             </button>
             <!-- M&A評価: 次回バージョンで公開予定のため一時非表示 -->
             <button type="button" class="metric-tile text-left rounded-lg px-3 py-1.5 hidden" data-metric="manda_B" data-color="#6b3540"><span class="tile-lamp"></span>
@@ -251,7 +262,7 @@
       
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>グラフの縦軸</dt><dd>入力ページで指定した各評価方式の時価総額（万円）を、経過年数に応じて推移させたものです。</dd><dt>表示指標の切替</dt><dd>上の評価額タイルをクリックすると表示する指標を切り替えられます（最大2つまで同時表示）。</dd><dt>死亡保険金額の上昇率</dt><dd>保険金額が年々増加する設計の場合、指定した上昇率で複利的に増加させて表示します。</dd><dt>経過年数</dt><dd>0〜表示期間の範囲で指定できます。表示期間は推移予測の右上のプルダウンで30・40・50・60年から選択でき、範囲外の値を入力した場合は表示期間の年数に補正されます。</dd></dl>
+            <dl><dt>グラフの縦軸</dt><dd>入力ページで指定した各評価方式の時価総額（万円）を、経過年数に応じて推移させたものです。</dd><dt>表示指標の切替</dt><dd>上の評価額タイルをクリックすると表示する指標を切り替えられます（最大3つまで同時表示）。</dd><dt>死亡保険金額の上昇率</dt><dd>保険金額が年々増加する設計の場合、指定した上昇率で複利的に増加させて表示します。</dd><dt>経過年数</dt><dd>0〜表示期間の範囲で指定できます。表示期間は推移予測の右上のプルダウンで30・40・50・60年から選択でき、範囲外の値を入力した場合は表示期間の年数に補正されます。</dd></dl>
             <p class="calc-logic-note">評価額の推移は、入力時点の評価額を基準に一定の前提で延長した概算です。実際の評価額は毎期の業績・資産内容によって変動します。</p>
           </div>
 </div>
@@ -291,6 +302,27 @@
             <div class="md:col-span-2">
               <label class="block text-xs font-medium mb-1" for="corpTaxRateProj">法人税率(%)</label>
               <input type="number" id="corpTaxRateProj" class="form-input w-20 rounded-lg px-3 py-2 text-sm" step="0.1" />
+            </div>
+            <div class="md:col-span-3">
+              <label class="flex items-center justify-between gap-2 text-xs font-medium mb-1" for="rim0_book">
+                <span class="flex items-center">【RIM】簿価純資産(万円)<span class="help-tip" tabindex="0">?<span class="help-text">RIMは残余利益方式(Residual Income Model)の略です。入力ページ「残余利益方式」の簿価純資産(円)が万円換算で自動で入ります。書き換えたい場合は「手入力する」を押してください(税引後純利益もあわせて編集できます)。</span></span></span>
+                <button type="button" id="manualRimBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
+              </label>
+              <input type="number" id="rim0_book" readonly class="form-input w-full rounded-lg px-3 py-2 text-sm bg-gray-50" />
+            </div>
+            <div class="md:col-span-3">
+              <label class="flex items-center justify-between gap-2 text-xs font-medium mb-1" for="rim0_profit">
+                <span class="flex items-center">【RIM】税引後純利益(万円)<span class="help-tip" tabindex="0">?<span class="help-text">RIMは残余利益方式(Residual Income Model)の略です。平常時の税引後当期純利益です。入力ページの値が自動で入ります。シナリオBでは保険料の損金(税引後)が自動で差し引かれ、残余利益方式の評価に反映されます。書き換えは「手入力する」を押してください(簿価純資産もあわせて編集できます)。</span></span></span>
+                <button type="button" id="manualRimBtn2" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
+              </label>
+              <input type="number" id="rim0_profit" readonly class="form-input w-full rounded-lg px-3 py-2 text-sm bg-gray-50" />
+            </div>
+            <div class="md:col-span-3">
+              <label class="flex items-center justify-between gap-2 text-xs font-medium mb-1" for="rimProfitB">
+                <span class="flex items-center whitespace-nowrap">【変更後】RIM税引後純利益(万円)<span class="help-tip" tabindex="0">?<span class="help-text">自動計算の欄です。【変更後】税引前利益との差(保険料の損金など)を税引後で差し引いた、残余利益方式のシナリオB用の平常時利益です。グラフ・推移表のシナリオB(残余利益方式)はこの値で描画されます。自由に入力したい場合は「手入力する」を押してください。</span></span></span>
+                <button type="button" id="manualRimBBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
+              </label>
+              <input type="number" id="rimProfitB" readonly class="form-input w-full rounded-lg px-3 py-2 text-sm bg-gray-50" />
             </div>
             <!-- M&A用の入力はM&A評価が非表示の間は隠す(次回バージョンで公開) -->
             <div class="hidden">
@@ -372,31 +404,63 @@
           </div>
         </div>
 
+        <!-- 株主の状況(試算条件の直下に表示。年数・対策後は下の自社株評価の指定に連動) -->
+        <div class="mt-8">
+          <h4 class="font-bold text-sm mb-2 flex items-center">株主の状況<span class="help-tip" tabindex="0">?<span class="help-text">下の「自社株評価」で指定した年数後時点・対策後切替に連動した試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</span></span></h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse min-w-[640px]">
+              <thead>
+                <tr class="bg-[#0f2a4a] text-white">
+                  <th class="text-center font-bold px-2 py-2 rounded-tl-lg" style="width:3.2rem">反映<span class="help-tip" tabindex="0" style="margin-left:2px">?<span class="help-text">「選択した株主のみ」ボタンがONのとき、チェックを入れた株主の株数だけを評価額(グラフ・タイル・推移表・総額)に反映します。OFFのときは全株主で計算します。</span></span></th>
+                  <th class="text-left font-bold px-2 py-2" style="min-width:11rem">株主名</th>
+                  <th class="text-right font-bold px-2 py-2">株数</th>
+                  <th class="text-right font-bold px-2 py-2">比率</th>
+                  <th class="text-right font-bold px-2 py-2">相続税評価額</th>
+                  <th class="text-right font-bold px-2 py-2 rounded-tr-lg">法人税法上評価額</th>
+                </tr>
+              </thead>
+              <tbody id="dsHolderBody"></tbody>
+              <tfoot>
+                <tr class="bg-[#eef1f4] font-bold">
+                  <td class="px-2 py-2"></td>
+                  <td class="px-2 py-2 text-left">合計</td>
+                  <td class="px-2 py-2 text-right" id="dsTotShares">-</td>
+                  <td class="px-2 py-2 text-right" id="dsTotRatio">-</td>
+                  <td class="px-2 py-2 text-right" id="dsTotReka">-</td>
+                  <td class="px-2 py-2 text-right" id="dsTotHojin">-</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
         <!-- 推移表 -->
         <div class="mt-8">
           <h4 class="font-bold text-sm mb-2 flex items-center">評価額推移表(0〜<span id="tblHorizonLabel">30</span>年・総額・万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。</span></span></h4>
           <div class="overflow-auto border border-gray-200 rounded-lg" style="max-height:360px">
             <table class="w-full text-xs" id="trendTable">
               <colgroup>
-                <col style="width:11.11%">
-                <col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%">
-                <col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%"><col style="width:11.11%">
+                <col style="width:9.1%">
+                <col style="width:9.09%"><col style="width:9.09%"><col style="width:9.09%"><col style="width:9.09%"><col style="width:9.09%">
+                <col style="width:9.09%"><col style="width:9.09%"><col style="width:9.09%"><col style="width:9.09%"><col style="width:9.09%">
               </colgroup>
               <thead class="sticky top-0 z-10">
                 <tr class="text-white">
                   <th rowspan="2" class="px-2 py-2 text-center font-bold align-middle bg-[#0f2a4a]">年</th>
-                  <th colspan="4" class="px-2 py-1 text-center font-bold border-l border-white/20" style="background-color:#3b6ea5">シナリオA（通常時）</th>
-                  <th colspan="4" class="px-2 py-1 text-center font-bold border-l border-white/20" style="background-color:#0f2a4a">シナリオB（対策後）</th>
+                  <th colspan="5" class="px-2 py-1 text-center font-bold border-l border-white/20" style="background-color:#3b6ea5">シナリオA（通常時）</th>
+                  <th colspan="5" class="px-2 py-1 text-center font-bold border-l border-white/20" style="background-color:#0f2a4a">シナリオB（対策後）</th>
                 </tr>
                 <tr class="text-white">
                   <th class="px-2 py-1.5 text-center font-bold border-l border-white/20" style="background-color:#5a86b3">相続税評価</th>
                   <th class="px-2 py-1.5 text-center font-bold" style="background-color:#5a86b3">法人税法上</th>
-                  <th class="px-2 py-1.5 text-center font-bold" style="background-color:#5a86b3">類似業種比準</th>
+                  <th class="px-2 py-1.5 text-center font-bold" style="background-color:#5a86b3">類似業種</th>
                   <th class="px-2 py-1.5 text-center font-bold" style="background-color:#5a86b3">純資産</th>
+                  <th class="px-2 py-1.5 text-center font-bold" style="background-color:#5a86b3">残余利益方式</th>
                   <th class="px-2 py-1.5 text-center font-bold border-l border-white/20" style="background-color:#1c3f68">相続税評価</th>
                   <th class="px-2 py-1.5 text-center font-bold" style="background-color:#1c3f68">法人税法上</th>
-                  <th class="px-2 py-1.5 text-center font-bold" style="background-color:#1c3f68">類似業種比準</th>
+                  <th class="px-2 py-1.5 text-center font-bold" style="background-color:#1c3f68">類似業種</th>
                   <th class="px-2 py-1.5 text-center font-bold" style="background-color:#1c3f68">純資産</th>
+                  <th class="px-2 py-1.5 text-center font-bold" style="background-color:#1c3f68">残余利益方式</th>
                 </tr>
               </thead>
               <tbody id="trendTableBody"></tbody>
@@ -432,32 +496,7 @@
             </table>
           </div>
 
-          <h4 class="font-bold text-sm mb-2 mt-6 flex items-center">株主の状況<span class="help-tip" tabindex="0">?<span class="help-text">上で指定した年数後時点の試算値です。株主の状況は入力ページ「STEP3 株主の状況」で登録した株数・比率をもとに、時価総額を按分して算出しています。</span></span></h4>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm border-collapse min-w-[640px]">
-              <thead>
-                <tr class="bg-[#0f2a4a] text-white">
-                  <th class="text-center font-bold px-2 py-2 rounded-tl-lg" style="width:3.2rem">反映<span class="help-tip" tabindex="0" style="margin-left:2px">?<span class="help-text">「選択した株主のみ」ボタンがONのとき、チェックを入れた株主の株数だけを評価額(グラフ・タイル・推移表・総額)に反映します。OFFのときは全株主で計算します。</span></span></th>
-                  <th class="text-left font-bold px-2 py-2" style="min-width:11rem">株主名</th>
-                  <th class="text-right font-bold px-2 py-2">株数</th>
-                  <th class="text-right font-bold px-2 py-2">比率</th>
-                  <th class="text-right font-bold px-2 py-2">相続税評価額</th>
-                  <th class="text-right font-bold px-2 py-2 rounded-tr-lg">法人税法上評価額</th>
-                </tr>
-              </thead>
-              <tbody id="dsHolderBody"></tbody>
-              <tfoot>
-                <tr class="bg-[#eef1f4] font-bold">
-                  <td class="px-2 py-2"></td>
-                  <td class="px-2 py-2 text-left">合計</td>
-                  <td class="px-2 py-2 text-right" id="dsTotShares">-</td>
-                  <td class="px-2 py-2 text-right" id="dsTotRatio">-</td>
-                  <td class="px-2 py-2 text-right" id="dsTotReka">-</td>
-                  <td class="px-2 py-2 text-right" id="dsTotHojin">-</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+
         </div>
 
     </div>
@@ -509,12 +548,12 @@
     <thead>
       <tr>
         <th class="lbl" rowspan="2">年</th>
-        <th colspan="4">シナリオA（通常時）</th>
-        <th colspan="4">シナリオB（対策後）</th>
+        <th colspan="5">シナリオA（通常時）</th>
+        <th colspan="5">シナリオB（対策後）</th>
       </tr>
       <tr>
-        <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th>
-        <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th>
+        <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th><th>残余利益方式</th>
+        <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th><th>残余利益方式</th>
       </tr>
     </thead>
     <tbody id="pTrendTableBody"></tbody>
@@ -529,7 +568,7 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260825b"></script>
+<script src="js/stock-calculator.js?v=20260825c"></script>
 <script src="js/data-backup.js?v=20260825t"></script>
 </body>
 </html>

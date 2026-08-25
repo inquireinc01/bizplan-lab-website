@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'corpTaxRateProj', 'annualProfit', 'annualProfitB', 'annualDividend',
     'retirementYear', 'retirementAmount', 'specialLossYear', 'specialLossAmount', 'mvNetAssets', 'realOpProfit',
     'insuranceAmount', 'insuranceGrowthRate', 'coveragePeriod', 'premiumAmount', 'deductibleRatio',
+    'rim0_book', 'rim0_profit', 'rimProfitB',
   ];
 
   const STORAGE_KEY = 'bpl_stock_valuation_v1';
@@ -38,12 +39,16 @@ document.addEventListener('DOMContentLoaded', function () {
     insuranceAmount: 30000, insuranceGrowthRate: 3, coveragePeriod: 25, premiumAmount: 500, deductibleRatio: 60,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30000, ss0_ruiji: 30000, ss0_junsisan: 60000, ss0_houjin: 45000,
+    // 残余利益方式(検討中の新方式)の起点: 簿価純資産・平常時税引後利益(万円)と割引率(%)・加算年数(年)
+    rim0_book: 50000, rim0_profit: 5000, rimProfitB: 5000, rimRate: 5, rimYears: 5,
   };
   // trial用のゼロ既定(companySizeとcorpTaxRateProj以外は全て0)
   const TRIAL_DEF = (function () {
     const o = {};
     Object.keys(DEFAULTS).forEach((k) => {
-      o[k] = k === 'companySize' ? DEFAULTS.companySize : (k === 'corpTaxRateProj' ? 30 : 0);
+      // 割引率・加算年数は「未入力なら5%・5年」という既定値ルールのためtrialでも5を使う
+      o[k] = k === 'companySize' ? DEFAULTS.companySize
+        : (k === 'corpTaxRateProj' ? 30 : (k === 'rimRate' || k === 'rimYears' ? 5 : 0));
     });
     return o;
   })();
@@ -129,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
     houjin: '法人税法上の評価',
     ruiji: '類似業種比準',
     junsisan: '純資産',
+    rim: '残余利益方式',
     manda: 'M&A評価',
   };
   const BASE_COLORS = {
@@ -138,6 +144,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ruiji: { light: '#b3b8bd', dark: '#6b7075' },
     junsisan: { light: '#b3b8bd', dark: '#6b7075' },
     manda: { light: '#9c5866', dark: '#6b3540' },
+    // 残余利益方式(検討中の新方式)は赤系で「参考・注意」であることを示す
+    rim: { light: '#c47070', dark: '#9e2f2f' },
   };
   const METRICS = {};
   // M&A評価は次回バージョンで公開予定のため、当面グラフ・凡例・ツールチップから隠す
@@ -157,6 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
   let horizonYears = 30; // グラフ・推移表の表示期間(30/40/50/60年をプルダウンで選択)
   let autoPremiumToB = false; // 保険料を【変更後】税引前利益に自動反映するかどうか(既定OFF・ボタンでトグル)
   let manualBMode = false;    // 【変更後】税引前利益を手入力するかどうか(既定OFF=自動入力エリア)
+  let manualRimMode = false;  // 残余利益方式の簿価純資産・税引後純利益を手入力するかどうか(既定OFF=入力ページから自動)
+  let manualRimBMode = false; // 【変更後】RIM税引後純利益を手入力するかどうか(既定OFF=自動計算)
 
   const yen = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 円';
   const man = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP')) + ' 万円';
@@ -202,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // 1つのシナリオ(年間税引前利益を指定)について、0〜表示期間(horizonYears)の5指標(総額万円)を計算
-  function computeScenario(v, year0, annualProfitValue, shared) {
+  function computeScenario(v, year0, annualProfitValue, shared, scenarioKey) {
     const sizeCfg = SIZE_CONFIG[v.companySize] || SIZE_CONFIG['mid-mid'];
     const L = sizeCfg.l;
     const shinshaku = sizeCfg.shin;
@@ -210,6 +220,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const shares50YenBasis = v.capitalAmount > 0 ? v.capitalAmount / 50 : 1;
     const afterTaxProfit = annualProfitValue * (1 - shared.corpTaxRate / 100);
     const base0 = year0.netAssetsAtValuation;
+
+    // ===== 残余利益方式(RIM): 簿価純資産_t + (平常時税引後利益 - 簿価純資産_t×割引率)×現価係数 =====
+    // 退職金・特損などの一時損失は「平常時利益」から除外して算定する(有識者会議の方向性)。
+    // ただし簿価純資産の減少はそのまま効く。純資産が減ると通常期待利益(純資産×割引率)も
+    // 下がって超過収益が増えるため、引下げ効果は一部相殺され、支払額ほどは評価が下がらない。
+    // 保険料の損金は毎年続く経常損金として利益(→純資産の蓄積)にそのまま効く。
+    const rimR = (v.rimRate > 0 ? v.rimRate : 5) / 100;
+    const rimN = Math.max(1, Math.round(v.rimYears >= 1 ? v.rimYears : 5));
+    const rimCoef = (1 - Math.pow(1 + rimR, -rimN)) / rimR;
+    const rimValid = !isNaN(v.rim0_book) && !isNaN(v.rim0_profit) && (v.rim0_book !== 0 || v.rim0_profit !== 0);
+    // シナリオごとの平常時税引後利益: 入力値に、税引前利益の差(保険料損金など)の税引後額を加減する
+    // シナリオBで「【変更後】RIM税引後純利益」を手入力している場合はその値を優先する
+    const rimProfit = !rimValid ? NaN
+      : (scenarioKey === 'B' && manualRimBMode && !isNaN(v.rimProfitB))
+        ? v.rimProfitB
+        : v.rim0_profit + (annualProfitValue - v.annualProfit) * (1 - shared.corpTaxRate / 100);
+    const rimAt = (book) => (rimValid ? book + (rimProfit - book * rimR) * rimCoef : NaN);
 
     function metricsFor(t, netAssetsT) {
       const netAssetPerShare = (netAssetsT * 10000) / shares;
@@ -230,17 +257,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let cumulative = base0;
-    const out = [metricsFor(0, cumulative)];
+    let rimBook = v.rim0_book;
+    const first = metricsFor(0, cumulative);
+    first.rim = rimAt(rimBook);
+    const out = [first];
     for (let t = 1; t <= horizonYears; t++) {
       let retained = afterTaxProfit - shared.annualDividend;
+      let oneTime = 0;
       if (shared.retirementYear !== null && shared.retirementYear === t) {
         retained -= shared.retirementAmount;
+        oneTime += shared.retirementAmount;
       }
       if (shared.specialLossYear !== null && shared.specialLossYear === t) {
         retained -= shared.specialLossAmount;
+        oneTime += shared.specialLossAmount;
       }
       cumulative += retained;
-      out.push(metricsFor(t, cumulative));
+      // RIMの簿価純資産: 平常時税引後利益で蓄積し、配当・退職金・特損で減少する
+      // (一時損失は利益側から除外されるが、純資産の減少はそのまま評価に反映される)
+      rimBook += (isNaN(rimProfit) ? 0 : rimProfit) - shared.annualDividend - oneTime;
+      const m = metricsFor(t, cumulative);
+      m.rim = rimAt(rimBook);
+      out.push(m);
     }
     return out;
   }
@@ -258,15 +296,15 @@ document.addEventListener('DOMContentLoaded', function () {
       rop: v.realOpProfit,
     };
 
-    const seriesA = computeScenario(v, year0, v.annualProfit, shared);
-    const seriesB = computeScenario(v, year0, v.annualProfitB, shared);
+    const seriesA = computeScenario(v, year0, v.annualProfit, shared, 'A');
+    const seriesB = computeScenario(v, year0, v.annualProfitB, shared, 'B');
 
     const series = [];
     for (let t = 0; t <= horizonYears; t++) {
       series.push({
         year: t,
-        saizokuT_A: seriesA[t].saizoku, houjinT_A: seriesA[t].houjin, ruijiT_A: seriesA[t].ruiji, junsisanT_A: seriesA[t].junsisan, mandaT_A: seriesA[t].manda,
-        saizokuT_B: seriesB[t].saizoku, houjinT_B: seriesB[t].houjin, ruijiT_B: seriesB[t].ruiji, junsisanT_B: seriesB[t].junsisan, mandaT_B: seriesB[t].manda,
+        saizokuT_A: seriesA[t].saizoku, houjinT_A: seriesA[t].houjin, ruijiT_A: seriesA[t].ruiji, junsisanT_A: seriesA[t].junsisan, mandaT_A: seriesA[t].manda, rimT_A: seriesA[t].rim,
+        saizokuT_B: seriesB[t].saizoku, houjinT_B: seriesB[t].houjin, ruijiT_B: seriesB[t].ruiji, junsisanT_B: seriesB[t].junsisan, mandaT_B: seriesB[t].manda, rimT_B: seriesB[t].rim,
       });
     }
     return { series, retirementYear: shared.retirementYear };
@@ -296,6 +334,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== グラフ描画(選択された1〜2指標を同じ太さでずらして重ねて表示) =====
+  // 年齢・株価表(グラフ下のExcel風データテーブル)の表示状態
+  let showAgeTable = false;
+  let ownerAgeDemo = null; // レイアウト確認(?agetable=1)専用の年齢フォールバック
+
   function drawChart(series, retirementYear) {
     const svg = document.getElementById('trendChart');
     const W = 800, H = 320, padL = 80, padR = 20, padT = 20, padB = 40;
@@ -310,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const HF = holderFactor();
     // 死亡保険金額(showInsurance)はスケールに含めない: 上限を超えたら天井に張り付く仕様でよいため。
     // 目盛りがキリのいい数字(1・2・2.5・5×10^n刻み)になるよう、最大値を切り上げて4等分する
-    const rawMaxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f] * HF)), 1);
+    const rawMaxV = Math.max(...series.flatMap((p) => activeFields.map((f) => p[f] * HF)).filter((x) => !isNaN(x)), 1);
     const niceStep = (x) => {
       const pow = Math.pow(10, Math.floor(Math.log10(x)));
       const f = x / pow;
@@ -338,13 +380,15 @@ document.addEventListener('DOMContentLoaded', function () {
       return `fill="${m.color}" stroke="#2b323d" stroke-width="0.5" stroke-opacity="0.1" fill-opacity="0.5"`;
     }
 
-    const barWidth = slotWidth * 0.68; // 1つ選択時と同じ太さを常に使用
+    // 3指標表示時は少し細くして隣の年に食み出さないようにする
+    const barWidth = slotWidth * (selectedMetrics.length >= 3 ? 0.55 : 0.68);
     const overlapOffset = barWidth / 3; // 約1/3ずらして重ねる
 
     let bars = '';
     if (selectedMetrics.length === 1) {
       const m = METRICS[selectedMetrics[0]];
       series.forEach((p, i) => {
+        if (isNaN(p[m.field])) return;
         const barX = padL + i * slotWidth + (slotWidth - barWidth) / 2;
         const barY = y(p[m.field] * HF);
         const barH = Math.max(0, yBottom - barY);
@@ -352,10 +396,11 @@ document.addEventListener('DOMContentLoaded', function () {
         bars += `<rect class="chart-bar" data-year="${i}" data-metric="${selectedMetrics[0]}" x="${barX.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barH.toFixed(1)}" ${barAttrs(p, m)} rx="1.5" style="animation-delay:${delay}ms"/>`;
       });
     } else {
-      const groupWidth = barWidth + overlapOffset;
+      const groupWidth = barWidth + overlapOffset * (selectedMetrics.length - 1);
       selectedMetrics.forEach((key, si) => {
         const m = METRICS[key];
         series.forEach((p, i) => {
+          if (isNaN(p[m.field])) return;
           const groupStart = padL + i * slotWidth + (slotWidth - groupWidth) / 2;
           const barX = groupStart + si * overlapOffset;
           const barY = y(p[m.field] * HF);
@@ -366,14 +411,18 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    const ageTableActive = showAgeTable && horizonYears <= 30;
     let xLabels = '';
     const xStep = horizonYears > 40 ? 10 : 5;
     const xTicks = [];
     for (let yr = 0; yr <= horizonYears; yr += xStep) xTicks.push(yr);
-    xTicks.forEach((yr) => {
-      const gx = padL + yr * slotWidth + slotWidth / 2;
-      xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yearLabel(yr)}</text>`;
-    });
+    // 年齢・株価表の表示中は、表の「経過年数」行が軸ラベルを兼ねるため二重表示を避ける
+    if (!ageTableActive) {
+      xTicks.forEach((yr) => {
+        const gx = padL + yr * slotWidth + slotWidth / 2;
+        xLabels += `<text x="${gx.toFixed(1)}" y="${H - padB + 20}" font-size="11" fill="#9aa1ab" text-anchor="middle">${yearLabel(yr)}</text>`;
+      });
+    }
 
     // ===== 年次イベント(退職金・特別損失)の洗練された強調: 枠線ではなく、破線ガイド + ラベルフラッグ、ボタンでトグル表示 =====
     // 2つのラベルは文字数(3文字/4文字)に関わらず同じサイズに統一。同じ年に重なる場合は縦に並べて表示する。
@@ -481,6 +530,88 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // ===== 残余利益方式の注意文言(選択中のみ、グラフ上部の空欄に赤字で表示) =====
+    let rimCaution = '';
+    if (selectedMetrics.some((k) => METRICS[k].base === 'rim')) {
+      rimCaution = `<text x="${padL + 10}" y="${padT + 16}" font-size="10.5" fill="#9e2f2f" font-weight="700">※残余利益方式は国税庁で審議中の新方式の参考試算です（算式・率・年数は未確定）</text>
+        <text x="${padL + 10}" y="${padT + 30}" font-size="9.5" fill="#9e2f2f">※退職金等の一時損失は平常時利益から除外して算定（簿価純資産の減少は反映。超過収益の増加で一部相殺され、支払額ほどは下がりません）</text>`;
+    }
+
+    // ===== 年齢・株価のデータテーブル(バーとX位置を揃えたExcel風の横並び表示) =====
+    let ageMatrix = '';
+    let extraH = 0;
+    if (ageTableActive) {
+      const rowH = 13;
+      const topY = H - padB + 8; // 軸ラベルを省略したぶん、そのスペースから開始する
+      const colCx = (i) => padL + i * slotWidth + slotWidth / 2;
+      // 3桁に収まる単位を自動選択(万円→百万円→億円→百億円)。対象は選択中の指標
+      let maxV = 0;
+      series.forEach((p) => {
+        activeFields.forEach((f) => { maxV = Math.max(maxV, Math.abs(p[f] * HF)); });
+      });
+      const UNITS = [[1, '万円'], [100, '百万円'], [10000, '億円'], [1000000, '百億円']];
+      let unit = UNITS[UNITS.length - 1];
+      for (let u = 0; u < UNITS.length; u++) {
+        if (Math.round(maxV / UNITS[u][0]) <= 999) { unit = UNITS[u]; break; }
+      }
+      // 年齢は入力ページ「株主の状況」の年齢列から読む。
+      // 「反映」チェックが入っている株主のうち、一番上の人の年齢で判定する
+      let ageRaw = NaN;
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        const holders = stored.ss_holders ? JSON.parse(stored.ss_holders) : [];
+        for (let hi = 0; hi < holders.length; hi++) {
+          if (!holderChecked(hi)) continue;
+          ageRaw = parseFloat(String(holders[hi].age || '').replace(/,/g, ''));
+          break;
+        }
+      } catch (e) {}
+      if (isNaN(ageRaw) && ownerAgeDemo !== null) ageRaw = ownerAgeDemo;
+      const hasAge = !isNaN(ageRaw) && ageRaw > 0;
+      // 換算後の桁数に応じて小数を付け、常に約3桁の精度で表示する(億円なら 6.08 / 15.4 など)
+      const miniMax = Math.round(maxV / unit[0]);
+      const miniDp = miniMax < 10 ? 2 : (miniMax < 100 ? 1 : 0);
+      const fmtMini = (n) => {
+        if (isNaN(n)) return '';
+        const a = Math.abs(n).toFixed(miniDp);
+        return n < 0 ? '△' + a : a;
+      };
+      // 行定義: 経過年数(5年刻み) / 社長年齢 / 選択中の指標(上のタイルと連動・最大3つ)
+      const matrixRows = [
+        { label: '経過年数', color: '#9aa1ab', weight: 400, cell: (p, i) => (i % xStep === 0 ? yearLabel(i) : '') },
+        { label: '年齢', color: '#4a5560', weight: 600, cell: (p, i) => (hasAge ? String(Math.round(ageRaw) + i) : '') },
+      ];
+      selectedMetrics.forEach((key) => {
+        const m = METRICS[key];
+        matrixRows.push({
+          label: BASE_METRICS[m.base].replace('の評価', '') + '(' + m.scenario + ')',
+          chip: m.color,
+          color: '#1f2733',
+          weight: 600,
+          cell: (p) => fmtMini(p[m.field] * HF / unit[0]),
+        });
+      });
+      let g = `<line x1="${padL}" y1="${topY}" x2="${W - padR}" y2="${topY}" stroke="#d7dce2" stroke-width="1"/>`;
+      matrixRows.forEach((row, ri) => {
+        const yTop = topY + ri * rowH;
+        const yText = yTop + rowH - 3.5;
+        if (ri >= 2) g += `<rect x="${padL}" y="${yTop}" width="${plotW}" height="${rowH}" fill="${ri % 2 === 0 ? '#f7f9fb' : '#ffffff'}"/>`;
+        if (row.chip) g += `<rect x="3" y="${(yTop + (rowH - 6) / 2).toFixed(1)}" width="6" height="6" rx="1.5" fill="${row.chip}" fill-opacity="0.85" stroke="#2b323d" stroke-opacity="0.15"/>`;
+        g += `<text x="${row.chip ? 12 : 12}" y="${yText}" font-size="7.5" fill="${row.color}" font-weight="${row.weight}" text-anchor="start">${row.label}</text>`;
+        series.forEach((p, i) => {
+          const t = row.cell(p, i);
+          if (t === '') return;
+          g += `<text x="${colCx(i).toFixed(1)}" y="${yText}" font-size="8" fill="${row.color}" text-anchor="middle"${ri >= 1 ? ' font-family="Arial"' : ''}>${t}</text>`;
+        });
+        g += `<line x1="${padL}" y1="${(yTop + rowH).toFixed(1)}" x2="${W - padR}" y2="${(yTop + rowH).toFixed(1)}" stroke="#eef1f4" stroke-width="0.8"/>`;
+      });
+      // 単位の凡例(左下)
+      g += `<text x="${padL - 8}" y="${(topY + matrixRows.length * rowH + 11).toFixed(1)}" font-size="7.5" fill="#9aa1ab" text-anchor="end">(単位: ${unit[1]})</text>`;
+      ageMatrix = `<g>${g}</g>`;
+      extraH = matrixRows.length * rowH + 16 - (padB - 8);
+    }
+    svg.setAttribute('viewBox', `0 0 ${SVG_W} ${H + Math.max(0, extraH)}`);
+
     svg.innerHTML = `
       ${gridLines}
       ${insuranceRect}
@@ -492,24 +623,27 @@ document.addEventListener('DOMContentLoaded', function () {
       ${bars}
       ${retireFlag}
       ${lossFlag}
+      ${ageMatrix}
+      ${rimCaution}
     `;
 
     chartLayout = { W, padL, plotW, slotWidth, count: series.length };
   }
 
   // 列ごとの色分け(タイル・ヘッダーと同じ配色。等間隔の列幅に合わせ、行のゼブラではなく列の色帯で識別する)
-  const TABLE_COL_CLASSES = ['col-saizoku-a', 'col-houjin-a', 'col-ruiji-a', 'col-junsisan-a', 'col-saizoku-b', 'col-houjin-b', 'col-ruiji-b', 'col-junsisan-b'];
+  const TABLE_COL_CLASSES = ['col-saizoku-a', 'col-houjin-a', 'col-ruiji-a', 'col-junsisan-a', 'col-rim-a', 'col-saizoku-b', 'col-houjin-b', 'col-ruiji-b', 'col-junsisan-b', 'col-rim-b'];
   function renderTable(series) {
     const body = document.getElementById('trendTableBody');
     let rows = '';
     const HF = holderFactor();
     series.forEach((p) => {
-      const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B].map((x) => x * HF);
+      const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.rimT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B, p.rimT_B].map((x) => x * HF);
       // 税引前利益がマイナス(赤字)の場合、推移が負値になり得るため、サイト共通の△+赤字表記に統一する
       const cells = vals.map((v, i) => {
+        if (isNaN(v)) return `<td class="px-2 py-1.5 text-right text-gray-300 ${TABLE_COL_CLASSES[i]}${i === 5 ? ' border-l border-gray-200' : ''}">—</td>`;
         const negCls = v < 0 ? ' neg-val' : '';
         const numText = window.numFmt ? window.numFmt(Math.round(v)) : Math.round(v).toLocaleString('ja-JP');
-        return `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${i === 4 ? ' border-l border-gray-200' : ''}${negCls}">${numText}</td>`;
+        return `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${i === 5 ? ' border-l border-gray-200' : ''}${negCls}">${numText}</td>`;
       }).join('');
       rows += `<tr class="border-b border-gray-100">
         <td class="px-2 py-1.5 text-center text-gray-700 border-r border-gray-200 bg-white">${yearLabel(p.year)}</td>
@@ -613,8 +747,8 @@ document.addEventListener('DOMContentLoaded', function () {
     Object.keys(BASE_METRICS).forEach((base) => {
       const elA = document.getElementById(`cv_${base}_A`);
       const elB = document.getElementById(`cv_${base}_B`);
-      if (elA) elA.innerHTML = manTile(p0[`${base}T_A`] * HF);
-      if (elB) elB.innerHTML = manTile(p0[`${base}T_B`] * HF);
+      if (elA) elA.innerHTML = isNaN(p0[`${base}T_A`]) ? '<span class="text-xs text-gray-400">未入力</span>' : manTile(p0[`${base}T_A`] * HF);
+      if (elB) elB.innerHTML = isNaN(p0[`${base}T_B`]) ? '<span class="text-xs text-gray-400">未入力</span>' : manTile(p0[`${base}T_B`] * HF);
     });
   }
 
@@ -623,12 +757,26 @@ document.addEventListener('DOMContentLoaded', function () {
     corpTaxRateProj: '%', annualProfit: '万円', annualProfitB: '万円', annualDividend: '万円',
     retirementYear: '年目', retirementAmount: '万円', specialLossYear: '年目', specialLossAmount: '万円',
     mvNetAssets: '万円', realOpProfit: '万円',
+    rim0_book: '万円', rim0_profit: '万円', rimProfitB: '万円',
     insuranceAmount: '万円', insuranceGrowthRate: '%', coveragePeriod: '年', premiumAmount: '万円', deductibleRatio: '%',
   };
   function populateLivePanel(v, usedDefaults) {
     PROJECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
+      // RIMの2欄は自動入力エリア: 入力ページの値があればそれを表示し、
+      // 無ければグレーの「自動計算：万円」で示す(入力例は出さない)。手入力モード中はそのまま
+      if ((id === 'rim0_book' || id === 'rim0_profit') && !manualRimMode) {
+        let rawStored;
+        try {
+          const o = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+          rawStored = o[id];
+        } catch (e) {}
+        const n = parseFloat(String(rawStored === undefined ? '' : rawStored).replace(/,/g, ''));
+        el.value = isNaN(n) ? '' : v[id];
+        el.placeholder = '自動計算：万円';
+        return;
+      }
       if (usedDefaults) {
         el.value = '';
         if (id === 'annualProfitB' && !manualBMode) {
@@ -699,11 +847,65 @@ document.addEventListener('DOMContentLoaded', function () {
       const existing = raw ? JSON.parse(raw) : {};
       const merged = Object.assign({}, existing, { companySize: currentValues.companySize });
       PROJECTION_IDS.forEach((id) => { merged[id] = String(currentValues[id]); });
+      // 手入力・自動反映の各モードも保存する(リロードで手入力値が自動値に戻るのを防ぐ)
+      merged.ss_manualB = manualBMode ? '1' : '0';
+      merged.ss_autoPremB = autoPremiumToB ? '1' : '0';
+      merged.ss_manualRim = manualRimMode ? '1' : '0';
+      merged.ss_manualRimB = manualRimBMode ? '1' : '0';
       localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
     } catch (e) {
       // localStorage不可の環境では保存をスキップ(表示上の計算には影響しない)
     }
   }
+
+  // 【変更後】RIM税引後純利益(自動計算・表示専用): シナリオBのRIMに使う平常時利益
+  // = RIM税引後純利益 + (【変更後】税引前利益 − 【現状】税引前利益) × (1 − 法人税率)
+  function syncRimProfitBDisplay() {
+    const el = document.getElementById('rimProfitB');
+    if (!el || !currentValues) return;
+    el.readOnly = !manualRimBMode;
+    el.classList.toggle('bg-gray-50', !manualRimBMode);
+    const btn = document.getElementById('manualRimBBtn');
+    if (btn) btn.textContent = manualRimBMode ? '自動計算に戻す' : '手入力する';
+    if (manualRimBMode) return; // 手入力中は自動値で上書きしない
+    const base = currentValues.rim0_profit;
+    const delta = (currentValues.annualProfitB - currentValues.annualProfit) * (1 - (currentValues.corpTaxRateProj || 0) / 100);
+    const v = base + delta;
+    if (isNaN(v)) {
+      el.value = '';
+      el.placeholder = '自動計算：万円';
+      return;
+    }
+    el.value = Math.round(v);
+    currentValues.rimProfitB = Math.round(v);
+    if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
+  }
+  const manualRimBBtn = document.getElementById('manualRimBBtn');
+  if (manualRimBBtn) {
+    manualRimBBtn.addEventListener('click', function () {
+      manualRimBMode = !manualRimBMode;
+      syncRimProfitBDisplay();
+      persistCurrentValues();
+      recomputeSeriesOnly();
+      if (manualRimBMode) {
+        const el = document.getElementById('rimProfitB');
+        if (el) { try { el.focus({ preventScroll: true }); el.select(); } catch (e) {} }
+      }
+    });
+  }
+
+  // 保存されていた手入力・自動反映モードを復元する(syncAutoProfitBが手入力値を潰す前に読む)
+  (function restoreManualModes() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const o = raw ? JSON.parse(raw) : null;
+      if (!o) return;
+      manualBMode = o.ss_manualB === '1';
+      autoPremiumToB = o.ss_autoPremB === '1';
+      manualRimMode = o.ss_manualRim === '1';
+      manualRimBMode = o.ss_manualRimB === '1';
+    } catch (e) {}
+  })();
 
   function refreshAll() {
     const { v, usedDefaults } = loadValues();
@@ -724,6 +926,7 @@ document.addEventListener('DOMContentLoaded', function () {
     renderTileSelection();
     renderTable(lastSeries);
     renderDsTables();
+    syncRimProfitBDisplay();
   }
 
   // ===== リアルタイム調整パネル: 変更すると即座にグラフ・表を再計算 =====
@@ -735,6 +938,7 @@ document.addEventListener('DOMContentLoaded', function () {
     drawChart(lastSeries, result.retirementYear);
     renderTable(lastSeries);
     renderDsTables();
+    syncRimProfitBDisplay();
   }
 
   if (livePanel) {
@@ -773,7 +977,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, true);
   }
 
-  // ===== 評価額タイルのクリックで表示指標を切り替え(最大2つ) =====
+  // ===== 評価額タイルのクリックで表示指標を切り替え(最大3つ) =====
   if (metricTilesEl) {
     metricTilesEl.addEventListener('click', function (e) {
       const btn = e.target.closest('.metric-tile');
@@ -783,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (idx >= 0) {
         if (selectedMetrics.length > 1) selectedMetrics.splice(idx, 1);
       } else {
-        if (selectedMetrics.length >= 2) selectedMetrics.shift();
+        if (selectedMetrics.length >= 3) selectedMetrics.shift();
         selectedMetrics.push(key);
       }
       renderTileSelection();
@@ -815,6 +1019,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const el = document.getElementById('tblHorizonLabel');
     if (el) el.textContent = String(horizonYears);
   }
+  // 年齢・株価表は30年表示のときだけ使える(40〜60年では列が細くなりすぎるため)
+  function applyAgeTableAvailability() {
+    const btn = document.getElementById('ageTableBtn');
+    if (!btn) return;
+    const ok = horizonYears <= 30;
+    btn.disabled = !ok;
+    btn.title = ok ? '' : '年齢・株価表は30年表示のときのみ使えます';
+    if (!ok && showAgeTable) {
+      showAgeTable = false;
+      btn.classList.remove('is-on');
+    }
+  }
   if (horizonSelect) {
     horizonSelect.addEventListener('change', function () {
       const v = parseInt(horizonSelect.value, 10);
@@ -824,10 +1040,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (dsYearInput) dsYearInput.value = String(horizonYears);
       }
       applyHorizonLabel();
+      applyAgeTableAvailability();
       refreshAll();
     });
   }
   applyHorizonLabel();
+  applyAgeTableAvailability();
 
   // ===== 基本情報を反映: 基本情報入力(決算書情報)の直前期データを試算条件へ =====
   const applyBasicInfoBtn = document.getElementById('applyBasicInfoBtn');
@@ -876,6 +1094,52 @@ document.addEventListener('DOMContentLoaded', function () {
       recomputeSeriesOnly();
     });
   }
+  // ===== 残余利益方式の簿価純資産・税引後純利益: 自動(入力ページから)/手入力の切替 =====
+  function applyRimInputState() {
+    ['rim0_book', 'rim0_profit'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.readOnly = !manualRimMode;
+      el.classList.toggle('bg-gray-50', !manualRimMode);
+    });
+    ['manualRimBtn', 'manualRimBtn2'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) btn.textContent = manualRimMode ? '自動に戻す' : '手入力する';
+    });
+  }
+  function onManualRimToggle(focusId) {
+      manualRimMode = !manualRimMode;
+      applyRimInputState();
+      persistCurrentValues();
+      if (manualRimMode) {
+        const el = document.getElementById(focusId);
+        if (el) { try { el.focus({ preventScroll: true }); el.select(); } catch (e) {} }
+      } else {
+        // 自動に戻す: 入力ページの円単位の値を正本として復元する
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const o = raw ? JSON.parse(raw) : null;
+          if (o) {
+            const yen2man = (v) => {
+              const n = window.numClean ? window.numClean(v) : parseFloat(String(v || '').replace(/,/g, ''));
+              return isNaN(n) ? '' : String(n / 10000);
+            };
+            if (o.ssRimBook !== undefined) o.rim0_book = yen2man(o.ssRimBook);
+            if (o.ssRimProfit !== undefined) o.rim0_profit = yen2man(o.ssRimProfit);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(o));
+          }
+        } catch (e) {}
+        refreshAll();
+      }
+  }
+  const manualRimBtn = document.getElementById('manualRimBtn');
+  const manualRimBtn2 = document.getElementById('manualRimBtn2');
+  if (manualRimBtn || manualRimBtn2) {
+    applyRimInputState();
+    if (manualRimBtn) manualRimBtn.addEventListener('click', function () { onManualRimToggle('rim0_book'); });
+    if (manualRimBtn2) manualRimBtn2.addEventListener('click', function () { onManualRimToggle('rim0_profit'); });
+  }
+
   const manualProfitBBtn = document.getElementById('manualProfitBBtn');
   if (manualProfitBBtn) {
     manualProfitBBtn.addEventListener('click', function () {
@@ -1004,6 +1268,30 @@ document.addEventListener('DOMContentLoaded', function () {
     svgEl.addEventListener('touchmove', function (e) { onChartMove(e); e.preventDefault(); }, { passive: false });
   }
 
+  // ===== 年齢・株価表(グラフ下データテーブル)のトグル =====
+  (function initAgeTable() {
+    const btn = document.getElementById('ageTableBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      showAgeTable = !showAgeTable;
+      btn.classList.toggle('is-on', showAgeTable);
+      recomputeSeriesOnly();
+    });
+    // レイアウト確認用: ?agetable=1 で自動的に開き、年齢60・指標2つの状態を再現(スクリーンショット用)
+    if (/[?&]agetable=1/.test(location.search)) {
+      ownerAgeDemo = 60;
+      setTimeout(function () {
+        btn.click();
+        const tile2 = document.querySelector('.metric-tile[data-metric="' + (/[?&]demorim=1/.test(location.search) ? 'rim_A' : 'houjin_A') + '"]');
+        if (tile2) tile2.click();
+        if (/[?&]demo3=1/.test(location.search)) {
+          const tile3 = document.querySelector('.metric-tile[data-metric="houjin_A"]');
+          if (tile3) tile3.click();
+        }
+      }, 600);
+    }
+  })();
+
   // ===== PDF出力 =====
   function doPrint() {
     if (!lastSeries) return;
@@ -1016,25 +1304,40 @@ document.addEventListener('DOMContentLoaded', function () {
     // 推移表(印刷用)
     let rows = '';
     lastSeries.forEach((p) => {
-      const cell = (v) => `<td>${roundMan(v)}</td>`;
+      const cell = (v) => `<td>${isNaN(v) ? '—' : roundMan(v)}</td>`;
       rows += `<tr><td class="lbl">${yearLabel(p.year)}</td>
-        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}
-        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}</tr>`;
+        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}${cell(p.rimT_A)}
+        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}${cell(p.rimT_B)}</tr>`;
     });
     document.getElementById('pTrendTableBody').innerHTML = rows;
 
     // 印刷用の凡例(現在選択中の指標)
     renderLegend(document.getElementById('pChartLegend'));
 
-    // グラフSVGを複製(アニメーションは無効化)
+    // 1枚目: グラフと年齢・株価表を見たままのPNGにして大きく貼る。
+    // 画面で表がOFFでも、印刷時は自動でONにして撮影し、撮影後に元へ戻す(30年表示のときのみ)
     const slot = document.getElementById('pChartSlot');
     slot.innerHTML = '';
-    // 画面のグラフを見たままのPNGにして貼る(色・寸法が確実に再現される)
+    const wasAgeTable = showAgeTable;
+    const forceAgeTable = !showAgeTable && horizonYears <= 30;
+    if (forceAgeTable) {
+      showAgeTable = true;
+      const { v } = loadValues();
+      drawChart(lastSeries, v.retirementYear);
+    }
+    const restoreChart = () => {
+      if (forceAgeTable) {
+        showAgeTable = wasAgeTable;
+        const { v } = loadValues();
+        drawChart(lastSeries, v.retirementYear);
+      }
+    };
     const chart = document.getElementById('trendChart');
     const chartSvg = chart && (chart.tagName.toLowerCase() === 'svg' ? chart : chart.querySelector('svg'));
     if (chartSvg && window.bplChartToImage) {
-      window.bplChartToImage(chartSvg, slot, function () { window.print(); });
+      window.bplChartToImage(chartSvg, slot, function () { restoreChart(); window.print(); });
     } else {
+      restoreChart();
       window.print();
     }
   }

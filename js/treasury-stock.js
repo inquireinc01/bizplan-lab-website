@@ -66,7 +66,16 @@ document.addEventListener('DOMContentLoaded', function () {
     form.querySelectorAll('input[id]').forEach(function (el) {
       if (el.value !== '') data[el.id] = el.value;
     });
+    // 法人の現金の手入力モードも保存する(リロードで自動値に上書きされるのを防ぐ)
+    data.ts_cashManual = cashManual ? '1' : '0';
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  function loadSavedCashManual() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const data = raw ? JSON.parse(raw) : null;
+      return !!(data && data.ts_cashManual === '1');
+    } catch (e) { return false; }
   }
 
   // ===== ？ツールチップ(税金の計算内訳。タップで開閉・モバイル対応) =====
@@ -135,7 +144,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cashInput.value === '') cashInput.placeholder = manual ? '0 万円' : '入力不要：万円';
     if (!manual) refreshAutoCash();
   }
-  if (cashLockBtn) cashLockBtn.addEventListener('click', function () { setCashMode(!cashManual); });
+  if (cashLockBtn) cashLockBtn.addEventListener('click', function () {
+    setCashMode(!cashManual);
+    // モード切替(特に自動計算に戻す)で現金の値が変わるため、結果へ即時反映して保存する
+    recompute();
+    saveCurrentValues();
+  });
   ['corpTaxRate', 'insuranceGainRate', 'stockCorpValue'].forEach(function (id) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', refreshAutoCash);
@@ -605,6 +619,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   applyTrialRateDefaults();
   applyTsPlaceholders();
-  setCashMode(false);
+  setCashMode(loadSavedCashManual());
   recompute();
 });
