@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // ブラウザのキャッシュ削除や別端末での続きの入力に備え、ファイルへの保存/読込を提供します。
   //
   // 保存名(お客様名・案件名)は任意入力。入力すると
-  //   1) 保存ファイル名   BizPlanLab_<ツール名>_<保存名>_<日付>.json
+  //   1) 保存ファイル名   BizPlanLab_<ツール名>_<保存名>_<日付>.txt
+  //      (拡張子は.txt。顧客側のセキュリティが.jsonのダウンロードを弾く事例があるため。
+  //       中身はJSONテキストで、読込みは.txt/.jsonのどちらも受け付ける)
   //   2) PDF出力のファイル名(印刷中だけdocument.titleを差し替え)
   //   3) 印刷シートのヘッダー表記
   // に共通で使われる。未入力ならツール名+日付のみ。サイト内の全ツールで共有する。
@@ -61,12 +63,12 @@ document.addEventListener('DOMContentLoaded', function () {
           if (v !== null) { payload.data[k] = v; hasData = true; }
         });
         if (!hasData) { showMsg('保存する入力内容がありません。先に入力してください。'); return; }
-        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'text/plain' });
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         var label = sanitize(getLabel());
         a.href = url;
-        a.download = 'BizPlanLab_' + pageLabel() + (label ? '_' + label : '') + '_' + dateStamp() + '.json';
+        a.download = 'BizPlanLab_' + pageLabel() + (label ? '_' + label : '') + '_' + dateStamp() + '.txt';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
