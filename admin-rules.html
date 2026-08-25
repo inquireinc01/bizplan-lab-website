@@ -146,7 +146,7 @@
   <div class="rule-body"><p>bizplan-lab-websiteで金額・数量を表示するときは、必ず3桁カンマ区切りにする。<strong>入力欄の<code>placeholder</code>に書く例示数値も対象</strong>。</p>
 <p><strong>Why:</strong> 入力値・計算結果は<code>number-format.js</code>が自動でカンマ整形するが、<code>placeholder</code>属性は対象外で素の数字のままだった。2026-07-24にユーザーから「数字はカンマ必須だってば。資本金の例：200000ってさ。200,000でしょうよ。全体ルールに入ってないかな？」と指摘。</p>
 <p><strong>How to apply:</strong></p>
-<ul><li><code>placeholder="例: 20000000"</code> ではなく <code>placeholder="例: 20,000,000"</code> と書く。</li><li><strong>カンマを付けないもの</strong>: 年(2005/2031)、電話番号(03-1234-5678)、郵便番号(123-4567)、法人番号(1234567890123)、登録番号(第12345号)、および3桁以下の数値・率(30/0.75など)。</li><li>入力欄の<code>value</code>や計算結果のtextContentは<code>number-format.js</code>(<code>window.numFmt</code>)が整形するので個別対応は不要。新規の数値表示を書くときは<code>window.numFmt()</code>を通す。</li><li>単位の見せ方は<a href="#unit-smaller-than-number-rule">unit-smaller-than-number-rule</a>も併せて守る。</li></ul></div>
+<ul><li><code>placeholder="入力例：20000000"</code> ではなく <code>placeholder="入力例：20,000,000"</code> と書く。</li><li><strong>カンマを付けないもの</strong>: 年(2005/2031)、電話番号(03-1234-5678)、郵便番号(123-4567)、法人番号(1234567890123)、登録番号(第12345号)、および3桁以下の数値・率(30/0.75など)。</li><li>入力欄の<code>value</code>や計算結果のtextContentは<code>number-format.js</code>(<code>window.numFmt</code>)が整形するので個別対応は不要。新規の数値表示を書くときは<code>window.numFmt()</code>を通す。</li><li>単位の見せ方は<a href="#unit-smaller-than-number-rule">unit-smaller-than-number-rule</a>も併せて守る。</li></ul></div>
 </article>
 
 <article class="rule" id="empty-input-placeholder-rule">

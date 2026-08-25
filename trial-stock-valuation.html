@@ -25,7 +25,7 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082522" />
+<link rel="stylesheet" href="css/style.css?v=2026082523" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -272,19 +272,19 @@
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtTotalAssetsBook">直前期末の総資産価額（帳簿価額）（千円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期の貸借対照表上の総資産の帳簿価額を千円単位で入力します。会社規模判定に用います。</span></span></label>
-              <input type="number" id="dtTotalAssetsBook" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 500,000" />
+              <input type="number" id="dtTotalAssetsBook" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：500,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtSales">直前期末以前1年間の取引金額（千円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期の売上高(取引金額)を千円単位で入力します。会社規模判定の取引金額基準に用います。</span></span></label>
-              <input type="number" id="dtSales" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 400,000" />
+              <input type="number" id="dtSales" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：400,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtEmpFull">継続勤務従業員数（人）<span class="help-tip" tabindex="0">?<span class="help-text">課税時期以前1年間、継続して勤務し週30時間以上等の勤務実態がある従業員数。役員(社長・専務等)は除きます。</span></span></label>
-              <input type="number" id="dtEmpFull" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
+              <input type="number" id="dtEmpFull" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：30" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtEmpHours">上記以外の従業員の年間労働時間合計（時間）<span class="help-tip" tabindex="0">?<span class="help-text">継続勤務従業員以外(パート等)の直前1年間の労働時間の合計。これを1,800時間で割った人数を従業員数に加算します。</span></span></label>
-              <input type="number" id="dtEmpHours" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+              <input type="number" id="dtEmpHours" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：0" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtEmpTotal">従業員数（自動計算）（人）<span class="help-tip" tabindex="0">?<span class="help-text">継続勤務従業員数 ＋（その他労働時間合計 ÷ 1,800）で算出した人数。70人以上なら大会社です。</span></span></label>
@@ -319,15 +319,15 @@
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtTotalAssetsTax">相続税評価による総資産価額（千円）<span class="help-tip" tabindex="0">?<span class="help-text">第5表①に対応。相続税評価額ベースの総資産を千円単位で入力します。株式等保有割合・土地保有割合の分母になります。</span></span></label>
-              <input type="number" id="dtTotalAssetsTax" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 550,000" />
+              <input type="number" id="dtTotalAssetsTax" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：550,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtStockValue">株式等の価額の合計額（千円）<span class="help-tip" tabindex="0">?<span class="help-text">第5表⑦に対応。保有する株式・出資等の相続税評価額の合計。総資産に対する割合が50%以上だと株式等保有特定会社に該当します。</span></span></label>
-              <input type="number" id="dtStockValue" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+              <input type="number" id="dtStockValue" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：0" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtLandValue">土地等の価額の合計額（千円）<span class="help-tip" tabindex="0">?<span class="help-text">土地・借地権等の相続税評価額の合計。総資産に対する割合が一定以上(会社規模で70〜90%)だと土地保有特定会社に該当します。</span></span></label>
-              <input type="number" id="dtLandValue" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+              <input type="number" id="dtLandValue" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：0" />
             </div>
           </div>
           <div class="mt-4 space-y-2 text-sm">
@@ -363,32 +363,32 @@
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtA">類似業種の株価 A（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁「類似業種比準価額計算上の業種目及び業種目別株価等」で公表される、該当業種の株価(A)。月ごとに公表されます。</span></span></label>
-              <input type="number" id="dtA" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 480" />
+              <input type="number" id="dtA" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：480" />
             </div>
             <div></div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtB">類似業種の1株当たり配当金額 B（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの配当金額(B)。1株(50円)当たりです。</span></span></label>
-              <input type="number" id="dtB" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 6.0" />
+              <input type="number" id="dtB" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：6.0" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtOwnB">自社の1株当たり配当金額 b（円）<span class="help-tip" tabindex="0">?<span class="help-text">自社の直前期末以前2年間の平均配当金額を1株(50円)当たりに換算した金額(b)。</span></span></label>
-              <input type="number" id="dtOwnB" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 4.0" />
+              <input type="number" id="dtOwnB" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：4.0" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtC">類似業種の1株当たり利益金額 C（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの年利益金額(C)。</span></span></label>
-              <input type="number" id="dtC" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 45" />
+              <input type="number" id="dtC" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：45" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtOwnC">自社の1株当たり利益金額 c（円）<span class="help-tip" tabindex="0">?<span class="help-text">自社の1株(50円)当たりの年利益金額(c)。法人税の課税所得を基に算定します。</span></span></label>
-              <input type="number" id="dtOwnC" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 60" />
+              <input type="number" id="dtOwnC" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：60" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtD">類似業種の1株当たり純資産価額 D（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの簿価純資産価額(D)。</span></span></label>
-              <input type="number" id="dtD" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 350" />
+              <input type="number" id="dtD" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：350" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtOwnD">自社の1株当たり純資産価額 d（円）<span class="help-tip" tabindex="0">?<span class="help-text">自社の1株(50円)当たりの簿価純資産価額(d)。</span></span></label>
-              <input type="number" id="dtOwnD" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 420" />
+              <input type="number" id="dtOwnD" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：420" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtShakushaku">斟酌率（自動）<span class="help-tip" tabindex="0">?<span class="help-text">会社規模による斟酌率。大会社0.7・中会社0.6・小会社0.5。会社規模の判定から自動設定されます。</span></span></label>
@@ -418,19 +418,19 @@
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtBookNet">帳簿価額による純資産（総資産-負債）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期末の貸借対照表上の純資産(帳簿価額の総資産-負債)を万円単位で入力します。</span></span></label>
-              <input type="number" id="dtBookNet" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 4,000" />
+              <input type="number" id="dtBookNet" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：4,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtUnrealized">含み益（評価差額）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">土地・有価証券・保険積立金などの、相続税評価額が帳簿価額を上回る差額(含み益)の合計を万円単位で入力します。含み損はマイナスで入力。</span></span></label>
-              <input type="number" id="dtUnrealized" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 8,000" />
+              <input type="number" id="dtUnrealized" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：8,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtSharesDetail">発行済株式数（株）<span class="help-tip" tabindex="0">?<span class="help-text">発行済株式の総数。1株当たりの評価額を求める際の分母になります。</span></span></label>
-              <input type="number" id="dtSharesDetail" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 2,000" />
+              <input type="number" id="dtSharesDetail" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：2,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtCapital">資本金等の額（円）<span class="help-tip" tabindex="0">?<span class="help-text">資本金＋資本準備金等の額(法人税法上の資本金等の額)。類似業種比準価額を1株当たりに換算する際に使います。</span></span></label>
-              <input type="number" id="dtCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 1,000,000" />
+              <input type="number" id="dtCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：1,000,000" />
             </div>
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="dtDeduction37">評価差額に対する38%控除（自動）（万円）<span class="help-tip" tabindex="0">?<span class="help-text">含み益 × 38%。純資産価額の算定では、含み益に対する法人税等相当額として38%を控除します。</span></span></label>
@@ -509,15 +509,15 @@
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbCapital">資本金（円）<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク等に記載の資本金額。額面50円として発行済株式数(資本金÷50)を概算するのに使います。</span></span></label>
-            <input type="number" id="tbCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 20,000,000" />
+            <input type="number" id="tbCapital" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：20,000,000" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbSales">売上高（千円）<span class="help-tip" tabindex="0">?<span class="help-text">直近期の売上高を千円単位で入力します。会社規模判定に用います。</span></span></label>
-            <input type="number" id="tbSales" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 400,000" />
+            <input type="number" id="tbSales" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：400,000" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbEmp">従業員数（人）<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク等に記載の従業員数。会社規模判定に用います。</span></span></label>
-            <input type="number" id="tbEmp" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30" />
+            <input type="number" id="tbEmp" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：30" />
           </div>
         </div>
       </div>
@@ -527,15 +527,15 @@
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbProfit">税引前利益（円）<span class="help-tip" tabindex="0">?<span class="help-text">直近期の税引前当期利益。類似業種比準価額の計算(自社の1株当たり利益金額)に使います。</span></span></label>
-            <input type="number" id="tbProfit" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 30,000,000" />
+            <input type="number" id="tbProfit" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：30,000,000" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbDividend">年間配当金額（円）<span class="help-tip" tabindex="0">?<span class="help-text">直近期の年間配当金の総額。無配の場合は0を入力してください。</span></span></label>
-            <input type="number" id="tbDividend" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 0" />
+            <input type="number" id="tbDividend" value="0" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：0" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbNetAssets">純資産（円）<span class="help-tip" tabindex="0">?<span class="help-text">帝国データバンク等に記載の純資産(簿価)。類似業種比準価額の計算(自社の1株当たり純資産価額)に使います。時価純資産の算定には使いません。</span></span></label>
-            <input type="number" id="tbNetAssets" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 80,000,000" />
+            <input type="number" id="tbNetAssets" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：80,000,000" />
           </div>
         </div>
       </div>
@@ -545,19 +545,19 @@
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbA">類似業種の株価 A（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの該当業種の株価(A)。</span></span></label>
-            <input type="number" id="tbA" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 480" />
+            <input type="number" id="tbA" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：480" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbB">類似業種の1株当たり配当金額 B（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの配当金額(B)。1株(50円)当たりです。</span></span></label>
-            <input type="number" id="tbB" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 6.0" />
+            <input type="number" id="tbB" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：6.0" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbC">類似業種の1株当たり利益金額 C（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの年利益金額(C)。</span></span></label>
-            <input type="number" id="tbC" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 45" />
+            <input type="number" id="tbC" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：45" />
           </div>
           <div>
             <label class="flex items-center text-sm font-medium mb-1.5" for="tbD">類似業種の1株当たり純資産価額 D（円）<span class="help-tip" tabindex="0">?<span class="help-text">国税庁公表データの簿価純資産価額(D)。時価純資産の概算にも使います。</span></span></label>
-            <input type="number" id="tbD" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="例: 350" />
+            <input type="number" id="tbD" step="0.01" class="form-input w-full rounded-lg px-4 py-2.5 text-sm" placeholder="入力例：350" />
           </div>
         </div>
       </div>
@@ -996,7 +996,7 @@ try { localStorage.setItem('bpl_stock_version', 'simple'); } catch (e) {}
 </script>
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-simple.js?v=20260825d"></script>
+<script src="js/stock-simple.js?v=20260825e"></script>
 <script src="js/stock-detail.js?v=20260724o"></script>
 <script src="js/stock-tdb.js?v=20260825a"></script>
 <script src="js/stock-stepper.js?v=20260724d"></script>

@@ -25,7 +25,7 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082522" />
+<link rel="stylesheet" href="css/style.css?v=2026082523" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -184,7 +184,7 @@
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txTaxableIncomeSimple">課税所得(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">各種所得控除を差し引いた後の課税所得金額です。源泉徴収票や確定申告書の「課税される所得金額」に相当します。生命保険料控除を<strong>適用する前</strong>の金額を入力してください。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txTaxableIncomeSimple" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 800" /></div>
+                <div class="tx-field-input"><input type="number" id="txTaxableIncomeSimple" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：800" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">適用される所得税率(自動判定)<span class="help-tip" tabindex="0">?<span class="help-text">課税所得に応じた超過累進税率です。<code>195万円以下5% / 330万円以下10% / 695万円以下20% / 900万円以下23% / 1,800万円以下33% / 4,000万円以下40% / 4,000万円超45%</code></span></span></span>
@@ -225,7 +225,7 @@
           <div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txSalaryIncome">給与収入(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">源泉徴収票の「支払金額」に相当する年間の給与・役員報酬の総額です。ここから給与所得控除を差し引いて給与所得を計算します。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txSalaryIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 1,200" /></div>
+              <div class="tx-field-input"><input type="number" id="txSalaryIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：1,200" /></div>
             </div>
             <div class="tx-field-row is-auto">
               <span class="tx-field-label">給与所得控除(自動計算)<span class="help-tip" tabindex="0">?<span class="help-text">給与収入に応じて自動計算されます(2020年分以降)。<code>162.5万円以下→55万円 / 180万円以下→収入×40%−10万円 / 360万円以下→収入×30%＋8万円 / 660万円以下→収入×20%＋44万円 / 850万円以下→収入×10%＋110万円 / 850万円超→195万円(上限)</code></span></span></span>
@@ -242,15 +242,15 @@
           <div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txBusinessIncome">事業所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">個人事業・自由業などによる所得。<code>総収入金額 − 必要経費</code>(青色申告特別控除の適用後の金額)を入力してください。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txBusinessIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txBusinessIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txRealEstateIncome">不動産所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">土地・建物の貸付による所得。<code>賃貸収入 − 必要経費(固定資産税・減価償却費・修繕費・借入金利子等)</code>を入力してください。損失の場合はマイナスで入力すると他の所得と損益通算されます。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txRealEstateIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txRealEstateIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txDividendIncome">配当所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">株式の配当・出資の分配等による所得。<code>収入金額 − 負債利子</code>を入力してください。課税方式は右の欄で選択します。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txDividendIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txDividendIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txDividendMethod">配当所得の課税方式<span class="help-tip" tabindex="0">?<span class="help-text"><strong>総合課税</strong>…他の所得と合算して累進税率で課税。配当控除(配当所得の10%または5%)が使えます。<strong>申告分離課税</strong>…他の所得と分離して20.315%(所得税15.315%＋住民税5%)で課税。<strong>申告不要</strong>…源泉徴収のみで完結し、合計所得金額に含めません。</span></span></label>
@@ -264,19 +264,19 @@
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txMiscIncome">雑所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">公的年金等、副業、原稿料、暗号資産の売却益など、他の9種類のいずれにも当たらない所得。公的年金等は公的年金等控除を差し引いた後の金額を入力してください。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txMiscIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txMiscIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txTransferShort">総合譲渡所得 短期(万円)<span class="help-tip" tabindex="0">?<span class="help-text">ゴルフ会員権・機械等(土地建物・株式以外)を保有5年以内に譲渡した所得。<code>譲渡価額 − 取得費 − 譲渡費用 − 特別控除50万円</code>。全額が総合課税の対象になります。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txTransferShort" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txTransferShort" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txTransferLong">総合譲渡所得 長期(万円)<span class="help-tip" tabindex="0">?<span class="help-text">同じく土地建物・株式以外の資産を保有5年超で譲渡した所得。長期の場合は<strong>1/2</strong>だけが総合課税の対象になります。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txTransferLong" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txTransferLong" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txForestryIncome">山林所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">保有5年超の山林の伐採・譲渡による所得。<code>総収入金額 − 必要経費 − 特別控除50万円</code>。該当がなければ0のままで構いません。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txForestryIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txForestryIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row is-auto">
               <span class="tx-field-label">合計所得金額(自動計算)<span class="help-tip" tabindex="0">?<span class="help-text">給与所得と上記の各所得を合算した金額です。配当所得は「総合課税」を選択した場合のみ含まれます。</span></span></span>
@@ -289,15 +289,15 @@
           <div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txInterestIncome">利子所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">預貯金・公社債の利子。原則として<code>20.315%(所得税15.315%＋住民税5%)</code>の源泉分離課税で完結するため、確定申告の対象にはなりません。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txInterestIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txInterestIncome" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txStockTransfer">株式等の譲渡所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">上場株式等・一般株式等の譲渡による所得。<code>20.315%</code>の申告分離課税です。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txStockTransfer" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txStockTransfer" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txLandTransfer">土地建物等の譲渡所得(万円)<span class="help-tip" tabindex="0">?<span class="help-text">土地・建物の譲渡による所得。保有5年超の長期譲渡は<code>20.315%</code>、5年以内の短期譲渡は<code>39.63%</code>の申告分離課税です。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txLandTransfer" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txLandTransfer" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txLandTransferType">土地建物等の保有期間<span class="help-tip" tabindex="0">?<span class="help-text">譲渡した年の1月1日時点で保有期間5年超なら長期譲渡(20.315%)、5年以内なら短期譲渡(39.63%)になります。</span></span></label>
@@ -318,19 +318,19 @@
           <div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txSocialInsurance">社会保険料控除(万円/年)<span class="help-tip" tabindex="0">?<span class="help-text">健康保険・厚生年金・雇用保険などの本人負担分の年間合計額です。支払った全額が控除されます。給与収入の約14〜15%が目安です。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txSocialInsurance" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 150" /></div>
+              <div class="tx-field-input"><input type="number" id="txSocialInsurance" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：150" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txSmallBizDeduction">小規模企業共済等掛金控除(万円)<span class="help-tip" tabindex="0">?<span class="help-text">小規模企業共済・iDeCo(個人型確定拠出年金)・心身障害者扶養共済の掛金。支払った全額が控除されます。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txSmallBizDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txSmallBizDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txEarthquakeDeduction">地震保険料控除(万円)<span class="help-tip" tabindex="0">?<span class="help-text">地震保険料の控除額。所得税は最高5万円、住民税は最高2.5万円です。控除後の金額を入力してください。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txEarthquakeDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txEarthquakeDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txMedicalDeduction">医療費控除(万円)<span class="help-tip" tabindex="0">?<span class="help-text"><code>支払った医療費 − 保険金等で補填される金額 − (10万円 または 総所得金額×5%のいずれか少ない額)</code>で計算した控除額。最高200万円です。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txMedicalDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txMedicalDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txSpouseDeduction">配偶者控除<span class="help-tip" tabindex="0">?<span class="help-text">配偶者の所得が48万円以下の場合に適用されます。控除額は所得税38万円(70歳以上の老人控除対象配偶者は48万円)、住民税33万円(老人は38万円)です。本人の合計所得が1,000万円を超える場合は適用されません。</span></span></label>
@@ -344,19 +344,19 @@
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txDependentGeneral">扶養親族 一般・16〜18歳/23〜69歳(人)<span class="help-tip" tabindex="0">?<span class="help-text">16歳以上で特定扶養親族・老人扶養親族に該当しない扶養親族の人数。控除額は1人あたり所得税38万円・住民税33万円です。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txDependentGeneral" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txDependentGeneral" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txDependentSpecific">扶養親族 特定・19〜22歳(人)<span class="help-tip" tabindex="0">?<span class="help-text">19歳以上23歳未満の扶養親族の人数。控除額は1人あたり所得税63万円・住民税45万円です。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txDependentSpecific" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txDependentSpecific" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txDependentElderly">扶養親族 老人・70歳以上(人)<span class="help-tip" tabindex="0">?<span class="help-text">70歳以上の扶養親族の人数。控除額は1人あたり所得税48万円・住民税38万円です(同居老親等は所得税58万円・住民税45万円ですが、本ツールでは一律48万円/38万円で計算します)。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txDependentElderly" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txDependentElderly" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
             <div class="tx-field-row">
               <label class="tx-field-label" for="txOtherDeduction">その他の所得控除(万円)<span class="help-tip" tabindex="0">?<span class="help-text">寄附金控除(ふるさと納税等)・障害者控除・寡婦控除・ひとり親控除・勤労学生控除など、上記以外の所得控除の合計額を入力してください。</span></span></label>
-              <div class="tx-field-input"><input type="number" id="txOtherDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+              <div class="tx-field-input"><input type="number" id="txOtherDeduction" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
             </div>
           </div>
 
@@ -440,11 +440,11 @@
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txInheritanceRate">相続税率(%)<span class="help-tip" tabindex="0">?<span class="help-text">相続財産に適用される相続税の税率(限界税率)を入力してください。財産規模により10%〜55%の範囲で変動します。法定相続分に応ずる取得金額に対して<code>1,000万円以下10% / 3,000万円以下15% / 5,000万円以下20% / 1億円以下30% / 2億円以下40% / 3億円以下45% / 6億円以下50% / 6億円超55%</code>です。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txInheritanceRate" step="0.1" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 30" /></div>
+                <div class="tx-field-input"><input type="number" id="txInheritanceRate" step="0.1" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：30" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txHeirs">法定相続人の数(人)<span class="help-tip" tabindex="0">?<span class="help-text">生命保険金・死亡退職金の非課税枠(500万円×法定相続人の数)の計算に使用します。詳細入力を選んだ場合は家系図から自動判定されます。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txHeirs" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 2" /></div>
+                <div class="tx-field-input"><input type="number" id="txHeirs" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：2" /></div>
               </div>
               <div class="tx-field-row">
                 <span class="tx-field-label">非課税枠(1区分あたり)</span>
@@ -480,19 +480,19 @@
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txChildren">子の人数(実子・人)<span class="help-tip" tabindex="0">?<span class="help-text">実子および代襲相続する孫の人数。子が1人でもいる場合、父母・兄弟姉妹は相続人になりません。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txChildren" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 2" /></div>
+                <div class="tx-field-input"><input type="number" id="txChildren" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：2" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAdopted">養子の人数(人)<span class="help-tip" tabindex="0">?<span class="help-text">相続税の計算では、法定相続人の数に算入できる養子の数に制限があります。実子がいる場合は1人まで、実子がいない場合は2人までです(特別養子等は実子として扱われます)。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAdopted" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAdopted" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txParents">父母・直系尊属の人数(人)<span class="help-tip" tabindex="0">?<span class="help-text">子(及び代襲相続人)がいない場合に相続人となります。子がいる場合はこの欄の人数は判定に影響しません。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txParents" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txParents" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txSiblings">兄弟姉妹の人数(人)<span class="help-tip" tabindex="0">?<span class="help-text">子も直系尊属もいない場合に相続人となります。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txSiblings" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txSiblings" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">法定相続人の数(自動判定)<span class="help-tip" tabindex="0">?<span class="help-text">相続税の基礎控除(3,000万円＋600万円×法定相続人の数)と、生命保険金・死亡退職金の非課税枠(500万円×法定相続人の数)の計算に使用します。この人数はシミュレーションページの非課税枠にも自動反映されます。</span></span></span>
@@ -509,23 +509,23 @@
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetLand">土地(万円)<span class="help-tip" tabindex="0">?<span class="help-text">宅地・農地等の相続税評価額。宅地は路線価方式または倍率方式で評価します。小規模宅地等の特例を適用する場合は減額後の金額を入力してください。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetLand" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetLand" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetBuilding">建物(万円)<span class="help-tip" tabindex="0">?<span class="help-text">家屋の相続税評価額。原則として固定資産税評価額と同額です。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetBuilding" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetBuilding" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetSecurities">有価証券(万円)<span class="help-tip" tabindex="0">?<span class="help-text">上場株式・投資信託・公社債等の相続税評価額。自社株(取引相場のない株式)も含みます。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetSecurities" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetSecurities" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetCash">現金・預貯金(万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続開始日の残高。既経過利子も加算します。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetCash" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetCash" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txAssetOther">その他の財産(万円)<span class="help-tip" tabindex="0">?<span class="help-text">車両・家財・書画骨董・ゴルフ会員権・貸付金・特許権など、上記以外の財産の相続税評価額。相続開始前7年以内の生前贈与財産もここに含めてください。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txAssetOther" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txAssetOther" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">生命保険金(非課税枠控除後)</span>
@@ -557,11 +557,11 @@
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txSmallLotValue">対象宅地の評価額(万円)<span class="help-tip" tabindex="0">?<span class="help-text">特例を適用する宅地の相続税評価額(減額前)を入力してください。この金額は上の「土地」にも含めて入力しておく必要があります(ここでの入力は減額額の計算にのみ使用します)。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txSmallLotValue" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txSmallLotValue" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txSmallLotArea">対象宅地の面積(㎡)<span class="help-tip" tabindex="0">?<span class="help-text">特例を適用する宅地の地積です。限度面積を超える部分は減額の対象になりません(限度面積までの割合で按分して減額します)。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txSmallLotArea" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txSmallLotArea" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">小規模宅地等の減額額(自動計算)<span class="help-tip" tabindex="0">?<span class="help-text"><code>対象宅地の評価額 × (min(限度面積, 面積) ÷ 面積) × 減額率</code>で計算し、課税価格から差し引きます。</span></span></span>
@@ -573,11 +573,11 @@
             <div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txDebt">債務(万円)<span class="help-tip" tabindex="0">?<span class="help-text">借入金・未払医療費・未払税金など、被相続人が負っていた債務。確実と認められるものが控除できます。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txDebt" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txDebt" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row">
                 <label class="tx-field-label" for="txFuneralCost">葬式費用(万円)<span class="help-tip" tabindex="0">?<span class="help-text">通夜・本葬・火葬・納骨等の費用。香典返し・法要(初七日以降)・墓石の購入費用は控除できません。</span></span></label>
-                <div class="tx-field-input"><input type="number" id="txFuneralCost" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="例: 0" /></div>
+                <div class="tx-field-input"><input type="number" id="txFuneralCost" class="form-input rounded-lg px-4 py-2.5 text-sm text-right" placeholder="入力例：0" /></div>
               </div>
               <div class="tx-field-row is-auto">
                 <span class="tx-field-label">負の財産の合計</span>

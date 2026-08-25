@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082522" />
+<link rel="stylesheet" href="css/style.css?v=2026082523" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -245,27 +245,27 @@
             <p class="rb-sub">拠出と期間</p>
             <div class="rb-field">
               <label for="rbAccAnnual">法人が退職金積立に拠出する年額<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">この金額がA〜Dの4つの積み立て方すべての原資として自動的に反映されます。A・Bは役員報酬として支給してから(流出率を控除)、C・Dは法人に置いたまま(Cは法人税率を控除、Dは全額を保険料に)積み立てます。</span></span></label>
-              <input type="number" id="rbAccAnnual" value="500" class="form-input num-input" placeholder="例: 500" />
+              <input type="number" id="rbAccAnnual" value="500" class="form-input num-input" placeholder="入力例：500" />
             </div>
             <div class="rb-field">
               <label for="rbAccAgeContract">契約年齢<span class="rb-field-unit">歳</span><span class="help-tip" tabindex="0">?<span class="help-text">保険を契約した(する)ときの年齢です。設計書の経過年数とグラフの横軸はこの年齢から始まります。</span></span></label>
-              <input type="number" id="rbAccAgeContract" value="45" class="form-input num-input" placeholder="例: 45" />
+              <input type="number" id="rbAccAgeContract" value="45" class="form-input num-input" placeholder="入力例：45" />
             </div>
             <div class="rb-field">
               <label for="rbAccAgeNow">現在の年齢<span class="rb-field-unit">歳</span><span class="help-tip" tabindex="0">?<span class="help-text">契約年齢と退職年齢の間にある場合、グラフに「現在」の位置を破線で表示します。</span></span></label>
-              <input type="number" id="rbAccAgeNow" value="50" class="form-input num-input" placeholder="例: 50" />
+              <input type="number" id="rbAccAgeNow" value="50" class="form-input num-input" placeholder="入力例：50" />
             </div>
             <div class="rb-field">
               <label for="rbAccAgeRetire">退職年齢<span class="rb-field-unit">歳</span><span class="help-tip" tabindex="0">?<span class="help-text">契約年齢から退職年齢までの年数が積立年数になります。グラフの横軸と下の設計書もこの範囲で表示します。保険期間とは別の入力です。</span></span><span class="rb-plan-room" id="rbAccYearsRoom"></span></label>
-              <input type="number" id="rbAccAgeRetire" value="65" class="form-input num-input" placeholder="例: 65" />
+              <input type="number" id="rbAccAgeRetire" value="65" class="form-input num-input" placeholder="入力例：65" />
             </div>
             <div class="rb-field">
               <label for="rbAccTerm">保険期間<span class="rb-field-unit">年</span><span class="help-tip" tabindex="0">?<span class="help-text">契約している保険自体の期間です(退職年齢とはリンクしません)。税務ルールの「当初4割相当期間」「保険期間の75％経過後の取り崩し」や、ダミー返戻金カーブの形はこの期間を基準に計算します。退職(積立終了)が保険期間の途中にあたる場合、設計書には保険期間のうち退職までの部分だけが表示されます。</span></span></label>
-              <input type="number" id="rbAccTerm" value="40" class="form-input num-input" placeholder="例: 40" />
+              <input type="number" id="rbAccTerm" value="40" class="form-input num-input" placeholder="入力例：40" />
             </div>
             <div class="rb-field">
               <label for="rbAccInsAmt">保険金額<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">死亡保険金額です。D(法人で保険で積立)を表示しているとき、グラフに保障ラインとして破線で表示します。積み立てながら万一の保障も同時に確保できるのが、現金積立にはない保険の価値です。</span></span></label>
-              <input type="number" id="rbAccInsAmt" value="20000" class="form-input num-input" placeholder="例: 20,000" />
+              <input type="number" id="rbAccInsAmt" value="20000" class="form-input num-input" placeholder="入力例：20,000" />
             </div>
           </div>
 
@@ -273,15 +273,15 @@
             <p class="rb-sub">税率と流出率</p>
             <div class="rb-field">
               <label for="rbAccOutflowRate">所得税・住民税率(A・Bに反映)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">役員報酬として受け取ったときに、所得税・住民税として手元から出ていく割合です。A・Bはこの率を引いた手取りしか積み立てられません。上の「所得税・住民税軽減額」カードもこの率で計算します。</span></span></label>
-              <input type="number" id="rbAccOutflowRate" value="50" step="0.1" class="form-input num-input" placeholder="例: 50" />
+              <input type="number" id="rbAccOutflowRate" value="50" step="0.1" class="form-input num-input" placeholder="入力例：50" />
             </div>
             <div class="rb-field">
               <label for="rbAccSocialRate">社会保険料率(労使合計)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">健康保険・厚生年金の本人負担と会社負担を合わせた率で、およそ30％が目安です。上の「社会保険料削減額」カードの計算に使います(標準報酬月額の上限があるため、報酬が高い場合の実効率は下がります)。</span></span></label>
-              <input type="number" id="rbAccSocialRate" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
+              <input type="number" id="rbAccSocialRate" value="30" step="0.1" class="form-input num-input" placeholder="入力例：30" />
             </div>
             <div class="rb-field">
               <label for="rbAccCorpTax">法人税率(C・Dに反映)<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">Cは税引後のキャッシュしか積み立てられないため、この率を引いた金額で積み上がります。Dでは損金算入額に法人税率を掛けた金額が繰り延べられる法人税になります。実効税率を入れてください。</span></span></label>
-              <input type="number" id="rbAccCorpTax" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
+              <input type="number" id="rbAccCorpTax" value="30" step="0.1" class="form-input num-input" placeholder="入力例：30" />
             </div>
 
             <div class="rb-field">
@@ -299,7 +299,7 @@
             </div>
             <div class="rb-field">
               <label for="rbAccLossRate">損金割合<span class="rb-field-unit">％</span></label>
-              <input type="number" id="rbAccLossRate" value="" step="1" class="form-input num-input" placeholder="自動" disabled />
+              <input type="number" id="rbAccLossRate" value="" step="1" class="form-input num-input" placeholder="自動計算：%" disabled />
             </div>
             <p class="rb-loss-verdict" id="rbAccLossVerdict"></p>
           </div>
@@ -348,19 +348,19 @@
 
           <div class="rb-field">
             <label for="finalMonthlySalary">最終報酬月額<span class="rb-field-unit">万円</span></label>
-            <input type="number" id="finalMonthlySalary" value="150" class="form-input num-input" placeholder="例: 150" />
+            <input type="number" id="finalMonthlySalary" value="150" class="form-input num-input" placeholder="入力例：150" />
           </div>
           <div class="rb-field">
             <label for="yearsOfService">役員在任年数<span class="rb-field-unit">年</span><span class="help-tip" tabindex="0">?<span class="help-text">退職所得控除額の計算にも使います。20年以下は1年あたり40万円、20年超の部分は1年あたり70万円で控除枠が増えます。</span></span></label>
-            <input type="number" id="yearsOfService" value="25" class="form-input num-input" placeholder="例: 25" />
+            <input type="number" id="yearsOfService" value="25" class="form-input num-input" placeholder="入力例：25" />
           </div>
           <div class="rb-field">
             <label for="meritMultiplier">功績倍率<span class="rb-field-unit">倍</span></label>
-            <input type="number" id="meritMultiplier" value="3.0" step="0.1" class="form-input num-input" placeholder="例: 3.0" />
+            <input type="number" id="meritMultiplier" value="3.0" step="0.1" class="form-input num-input" placeholder="入力例：3.0" />
           </div>
           <div class="rb-field">
             <label for="meritAddRate">功労加算率<span class="rb-field-unit">％</span></label>
-            <input type="number" id="meritAddRate" value="0" step="1" class="form-input num-input" placeholder="例: 0" />
+            <input type="number" id="meritAddRate" value="0" step="1" class="form-input num-input" placeholder="入力例：0" />
           </div>
 
           <p class="rb-sum"><span class="rb-sum-label">支給する退職金額</span><span class="rb-sum-num" id="retirementAmountDisplay">-</span></p>
@@ -380,15 +380,15 @@
 
           <div class="rb-field">
             <label for="surrenderValue">解約返戻金見込額<span class="rb-field-unit">万円</span></label>
-            <input type="number" id="surrenderValue" value="4500" class="form-input num-input" placeholder="例: 4,500" />
+            <input type="number" id="surrenderValue" value="4500" class="form-input num-input" placeholder="入力例：4,500" />
           </div>
           <div class="rb-field">
             <label for="bookValue">資産計上額<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">解約時点の保険積立金の簿価です。全額損金タイプの保険であれば0になります。</span></span></label>
-            <input type="number" id="bookValue" value="0" class="form-input num-input" placeholder="例: 0" />
+            <input type="number" id="bookValue" value="0" class="form-input num-input" placeholder="入力例：0" />
           </div>
           <div class="rb-field">
             <label for="corpTaxRateRb">法人税率<span class="rb-field-unit">％</span></label>
-            <input type="number" id="corpTaxRateRb" value="30" step="0.1" class="form-input num-input" placeholder="例: 30" />
+            <input type="number" id="corpTaxRateRb" value="30" step="0.1" class="form-input num-input" placeholder="入力例：30" />
           </div>
 
           <dl class="rb-mini">
