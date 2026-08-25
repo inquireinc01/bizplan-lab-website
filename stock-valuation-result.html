@@ -12,7 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082509" />
+<link rel="stylesheet" href="css/style.css?v=2026082513" />
+<style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -496,39 +497,13 @@
     <div class="print-meta">作成日: <span id="pDate"></span><br />会社規模区分: <span id="pSize"></span></div>
   </div>
 
-  <div class="print-sec">現在の評価額(総額・万円)</div>
-  <table class="print-table">
-    <thead>
-      <tr>
-        <th class="lbl">シナリオ</th>
-        <th>相続税評価</th>
-        <th>法人税法上</th>
-        <th>類似業種比準</th>
-        <th>純資産</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="highlight">
-        <td class="lbl">シナリオA（通常時）</td>
-        <td id="pcv_saizoku_A"></td>
-        <td id="pcv_houjin_A"></td>
-        <td id="pcv_ruiji_A"></td>
-        <td id="pcv_junsisan_A"></td>
-      </tr>
-      <tr>
-        <td class="lbl">シナリオB（対策後）</td>
-        <td id="pcv_saizoku_B"></td>
-        <td id="pcv_houjin_B"></td>
-        <td id="pcv_ruiji_B"></td>
-        <td id="pcv_junsisan_B"></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="print-sec">将来推移(30年後まで・総額・1年単位)</div>
-  <div class="print-chart" id="pChartSlot"></div>
+  <!-- ===== 1枚目: 評価額の将来推移グラフを大きく ===== -->
+  <div class="print-sec">評価額の将来推移(総額・万円・1年単位)</div>
+  <div class="print-chart-big" id="pChartSlot"></div>
   <div class="print-legend" id="pChartLegend"></div>
 
+  <!-- ===== 2枚目: 推移表と前提条件 ===== -->
+  <div class="print-break"></div>
   <div class="print-sec">評価額推移表(総額・万円)</div>
   <table class="print-table" style="font-size:7pt">
     <thead>
@@ -546,17 +521,15 @@
   </table>
   <p class="print-note">※ 相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bは独立した年間税引前利益の前提による並行シナリオです。簡易試算のため税引前利益は毎年一定と仮定しています。</p>
 
-  <div class="print-keymsg">計画的な自社株の把握と対策が、円滑な事業承継を実現するための重要な要素となります。</div>
-
   <div class="print-foot">
-    <p>本シートの各数値は概算把握を目的とした簡易試算値であり、株価・グラフ・各種数値等について保証するものではありません。実際の相続税・贈与税申告等に用いる評価額は、直近の国税庁公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。</p>
+    <p>本シートの各数値は概算把握を目的とした簡易試算値であり、将来・グラフ・各種数値等について保証するものではありません。実際の相続税・贈与税申告等に用いる評価額は、直近の公表データと自社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。</p>
     <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
   </div>
 </div>
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-calculator.js?v=20260802b"></script>
+<script src="js/stock-calculator.js?v=20260825a"></script>
 <script src="js/data-backup.js?v=20260825q"></script>
 </body>
 </html>

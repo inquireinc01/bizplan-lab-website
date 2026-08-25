@@ -1011,14 +1011,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pDate').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
     document.getElementById('pSize').textContent = lastYear0.sizeLabel;
 
-    const p0 = lastSeries[0];
     const roundMan = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
-    Object.keys(BASE_METRICS).forEach((base) => {
-      const elA = document.getElementById(`pcv_${base}_A`);
-      const elB = document.getElementById(`pcv_${base}_B`);
-      if (elA) elA.textContent = roundMan(p0[`${base}T_A`]);
-      if (elB) elB.textContent = roundMan(p0[`${base}T_B`]);
-    });
 
     // 推移表(印刷用)
     let rows = '';
@@ -1043,6 +1036,16 @@ document.addEventListener('DOMContentLoaded', function () {
       clone.querySelectorAll('.chart-bar').forEach((r) => {
         r.style.animation = 'none';
       });
+      // A4ヨコいっぱいに拡大できるよう、固定サイズを外してviewBoxで伸縮させる
+      const svg = clone.tagName && clone.tagName.toLowerCase() === 'svg' ? clone : clone.querySelector('svg');
+      if (svg) {
+        if (!svg.getAttribute('viewBox') && svg.getAttribute('width') && svg.getAttribute('height')) {
+          svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
+        }
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
       slot.appendChild(clone);
     }
 

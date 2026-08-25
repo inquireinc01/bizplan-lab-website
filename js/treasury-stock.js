@@ -556,6 +556,45 @@ document.addEventListener('DOMContentLoaded', function () {
       const pDiffEl = document.getElementById('pSumDiff');
       if (pDiffEl) pDiffEl.textContent = (r.diff >= 0 ? '+' : '') + man(r.diff);
 
+      // 2枚目: 前提条件(画面の入力値をそのまま転記。率は%、金額は万円)
+      const rawOf = (id) => {
+        const el = document.getElementById(id);
+        const v = parseFloat((el && el.value || '').replace(/,/g, ''));
+        return isNaN(v) ? 0 : v;
+      };
+      const setCond = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setCond('pCondCash', man(rawOf('cash')));
+      setCond('pCondCapital', man(rawOf('capital')));
+      setCond('pCondCorpTax', rawOf('corpTaxRate') + ' %');
+      setCond('pCondIncomeTax', rawOf('incomeTaxRate') + ' %');
+      setCond('pCondInheritTax', rawOf('inheritanceTaxRate') + ' %');
+      setCond('pCondGainRate', rawOf('insuranceGainRate') + ' %');
+      setCond('pCondStockInherit', man(rawOf('stockInheritanceValue')));
+      setCond('pCondStockCorp', man(rawOf('stockCorpValue')));
+
+      // 1枚目: ウォーターフォール(A/B)のSVGを複製し、A4ヨコに合わせて伸縮させる
+      const cloneWf = (srcId, slotId) => {
+        const slot = document.getElementById(slotId);
+        if (!slot) return;
+        slot.innerHTML = '';
+        const src = document.getElementById(srcId);
+        if (!src) return;
+        const clone = src.cloneNode(true);
+        clone.removeAttribute('id');
+        const svg = clone.tagName && clone.tagName.toLowerCase() === 'svg' ? clone : clone.querySelector('svg');
+        if (svg) {
+          if (!svg.getAttribute('viewBox') && svg.getAttribute('width') && svg.getAttribute('height')) {
+            svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
+          }
+          svg.removeAttribute('width');
+          svg.removeAttribute('height');
+          svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        }
+        slot.appendChild(clone);
+      };
+      cloneWf('tsWaterfall1', 'pWfSlotA');
+      cloneWf('tsWaterfall2', 'pWfSlotB');
+
       window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));

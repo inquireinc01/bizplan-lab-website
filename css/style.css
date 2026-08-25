@@ -3904,6 +3904,60 @@ a.portal-feed-row:hover .portal-feed-text {
   .print-sheet table, .print-sheet svg { page-break-inside: avoid; }
   .print-sheet h2, .print-sheet .print-sec { page-break-after: avoid; }
 }
+/* 非課税の印刷: 縦積みの指標カード */
+.print-stats-col > div {
+  border: 1px solid #dde3e8;
+  border-radius: 6px;
+  padding: 7px 12px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.print-stats-col .k { font-size: 9.5px; color: #555; }
+.print-stats-col .v { font-size: 12px; font-weight: 700; font-family: Arial; white-space: nowrap; }
+
+/* 金庫株の印刷: パターンA/Bの強調ヘッダー */
+.print-pattern-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f2a4a;
+  border: 1.5px solid #0f2a4a;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+}
+.print-pattern-head b { font-size: 13.5px; }
+.print-pattern-head .pp-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  font-family: Arial;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  background-color: #0f2a4a;
+}
+.print-pattern-head.is-b { border-color: #3b6ea5; color: #2d5580; }
+.print-pattern-head.is-b .pp-badge { background-color: #3b6ea5; }
+
+/* 金庫株のA4ヨコ印刷: ウォーターフォール2列 */
+.print-wf-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  align-items: start;
+}
+.print-wf-cols .print-chart-big svg { max-height: 110mm; }
+
 /* 将来負債のA4ヨコ2ページ印刷 */
 .print-break { break-before: page; page-break-before: always; height: 0; }
 .print-chart-big { margin: 8px 0 6px; }

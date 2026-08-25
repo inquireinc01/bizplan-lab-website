@@ -25,7 +25,8 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082509" />
+<link rel="stylesheet" href="css/style.css?v=2026082513" />
+<style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -380,7 +381,7 @@
 </footer>
 
 <!-- ===== 印刷用シート(PDF出力) ===== -->
-<div class="print-sheet" id="printSheet">
+<div class="print-sheet" id="printSheet" data-no-auto-cond>
   <div class="print-head">
     <div class="print-brand">BizPlan Laboratory</div>
     <h1 class="print-title">
@@ -392,9 +393,49 @@
     <div class="print-meta">作成日: <span id="pDate"></span></div>
   </div>
 
+  <!-- ===== 1枚目: 資金の流れ(ウォーターフォール)と効果 ===== -->
+  <div class="print-sec">資金の流れの比較</div>
+  <div class="print-wf-cols">
+    <div>
+      <div class="print-pattern-head is-a"><span class="pp-badge">A</span>給与を原資に<b>個人で負担</b>した場合</div>
+      <div class="print-chart-big" id="pWfSlotA"></div>
+    </div>
+    <div>
+      <div class="print-pattern-head is-b"><span class="pp-badge">B</span>金庫株を原資に<b>法人で負担</b>した場合</div>
+      <div class="print-chart-big" id="pWfSlotB"></div>
+    </div>
+  </div>
+  <div class="print-sec" style="margin-top:8px">法人・個人トータルの効果</div>
+  <table class="print-table">
+    <thead>
+      <tr><th class="lbl">比較</th><th>A 給与で負担</th><th>B 金庫株で負担</th><th>差額(B-A)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="total"><td class="lbl">法人・個人 合計残高</td><td id="pSumS1"></td><td id="pSumS2"></td><td id="pSumDiff"></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 2枚目: 前提条件と計算根拠 ===== -->
+  <div class="print-break"></div>
   <div class="print-cols">
     <div>
-      <div class="print-sec">パターンA 給与を原資に個人で負担</div>
+      <div class="print-sec">前提条件</div>
+      <table class="print-table">
+        <thead><tr><th class="lbl">項目</th><th>値</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">法人の現金(死亡保険金額)</td><td id="pCondCash"></td></tr>
+          <tr><td class="lbl">資本金</td><td id="pCondCapital"></td></tr>
+          <tr><td class="lbl">法人税率</td><td id="pCondCorpTax"></td></tr>
+          <tr><td class="lbl">所得税・社保率</td><td id="pCondIncomeTax"></td></tr>
+          <tr><td class="lbl">相続税率</td><td id="pCondInheritTax"></td></tr>
+          <tr><td class="lbl">保険差益率</td><td id="pCondGainRate"></td></tr>
+          <tr><td class="lbl">自社株の相続税評価額</td><td id="pCondStockInherit"></td></tr>
+          <tr><td class="lbl">自社株の法人税法上の評価額</td><td id="pCondStockCorp"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="print-sec">計算根拠 ① パターンA 給与を原資に個人で負担</div>
       <table class="print-table">
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
@@ -409,14 +450,14 @@
       </table>
     </div>
     <div>
-      <div class="print-sec">パターンB 金庫株を原資に法人で負担</div>
+      <div class="print-sec">計算根拠 ② パターンB 金庫株を原資に法人で負担</div>
       <table class="print-table">
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
           <tr><td class="lbl">法人税</td><td class="neg" id="pS2CorpTax"></td></tr>
           <tr><td class="lbl">保険差益</td><td id="pS2InsuranceGain"></td></tr>
           <tr><td class="lbl">保険差益への法人税</td><td class="neg" id="pS2InsuranceTax"></td></tr>
-          <tr><td class="lbl">遺族から自社株買い</td><td class="neg" id="pS2Buyback"></td></tr>
+          <tr><td class="lbl">遺族から自社株買取</td><td class="neg" id="pS2Buyback"></td></tr>
           <tr><td class="lbl">法人の最終残高</td><td id="pS2CorpFinal"></td></tr>
           <tr><td class="lbl">自社株の相続税</td><td class="neg" id="pS2StockTax"></td></tr>
           <tr><td class="lbl">譲渡所得税・住民税</td><td class="neg" id="pS2CapitalGainsTax"></td></tr>
@@ -427,20 +468,8 @@
     </div>
   </div>
 
-  <div class="print-sec">法人・個人トータルの比較</div>
-  <table class="print-table">
-    <thead>
-      <tr><th class="lbl">比較</th><th>A 給与で負担</th><th>B 金庫株で負担</th><th>差額(B-A)</th></tr>
-    </thead>
-    <tbody>
-      <tr class="total"><td class="lbl">法人・個人 合計残高</td><td id="pSumS1"></td><td id="pSumS2"></td><td id="pSumDiff"></td></tr>
-    </tbody>
-  </table>
-
-  <div class="print-keymsg">相続税の負担方法の違いにより、法人・個人トータルで残る資金が大きく変わる場合があります。</div>
-
   <div class="print-foot">
-    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の税額計算には、各種特例の適用要件や個別事情の確認が必要です。譲渡所得税は取得費加算の特例を前提に約20%で試算しています。</p>
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の税額計算には、各特例の適用要件や個別事情の確認が必要です。譲渡所得税は取得費加算の特例を前提に約20%で試算しています。</p>
     <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
   </div>
 </div>
@@ -448,6 +477,6 @@
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/data-backup.js?v=20260825q"></script>
-<script src="js/treasury-stock.js?v=20260803a"></script>
+<script src="js/treasury-stock.js?v=20260825c"></script>
 </body>
 </html>

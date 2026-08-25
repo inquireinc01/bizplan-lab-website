@@ -496,6 +496,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const now = new Date();
     const dateEl = $('pDate');
     if (dateEl) dateEl.textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+
+    // 1枚目: 画面の効果・残り枠をそのまま転記(見えているものを忠実に)
+    const copyTxt = (fromId, toId) => {
+      const from = $(fromId), to = $(toId);
+      if (from && to) to.textContent = from.textContent || '—';
+    };
+    copyTxt('txUseIncome', 'pEffIncome');
+    copyTxt('txSave10y', 'pEff10y');
+    copyTxt('txSaveIncomeTotal', 'pRemIncome');
+    copyTxt('txUseInherit', 'pEffInherit');
+    copyTxt('txSaveInheritTotal', 'pRemInherit');
+
+    // ゲージSVGを複製(A4ヨコに合わせて伸縮)
+    const cloneChart = (srcId, slotId) => {
+      const slot = $(slotId);
+      if (!slot) return;
+      slot.innerHTML = '';
+      const src = $(srcId);
+      if (!src) return;
+      const clone = src.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      slot.appendChild(clone);
+    };
+    cloneChart('txChartIncome', 'pTxChartIncome');
+    cloneChart('txChartInherit', 'pTxChartInherit');
+
     window.print();
   }
   document.querySelectorAll('.js-pdf-btn').forEach((b) => b.addEventListener('click', doPrint));
