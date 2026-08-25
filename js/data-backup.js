@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ブラウザのキャッシュ削除や別端末での続きの入力に備え、ファイルへの保存/読込を提供します。
   //
   // 保存名(お客様名・案件名)は任意入力。入力すると
-  //   1) 保存ファイル名   BizPlanLab_<ツール名>_<保存名>_<日付>.txt
+  //   1) 保存ファイル名   <日付>_<保存名>_<ツール名短縮>_V100.txt (保存のたびに版番号が自動で+1)
   //   2) PDF出力のファイル名(印刷中だけdocument.titleを差し替え)
   //   3) 印刷シートのヘッダー表記
   // に共通で使われる。未入力ならツール名+日付のみ。サイト内の全ツールで共有する。
@@ -31,9 +31,27 @@ document.addEventListener('DOMContentLoaded', function () {
     var pad = function (n) { return String(n).padStart(2, '0'); };
     return now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
   }
-  function suggestedFileName(ext) {
+  // ツール名の短縮形(「将来負債×生命保険」→「将来負債」。×が無いツール名はそのまま)
+  function shortToolName() {
+    return pageLabel().split('×')[0] || pageLabel();
+  }
+  // 推奨ファイル名は「日付_顧客名_ツール名_V100」(2026-08-25指示)。保存名未入力なら顧客名部分を省略。
+  // V番号は同じ日付・顧客・ツールで保存するたびにV100→V101…と自動で上がる(このPC内で記憶)
+  var VER_KEY = 'bpl_save_ver_v1';
+  function saveBase() {
     var label = sanitize(getLabel());
-    return 'BizPlanLab_' + pageLabel() + (label ? '_' + label : '') + '_' + dateStamp() + '.' + (ext || 'txt');
+    return dateStamp() + '_' + (label ? label + '_' : '') + shortToolName();
+  }
+  function peekVersion(base) {
+    var map = {};
+    try { map = JSON.parse(localStorage.getItem(VER_KEY) || '{}'); } catch (e) {}
+    return (map[base] || 99) + 1;
+  }
+  function commitVersion(base, ver) {
+    var map = {};
+    try { map = JSON.parse(localStorage.getItem(VER_KEY) || '{}'); } catch (e) {}
+    map[base] = ver;
+    try { localStorage.setItem(VER_KEY, JSON.stringify(map)); } catch (e) {}
   }
   function downloadText(text, fileName, mime) {
     var blob = new Blob([text], { type: mime });
@@ -173,7 +191,13 @@ document.addEventListener('DOMContentLoaded', function () {
       saveBtn.addEventListener('click', function () {
         var text = buildPayloadText();
         if (text === null) { showMsg('保存する入力内容がありません。先に入力してください。'); return; }
-        var txtName = suggestedFileName('txt');
+        var base = saveBase();
+        var ver = peekVersion(base);
+        var fname = function (ext) { return base + '_V' + ver + '.' + ext; };
+        // どの保存方法でも、実際に保存動作をした時点で版番号を確定(次回はV+1)
+        var committed = false;
+        var commitOnce = function () { if (!committed) { committed = true; commitVersion(base, ver); } };
+        var txtName = fname('txt');
         openModal(
           '入力データの保存',
           '<span class="backup-modal-lead">保存方法を選んでください</span>' +
@@ -187,16 +211,19 @@ document.addEventListener('DOMContentLoaded', function () {
             buttons: [
               { text: '全文をコピー', primary: true, onClick: function (ta) {
                   copyText(ta, function (ok) {
+                    if (ok) commitOnce();
                     modalMsg(ok ? 'コピーしました。メモ帳に貼り付けて「' + txtName + '」の名前で保存してください。'
                                : '自動コピーできませんでした。全文が選択されているので、Ctrl+C でコピーしてください。', ok);
                   });
                 } },
               { text: '.txtで保存', onClick: function (ta) {
-                  downloadText(ta.value, suggestedFileName('txt'), 'text/plain');
+                  commitOnce();
+                  downloadText(ta.value, fname('txt'), 'text/plain');
                   modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
                 } },
               { text: '.jsonで保存', onClick: function (ta) {
-                  downloadText(ta.value, suggestedFileName('json'), 'application/json');
+                  commitOnce();
+                  downloadText(ta.value, fname('json'), 'application/json');
                   modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
                 } },
               { text: '閉じる', onClick: function () { closeModal(); } },
