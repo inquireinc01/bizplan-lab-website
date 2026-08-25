@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '  <div class="backup-modal-slots hidden"></div>' +
       '  <div class="backup-modal-actions"></div>' +
       '  <p class="backup-modal-msg hidden"></p>' +
-      '  <p class="backup-modal-filename hidden">推奨ファイル名: <b></b></p>' +
+      '  <p class="backup-modal-filename hidden">保存データ名: <input type="text" class="backup-modal-name" maxlength="60" spellcheck="false" /><span class="backup-modal-ext">.txt</span></p>' +
       '  <textarea class="backup-modal-text" spellcheck="false"></textarea>' +
       '</div>';
     document.body.appendChild(wrap);
@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', function () {
     m.querySelector('.backup-modal-title').textContent = title;
     m.querySelector('.backup-modal-guide').innerHTML = guide;
     var fn = m.querySelector('.backup-modal-filename');
-    fn.classList.toggle('hidden', !opts.fileName);
-    if (opts.fileName) fn.querySelector('b').textContent = opts.fileName;
+    fn.classList.toggle('hidden', !opts.nameValue);
+    if (opts.nameValue) fn.querySelector('.backup-modal-name').value = opts.nameValue;
     var ta = m.querySelector('.backup-modal-text');
     ta.value = opts.text || '';
     ta.readOnly = !!opts.readOnly;
@@ -136,6 +136,17 @@ document.addEventListener('DOMContentLoaded', function () {
     m.classList.remove('hidden');
     return m;
   }
+  // 保存データ名の取得と検証。問題があればエラーメッセージを表示してnullを返す
+  function getSaveName() {
+    var input = modal.querySelector('.backup-modal-name');
+    var name = (input.value || '').trim();
+    if (!name) { modalMsg('保存データ名を入力してください。', false); input.focus(); return null; }
+    var bad = name.match(/[\\/:*?"<>|]/g);
+    if (bad) { modalMsg('保存データ名に使えない文字が含まれています: ' + bad.join(' '), false); input.focus(); return null; }
+    if (name.length > 60) { modalMsg('保存データ名は60文字以内にしてください(現在' + name.length + '文字)。', false); input.focus(); return null; }
+    return name;
+  }
+
   function copyText(ta, done) {
     ta.focus();
     ta.select();
@@ -213,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var committed = false;
         var commitOnce = function () { if (!committed) { committed = true; commitVersion(base, ver); } };
         var txtName = fname('txt');
+        var defaultName = base + '_V' + ver;
         openModal(
           '入力データの保存',
           '<span class="backup-modal-lead">保存方法を選んでください</span>' +
@@ -223,12 +235,15 @@ document.addEventListener('DOMContentLoaded', function () {
           {
             text: text,
             readOnly: true,
-            fileName: txtName,
+            nameValue: defaultName,
             buttons: [
               { text: 'このPCに保存', primary: true, onClick: function (ta, btn) {
+                  var name = getSaveName();
+                  if (name === null) return;
                   try {
                     var slots = readSlots();
-                    var name = base + '_V' + ver;
+                    var overwrote = false;
+                    slots = slots.filter(function (x) { if (x && x.name === name) { overwrote = true; return false; } return true; });
                     slots.unshift({ name: name, savedAt: new Date().toISOString(), page: location.pathname, label: getLabel(), data: JSON.parse(ta.value).data });
                     while (slots.length > SLOTS_MAX) slots.pop();
                     writeSlots(slots);
@@ -237,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     btn.textContent = '保存しました';
                     btn.classList.add('backup-btn-ok');
                     btn.disabled = true;
-                    modalMsg('「' + name + '」としてこのPC(ブラウザ内)に保存しました。「読込み」の一覧から呼び出せます。※ブラウザの履歴・キャッシュを削除すると消えることがあります。', true);
+                    modalMsg('「' + name + '」としてこのPC(ブラウザ内)に' + (overwrote ? '上書き保存' : '保存') + 'しました。「読込み」の一覧から呼び出せます。※ブラウザの履歴・キャッシュを削除すると消えることがあります。', true);
                     // 自動では閉じない(メッセージを読む時間を確保)。閉じた後もヒーロー側に保存名を残す
                     showMsg('このPCに「' + name + '」を保存しました。');
                   } catch (e) {
@@ -245,16 +260,20 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 } },
               { text: '全文をコピー', onClick: function (ta) {
+                  var name = getSaveName();
+                  if (name === null) return;
                   copyText(ta, function (ok) {
                     if (ok) commitOnce();
-                    modalMsg(ok ? 'コピーしました。メモ帳に貼り付けて「' + txtName + '」の名前で保存してください。'
+                    modalMsg(ok ? 'コピーしました。メモ帳に貼り付けて「' + name + '.txt」の名前で保存してください。'
                                : '自動コピーできませんでした。全文が選択されているので、Ctrl+C でコピーしてください。', ok);
                   });
                 } },
               { text: '.txtで保存', onClick: function (ta) {
+                  var name = getSaveName();
+                  if (name === null) return;
                   commitOnce();
-                  downloadText(ta.value, fname('txt'), 'text/plain');
-                  modalMsg('ダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
+                  downloadText(ta.value, name + '.txt', 'text/plain');
+                  modalMsg('「' + name + '.txt」のダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
                 } },
               { text: '閉じる', onClick: function () { closeModal(); } },
             ],
@@ -377,6 +396,50 @@ document.addEventListener('DOMContentLoaded', function () {
         head.appendChild(line);
       }
       line.textContent = '保存名：' + label;
+    });
+    // ===== 前提条件(入力値一覧)を印刷シートの最後に自動生成する =====
+    // 「伝えたい結果・グラフを先に、前提条件は最後に網羅」(2026-08-25指示)。
+    // ページ上の見えている入力欄(ラベル付き)から毎回組み立てるため、
+    // ツールごとの手作業や項目の追加漏れが起きない
+    document.querySelectorAll('.print-sheet').forEach(function (sheet) {
+      var oldCond = sheet.querySelector('.print-cond-auto');
+      if (oldCond) oldCond.remove();
+      var rows = [];
+      document.querySelectorAll('main input[id], main select[id]').forEach(function (el) {
+        if (el.closest('.print-sheet') || el.closest('.backup-modal')) return;
+        var t = (el.type || '').toLowerCase();
+        if (t === 'file' || t === 'hidden' || t === 'checkbox' || t === 'radio') return;
+        if (el.classList.contains('hero-save-label')) return;
+        if (el.offsetParent === null) return; // 非表示(畳まれている)欄は載せない
+        var lab = document.querySelector('label[for="' + el.id + '"]');
+        var name = '';
+        if (lab) {
+          var c = lab.cloneNode(true);
+          c.querySelectorAll('.help-tip').forEach(function (x) { x.remove(); });
+          name = c.textContent.replace(/\s+/g, ' ').trim();
+        }
+        if (!name) return;
+        var val;
+        if (el.tagName === 'SELECT') {
+          var o = el.options[el.selectedIndex];
+          val = o ? o.text : '';
+        } else {
+          val = el.value;
+        }
+        rows.push([name, val === '' ? '—' : val]);
+      });
+      if (!rows.length) return;
+      var div = document.createElement('div');
+      div.className = 'print-cond-auto';
+      var html = '<div class="print-sec">前提条件(入力値一覧)</div><div class="print-cond-grid">';
+      rows.forEach(function () { html += '<div class="pc-item"><span class="pc-k"></span><span class="pc-v"></span></div>'; });
+      div.innerHTML = html + '</div>';
+      var items = div.querySelectorAll('.pc-item');
+      rows.forEach(function (r, i) {
+        items[i].children[0].textContent = r[0];
+        items[i].children[1].textContent = r[1];
+      });
+      sheet.appendChild(div);
     });
   });
   window.addEventListener('afterprint', function () {

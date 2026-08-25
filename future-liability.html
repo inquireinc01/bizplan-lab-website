@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082505" />
+<link rel="stylesheet" href="css/style.css?v=2026082507" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -350,7 +350,25 @@
 
   <div class="print-cols">
     <div>
-      <div class="print-sec">会計上のバランスシート</div>
+      <div class="print-sec">貸借対照表の比較(同一縮尺)</div>
+  <div class="print-chart" id="pChartSlot"></div>
+  <div class="print-legend">
+    <span><i style="background:#1c3f68"></i>流動資産</span>
+    <span><i style="background:#0f2a4a"></i>固定資産</span>
+    <span><i style="background:#091a30"></i>その他資産</span>
+    <span><i style="background:#c7ccd3"></i>流動負債</span>
+    <span><i style="background:#9aa1ab"></i>固定負債</span>
+    <span><i style="background:#3b6ea5"></i>純資産</span>
+    <span><i style="background:rgba(168,61,61,0.3);border:1px dashed #a83d3d"></i>簿外(将来負債/準備資産)</span>
+  </div>
+
+  <div class="print-keymsg">将来発生する負債を簿外資産とあわせて把握することが、計画的な資金準備の出発点となります。</div>
+
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の資金計画の策定にあたっては、詳細な決算内容をもとにした専門的な検討が必要です。</p>
+    <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
+  </div>
+<div class="print-sec">会計上のバランスシート</div>
       <table class="print-table">
         <thead><tr><th class="lbl">科目</th><th>金額</th></tr></thead>
         <tbody>
@@ -383,29 +401,11 @@
     </div>
   </div>
 
-  <div class="print-sec">貸借対照表の比較(同一縮尺)</div>
-  <div class="print-chart" id="pChartSlot"></div>
-  <div class="print-legend">
-    <span><i style="background:#1c3f68"></i>流動資産</span>
-    <span><i style="background:#0f2a4a"></i>固定資産</span>
-    <span><i style="background:#091a30"></i>その他資産</span>
-    <span><i style="background:#c7ccd3"></i>流動負債</span>
-    <span><i style="background:#9aa1ab"></i>固定負債</span>
-    <span><i style="background:#3b6ea5"></i>純資産</span>
-    <span><i style="background:rgba(168,61,61,0.3);border:1px dashed #a83d3d"></i>簿外(将来負債/準備資産)</span>
   </div>
-
-  <div class="print-keymsg">将来発生する負債を簿外資産とあわせて把握することが、計画的な資金準備の出発点となります。</div>
-
-  <div class="print-foot">
-    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の資金計画の策定にあたっては、詳細な決算内容をもとにした専門的な検討が必要です。</p>
-    <p class="cr">&copy; 2026 TK&amp;Company Inc. and BizPlan Laboratory Inc. All rights reserved.</p>
-  </div>
-</div>
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/data-backup.js?v=20260825m"></script>
+<script src="js/data-backup.js?v=20260825p"></script>
 <script src="js/future-liability.js?v=20260825b"></script>
 </body>
 </html>
