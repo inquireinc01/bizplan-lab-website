@@ -3875,3 +3875,39 @@ a.portal-feed-row:hover .portal-feed-text {
 .portal-save-btn.is-saved {
   color: #b98a2f;
 }
+
+/* ===== 保存名(お客様名・案件名)の入力欄: ヒーローのボタン列に置く白枠の小さな欄 ===== */
+.hero-save-label {
+  width: 13rem;
+  max-width: 44vw;
+  height: 2.4rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0.55rem;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  padding: 0 0.6rem;
+  flex-shrink: 1;
+  min-width: 7rem;
+}
+.hero-save-label::placeholder { color: rgba(255, 255, 255, 0.55); }
+.hero-save-label:focus {
+  outline: none;
+  border-color: #fff;
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+/* ===== PDF印刷の最適化 ===== */
+@media print {
+  /* 表・グラフがページ境界で分断されないようにする */
+  .print-sheet table, .print-sheet svg { page-break-inside: avoid; }
+  .print-sheet h2, .print-sheet .print-sec { page-break-after: avoid; }
+}
+/* 印刷ヘッダーの保存名の行(beforeprintで挿入される。未入力時は出ない) */
+.print-sheet .print-save-label {
+  font-size: 12px;
+  color: #333;
+  margin-top: 3px;
+  font-weight: 700;
+}

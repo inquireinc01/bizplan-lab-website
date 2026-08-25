@@ -39,6 +39,9 @@
 /* メルマガ登録ボタンはロゴのブルーグラデーションで強調(2026-08-13指示。btn-primaryネイビー固定の明示的例外) */
 .mm-btn { background: linear-gradient(90deg, #0f2a4a 0%, #3878c7 100%); }
 .mm-btn:hover { background: linear-gradient(90deg, #16375f 0%, #4a8ad9 100%); }
+/* 登録欄の下の注記(匿名性と停止方法の明示。特定電子メール法の受信拒否の案内も兼ねる) */
+.mm-note { margin-top: 8px; font-size: var(--fs-1); line-height: 1.6; color: var(--color-slate-light); }
+.mm-note a { color: var(--color-navy); text-decoration: underline; }
 </style>
 </head>
 <body class="bg-[#f8f9fb] text-[#2b2f36]">
@@ -86,10 +89,17 @@
             <p class="mm-lede">平日の朝、指数・金利・ニュースを1通に。</p>
             <form id="mm-form" class="mm-form" novalidate>
               <input type="email" id="mm-email" class="mm-input" placeholder="mail@example.com" autocomplete="email" aria-label="メールアドレス" />
+              <!-- ハニーポット: 人には見えない。botが埋めるので、埋まっていたら送信を捨てる -->
+              <input type="text" id="mm-company" name="company" tabindex="-1" autocomplete="off" aria-hidden="true"
+                     style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
               <button type="submit" class="btn-primary mm-btn">登録無料</button>
             </form>
             <a href="#" id="mm-sample" class="mm-sample">サンプルを見る <span aria-hidden="true">&rarr;</span></a>
-            <div id="mm-done" class="mm-done" hidden>ご登録ありがとうございます。次の平日の朝からお届けします。</div>
+            <div id="mm-done" class="mm-done" hidden>
+              確認のメールをお送りしました。メール内のリンクを開くと登録が完了します。<br />
+              <span style="color:#6b7684;">届かない場合は迷惑メールフォルダをご確認ください。</span>
+            </div>
+            <p class="mm-note">Googleアカウントへの登録は不要です。配信停止はいつでも1クリックで行えます（<a href="unsubscribe.html">配信停止はこちら</a>）。</p>
           </div>
         </div>
 
@@ -250,7 +260,29 @@ Array.prototype.forEach.call(document.querySelectorAll('.m-fold > .sc-head'), fu
   });
 });
 
-// メルマガ登録(フェーズ0はフォーム挙動のみ。送信先は未接続)
+/* ============================================================
+   メルマガ登録(ダブルオプトイン)
+   ------------------------------------------------------------
+   Apps Script の Webアプリへ直接POSTする。訪問者にGoogleログインを求めない
+   (企画書の「身バレを警戒する銀行員」への配慮。Googleフォームを使わない理由)。
+
+   Content-Type を text/plain にしているのは、CORSのプリフライトを避けるため。
+   Apps Script はプリフライト(OPTIONS)に応答できないので、これが唯一通る形。
+   応答は no-cors のため読めない ＝ 成否は画面に出せないが、
+   「登録済みかどうか」を外部から探れなくなる利点の方が大きい。
+   本当の完了通知は、このあと届く確認メールが担う。
+   ============================================================ */
+var MAIL_API = 'https://script.google.com/macros/s/PASTE_WEEKDAY_MAIL_DEPLOYMENT_ID/exec';
+
+function mmPost(payload) {
+  return fetch(MAIL_API, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+}
+
 document.getElementById('mm-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var input = document.getElementById('mm-email');
@@ -260,9 +292,20 @@ document.getElementById('mm-form').addEventListener('submit', function (e) {
     input.focus();
     return;
   }
-  document.getElementById('mm-form').hidden = true;
-  document.getElementById('mm-sample').hidden = true;
-  document.getElementById('mm-done').hidden = false;
+  var btn = e.target.querySelector('button[type="submit"]');
+  if (btn) { btn.disabled = true; btn.textContent = '送信中…'; }
+
+  mmPost({
+    action: 'register',
+    email: v,
+    company: document.getElementById('mm-company').value,   // ハニーポット
+    source: 'weekday-top'
+  })['catch'](function () { /* no-cors では失敗も成功も区別できない。画面表示は変えない */ })
+   .then(function () {
+     document.getElementById('mm-form').hidden = true;
+     document.getElementById('mm-sample').hidden = true;
+     document.getElementById('mm-done').hidden = false;
+   });
 });
 document.getElementById('mm-email').addEventListener('change', function () {
   this.style.borderColor = '';

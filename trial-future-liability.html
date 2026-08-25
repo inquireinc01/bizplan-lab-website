@@ -25,7 +25,7 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026081101" />
+<link rel="stylesheet" href="css/style.css?v=2026081701" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -129,19 +129,20 @@
         <p class="hero-info-text hidden">現在のバランスシート上の純資産は、退職金や自社株買取といった「将来必ず発生する負債」を考慮していない場合があります。今後発生が見込まれる負債を入力し、生命保険でどこまで備えられるかを踏まえた実質的な余力を確認します。</p>
       </div>
       <div class="hero-actions" data-backup-keys="bpl_future_liability_v1">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
         <a href="trial-portal.html" class="hero-util-btn" title="テストページのトップに戻る">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
           <span class="hero-util-label">トップ</span>
         </a>
-        <button type="button" disabled class="hero-util-btn trial-off" data-trial-off title="テスト版では利用できません: ファイルから読み込む">
+        <button type="button" class="js-backup-load hero-util-btn" title="ファイルから読み込む">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15V4m0 0L8 8m4-4l4 4M5 16v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
           <span class="hero-util-label">読込み</span>
         </button>
-        <button type="button" disabled class="hero-util-btn trial-off" data-trial-off title="テスト版では利用できません: ファイルに保存">
+        <button type="button" class="js-backup-save hero-util-btn" title="ファイルに保存">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 4h11l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 4v5h7V4M8 20v-6h8v6"/></svg>
           <span class="hero-util-label">保存</span>
         </button>
-        <button type="button" disabled class="hero-util-btn trial-off" data-trial-off title="テスト版では利用できません: PDFに出力する">
+        <button type="button" class="js-pdf-btn hero-util-btn" title="PDFに出力する">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
           <span class="hero-util-label">PDF</span>
         </button>
@@ -149,6 +150,7 @@
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12M9 7V4h6v3m-8 0l1 13a2 2 0 002 2h4a2 2 0 002-2l1-13"/></svg>
           <span class="hero-util-label">全データクリア</span>
         </button>
+        <input type="file" class="js-backup-file hidden" accept="application/json" />
       </div>
     </div>
   </section>
@@ -413,6 +415,7 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
+<script src="js/data-backup.js?v=20260817a"></script>
 <script src="js/future-liability.js?v=20260803a"></script>
 </body>
 </html>
