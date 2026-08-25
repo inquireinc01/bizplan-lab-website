@@ -50,10 +50,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var tr = document.createElement('tr');
     tr.className = 'border-b border-gray-100 tb-holder';
     tr.innerHTML =
-      '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" value="' + (d.name || '') + '" placeholder="氏名・法人名" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.ratio || '') + '" placeholder="％" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" placeholder="氏名・法人名" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="株数" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hr js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="％" /></td>' +
       '<td class="px-1 py-1 text-center"><button type="button" class="hdel text-gray-400 hover:text-red-500 font-bold" title="削除">×</button></td>';
+    // 値はHTMLに埋め込まず、生成後にプロパティへ代入する(「"」入りの名前で属性が壊れるため)
+    tr.querySelector('.hn').value = d.name || '';
+    tr.querySelector('.hs').value = d.shares || '';
+    tr.querySelector('.hr').value = d.ratio || '';
     tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); });
     holderBody.appendChild(tr);
     if (window.numReformatAll) setTimeout(window.numReformatAll, 0);

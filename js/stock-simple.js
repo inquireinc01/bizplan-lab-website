@@ -79,13 +79,18 @@ document.addEventListener('DOMContentLoaded', function () {
     var tr = document.createElement('tr');
     tr.className = 'border-b border-gray-100 ss-holder';
     tr.innerHTML =
-      '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" value="' + (d.name || '') + '" placeholder="氏名・法人名" /></td>' +
-      '<td class="px-1 py-1 ss-group-col"><input type="text" class="hg form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:7rem" value="' + (d.group || '') + '" placeholder="(株主名と同じ)" /></td>' +
-      '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" value="' + (d.shares || '') + '" placeholder="株数" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hn form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:11rem" placeholder="氏名・法人名" /></td>' +
+      '<td class="px-1 py-1 ss-group-col"><input type="text" class="hg form-input w-full rounded px-2 py-1.5 text-sm" style="min-width:7rem" placeholder="(株主名と同じ)" /></td>' +
+      '<td class="px-1 py-1"><input type="text" class="hs js-num form-input w-full rounded px-2 py-1.5 text-right text-sm" placeholder="株数" /></td>' +
       '<td class="px-2 py-2 text-right hr-display">-</td>' +
       '<td class="px-2 py-2 text-right hreka ss-eval-col">-</td>' +
       '<td class="px-2 py-2 text-right hhojin ss-eval-col">-</td>' +
       '<td class="px-1 py-1 text-center"><button type="button" class="hdel text-gray-400 hover:text-red-500 font-bold" title="削除">×</button></td>';
+    // 値はHTMLに埋め込まず、生成後にプロパティへ代入する。
+    // 埋め込むと株主名の「"」等で属性が壊れ、再読込後に名前が欠ける(2026-08-25修正)
+    tr.querySelector('.hn').value = d.name || '';
+    tr.querySelector('.hg').value = d.group || '';
+    tr.querySelector('.hs').value = d.shares || '';
     tr.querySelector('.hdel').addEventListener('click', function () { tr.remove(); recalcHolders(); });
     holderBody.appendChild(tr);
     if (window.numReformatAll) setTimeout(window.numReformatAll, 0);
@@ -288,7 +293,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
   form.addEventListener('input', clearOwnError);
-  form.addEventListener('change', clearOwnError);
+  // 注意: changeには登録しない。changeではrecalcAllが正しいエラー状態を作り直すが、
+  // その直後にclearOwnErrorが走ると、超過エラーで付けた赤枠を編集中の欄からだけ
+  // 外してしまい「間違えた行だけ赤くない」逆転表示になる(2026-08-25修正)。
 
   // 入力欄でEnterを押しただけで暗黙送信(=結果ページへ遷移)されるのを防ぐ。
   // Enterは「入力確定」として扱い、blurでchangeを発火させて再計算だけ行う。
