@@ -379,6 +379,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  // ===== ヘッドレス検証用: ?autoprint=1 でPDF出力処理を自動実行する =====
+  // (実際の印刷レンダリングをヘッドレスブラウザのPDF生成で確認するための仕組み)
+  if (/[?&]autoprint=1/.test(location.search)) {
+    window.print = function () {};
+    setTimeout(function () {
+      var btns = document.querySelectorAll('button');
+      for (var i = 0; i < btns.length; i++) {
+        if (/PDF|印刷/.test(btns[i].textContent)) { btns[i].click(); break; }
+      }
+    }, 1200);
+  }
+
   // ===== 画面のSVGグラフを「見たままのPNG画像」にして印刷スロットへ入れる共通ヘルパー =====
   // SVGを単純に複製すると、CSSで与えている色・寸法が印刷側で失われることがある
   // (自社株=全バーが灰色化 / 金庫株=白紙、の不具合の原因)。
@@ -421,13 +433,70 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.drawImage(img, 0, 0, rect.width, rect.height);
         var out = new Image();
         out.className = 'print-chart-img';
-        out.src = c.toDataURL('image/png');
+        // PNGの読み込み完了を待ってからdoneを呼ぶ。
+        // 直後にwindow.print()すると未ロードのまま印刷され空白になるため。
+        out.onload = function () { if (done) done(true); };
+        out.onerror = function () { if (done) done(false); };
         slot.innerHTML = '';
         slot.appendChild(out);
-        if (done) done(true);
+        out.src = c.toDataURL('image/png');
       };
       img.onerror = function () { slot.innerHTML = ''; if (done) done(false); };
       img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
+    } catch (e) {
+      slot.innerHTML = '';
+      if (done) done(false);
+    }
+  };
+
+  // ===== 画面のHTML要素(カード等)も「見たままのPNG画像」にする共通ヘルパー =====
+  // SVGのforeignObjectに描画済みスタイルを焼き込んだHTMLを包み、canvas経由でPNG化する。
+  // DOM複製は印刷エンジンの改ページ・CSS差でレイアウトが崩れるため、画像化が確実。
+  window.bplDomToImage = function (src, slot, done) {
+    try {
+      var rect = src.getBoundingClientRect();
+      if (!rect.width || !rect.height) { if (done) done(false); return; }
+      var clone = src.cloneNode(true);
+      var srcAll = [src].concat(Array.prototype.slice.call(src.querySelectorAll('*')));
+      var dstAll = [clone].concat(Array.prototype.slice.call(clone.querySelectorAll('*')));
+      for (var i = 0; i < srcAll.length; i++) {
+        var cs = getComputedStyle(srcAll[i]);
+        var buf = '';
+        for (var j = 0; j < cs.length; j++) {
+          var prop = cs[j];
+          buf += prop + ':' + cs.getPropertyValue(prop) + ';';
+        }
+        dstAll[i].setAttribute('style', buf);
+      }
+      clone.removeAttribute('id');
+      clone.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });
+      var W = Math.ceil(rect.width);
+      var H = Math.ceil(rect.height);
+      var xhtml = new XMLSerializer().serializeToString(clone);
+      var svgXml = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '">' +
+        '<foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">' +
+        xhtml + '</div></foreignObject></svg>';
+      var img = new Image();
+      img.onload = function () {
+        var scale = 2; // 印刷でぼやけないよう2倍で描く
+        var c = document.createElement('canvas');
+        c.width = W * scale;
+        c.height = H * scale;
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0, W, H);
+        var out = new Image();
+        out.className = 'print-chart-img';
+        out.onload = function () { if (done) done(true); };
+        out.onerror = function () { if (done) done(false); };
+        slot.innerHTML = '';
+        slot.appendChild(out);
+        out.src = c.toDataURL('image/png');
+      };
+      img.onerror = function () { slot.innerHTML = ''; if (done) done(false); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgXml);
     } catch (e) {
       slot.innerHTML = '';
       if (done) done(false);

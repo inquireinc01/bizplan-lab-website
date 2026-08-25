@@ -3901,11 +3901,22 @@ a.portal-feed-row:hover .portal-feed-text {
 /* ===== PDF印刷の最適化 ===== */
 @media print {
   /* 表・グラフがページ境界で分断されないようにする */
-  .print-sheet table, .print-sheet svg { page-break-inside: avoid; }
+  /* 表自体は複数ページに割ってよい(丸ごと禁止すると空白ページが生まれる)。行とグラフは分断しない */
+  .print-sheet tr, .print-sheet svg, .print-sheet img.print-chart-img { page-break-inside: avoid; break-inside: avoid; }
+  .print-sheet thead { display: table-header-group; }
   .print-sheet h2, .print-sheet .print-sec { page-break-after: avoid; }
 }
-/* 画面のカードをそのまま複製した印刷ブロック */
-.print-screen-clone > div { margin-bottom: 10px; }
+/* 画面のカードを見たまま画像化した印刷ブロック(A4ヨコ1枚に収まる高さ配分) */
+.print-dom-slot { margin-bottom: 6px; break-inside: avoid; page-break-inside: avoid; }
+.print-dom-slot img.print-chart-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: left top;
+  display: block;
+}
+.print-dom-slot.is-top img.print-chart-img { max-height: 94mm; }
+.print-dom-slot.is-bottom img.print-chart-img { max-height: 60mm; }
 .print-screen-clone details summary { list-style: none; }
 .print-screen-clone details summary::-webkit-details-marker { display: none; }
 
