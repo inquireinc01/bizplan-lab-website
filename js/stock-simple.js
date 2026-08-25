@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var coef = (1 - Math.pow(1 + rr, -n)) / rr;
     coefEl.value = coef.toFixed(2);
     if (errs.length > 0) { valEl.value = ''; valEl.placeholder = '入力値を確認してください'; return; }
-    if (isNaN(book) || isNaN(profit)) { valEl.value = ''; valEl.placeholder = '簿価純資産と純利益を入力'; return; }
+    if (isNaN(book) || isNaN(profit)) { valEl.value = ''; valEl.placeholder = '自動計算：円'; return; }
     var value = book + (profit - book * rr) * coef;
     valEl.value = fmt(value) + ' 円';
   }

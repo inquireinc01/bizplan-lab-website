@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082520" />
+<link rel="stylesheet" href="css/style.css?v=2026082522" />
 </head>
 <body class="bg-white text-[#2b2f36]">
 
@@ -695,7 +695,7 @@
         </div>
 
         <!-- 残余利益方式(検討中の新方式・任意入力) -->
-        <div class="calc-section bg-white p-6 sm:p-8" id="rimSection">
+        <div class="calc-section p-6 sm:p-8" id="rimSection" style="background-color:#fbf4f4;border:1px solid rgba(158,47,47,0.18)">
           <h3 class="font-bold text-base mb-2 flex items-center justify-between"><span class="flex items-center"><span class="step-badge" style="background-color:#9e2f2f">参考</span>残余利益方式（RIM・検討中の新方式）<span class="help-tip" tabindex="0">?<span class="help-text">RIMはResidual Income Model(残余利益方式)の略です。国税庁の有識者会議で審議中の新しい評価方式(2028年1月適用開始の可能性)。簿価純資産に、超過収益(税引後当期純利益−簿価純資産×割引率)×現価係数を加減して評価します。制度は検討段階のため、あくまで参考試算です。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <p class="text-xs text-gray-500 mb-1">任意入力です。入力すると、結果ページに「残余利益方式」の評価額タイルが表示され、グラフ・年齢・株価表で比較できます。</p>
           <p class="text-xs font-bold mb-4" style="color:#9e2f2f">※国税庁で審議中の新方式の参考試算です（算式・率・年数は未確定）。退職金等の一時損失は平常時利益から除外して算定します（簿価純資産の減少は反映され、超過収益の増加で一部相殺されます）。</p>
@@ -752,7 +752,7 @@
               <thead>
                 <tr class="bg-[#0f2a4a] text-white">
                   <th class="text-left font-bold px-2 py-2 rounded-tl-lg" style="min-width:9rem">株主名</th>
-                  <th class="text-right font-bold px-2 py-2" style="min-width:4rem">年齢<span class="help-tip" tabindex="0">?<span class="help-text">任意入力です。結果ページのグラフ「年齢・株価表」に、反映チェックの入った一番上の株主の年齢が経過年数に応じて表示されます。</span></span></th>
+                  <th class="text-right font-bold px-2 py-2" style="min-width:4.5rem">年齢(歳)<span class="help-tip" tabindex="0">?<span class="help-text">任意入力です。結果ページのグラフ「年齢・株価表」に、反映チェックの入った一番上の株主の年齢が経過年数に応じて表示されます。</span></span></th>
                   <th class="text-left font-bold px-2 py-2 ss-group-col" style="min-width:7rem">グループ<span class="help-tip" tabindex="0">?<span class="help-text">同族関係者(親族等)をまとめる名前を入力してください(例: 山田家)。空欄の場合は株主名ごとに単独のグループとして同族株主等の判定に使われます。</span></span></th>
                   <th class="text-right font-bold px-2 py-2" style="min-width:7rem">株数</th>
                   <th class="text-right font-bold px-2 py-2" style="min-width:4.5rem">比率</th>
@@ -981,7 +981,7 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
-<script src="js/stock-simple.js?v=20260825c"></script>
+<script src="js/stock-simple.js?v=20260825d"></script>
 <script src="js/stock-detail.js?v=20260724o"></script>
 <script src="js/stock-tdb.js?v=20260825a"></script>
 <script src="js/stock-stepper.js?v=20260724d"></script>
