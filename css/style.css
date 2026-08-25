@@ -3980,7 +3980,7 @@ a.portal-feed-row:hover .portal-feed-text {
 }
 .backup-modal-guide { font-size: 0.78rem; font-weight: 400; color: var(--color-gray-600); line-height: 1.7; margin-bottom: 0.5rem; }
 .backup-modal-guide b { color: var(--color-navy); }
-.backup-modal-filename { font-size: 0.75rem; font-weight: 400; color: var(--color-gray-600); margin-bottom: 0.4rem; }
+.backup-modal-filename { font-size: 0.75rem; font-weight: 400; color: var(--color-gray-600); margin-top: 0.9rem; margin-bottom: 0.15rem; display: flex; align-items: center; gap: 0.4rem; }
 .backup-modal-name {
   font-family: Consolas, monospace;
   color: var(--color-navy);
