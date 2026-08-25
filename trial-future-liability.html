@@ -175,6 +175,7 @@
                 <button type="button" id="bsDetailToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-green overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">BS内訳</span></button>
                 <button type="button" id="equityRatioToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-green overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">自己資本％</span></button>
                 <button type="button" id="insuranceToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-burgundy overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">生命保険なし</span></button>
+                <button type="button" id="offBalAssetToggle" aria-pressed="false" class="overlay-toggle overlay-toggle-green overlay-toggle-compact"><span class="dot"></span><span class="toggle-label">簿外資産なし</span></button>
               </div>
             </div>
             <svg id="bsChart" viewBox="0 0 700 456" class="w-full h-auto" role="img" aria-label="会計上・実質的・簿外負債発動時のバランスシート比較"></svg>
@@ -314,7 +315,7 @@
         
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>① 貸借対照表</dt><dd>入力した決算書の数値そのまま。資産 / 負債＋純資産 を積み上げて表示します。</dd><dt>② 実質BS</dt><dd>①に簿外資産（生命保険金・その他・不足分）と簿外負債（将来負債）を加えたBS。将来発生する負債を織り込んだ実質的な財政状態を表します。</dd><dt>③ 将来BS</dt><dd>将来負債が実際に発生し、簿外資産で充当した後のBS。純資産は <code>元の純資産 − 不足分</code> となります。</dd><dt>④ 次世代実質BS</dt><dd>③にさらに次世代将来負債と、それに対応する簿外資産を加えたBS。</dd><dt>自己資本比率</dt><dd><code>純資産 ÷ 資産合計 × 100</code>。純資産がマイナス、または資産合計が0以下の場合は「債務超過」と表示します。</dd><dt>BS内訳 / 自己資本％ / 生命保険なし</dt><dd>「BS内訳」は各帯の内訳項目名と金額の表示切替、「自己資本％」は自己資本比率ボックスの表示切替、「生命保険なし」は生命保険金を0として再計算した場合との比較切替です。</dd></dl>
+            <dl><dt>① 貸借対照表</dt><dd>入力した決算書の数値そのまま。資産 / 負債＋純資産 を積み上げて表示します。</dd><dt>② 実質BS</dt><dd>①に簿外資産（生命保険金・その他・不足分）と簿外負債（将来負債）を加えたBS。将来発生する負債を織り込んだ実質的な財政状態を表します。</dd><dt>③ 将来BS</dt><dd>将来負債が実際に発生し、簿外資産で充当した後のBS。純資産は <code>元の純資産 − 不足分</code> となります。</dd><dt>④ 次世代実質BS</dt><dd>③にさらに次世代将来負債と、それに対応する簿外資産を加えたBS。</dd><dt>自己資本比率</dt><dd><code>純資産 ÷ 資産合計 × 100</code>。純資産がマイナス、または資産合計が0以下の場合は「債務超過」と表示します。</dd><dt>BS内訳 / 自己資本％ / 生命保険なし / 簿外資産</dt><dd>「BS内訳」は各帯の内訳項目名と金額の表示切替、「自己資本％」は自己資本比率ボックスの表示切替、「生命保険なし」は生命保険金を0として再計算した場合との比較切替です。「簿外資産なし/あり」は実質BS・次世代実質BSの簿外資産(生命保険金・その他・不足分)の表示切替で、既定は非表示。まず将来負債の存在を示してから、ボタンで備えを重ねて見せられます。</dd></dl>
             <p class="calc-logic-note">各帯にカーソルを合わせると、その要素の名称と金額がポップアップで表示されます。</p>
           </div>
 </div>
@@ -416,6 +417,6 @@
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260721d"></script>
 <script src="js/data-backup.js?v=20260817a"></script>
-<script src="js/future-liability.js?v=20260803a"></script>
+<script src="js/future-liability.js?v=20260825a"></script>
 </body>
 </html>

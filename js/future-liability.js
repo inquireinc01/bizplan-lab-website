@@ -91,6 +91,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ===== 実質BS/次世代実質BSの「簿外資産あり/なし」トグル(2026-08-25指示。初期値はなし) =====
+  // まず「将来負債がある」ことだけを見せ、ボタンで簿外資産(備え)を重ねて見せる説明の流れを作る
+  let showOffBalAsset = false;
+  const offBalAssetToggle = document.getElementById('offBalAssetToggle');
+  if (offBalAssetToggle) {
+    offBalAssetToggle.addEventListener('click', function () {
+      showOffBalAsset = !showOffBalAsset;
+      offBalAssetToggle.classList.toggle('is-on', showOffBalAsset);
+      offBalAssetToggle.setAttribute('aria-pressed', String(showOffBalAsset));
+      offBalAssetToggle.querySelector('.toggle-label').textContent = showOffBalAsset ? '簿外資産あり' : '簿外資産なし';
+      recompute();
+    });
+  }
+
   // ===== 各BSの「自己資本％」トグル(初期値はOFF、ラベルは固定で点灯だけで状態を表す) =====
   let showEquityRatio = false;
   const equityRatioToggle = document.getElementById('equityRatioToggle');
@@ -629,6 +643,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // 通常は0(基準線)から上に積むが、純資産が債務超過などで負値になる場合は
   // その要素だけ基準線から下向きに積むことで、マイナス値でも高さがマイナスにならず表示が崩れない。
   function updateChart(dataByBar, pxPerYen, showValues, labelOnly) {
+    // 「簿外資産なし」(既定)の間は簿外資産側の帯だけを0にして隠し、将来負債だけを見せる
+    // (value=0の枠は非表示になる既存機構を利用。実データ・ダミーの両方にここで一括適用)
+    if (!showOffBalAsset) {
+      Object.values(dataByBar).forEach((segs) => segs.forEach((s) => {
+        if (s.offBalance && s.assetSide) s.value = 0;
+      }));
+    }
     initChartOnce();
     const anyNeg = Object.values(dataByBar).some((segs) => segs.some((s) => s.value < 0));
     updateLayout(anyNeg);
