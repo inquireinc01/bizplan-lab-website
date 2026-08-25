@@ -58,10 +58,10 @@ document.addEventListener('DOMContentLoaded', function () {
       '  <div class="backup-modal-head"><span class="backup-modal-title"></span>' +
       '    <button type="button" class="backup-modal-close" aria-label="閉じる">&times;</button></div>' +
       '  <p class="backup-modal-guide"></p>' +
-      '  <p class="backup-modal-filename hidden">推奨ファイル名: <b></b></p>' +
-      '  <textarea class="backup-modal-text" spellcheck="false"></textarea>' +
       '  <div class="backup-modal-actions"></div>' +
       '  <p class="backup-modal-msg hidden"></p>' +
+      '  <p class="backup-modal-filename hidden">推奨ファイル名: <b></b></p>' +
+      '  <textarea class="backup-modal-text" spellcheck="false"></textarea>' +
       '</div>';
     document.body.appendChild(wrap);
     wrap.addEventListener('click', function (e) { if (e.target === wrap) closeModal(); });
@@ -176,7 +176,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var txtName = suggestedFileName('txt');
         openModal(
           '入力データの保存',
-          '保存方法を選べます。<b>「全文をコピー」</b>は下のデータをコピーし、ご自身でメモ帳に貼り付けて保存する方法です' +
+          '<span class="backup-modal-lead">保存方法を選んでください</span>' +
+          '<b>「全文をコピー」</b>は下のデータをコピーし、ご自身でメモ帳に貼り付けて保存する方法です' +
           '(会社のセキュリティでダウンロードが禁止されていても保存できます)。' +
           '<br>通常の環境では「.txtで保存」または「.jsonで保存」でそのままダウンロードできます。',
           {
@@ -209,7 +210,8 @@ document.addEventListener('DOMContentLoaded', function () {
       loadBtn.addEventListener('click', function () {
         openModal(
           '入力データの読込み',
-          '保存したファイルをメモ帳で開いて<b>全文をコピーし、下に貼り付けて</b>「読み込む」を押してください。' +
+          '<span class="backup-modal-lead">読込み方法を選んでください</span>' +
+          '保存したファイルをメモ帳で開いて<b>全文を下の欄に貼り付けて</b>「読み込む」を押してください。' +
           '<br>ファイルを直接選べる環境では「ファイルを選ぶ」も使えます。' +
           '<br><b>現在の入力内容は読み込んだ内容で上書きされます。</b>',
           {

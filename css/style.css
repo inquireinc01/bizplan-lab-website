@@ -3951,6 +3951,13 @@ a.portal-feed-row:hover .portal-feed-text {
   cursor: pointer;
   padding: 0.2rem 0.4rem;
 }
+.backup-modal-lead {
+  display: block;
+  color: var(--color-red);
+  font-size: 0.92rem;
+  font-weight: 900;
+  margin-bottom: 0.35rem;
+}
 .backup-modal-guide { font-size: 0.78rem; font-weight: 400; color: var(--color-gray-600); line-height: 1.7; margin-bottom: 0.5rem; }
 .backup-modal-guide b { color: var(--color-navy); }
 .backup-modal-filename { font-size: 0.75rem; font-weight: 400; color: var(--color-gray-600); margin-bottom: 0.4rem; }
