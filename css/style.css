@@ -4040,4 +4040,17 @@ a.portal-feed-row:hover .portal-feed-text {
   margin-top: 0.6rem;
   color: var(--color-red);
 }
-.backup-modal-msg.is-ok { color: var(--color-blue-dark); }
+.backup-modal-msg.is-ok {
+  color: var(--color-green-gray-dark);
+  background-color: var(--color-green-gray-soft);
+  border: 1px solid var(--color-green-gray);
+  border-radius: 0.55rem;
+  padding: 0.5rem 0.75rem;
+}
+/* 「このPCに保存」成功時: ボタン自身が緑の「保存しました」に変わる */
+.backup-btn-ok, .backup-btn-ok:hover {
+  background-color: var(--color-green-gray);
+  border-color: var(--color-green-gray);
+  color: #fff;
+  cursor: default;
+}

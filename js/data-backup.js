@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
             readOnly: true,
             fileName: txtName,
             buttons: [
-              { text: 'このPCに保存', primary: true, onClick: function (ta) {
+              { text: 'このPCに保存', primary: true, onClick: function (ta, btn) {
                   try {
                     var slots = readSlots();
                     var name = base + '_V' + ver;
@@ -233,7 +233,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     while (slots.length > SLOTS_MAX) slots.pop();
                     writeSlots(slots);
                     commitOnce();
-                    modalMsg('このPC(ブラウザ内)に「' + name + '」として保存しました。「読込み」ボタンの一覧から呼び出せます。※ブラウザの履歴・キャッシュを削除すると消えることがあります。', true);
+                    // 保存できたことを押したボタン自身で示し、少し置いてから自動で閉じる
+                    btn.textContent = '保存しました';
+                    btn.classList.add('backup-btn-ok');
+                    btn.disabled = true;
+                    modalMsg('「' + name + '」としてこのPC(ブラウザ内)に保存しました。「読込み」の一覧から呼び出せます。※ブラウザの履歴・キャッシュを削除すると消えることがあります。', true);
+                    setTimeout(function () {
+                      closeModal();
+                      showMsg('このPCに「' + name + '」を保存しました。');
+                    }, 1600);
                   } catch (e) {
                     modalMsg('このPCへの保存に失敗しました(保存領域が不足している可能性があります)。他の保存方法をお使いください。', false);
                   }
