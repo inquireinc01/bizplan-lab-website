@@ -2381,7 +2381,21 @@ img {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+
+  /* 著作権表記: position:fixedは印刷で全ページに繰り返し描画される */
+  .print-page-cr {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    font-size: 6.5pt;
+    color: #98a1ac;
+    background: #fff;
+    padding-left: 4px;
+  }
 }
+
+.print-page-cr { display: none; }
 
 /* 印刷シートの内部レイアウト(画面プレビュー時にも同じ見た目) */
 .print-sheet {

@@ -520,6 +520,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (pending > 0) return;
         tips.forEach((tv) => { tv[0].style.visibility = tv[1]; });
         dets.forEach((d) => d.removeAttribute('open'));
+        // 上段・下段を同じ縮尺で縮めて幅を揃え、A4ヨコ1枚に収める(個別のmax-heightだと幅がずれる)
+        const imgs = slot.querySelectorAll('img.print-chart-img');
+        if (imgs.length >= 2) {
+          const SHEET_MM = 277;  // 印刷可能幅
+          const AVAIL_MM = 160;  // ヘッダー・見出しを除いた1枚目の高さ予算
+          let totalMm = 0;
+          imgs.forEach((im) => { totalMm += (im.naturalHeight / im.naturalWidth) * SHEET_MM; });
+          const scale = Math.min(1, AVAIL_MM / totalMm);
+          imgs.forEach((im) => {
+            im.style.maxHeight = 'none';
+            im.style.width = (scale * 100).toFixed(1) + '%';
+            im.style.margin = '0 auto';
+          });
+        }
         window.print();
       };
       grids.forEach((g, i) => {
