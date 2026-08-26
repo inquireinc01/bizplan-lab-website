@@ -595,6 +595,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!slot) return;
         slot.innerHTML = '';
         if (src && window.bplChartToImage) {
+          // ラベル・金額はフェードイン(CSSアニメ)の完了状態に依存するため、
+          // 撮影前にアニメを止めて最終状態(不透明)を強制する。省モーション環境や
+          // アニメ完了前の印刷でも文字が消えないようにする(見た目は最終状態と同じ)
+          src.classList.remove('wf-anim');
+          src.querySelectorAll('.wf-fade, .wf-bar, .wf-conn').forEach((el) => {
+            el.style.animation = 'none';
+            el.style.opacity = '1';
+          });
           pending += 1;
           window.bplChartToImage(src, slot, finish);
         }

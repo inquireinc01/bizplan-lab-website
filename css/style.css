@@ -3986,14 +3986,21 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-pattern-head.is-b { border-color: #3b6ea5; color: #2d5580; }
 .print-pattern-head.is-b .pp-badge { background-color: #3b6ea5; }
 
-/* 金庫株のA4ヨコ印刷: ウォーターフォール2列 */
+/* 金庫株のA4ヨコ印刷: パターンA/Bを縦積み2段にし、グラフを大きく見せる */
 .print-wf-cols {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
+  grid-template-columns: 1fr;
+  gap: 4px 0;
   align-items: start;
 }
-.print-wf-cols .print-chart-big svg { max-height: 110mm; }
+.print-wf-cols .print-chart-big svg { max-height: 70mm; }
+.print-wf-cols .print-chart-big img.print-chart-img {
+  width: 50%;
+  max-height: none;
+  margin: 0 auto;
+  display: block;
+}
+.print-wf-cols .print-pattern-head { margin-bottom: 2px; }
 
 /* 将来負債のA4ヨコ2ページ印刷 */
 .print-break { break-before: page; page-break-before: always; height: 0; }
