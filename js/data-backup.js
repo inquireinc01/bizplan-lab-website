@@ -53,6 +53,38 @@ document.addEventListener('DOMContentLoaded', function () {
     map[base] = ver;
     try { localStorage.setItem(VER_KEY, JSON.stringify(map)); } catch (e) {}
   }
+  // base64url変換(URLのハッシュに安全に載せる)
+  function b64urlEncode(bytesOrString) {
+    var bin;
+    if (typeof bytesOrString === 'string') {
+      bin = unescape(encodeURIComponent(bytesOrString));
+    } else {
+      bin = '';
+      var u8 = new Uint8Array(bytesOrString);
+      for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+    }
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function b64urlDecodeToBytes(b64) {
+    var t = b64.replace(/-/g, '+').replace(/_/g, '/');
+    while (t.length % 4) t += '=';
+    var bin = atob(t);
+    var u8 = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return u8;
+  }
+  // 復元リンクを作る。対応ブラウザではdeflate圧縮(#bplz=)で短くし、QRも読み取りやすくする
+  function buildRestoreUrl(text, done) {
+    var plain = location.origin + location.pathname + '#bpl=' + b64urlEncode(text);
+    if (typeof CompressionStream === 'undefined') { done(plain); return; }
+    try {
+      var stream = new Blob([text]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      new Response(stream).arrayBuffer().then(function (buf) {
+        done(location.origin + location.pathname + '#bplz=' + b64urlEncode(buf));
+      }, function () { done(plain); });
+    } catch (e) { done(plain); }
+  }
+
   function downloadText(text, fileName, mime) {
     var blob = new Blob([text], { type: mime });
     var url = URL.createObjectURL(blob);
@@ -92,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '  <div class="backup-modal-slots hidden"></div>' +
       '  <div class="backup-modal-actions"></div>' +
       '  <p class="backup-modal-msg hidden"></p>' +
+      '  <div class="backup-modal-qr hidden"></div>' +
       '  <p class="backup-modal-filename hidden">保存データ名: <input type="text" class="backup-modal-name" maxlength="60" spellcheck="false" /><span class="backup-modal-ext">.txt</span></p>' +
       '  <textarea class="backup-modal-text" spellcheck="false"></textarea>' +
       '</div>';
@@ -132,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     var msg = m.querySelector('.backup-modal-msg');
     msg.classList.add('hidden');
+    m.querySelector('.backup-modal-qr').classList.add('hidden');
     m.querySelector('.backup-modal-slots').classList.add('hidden');
     m.classList.remove('hidden');
     return m;
@@ -281,15 +315,35 @@ document.addEventListener('DOMContentLoaded', function () {
                   var name = getSaveName();
                   if (name === null) return;
                   commitOnce();
-                  // データをURLの#以降に埋め込む(base64url)。#以降はサーバーへ送信されない
-                  var payload = btoa(unescape(encodeURIComponent(text)))
-                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-                  var url = location.origin + location.pathname + '#bpl=' + payload;
-                  location.hash = '#bpl=' + payload;
-                  ta.value = url;
-                  btn.textContent = 'リンクを作成しました';
-                  modalMsg('アドレスバーが復元リンクになりました。このまま Ctrl+D を押してお気に入りに登録してください(登録名は「' + name + '」がおすすめ)。下のリンクをメール等に貼って保存することもできます。開くだけでデータが復元されます。', true);
-                  showMsg('復元リンクを作成しました。Ctrl+D でお気に入りに登録してください。');
+                  // データをURLの#以降に埋め込む(圧縮+base64url)。#以降はサーバーへ送信されない
+                  buildRestoreUrl(text, function (url) {
+                    location.hash = url.slice(url.indexOf('#'));
+                    ta.value = url;
+                    btn.textContent = 'リンクを作成しました';
+                    modalMsg('アドレスバーが復元リンクになりました。このまま Ctrl+D を押してお気に入りに登録してください(登録名は「' + name + '」がおすすめ)。下のリンクをメール等に貼って保存することもできます。開くだけでデータが復元されます。', true);
+                    showMsg('復元リンクを作成しました。Ctrl+D でお気に入りに登録してください。');
+                  });
+                } },
+              { text: 'QRコードを表示', onClick: function (ta, btn) {
+                  var name = getSaveName();
+                  if (name === null) return;
+                  if (typeof qrcode === 'undefined') { modalMsg('QR機能の読み込みに失敗しました。ページを再読み込みしてください。', false); return; }
+                  commitOnce();
+                  buildRestoreUrl(text, function (url) {
+                    try {
+                      var qr = qrcode(0, 'L');
+                      qr.addData(url);
+                      qr.make();
+                      var qrBox = modal.querySelector('.backup-modal-qr');
+                      qrBox.innerHTML = '<img alt="復元QRコード" src="' + qr.createDataURL(3, 8) + '" />' +
+                        '<p class="backup-modal-qr-cap">「' + name + '」の復元QR。スマホのカメラで読み取り、開いたリンクを保存してください。<br>リンクを開くと(スマホでも)この入力データが復元されます。PCへはスマホからメール等で送れます。</p>';
+                      qrBox.classList.remove('hidden');
+                      ta.value = url;
+                      modalMsg('QRコードを表示しました。ダウンロード・コピー・お気に入りが使えない端末でも、スマホで撮るだけでデータを持ち出せます。', true);
+                    } catch (e) {
+                      modalMsg('QRコードの生成に失敗しました(データ量が大きすぎる可能性があります)。「復元リンクを作る」をお使いください。', false);
+                    }
+                  });
                 } },
               { text: '閉じる', onClick: function () { closeModal(); } },
             ],
@@ -303,11 +357,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 残ることが多いため、データをURLの#以降に埋め込んだリンクで持ち出せるようにする。
     // #以降はサーバーへ送信されないため、データが外部に出ることはない。
     var didLinkRestore = false;
-    if (location.hash.indexOf('#bpl=') === 0) {
+    function finishLinkRestore(linkText) {
       try {
-        var b64 = location.hash.slice(5).replace(/-/g, '+').replace(/_/g, '/');
-        while (b64.length % 4) b64 += '=';
-        var linkText = decodeURIComponent(escape(atob(b64)));
         var linkRestored = applyBackupText(linkText);
         history.replaceState(null, '', location.pathname + location.search);
         if (linkRestored) {
@@ -315,6 +366,25 @@ document.addEventListener('DOMContentLoaded', function () {
           try { sessionStorage.setItem('bpl_link_restored', '1'); } catch (e) {}
           location.reload();
         }
+      } catch (e) {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    }
+    if (location.hash.indexOf('#bpl=') === 0) {
+      try {
+        var u8p = b64urlDecodeToBytes(location.hash.slice(5));
+        finishLinkRestore(decodeURIComponent(escape(String.fromCharCode.apply(null, u8p))));
+      } catch (e) {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    } else if (location.hash.indexOf('#bplz=') === 0) {
+      // 圧縮リンク(deflate-raw)。復元は非同期になるため完了後にreloadする
+      try {
+        var u8 = b64urlDecodeToBytes(location.hash.slice(6));
+        var ds = new Blob([u8]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+        new Response(ds).text().then(function (linkText) { finishLinkRestore(linkText); }, function () {
+          history.replaceState(null, '', location.pathname + location.search);
+        });
       } catch (e) {
         history.replaceState(null, '', location.pathname + location.search);
       }

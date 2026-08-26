@@ -3927,6 +3927,17 @@ a.portal-feed-row:hover .portal-feed-text {
 #ssCapital::placeholder, #ssShares::placeholder { font-size: 11.5px; }
 #ssHolderBody .hs::placeholder { font-size: 11.5px; }
 
+/* 保存ダイアログのQRコード表示 */
+.backup-modal-qr { text-align: center; margin: 0.7rem 0 0.2rem; }
+.backup-modal-qr img {
+  width: min(72vw, 300px);
+  height: auto;
+  image-rendering: pixelated;
+  border: 1px solid #e2e6ea;
+  border-radius: 8px;
+}
+.backup-modal-qr-cap { font-size: 0.75rem; color: #556; margin-top: 0.4rem; text-align: left; }
+
 /* 画面のカードを見たまま画像化した印刷ブロック(A4ヨコ1枚に収まる高さ配分) */
 .print-dom-slot { margin-bottom: 6px; break-inside: avoid; page-break-inside: avoid; }
 .print-dom-slot img.print-chart-img {
