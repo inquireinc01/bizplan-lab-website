@@ -231,7 +231,9 @@ document.addEventListener('DOMContentLoaded', function () {
           '<b>「このPCに保存」</b>はこの端末のブラウザ内に名前を付けて保存します' +
           '(ダウンロードやコピーが禁止されている環境でも使えます。読込みは同じ端末から)。' +
           '<br><b>「全文をコピー」</b>は下のデータをコピーし、メモ帳に貼り付けて保存する方法です。' +
-          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。',
+          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。' +
+          '<br><b>「復元リンクを作る」</b>は、データ入りのリンクをお気に入りに登録して残す方法です' +
+          '(履歴・サイトデータが定期削除されるPCでも、お気に入りは残ることが多いためおすすめです)。',
           {
             text: text,
             readOnly: true,
@@ -275,11 +277,56 @@ document.addEventListener('DOMContentLoaded', function () {
                   downloadText(ta.value, name + '.txt', 'text/plain');
                   modalMsg('「' + name + '.txt」のダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
                 } },
+              { text: '復元リンクを作る', onClick: function (ta, btn) {
+                  var name = getSaveName();
+                  if (name === null) return;
+                  commitOnce();
+                  // データをURLの#以降に埋め込む(base64url)。#以降はサーバーへ送信されない
+                  var payload = btoa(unescape(encodeURIComponent(text)))
+                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                  var url = location.origin + location.pathname + '#bpl=' + payload;
+                  location.hash = '#bpl=' + payload;
+                  ta.value = url;
+                  btn.textContent = 'リンクを作成しました';
+                  modalMsg('アドレスバーが復元リンクになりました。このまま Ctrl+D を押してお気に入りに登録してください(登録名は「' + name + '」がおすすめ)。下のリンクをメール等に貼って保存することもできます。開くだけでデータが復元されます。', true);
+                  showMsg('復元リンクを作成しました。Ctrl+D でお気に入りに登録してください。');
+                } },
               { text: '閉じる', onClick: function () { closeModal(); } },
             ],
           }
         );
       });
+    }
+
+    // ===== 復元リンク(#bpl=...)からの自動復元 =====
+    // 会社PCのポリシーで閲覧データが定期削除される環境でも、お気に入り(ブックマーク)は
+    // 残ることが多いため、データをURLの#以降に埋め込んだリンクで持ち出せるようにする。
+    // #以降はサーバーへ送信されないため、データが外部に出ることはない。
+    var didLinkRestore = false;
+    if (location.hash.indexOf('#bpl=') === 0) {
+      try {
+        var b64 = location.hash.slice(5).replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        var linkText = decodeURIComponent(escape(atob(b64)));
+        var linkRestored = applyBackupText(linkText);
+        history.replaceState(null, '', location.pathname + location.search);
+        if (linkRestored) {
+          didLinkRestore = true;
+          try { sessionStorage.setItem('bpl_link_restored', '1'); } catch (e) {}
+          location.reload();
+        }
+      } catch (e) {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    }
+    // 復元直後のリロード後にだけ案内を出す(リロード前に消費しないようガード)
+    if (!didLinkRestore) {
+      try {
+        if (sessionStorage.getItem('bpl_link_restored') === '1') {
+          sessionStorage.removeItem('bpl_link_restored');
+          showMsg('復元リンクからデータを読み込みました。');
+        }
+      } catch (e) {}
     }
 
     if (loadBtn) {
