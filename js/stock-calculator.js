@@ -664,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const colIdx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter((i) => (i < 5 ? showA : showB));
       const cells = vals.map((v, k) => {
         const i = colIdx[k];
-        const sep = (i === 5 && showA) ? ' border-l border-gray-200' : '';
+        const sep = '';
         if (isNaN(v)) return `<td class="px-2 py-1.5 text-right text-gray-300 ${TABLE_COL_CLASSES[i]}${sep}">—</td>`;
         const negCls = v < 0 ? ' neg-val' : '';
         const numText = window.numFmt ? window.numFmt(Math.round(v)) : Math.round(v).toLocaleString('ja-JP');

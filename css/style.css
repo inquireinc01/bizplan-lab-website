@@ -2198,19 +2198,12 @@ img {
 #trendTable td.col-rim-b {
   background-color: rgba(15, 42, 74, 0.12);
 }
-/* シナリオA/Bの境界に太い区切り線を入れて2ブロックを視覚的に分ける */
-#trendTable td.col-saizoku-b {
+/* シナリオA/Bの境界に太い区切り線を1本だけ入れて2ブロックを視覚的に分ける
+   (B側の各セル左に引く。RIM列側には引かない=二重線を防ぐ) */
+#trendTable td.col-saizoku-b,
+#trendTable th.sc-b-start {
   border-left: 2.5px solid #0f2a4a !important;
 }
-#trendTable th.sc-b-start {
-  border-left: 2.5px solid #fff !important;
-}
-#trendTable td.col-rim-a {
-  border-right: 2.5px solid #0f2a4a;
-}
-/* A/Bグループヘッダーの色をタイル/PDFと統一 */
-#trendTable thead .grp-a { background-color: #3b6ea5 !important; }
-#trendTable thead .grp-b { background-color: #0f2a4a !important; }
 
 /* 別枠強調ボックス(退職金・生命保険の契約条件) */
 .field-highlight {
