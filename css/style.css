@@ -914,6 +914,32 @@ input[type="number"] {
     text-shadow: 0 0 14px rgba(255, 210, 63, 0.95), 0 0 32px rgba(255, 210, 63, 0.6), 0 0 56px rgba(255, 210, 63, 0.35);
   }
 }
+/* INPUT=ライトブルー / OUTPUT=ライトグリーンの発光。複合バッジは単語ごとに塗り分ける */
+.io-glow-in {
+  color: #7ec8ff;
+  animation: ioGlowIn 2.2s ease-in-out infinite alternate;
+}
+@keyframes ioGlowIn {
+  from {
+    text-shadow: 0 0 8px rgba(126, 200, 255, 0.55), 0 0 18px rgba(126, 200, 255, 0.3), 0 0 32px rgba(126, 200, 255, 0.18);
+  }
+  to {
+    text-shadow: 0 0 14px rgba(126, 200, 255, 0.95), 0 0 32px rgba(126, 200, 255, 0.6), 0 0 56px rgba(126, 200, 255, 0.35);
+  }
+}
+.io-glow-out {
+  color: #8ce8ae;
+  animation: ioGlowOut 2.2s ease-in-out infinite alternate;
+}
+@keyframes ioGlowOut {
+  from {
+    text-shadow: 0 0 8px rgba(140, 232, 174, 0.55), 0 0 18px rgba(140, 232, 174, 0.3), 0 0 32px rgba(140, 232, 174, 0.18);
+  }
+  to {
+    text-shadow: 0 0 14px rgba(140, 232, 174, 0.95), 0 0 32px rgba(140, 232, 174, 0.6), 0 0 56px rgba(140, 232, 174, 0.35);
+  }
+}
+.hero-io-badge .io-sep { color: rgba(255, 255, 255, 0.55); }
 /* ホバー時に色だけがふわっとフェードするエフェクト(位置は動かさない) */
 .nav-btn::before {
   content: "";
