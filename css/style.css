@@ -2183,25 +2183,35 @@ img {
   animation: lampPulse 1.8s ease-in-out infinite;
 }
 
-/* 評価額推移表: シナリオA/Bを配色で明確に分ける(A=ブルー系 / B=ネイビー系) */
+/* 評価額推移表: シナリオA/Bを配色で分け(A=ブルー系/B=ネイビー系)、行ゼブラで濃淡を付ける */
 #trendTable td.col-saizoku-a,
 #trendTable td.col-houjin-a,
 #trendTable td.col-ruiji-a,
 #trendTable td.col-junsisan-a,
-#trendTable td.col-rim-a {
-  background-color: rgba(59, 110, 165, 0.10);
-}
+#trendTable td.col-rim-a { background-color: rgba(59, 110, 165, 0.05); }
 #trendTable td.col-saizoku-b,
 #trendTable td.col-houjin-b,
 #trendTable td.col-ruiji-b,
 #trendTable td.col-junsisan-b,
-#trendTable td.col-rim-b {
-  background-color: rgba(15, 42, 74, 0.12);
-}
-/* シナリオA/Bの境界に太い区切り線を1本だけ入れて2ブロックを視覚的に分ける
-   (B側の各セル左に引く。RIM列側には引かない=二重線を防ぐ) */
+#trendTable td.col-rim-b { background-color: rgba(15, 42, 74, 0.06); }
+/* 行ゼブラ(偶数行を少し濃く) */
+#trendTableBody tr:nth-child(even) td.col-saizoku-a,
+#trendTableBody tr:nth-child(even) td.col-houjin-a,
+#trendTableBody tr:nth-child(even) td.col-ruiji-a,
+#trendTableBody tr:nth-child(even) td.col-junsisan-a,
+#trendTableBody tr:nth-child(even) td.col-rim-a { background-color: rgba(59, 110, 165, 0.13); }
+#trendTableBody tr:nth-child(even) td.col-saizoku-b,
+#trendTableBody tr:nth-child(even) td.col-houjin-b,
+#trendTableBody tr:nth-child(even) td.col-ruiji-b,
+#trendTableBody tr:nth-child(even) td.col-junsisan-b,
+#trendTableBody tr:nth-child(even) td.col-rim-b { background-color: rgba(15, 42, 74, 0.14); }
+#trendTableBody tr:nth-child(even) td:first-child { background-color: #f3f6f9; }
+/* 5年ごと(現在・5年後・10年後…=1,6,11…行目)の上端に区切り線 */
+#trendTableBody tr:nth-child(5n + 1) td { border-top: 1.5px solid #aeb9c6; }
+/* シナリオA/Bの境界に太い区切り線を1本だけ入れて2ブロックを視覚的に分ける。
+   グループ帯・項目行・本文のすべてで同じ濃紺2.5pxを引き、上から下まで一直線にする */
 #trendTable td.col-saizoku-b,
-#trendTable th.sc-b-start {
+#trendTable thead th.sc-b-start {
   border-left: 2.5px solid #0f2a4a !important;
 }
 
