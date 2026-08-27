@@ -310,6 +310,19 @@ document.addEventListener('DOMContentLoaded', function () {
     return { series, retirementYear: shared.retirementYear };
   }
 
+  // 推移表(画面・PDF)は表示期間に関係なく常に0〜60年で出す。
+  // グラフ・年齢株価表はhorizonYears連動のまま。
+  const TREND_YEARS = 60;
+  function computeTrendSeries() {
+    if (!currentValues || !lastYear0) return lastSeries || [];
+    const saved = horizonYears;
+    horizonYears = TREND_YEARS;
+    let out;
+    try { out = computeSeries(currentValues, lastYear0).series; }
+    finally { horizonYears = saved; }
+    return out;
+  }
+
   // ===== 凡例・タイル選択state の描画 =====
   function renderLegend(container) {
     container.innerHTML = selectedMetrics.map((key) => {
@@ -637,7 +650,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 列ごとの色分け(タイル・ヘッダーと同じ配色。等間隔の列幅に合わせ、行のゼブラではなく列の色帯で識別する)
   const TABLE_COL_CLASSES = ['col-saizoku-a', 'col-houjin-a', 'col-ruiji-a', 'col-junsisan-a', 'col-rim-a', 'col-saizoku-b', 'col-houjin-b', 'col-ruiji-b', 'col-junsisan-b', 'col-rim-b'];
-  function renderTable(series) {
+  function renderTable(seriesIgnored) {
+    const series = computeTrendSeries();
     const body = document.getElementById('trendTableBody');
     let rows = '';
     const HF = holderFactor();
@@ -1063,8 +1077,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== グラフ・推移表の表示期間(30/40/50/60年)プルダウン =====
   const horizonSelect = document.getElementById('horizonSelect');
   function applyHorizonLabel() {
+    // 推移表は表示期間に関わらず常に0〜60年を表示するため固定表記
     const el = document.getElementById('tblHorizonLabel');
-    if (el) el.textContent = String(horizonYears);
+    if (el) el.textContent = '60';
   }
   // 年齢・株価表は30年表示のときだけ使える(40〜60年では列が細くなりすぎるため)
   function applyAgeTableAvailability() {
@@ -1386,25 +1401,27 @@ document.addEventListener('DOMContentLoaded', function () {
     if (secB) secB.style.display = (scMode === 'A') ? 'none' : '';
     if (brkB) brkB.style.display = (scMode === 'both') ? '' : 'none';
 
-    // A4ヨコ1枚に収めるため、年次を左右2列に分ける(左=前半・右=後半)。
-    // 30年表示では左に0〜30年を入れ、右列は空(非表示)にして余白にする
-    // 左列に入れる行数。0〜30年(31行)までは左1列に収める。31年超のぶんを右列へ回す
-    const SPLIT_AT = 31;
+    // 推移表は表示期間に関係なく常に0〜60年を左右2列で出す。
+    // 左=現在〜30年後(31行)、右=31年後〜60年後。
+    // 「1年後の右に31年後」が並ぶよう、右列は先頭に空行を1つ入れて1行ずらす
+    // (左の「n年後」と右の「n+30年後」が同じ行に来る。現在の右は空欄)。
+    const trend = computeTrendSeries(); // 常に0〜60年(61件)
     const rowHtml = (p, suffix) => {
       const cell = (v) => `<td>${isNaN(v) ? '—' : roundMan(v * HFP)}</td>`;
       return `<tr><td class="lbl">${yearLabel(p.year)}</td>` +
         cell(p[`saizokuT_${suffix}`]) + cell(p[`houjinT_${suffix}`]) + cell(p[`ruijiT_${suffix}`]) +
         cell(p[`junsisanT_${suffix}`]) + cell(p[`rimT_${suffix}`]) + '</tr>';
     };
+    const emptyRow = '<tr><td class="lbl">&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
     const fillTrend = (suffix) => {
-      const left = lastSeries.slice(0, SPLIT_AT);
-      const right = lastSeries.slice(SPLIT_AT);
+      const left = trend.slice(0, 31);          // 現在〜30年後
+      const right = trend.slice(31);            // 31年後〜60年後
       const bodyL = document.getElementById('pTrendBody' + suffix + 'L');
       const bodyR = document.getElementById('pTrendBody' + suffix + 'R');
       const tableR = document.getElementById('pTrendTable' + suffix + 'R');
       if (bodyL) bodyL.innerHTML = left.map((p) => rowHtml(p, suffix)).join('');
-      if (bodyR) bodyR.innerHTML = right.map((p) => rowHtml(p, suffix)).join('');
-      // 30年表示のときは右列に行が無いので表ごと隠す(右半分は余白)
+      // 右列は空行1つで1行ずらしてから31年後〜を並べる
+      if (bodyR) bodyR.innerHTML = emptyRow + right.map((p) => rowHtml(p, suffix)).join('');
       if (tableR) tableR.style.visibility = right.length ? 'visible' : 'hidden';
     };
     fillTrend('A');
