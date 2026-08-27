@@ -89,6 +89,39 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (e) { done(plain); }
   }
 
+  // OS標準の「名前を付けて保存」ダイアログでファイルを書く(File System Access API)。
+  // 「ブラウザのダウンロード」とは別経路のため、ダウンロードだけを禁止している環境でも
+  // 通ることがある。非対応ブラウザ(Firefox/Safari等)ではfalseを返し、呼び出し側で従来法へ。
+  function fsSaveSupported() { return typeof window.showSaveFilePicker === 'function'; }
+  function fsOpenSupported() { return typeof window.showOpenFilePicker === 'function'; }
+  function fsSaveText(text, suggestedName, done) {
+    if (!fsSaveSupported()) { done(false, 'unsupported'); return; }
+    window.showSaveFilePicker({
+      suggestedName: suggestedName,
+      types: [{ description: 'BizPlan保存データ', accept: { 'text/plain': ['.txt'] } }],
+    }).then(function (handle) {
+      return handle.createWritable().then(function (w) {
+        return w.write(text).then(function () { return w.close(); }).then(function () { done(true, handle.name); });
+      });
+    }).catch(function (e) {
+      // ユーザーがダイアログをキャンセルした場合はエラー扱いにしない
+      if (e && e.name === 'AbortError') { done(false, 'abort'); return; }
+      done(false, (e && e.name) || 'error');
+    });
+  }
+  function fsOpenText(done) {
+    if (!fsOpenSupported()) { done(false, 'unsupported'); return; }
+    window.showOpenFilePicker({
+      types: [{ description: 'BizPlan保存データ', accept: { 'text/plain': ['.txt', '.json'] } }],
+      multiple: false,
+    }).then(function (handles) {
+      return handles[0].getFile().then(function (file) { return file.text(); }).then(function (t) { done(true, t); });
+    }).catch(function (e) {
+      if (e && e.name === 'AbortError') { done(false, 'abort'); return; }
+      done(false, (e && e.name) || 'error');
+    });
+  }
+
   function downloadText(text, fileName, mime) {
     var blob = new Blob([text], { type: mime });
     var url = URL.createObjectURL(blob);
@@ -267,7 +300,8 @@ document.addEventListener('DOMContentLoaded', function () {
           '<b>「このPCに保存」</b>はこの端末のブラウザ内に名前を付けて保存します' +
           '(ダウンロードやコピーが禁止されている環境でも使えます。読込みは同じ端末から)。' +
           '<br><b>「全文をコピー」</b>は下のデータをコピーし、メモ帳に貼り付けて保存する方法です。' +
-          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。',
+          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。' +
+          '<br><b>「このPCに保存(B)」</b>はWindowsの「名前を付けて保存」画面でファイル保存します(ダウンロードが禁止でも通る場合があります。Edge/Chrome専用)。',
           {
             text: text,
             readOnly: true,
@@ -302,6 +336,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (ok) commitOnce();
                     modalMsg(ok ? 'コピーしました。メモ帳に貼り付けて「' + name + '.txt」の名前で保存してください。'
                                : '自動コピーできませんでした。全文が選択されているので、Ctrl+C でコピーしてください。', ok);
+                  });
+                } },
+              { text: 'このPCに保存(B)', onClick: function (ta) {
+                  var name = getSaveName();
+                  if (name === null) return;
+                  if (!fsSaveSupported()) {
+                    modalMsg('この方法はお使いのブラウザでは利用できません。Edge/Chromeでお試しいただくか、他の保存方法をご利用ください。', false);
+                    return;
+                  }
+                  modalMsg('保存先を選ぶ画面を開きます…', true);
+                  fsSaveText(ta.value, name + '.txt', function (ok, info) {
+                    if (ok) {
+                      commitOnce();
+                      modalMsg('「' + info + '」として保存しました。読込みは「読込み」→「このPCから開く(B)」から同じファイルを選んでください。', true);
+                      showMsg('「' + name + '」を保存しました。');
+                    } else if (info === 'abort') {
+                      modalMsg('保存をキャンセルしました。', false);
+                    } else {
+                      modalMsg('この方法での保存がブロックされました。「このPCに保存」や「全文をコピー」をお使いください。', false);
+                    }
                   });
                 } },
               { text: '.txtで保存', onClick: function (ta) {
@@ -372,6 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<span class="backup-modal-lead">読込み方法を選んでください</span>' +
           '<b>「このPCに保存」したデータは下の一覧から</b>読み込めます。' +
           '<br>保存したファイル(.txt / .json)がある場合は<b>「ファイルを選ぶ」</b>から読み込めます。' +
+          '<br><b>「このPCから開く(B)」</b>はWindowsの「開く」画面から保存(B)したファイルを読み込みます(Edge/Chrome専用)。' +
           '<br>ファイルを選べない環境では、メモ帳で開いた全文を最下部の欄に貼り付けて<b>「貼り付けたデータを読み込む」</b>を押してください。' +
           '<br><b>現在の入力内容は読み込んだ内容で上書きされます。</b>',
           {
@@ -380,6 +435,27 @@ document.addEventListener('DOMContentLoaded', function () {
             placeholder: 'ここに保存したデータの全文を貼り付け',
             buttons: [
               { text: 'ファイルを選ぶ', primary: true, onClick: function () { if (fileInput) fileInput.click(); } },
+              { text: 'このPCから開く(B)', onClick: function () {
+                  if (!fsOpenSupported()) {
+                    modalMsg('この方法はお使いのブラウザでは利用できません。「ファイルを選ぶ」をお使いください。', false);
+                    return;
+                  }
+                  fsOpenText(function (ok, payload) {
+                    if (!ok) {
+                      if (payload === 'abort') { modalMsg('読み込みをキャンセルしました。', false); return; }
+                      modalMsg('この方法での読み込みができませんでした。「ファイルを選ぶ」をお使いください。', false);
+                      return;
+                    }
+                    try {
+                      var restored = applyBackupText(payload);
+                      if (!restored) { modalMsg('このページに該当する入力データが見つかりませんでした。保存したツールのページで読み込んでください。', false); return; }
+                      modalMsg('読み込みました。ページを再読み込みします…', true);
+                      setTimeout(function () { location.reload(); }, 700);
+                    } catch (e) {
+                      modalMsg('読み込みに失敗しました。正しい保存ファイルか確認してください。', false);
+                    }
+                  });
+                } },
               { text: '貼り付けたデータを読み込む', onClick: function (ta) {
                   var text = ta.value.trim();
                   if (!text) { modalMsg('データが貼り付けられていません。下の欄に全文を貼り付けてください。', false); return; }
