@@ -3955,6 +3955,12 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-stats-col .k { font-size: 9.5px; color: #555; }
 .print-stats-col .v { font-size: 12px; font-weight: 700; font-family: Arial; white-space: nowrap; }
 
+/* 評価額推移表(画面): 列見出しは折り返さず1行に収める */
+#trendTable thead th { white-space: nowrap; }
+@media (max-width: 900px) {
+  #trendTable thead th { font-size: 10px; padding-left: 2px; padding-right: 2px; }
+}
+
 /* 自社株の印刷: シナリオA/Bの見出し(色分けして読み分けやすくする) */
 .print-scenario-head {
   display: flex;
