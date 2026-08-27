@@ -1322,6 +1322,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     // レイアウト確認用: ?agetable=1 で自動的に開き、年齢60・指標2つの状態を再現(スクリーンショット用)
     // 検証用: ?psc=A|B|both で印刷対象シナリオを指定
+    // 検証用: ?hz=40|50|60 で表示期間を切り替え
+    var hzM = location.search.match(/[?&]hz=(30|40|50|60)/);
+    if (hzM && horizonSelect) {
+      horizonSelect.value = hzM[1];
+      horizonSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     var pscM = location.search.match(/[?&]psc=(A|B|both)/);
     if (pscM) {
       trendScenario = pscM[1];
@@ -1374,16 +1380,28 @@ document.addEventListener('DOMContentLoaded', function () {
     if (secB) secB.style.display = (scMode === 'A') ? 'none' : '';
     if (brkB) brkB.style.display = (scMode === 'both') ? '' : 'none';
 
-    const buildRows = (suffix) => lastSeries.map((p) => {
+    // A4ヨコ1枚に収めるため、年次を左右2列に分ける(左=前半・右=後半)。
+    // 30年表示では左に0〜30年を入れ、右列は空(非表示)にして余白にする
+    const SPLIT_AT = 31; // 左列に入れる行数(現在〜30年後)
+    const rowHtml = (p, suffix) => {
       const cell = (v) => `<td>${isNaN(v) ? '—' : roundMan(v * HFP)}</td>`;
       return `<tr><td class="lbl">${yearLabel(p.year)}</td>` +
         cell(p[`saizokuT_${suffix}`]) + cell(p[`houjinT_${suffix}`]) + cell(p[`ruijiT_${suffix}`]) +
         cell(p[`junsisanT_${suffix}`]) + cell(p[`rimT_${suffix}`]) + '</tr>';
-    }).join('');
-    const bodyA = document.getElementById('pTrendBodyA');
-    const bodyB = document.getElementById('pTrendBodyB');
-    if (bodyA) bodyA.innerHTML = buildRows('A');
-    if (bodyB) bodyB.innerHTML = buildRows('B');
+    };
+    const fillTrend = (suffix) => {
+      const left = lastSeries.slice(0, SPLIT_AT);
+      const right = lastSeries.slice(SPLIT_AT);
+      const bodyL = document.getElementById('pTrendBody' + suffix + 'L');
+      const bodyR = document.getElementById('pTrendBody' + suffix + 'R');
+      const tableR = document.getElementById('pTrendTable' + suffix + 'R');
+      if (bodyL) bodyL.innerHTML = left.map((p) => rowHtml(p, suffix)).join('');
+      if (bodyR) bodyR.innerHTML = right.map((p) => rowHtml(p, suffix)).join('');
+      // 30年表示のときは右列に行が無いので表ごと隠す(右半分は余白)
+      if (tableR) tableR.style.visibility = right.length ? 'visible' : 'hidden';
+    };
+    fillTrend('A');
+    fillTrend('B');
 
     // 印刷用の凡例(現在選択中の指標)
     renderLegend(document.getElementById('pChartLegend'));
