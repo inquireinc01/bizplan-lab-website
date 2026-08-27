@@ -25,7 +25,7 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082539" />
+<link rel="stylesheet" href="css/style.css?v=2026082544" />
 <style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
@@ -564,9 +564,9 @@
 
   <!-- ===== 2枚目以降: 推移表(シナリオごと)と前提条件 ===== -->
   <div class="print-break"></div>
-  <div class="print-sec">評価額推移表<span id="pTrendUnit">(総額・万円)</span></div>
   <!-- シナリオA -->
   <div id="pTrendSecA">
+    <div class="print-sec">評価額推移表<span id="pTrendUnit">(総額・万円)</span></div>
     <div class="print-subsec print-scenario-head is-a"><span class="ps-badge">A</span>シナリオA（通常時）</div>
     <div class="print-trend-cols sc-a">
       <table class="print-table print-trend">
@@ -592,6 +592,7 @@
   <!-- シナリオB -->
   <div id="pTrendSecB">
     <div class="print-break" id="pTrendBreakB"></div>
+    <div class="print-sec">評価額推移表<span id="pTrendUnitB">(総額・万円)</span></div>
     <div class="print-subsec print-scenario-head is-b"><span class="ps-badge">B</span>シナリオB（対策後）</div>
     <div class="print-trend-cols sc-b">
       <table class="print-table print-trend">
@@ -628,7 +629,7 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260826a"></script>
-<script src="js/stock-calculator.js?v=20260827a"></script>
+<script src="js/stock-calculator.js?v=20260827b"></script>
 <script src="js/data-backup.js?v=20260827a"></script>
 <script>
 /* テスト配信版: 全データクリアの確定クリック時に印を置き、

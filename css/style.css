@@ -3964,6 +3964,9 @@ a.portal-feed-row:hover .portal-feed-text {
   #trendTable thead th { font-size: 10px; padding-left: 2px; padding-right: 2px; }
 }
 
+/* 印刷: セクション見出しは直後の内容と離さない */
+.print-sheet .print-sec { page-break-after: avoid; break-after: avoid; }
+
 /* 自社株の印刷: 前提条件は最終ページにまとめる */
 .print-cond-page .print-cond-auto { margin-top: 0; }
 
@@ -4009,13 +4012,19 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-trend-cols .print-trend {
   width: 100%;
   table-layout: fixed;
-  font-size: 8.2pt;
-  page-break-inside: avoid;
-  break-inside: avoid;
+  font-size: 8pt;
 }
-/* 31行でA4ヨコの縦幅(約192mm)をいっぱいに使う行高 */
+/* 各シナリオの表(見出し+表本体)は1ページに収める。改ページはHTML側のprint-breakが担う。
+   Bセクション冒頭の旧print-break(#pTrendBreakB)がそれ。 */
+#pTrendSecA, #pTrendSecB { page-break-inside: avoid; break-inside: avoid; }
+#pTrendSecA > .print-sec,
+#pTrendSecB > .print-sec,
+#pTrendSecA > .print-scenario-head,
+#pTrendSecB > .print-scenario-head { page-break-after: avoid; break-after: avoid; }
+.print-trend-cols .print-trend { page-break-inside: avoid; break-inside: avoid; }
+/* 見出し+32行がA4ヨコ1ページ(有効約190mm)に確実に収まる行高 */
 .print-trend-cols .print-trend th,
-.print-trend-cols .print-trend td { padding: 2.6px 6px; line-height: 1.3; }
+.print-trend-cols .print-trend td { padding: 1.6px 6px; line-height: 1.22; }
 /* 年列は狭く、指標5列は均等に(左右の表で列位置が揃う) */
 .print-trend-cols .print-trend th.lbl,
 .print-trend-cols .print-trend td.lbl { width: 15%; }

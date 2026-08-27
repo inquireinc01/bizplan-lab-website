@@ -1372,8 +1372,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (chartUnitEl) chartUnitEl.textContent = isPartial
       ? '(選択した株主の持分 ' + (HFP * 100).toFixed(2) + '% ・万円・1年単位)'
       : '(総額・万円・1年単位)';
-    const trendUnitEl = document.getElementById('pTrendUnit');
-    if (trendUnitEl) trendUnitEl.textContent = unitNote;
+    ['pTrendUnit', 'pTrendUnitB'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = unitNote;
+    });
 
     // PDFに出すシナリオは画面の「表示するシナリオ」に連動。Bのみのときは改ページを出さない
     const scMode = trendScenario;
