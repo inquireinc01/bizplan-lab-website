@@ -752,7 +752,10 @@ document.addEventListener('DOMContentLoaded', function () {
         items[i].children[0].textContent = r[0];
         items[i].children[1].textContent = r[1];
       });
-      sheet.appendChild(div);
+      // 差し込み先の指定(.print-cond-page)があればそこへ。無ければ従来どおり末尾へ
+      var slotEl = sheet.querySelector('.print-cond-page');
+      if (slotEl) { slotEl.innerHTML = ''; slotEl.appendChild(div); }
+      else { sheet.appendChild(div); }
     });
   });
   window.addEventListener('afterprint', function () {

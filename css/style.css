@@ -3964,6 +3964,9 @@ a.portal-feed-row:hover .portal-feed-text {
   #trendTable thead th { font-size: 10px; padding-left: 2px; padding-right: 2px; }
 }
 
+/* 自社株の印刷: 前提条件は最終ページにまとめる */
+.print-cond-page .print-cond-auto { margin-top: 0; }
+
 /* 自社株の印刷: シナリオA/Bの見出し(色分けして読み分けやすくする) */
 .print-scenario-head {
   display: flex;
@@ -4006,12 +4009,13 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-trend-cols .print-trend {
   width: 100%;
   table-layout: fixed;
-  font-size: 7pt;
+  font-size: 8.2pt;
   page-break-inside: avoid;
   break-inside: avoid;
 }
+/* 31行でA4ヨコの縦幅(約192mm)をいっぱいに使う行高 */
 .print-trend-cols .print-trend th,
-.print-trend-cols .print-trend td { padding: 1.5px 5px; line-height: 1.3; }
+.print-trend-cols .print-trend td { padding: 2.6px 6px; line-height: 1.3; }
 /* 年列は狭く、指標5列は均等に(左右の表で列位置が揃う) */
 .print-trend-cols .print-trend th.lbl,
 .print-trend-cols .print-trend td.lbl { width: 15%; }
