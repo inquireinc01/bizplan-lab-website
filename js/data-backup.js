@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // 通常環境向けに「ファイルとしてダウンロード」(.txt)も併設する。
   // 読込みも「メモ帳から全文コピー→貼り付け」と「ファイルを選ぶ」の両対応。
 
+  // テスト配信ページ(trial-)ではダイアログの見出しに環境名を付けて区別する
+  var IS_TRIAL_PAGE = location.pathname.indexOf('trial-') >= 0;
+  var ENV_SUFFIX = IS_TRIAL_PAGE ? '（テスト環境）' : '';
+
   var LABEL_KEY = 'bpl_save_label_v1';
 
   function getLabel() {
@@ -124,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
       '  <div class="backup-modal-slots hidden"></div>' +
       '  <div class="backup-modal-actions"></div>' +
       '  <p class="backup-modal-msg hidden"></p>' +
-      '  <div class="backup-modal-qr hidden"></div>' +
       '  <p class="backup-modal-filename hidden">保存データ名: <input type="text" class="backup-modal-name" maxlength="60" spellcheck="false" /><span class="backup-modal-ext">.txt</span></p>' +
       '  <textarea class="backup-modal-text" spellcheck="false"></textarea>' +
       '</div>';
@@ -165,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     var msg = m.querySelector('.backup-modal-msg');
     msg.classList.add('hidden');
-    m.querySelector('.backup-modal-qr').classList.add('hidden');
     m.querySelector('.backup-modal-slots').classList.add('hidden');
     m.classList.remove('hidden');
     return m;
@@ -260,14 +262,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var txtName = fname('txt');
         var defaultName = base + '_V' + ver;
         openModal(
-          '入力データの保存',
+          '入力データの保存' + ENV_SUFFIX,
           '<span class="backup-modal-lead">保存方法を選んでください</span>' +
           '<b>「このPCに保存」</b>はこの端末のブラウザ内に名前を付けて保存します' +
           '(ダウンロードやコピーが禁止されている環境でも使えます。読込みは同じ端末から)。' +
           '<br><b>「全文をコピー」</b>は下のデータをコピーし、メモ帳に貼り付けて保存する方法です。' +
-          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。' +
-          '<br><b>「復元リンクを作る」</b>は、データ入りのリンクをお気に入りに登録して残す方法です' +
-          '(履歴・サイトデータが定期削除されるPCでも、お気に入りは残ることが多いためおすすめです)。',
+          '<br>通常の環境では「.txtで保存」でそのままダウンロードできます。',
           {
             text: text,
             readOnly: true,
@@ -310,45 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   commitOnce();
                   downloadText(ta.value, name + '.txt', 'text/plain');
                   modalMsg('「' + name + '.txt」のダウンロードを開始しました。保存されない場合は「全文をコピー」をお使いください。', true);
-                } },
-              { text: '復元リンクを作る', onClick: function (ta, btn) {
-                  var name = getSaveName();
-                  if (name === null) return;
-                  commitOnce();
-                  // データをURLの#以降に埋め込む(圧縮+base64url)。#以降はサーバーへ送信されない
-                  buildRestoreUrl(text, function (url) {
-                    location.hash = url.slice(url.indexOf('#'));
-                    ta.value = url;
-                    btn.textContent = 'リンクを作成しました';
-                    // タッチ端末(iPad等)にはCtrl+Dがないため、案内をデバイスで切り替える
-                    var isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-                    var howTo = isTouch
-                      ? 'ブラウザの共有ボタン(□に↑)や☆マークから「お気に入り/ブックマークに追加」してください'
-                      : 'このまま Ctrl+D を押してお気に入りに登録してください';
-                    modalMsg('アドレスバーが復元リンクになりました。' + howTo + '(登録名は「' + name + '」がおすすめ)。下のリンクをメール等に貼って保存することもできます。開くだけでデータが復元されます。', true);
-                    showMsg('復元リンクを作成しました。' + (isTouch ? 'ブックマークに追加してください。' : 'Ctrl+D でお気に入りに登録してください。'));
-                  });
-                } },
-              { text: 'QRコードを表示', onClick: function (ta, btn) {
-                  var name = getSaveName();
-                  if (name === null) return;
-                  if (typeof qrcode === 'undefined') { modalMsg('QR機能の読み込みに失敗しました。ページを再読み込みしてください。', false); return; }
-                  commitOnce();
-                  buildRestoreUrl(text, function (url) {
-                    try {
-                      var qr = qrcode(0, 'L');
-                      qr.addData(url);
-                      qr.make();
-                      var qrBox = modal.querySelector('.backup-modal-qr');
-                      qrBox.innerHTML = '<img alt="復元QRコード" src="' + qr.createDataURL(3, 8) + '" />' +
-                        '<p class="backup-modal-qr-cap">「' + name + '」の復元QR。スマホのカメラで読み取り、開いたリンクを保存してください。<br>リンクを開くと(スマホでも)この入力データが復元されます。PCへはスマホからメール等で送れます。</p>';
-                      qrBox.classList.remove('hidden');
-                      ta.value = url;
-                      modalMsg('QRコードを表示しました。ダウンロード・コピー・お気に入りが使えない端末でも、スマホで撮るだけでデータを持ち出せます。', true);
-                    } catch (e) {
-                      modalMsg('QRコードの生成に失敗しました(データ量が大きすぎる可能性があります)。「復元リンクを作る」をお使いください。', false);
-                    }
-                  });
                 } },
               { text: '閉じる', onClick: function () { closeModal(); } },
             ],
@@ -407,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (loadBtn) {
       loadBtn.addEventListener('click', function () {
         var m = openModal(
-          '入力データの読込み',
+          '入力データの読込み' + ENV_SUFFIX,
           '<span class="backup-modal-lead">読込み方法を選んでください</span>' +
           '<b>「このPCに保存」したデータは下の一覧から</b>読み込めます。' +
           '<br>保存したファイル(.txt / .json)がある場合は<b>「ファイルを選ぶ」</b>から読み込めます。' +
