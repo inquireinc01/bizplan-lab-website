@@ -73,6 +73,10 @@
     var isDecimal = el.getAttribute('step') && el.getAttribute('step') !== '1';
     if (el.type === 'number') {
       el.type = 'text';
+    }
+    // タブレット・スマホで数字キーボードを開くためのヒント。
+    // 最初からtype=textの数値欄(.js-num)にも必ず付与する(HTMLで明示済みなら尊重)
+    if (!el.getAttribute('inputmode')) {
       el.setAttribute('inputmode', isDecimal ? 'decimal' : 'numeric');
     }
     el.classList.add('num-input');
