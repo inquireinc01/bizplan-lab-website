@@ -325,10 +325,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== 凡例・タイル選択state の描画 =====
   function renderLegend(container) {
-    container.innerHTML = selectedMetrics.map((key) => {
+    let html = selectedMetrics.map((key) => {
       const m = METRICS[key];
       return `<span class="flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-full" style="background:${m.color}"></span>${m.label}</span>`;
     }).join('');
+    // 死亡保険金額(グラフ上の赤い点線)を表示しているときは凡例にも加える
+    if (showInsurance && currentValues && currentValues.insuranceAmount > 0) {
+      const label = showInsuranceNet ? '死亡保険金額(手取り・赤い点線)' : '死亡保険金額(赤い点線)';
+      html += `<span class="flex items-center gap-1.5"><span class="inline-block" style="width:16px;border-top:2px dashed rgba(131,47,47,0.85)"></span>${label}</span>`;
+    }
+    container.innerHTML = html;
   }
 
   function renderTileSelection() {
