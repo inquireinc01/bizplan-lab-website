@@ -320,8 +320,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     location.hash = url.slice(url.indexOf('#'));
                     ta.value = url;
                     btn.textContent = 'リンクを作成しました';
-                    modalMsg('アドレスバーが復元リンクになりました。このまま Ctrl+D を押してお気に入りに登録してください(登録名は「' + name + '」がおすすめ)。下のリンクをメール等に貼って保存することもできます。開くだけでデータが復元されます。', true);
-                    showMsg('復元リンクを作成しました。Ctrl+D でお気に入りに登録してください。');
+                    // タッチ端末(iPad等)にはCtrl+Dがないため、案内をデバイスで切り替える
+                    var isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                    var howTo = isTouch
+                      ? 'ブラウザの共有ボタン(□に↑)や☆マークから「お気に入り/ブックマークに追加」してください'
+                      : 'このまま Ctrl+D を押してお気に入りに登録してください';
+                    modalMsg('アドレスバーが復元リンクになりました。' + howTo + '(登録名は「' + name + '」がおすすめ)。下のリンクをメール等に貼って保存することもできます。開くだけでデータが復元されます。', true);
+                    showMsg('復元リンクを作成しました。' + (isTouch ? 'ブックマークに追加してください。' : 'Ctrl+D でお気に入りに登録してください。'));
                   });
                 } },
               { text: 'QRコードを表示', onClick: function (ta, btn) {
