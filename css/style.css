@@ -3955,6 +3955,9 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-stats-col .k { font-size: 9.5px; color: #555; }
 .print-stats-col .v { font-size: 12px; font-weight: 700; font-family: Arial; white-space: nowrap; }
 
+/* PDFボタン: プレビュー準備中の状態 */
+.js-pdf-btn.is-busy { opacity: 0.65; pointer-events: none; }
+
 /* 評価額推移表(画面): 列見出しは折り返さず1行に収める */
 #trendTable thead th { white-space: nowrap; }
 @media (max-width: 900px) {

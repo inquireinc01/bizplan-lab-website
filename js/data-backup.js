@@ -538,6 +538,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  // ===== PDFボタンの押下フィードバック(全ツール共通) =====
+  // 画像化などの準備に数百ミリ秒かかるため、その間ボタンを「準備中…」にして
+  // 二度押しを防ぐ。印刷プレビュー(window.print)は各ツールの処理完了後に開く。
+  document.querySelectorAll('.js-pdf-btn').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      // 準備中の再クリックは各ツールのdoPrintまで届かせない(多重実行の防止)。
+      // キャプチャ段階で受けるため、先に登録済みのdoPrintより前に止められる
+      if (btn.dataset.printBusy === '1') {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        return;
+      }
+      btn.dataset.printBusy = '1';
+      var label = btn.innerHTML;
+      btn.innerHTML = '印刷プレビューを準備中…';
+      btn.classList.add('is-busy');
+      var restore = function () {
+        btn.innerHTML = label;
+        btn.classList.remove('is-busy');
+        btn.dataset.printBusy = '';
+      };
+      // 印刷ダイアログが開くとafterprintが発火する。開かない場合も5秒で必ず戻す
+      var done = false;
+      var finish = function () { if (done) return; done = true; window.removeEventListener('afterprint', finish); restore(); };
+      window.addEventListener('afterprint', finish);
+      setTimeout(finish, 5000);
+    }, true);
+  });
+
   // ===== ヘッドレス検証用: ?autoprint=1 でPDF出力処理を自動実行する =====
   // (実際の印刷レンダリングをヘッドレスブラウザのPDF生成で確認するための仕組み)
   if (/[?&]autoprint=1/.test(location.search)) {
