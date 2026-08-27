@@ -3994,17 +3994,39 @@ a.portal-feed-row:hover .portal-feed-text {
 /* 推移表: 5年ごとに薄い帯を敷いて行を追いやすくする */
 .print-trend tbody tr:nth-child(5n + 1) td { background-color: #f4f7fa; }
 .print-trend td.lbl { font-weight: 600; }
-/* 推移表を左右2列に分けて1枚に収める(左=前半・右=後半。30年表示では右は空欄) */
+/* 推移表を左右2列に分けて1枚に収める(左=前半・右=後半。30年表示では右は空欄)。
+   グラフや他セクションと横幅を揃えるため、2つの表でページ幅いっぱいを均等に使う */
 .print-trend-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 10px;
+  gap: 0 12px;
   align-items: start;
+  width: 100%;
 }
-.print-trend-cols .print-trend { font-size: 6.6pt; }
+.print-trend-cols .print-trend {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 7pt;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
 .print-trend-cols .print-trend th,
-.print-trend-cols .print-trend td { padding: 1px 4px; line-height: 1.25; }
-.print-trend-cols .print-trend { page-break-inside: avoid; break-inside: avoid; }
+.print-trend-cols .print-trend td { padding: 1.5px 5px; line-height: 1.3; }
+/* 年列は狭く、指標5列は均等に(左右の表で列位置が揃う) */
+.print-trend-cols .print-trend th.lbl,
+.print-trend-cols .print-trend td.lbl { width: 15%; }
+.print-trend-cols .print-trend th:not(.lbl),
+.print-trend-cols .print-trend td:not(.lbl) { width: 17%; }
+/* 見出し(項目名)と年はセンタリング。数値は従来どおり右寄せ */
+.print-trend-cols .print-trend thead th { text-align: center; }
+.print-trend-cols .print-trend td.lbl { text-align: center; }
+/* シナリオごとにイメージカラーを変える(A=青系 / B=紺系) */
+.print-trend-cols.sc-a .print-trend thead th { background-color: #3b6ea5; color: #fff; }
+.print-trend-cols.sc-a .print-trend tbody tr:nth-child(5n + 1) td { background-color: #eaf1f8; }
+.print-trend-cols.sc-a .print-trend td.lbl { color: #2d5580; }
+.print-trend-cols.sc-b .print-trend thead th { background-color: #0f2a4a; color: #fff; }
+.print-trend-cols.sc-b .print-trend tbody tr:nth-child(5n + 1) td { background-color: #e8ebf1; }
+.print-trend-cols.sc-b .print-trend td.lbl { color: #0f2a4a; }
 
 /* 金庫株の印刷: パターンA/Bの強調ヘッダー */
 .print-pattern-head {

@@ -611,7 +611,11 @@ document.addEventListener('DOMContentLoaded', function () {
       ageMatrix = `<g>${g}</g>`;
       extraH = matrixRows.length * rowH + 16 - (padB - 8);
     }
-    svg.setAttribute('viewBox', `0 0 ${SVG_W} ${H + Math.max(0, extraH)}`);
+    // イベントフラッグ(退職金・特別損失)は右端でSVG_W(830)まで使うが、表示していない
+    // ときは800までしか描かないため、その分viewBoxを詰めて右側の余白をなくす
+    const needWideRight = (showRetirement || showSpecialLoss || (showInsurance && currentValues && currentValues.coveragePeriod > horizonYears));
+    const viewW = needWideRight ? SVG_W : W;
+    svg.setAttribute('viewBox', `0 0 ${viewW} ${H + Math.max(0, extraH)}`);
 
     svg.innerHTML = `
       ${gridLines}
