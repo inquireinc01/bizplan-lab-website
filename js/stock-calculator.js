@@ -1081,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (horizonSelect) {
     horizonSelect.addEventListener('change', function () {
       const v = parseInt(horizonSelect.value, 10);
-      horizonYears = (v === 40 || v === 50 || v === 60) ? v : 30;
+      horizonYears = [10, 15, 20, 25, 30, 40, 50, 60].indexOf(v) >= 0 ? v : 30;
       if (dsYear > horizonYears) {
         dsYear = horizonYears;
         if (dsYearInput) dsYearInput.value = String(horizonYears);
@@ -1388,7 +1388,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // A4ヨコ1枚に収めるため、年次を左右2列に分ける(左=前半・右=後半)。
     // 30年表示では左に0〜30年を入れ、右列は空(非表示)にして余白にする
-    const SPLIT_AT = 31; // 左列に入れる行数(現在〜30年後)
+    // 左列に入れる行数。0〜30年(31行)までは左1列に収める。31年超のぶんを右列へ回す
+    const SPLIT_AT = 31;
     const rowHtml = (p, suffix) => {
       const cell = (v) => `<td>${isNaN(v) ? '—' : roundMan(v * HFP)}</td>`;
       return `<tr><td class="lbl">${yearLabel(p.year)}</td>` +
