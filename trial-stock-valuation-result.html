@@ -25,7 +25,7 @@
 })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/style.css?v=2026082529" />
+<link rel="stylesheet" href="css/style.css?v=2026082531" />
 <style>@media print{@page{size:A4 landscape;margin:9mm 11mm}}</style>
 </head>
 <body class="bg-white text-[#2b2f36]">
@@ -185,6 +185,7 @@
             <button type="button" id="ageTableBtn" class="overlay-toggle overlay-toggle-navy">
               <span class="dot"></span>年齢・株価表
             </button>
+
             <button type="button" id="retirementToggleBtn" class="overlay-toggle overlay-toggle-navy">
               <span class="dot"></span>退職金
             </button>
@@ -444,7 +445,16 @@
 
         <!-- 推移表 -->
         <div class="mt-8">
-          <h4 class="font-bold text-sm mb-2 flex items-center">評価額推移表(0〜<span id="tblHorizonLabel">30</span>年・総額・万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。</span></span></h4>
+          <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+            <h4 class="font-bold text-sm mb-0 flex items-center">評価額推移表(0〜<span id="tblHorizonLabel">30</span>年・総額・万円)<span class="help-tip" tabindex="0">?<span class="help-text">相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bはそれぞれ独立した年間税引前利益の前提で試算した並行シナリオです(例: 生命保険加入前後の比較)。簡易試算のため税引前利益は毎年一定と仮定しています。</span></span></h4>
+            <label class="flex items-center gap-1.5 text-xs font-bold text-gray-600" for="trendScenarioSel">表示するシナリオ<span class="help-tip" tabindex="0">?<span class="help-text">表に出すシナリオを選べます。「シナリオAのみ」にすると数字が半分になり読みやすくなります。ここでの選択はPDF出力にもそのまま反映されます(A・B両方のときはPDFではページを分けて印刷します)。</span></span>
+              <select id="trendScenarioSel" class="form-input rounded-lg px-2 py-1 text-sm">
+                <option value="both">A・B両方</option>
+                <option value="A">シナリオAのみ</option>
+                <option value="B">シナリオBのみ</option>
+              </select>
+            </label>
+          </div>
           <div class="overflow-auto border border-gray-200 rounded-lg" style="max-height:360px">
             <table class="w-full text-xs" id="trendTable">
               <colgroup>
@@ -548,27 +558,40 @@
   </div>
 
   <!-- ===== 1枚目: 評価額の将来推移グラフを大きく ===== -->
-  <div class="print-sec">評価額の将来推移(総額・万円・1年単位)</div>
+  <div class="print-sec">評価額の将来推移<span id="pChartUnit">(総額・万円・1年単位)</span></div>
   <div class="print-chart-big" id="pChartSlot"></div>
   <div class="print-legend" id="pChartLegend"></div>
 
-  <!-- ===== 2枚目: 推移表と前提条件 ===== -->
+  <!-- ===== 2枚目以降: 推移表(シナリオごと)と前提条件 ===== -->
   <div class="print-break"></div>
-  <div class="print-sec">評価額推移表(総額・万円)</div>
-  <table class="print-table" style="font-size:7pt">
-    <thead>
-      <tr>
-        <th class="lbl" rowspan="2">年</th>
-        <th colspan="5">シナリオA（通常時）</th>
-        <th colspan="5">シナリオB（対策後）</th>
-      </tr>
-      <tr>
-        <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th><th>残余利益方式</th>
-        <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th><th>残余利益方式</th>
-      </tr>
-    </thead>
-    <tbody id="pTrendTableBody"></tbody>
-  </table>
+  <div class="print-sec">評価額推移表<span id="pTrendUnit">(総額・万円)</span></div>
+  <!-- シナリオA -->
+  <div id="pTrendSecA">
+    <div class="print-subsec print-scenario-head is-a"><span class="ps-badge">A</span>シナリオA（通常時）</div>
+    <table class="print-table print-trend" style="font-size:7.5pt">
+      <thead>
+        <tr>
+          <th class="lbl">年</th>
+          <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th><th>残余利益方式</th>
+        </tr>
+      </thead>
+      <tbody id="pTrendBodyA"></tbody>
+    </table>
+  </div>
+  <!-- シナリオB -->
+  <div id="pTrendSecB">
+    <div class="print-break" id="pTrendBreakB"></div>
+    <div class="print-subsec print-scenario-head is-b"><span class="ps-badge">B</span>シナリオB（対策後）</div>
+    <table class="print-table print-trend" style="font-size:7.5pt">
+      <thead>
+        <tr>
+          <th class="lbl">年</th>
+          <th>相続税評価</th><th>法人税法上</th><th>類似業種比準</th><th>純資産</th><th>残余利益方式</th>
+        </tr>
+      </thead>
+      <tbody id="pTrendBodyB"></tbody>
+    </table>
+  </div>
   <p class="print-note">※ 相続税評価＝併用方式と純資産価額のいずれか低い方 / 法人税法上の評価＝類似業種比準×50%＋純資産×50%。シナリオA・Bは独立した年間税引前利益の前提による並行シナリオです。簡易試算のため税引前利益は毎年一定と仮定しています。</p>
 
   <div class="print-foot">
@@ -579,7 +602,7 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260826a"></script>
-<script src="js/stock-calculator.js?v=20260825c"></script>
+<script src="js/stock-calculator.js?v=20260826b"></script>
 <script src="js/data-backup.js?v=20260826h"></script>
 <script>
 /* テスト配信版: 全データクリアの確定クリック時に印を置き、

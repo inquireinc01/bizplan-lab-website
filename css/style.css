@@ -2190,7 +2190,7 @@ img {
 #trendTable td.col-ruiji-a,
 #trendTable td.col-junsisan-a,
 #trendTable td.col-rim-a {
-  background-color: rgba(59, 110, 165, 0.05);
+  background-color: rgba(59, 110, 165, 0.08);
 }
 #trendTable td.col-saizoku-b,
 #trendTable td.col-houjin-b,
@@ -3954,6 +3954,37 @@ a.portal-feed-row:hover .portal-feed-text {
 }
 .print-stats-col .k { font-size: 9.5px; color: #555; }
 .print-stats-col .v { font-size: 12px; font-weight: 700; font-family: Arial; white-space: nowrap; }
+
+/* 自社株の印刷: シナリオA/Bの見出し(色分けして読み分けやすくする) */
+.print-scenario-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 5px;
+  margin: 6px 0 4px;
+}
+.print-scenario-head .ps-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  font-family: Arial;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.print-scenario-head.is-a { background: #eaf0f7; color: #2d5580; }
+.print-scenario-head.is-a .ps-badge { background-color: #3b6ea5; }
+.print-scenario-head.is-b { background: #e9edf3; color: #0f2a4a; }
+.print-scenario-head.is-b .ps-badge { background-color: #0f2a4a; }
+/* 推移表: 5年ごとに薄い帯を敷いて行を追いやすくする */
+.print-trend tbody tr:nth-child(5n + 1) td { background-color: #f4f7fa; }
+.print-trend td.lbl { font-weight: 600; }
 
 /* 金庫株の印刷: パターンA/Bの強調ヘッダー */
 .print-pattern-head {

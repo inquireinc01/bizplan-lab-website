@@ -335,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== グラフ描画(選択された1〜2指標を同じ太さでずらして重ねて表示) =====
   // 年齢・株価表(グラフ下のExcel風データテーブル)の表示状態
+  let trendScenario = 'both'; // 評価額推移表に表示するシナリオ(both/A/B)。画面・PDF共通
   let showAgeTable = false;
   let ownerAgeDemo = null; // レイアウト確認(?agetable=1)専用の年齢フォールバック
 
@@ -636,14 +637,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const body = document.getElementById('trendTableBody');
     let rows = '';
     const HF = holderFactor();
+    const showA = trendScenario !== 'B';
+    const showB = trendScenario !== 'A';
     series.forEach((p) => {
-      const vals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.rimT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B, p.rimT_B].map((x) => x * HF);
+      const allVals = [p.saizokuT_A, p.houjinT_A, p.ruijiT_A, p.junsisanT_A, p.rimT_A, p.saizokuT_B, p.houjinT_B, p.ruijiT_B, p.junsisanT_B, p.rimT_B].map((x) => x * HF);
+      const vals = allVals.filter((v, i) => (i < 5 ? showA : showB));
       // 税引前利益がマイナス(赤字)の場合、推移が負値になり得るため、サイト共通の△+赤字表記に統一する
-      const cells = vals.map((v, i) => {
-        if (isNaN(v)) return `<td class="px-2 py-1.5 text-right text-gray-300 ${TABLE_COL_CLASSES[i]}${i === 5 ? ' border-l border-gray-200' : ''}">—</td>`;
+      const colIdx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter((i) => (i < 5 ? showA : showB));
+      const cells = vals.map((v, k) => {
+        const i = colIdx[k];
+        const sep = (i === 5 && showA) ? ' border-l border-gray-200' : '';
+        if (isNaN(v)) return `<td class="px-2 py-1.5 text-right text-gray-300 ${TABLE_COL_CLASSES[i]}${sep}">—</td>`;
         const negCls = v < 0 ? ' neg-val' : '';
         const numText = window.numFmt ? window.numFmt(Math.round(v)) : Math.round(v).toLocaleString('ja-JP');
-        return `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${i === 5 ? ' border-l border-gray-200' : ''}${negCls}">${numText}</td>`;
+        return `<td class="px-2 py-1.5 text-right ${TABLE_COL_CLASSES[i]}${sep}${negCls}">${numText}</td>`;
       }).join('');
       rows += `<tr class="border-b border-gray-100">
         <td class="px-2 py-1.5 text-center text-gray-700 border-r border-gray-200 bg-white">${yearLabel(p.year)}</td>
@@ -651,6 +658,33 @@ document.addEventListener('DOMContentLoaded', function () {
       </tr>`;
     });
     body.innerHTML = rows;
+    applyTrendScenarioHead();
+  }
+
+  // 推移表のヘッダー・列幅を、表示中のシナリオに合わせて切り替える
+  function applyTrendScenarioHead() {
+    const table = document.getElementById('trendTable');
+    if (!table) return;
+    const showA = trendScenario !== 'B';
+    const showB = trendScenario !== 'A';
+    const nCols = (showA ? 5 : 0) + (showB ? 5 : 0);
+    // colgroup(年+指標列)の幅を均等割り
+    const cols = table.querySelectorAll('colgroup col');
+    const w = (100 / (nCols + 1)).toFixed(2) + '%';
+    cols.forEach((c, i) => {
+      const visible = i === 0 || (i <= 5 ? showA : showB);
+      c.style.display = visible ? '' : 'none';
+      if (visible) c.style.width = w;
+    });
+    const rows = table.querySelectorAll('thead tr');
+    if (rows.length >= 2) {
+      const groupCells = rows[0].children; // [年, A, B]
+      if (groupCells[1]) groupCells[1].style.display = showA ? '' : 'none';
+      if (groupCells[2]) groupCells[2].style.display = showB ? '' : 'none';
+      Array.from(rows[1].children).forEach((th, i) => {
+        th.style.display = (i < 5 ? showA : showB) ? '' : 'none';
+      });
+    }
   }
 
   // ===== 自社株評価・株主の状況(ディスカッションシートの自社株の観点と同じレイアウト) =====
@@ -1013,6 +1047,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 死亡保険金額の税引後(法人税控除後)表示トグル =====
+  // ===== 評価額推移表: 表示するシナリオ(A/B/両方)。PDF出力にも連動 =====
+  const trendScenarioSel = document.getElementById('trendScenarioSel');
+  if (trendScenarioSel) {
+    trendScenarioSel.addEventListener('change', function () {
+      trendScenario = trendScenarioSel.value || 'both';
+      if (lastSeries) renderTable(lastSeries);
+    });
+  }
+
   // ===== グラフ・推移表の表示期間(30/40/50/60年)プルダウン =====
   const horizonSelect = document.getElementById('horizonSelect');
   function applyHorizonLabel() {
@@ -1278,6 +1321,14 @@ document.addEventListener('DOMContentLoaded', function () {
       recomputeSeriesOnly();
     });
     // レイアウト確認用: ?agetable=1 で自動的に開き、年齢60・指標2つの状態を再現(スクリーンショット用)
+    // 検証用: ?psc=A|B|both で印刷対象シナリオを指定
+    var pscM = location.search.match(/[?&]psc=(A|B|both)/);
+    if (pscM) {
+      trendScenario = pscM[1];
+      var pscSel = document.getElementById('trendScenarioSel');
+      if (pscSel) pscSel.value = pscM[1];
+      if (lastSeries) renderTable(lastSeries);
+    }
     if (/[?&]agetable=1/.test(location.search)) {
       ownerAgeDemo = 60;
       setTimeout(function () {
@@ -1301,15 +1352,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const roundMan = (n) => (window.numFmt ? window.numFmt(Math.round(n)) : Math.round(n).toLocaleString('ja-JP'));
 
-    // 推移表(印刷用)
-    let rows = '';
-    lastSeries.forEach((p) => {
-      const cell = (v) => `<td>${isNaN(v) ? '—' : roundMan(v)}</td>`;
-      rows += `<tr><td class="lbl">${yearLabel(p.year)}</td>
-        ${cell(p.saizokuT_A)}${cell(p.houjinT_A)}${cell(p.ruijiT_A)}${cell(p.junsisanT_A)}${cell(p.rimT_A)}
-        ${cell(p.saizokuT_B)}${cell(p.houjinT_B)}${cell(p.ruijiT_B)}${cell(p.junsisanT_B)}${cell(p.rimT_B)}</tr>`;
-    });
-    document.getElementById('pTrendTableBody').innerHTML = rows;
+    // 推移表(印刷用): 画面と同じく「選択した株主のみ」の按分率を反映する
+    const HFP = holderFactor();
+    const isPartial = HFP !== 1;
+    const unitNote = isPartial
+      ? '(選択した株主の持分 ' + (HFP * 100).toFixed(2) + '% ・万円)'
+      : '(総額・万円)';
+    const chartUnitEl = document.getElementById('pChartUnit');
+    if (chartUnitEl) chartUnitEl.textContent = isPartial
+      ? '(選択した株主の持分 ' + (HFP * 100).toFixed(2) + '% ・万円・1年単位)'
+      : '(総額・万円・1年単位)';
+    const trendUnitEl = document.getElementById('pTrendUnit');
+    if (trendUnitEl) trendUnitEl.textContent = unitNote;
+
+    // PDFに出すシナリオは画面の「表示するシナリオ」に連動。Bのみのときは改ページを出さない
+    const scMode = trendScenario;
+    const secA = document.getElementById('pTrendSecA');
+    const secB = document.getElementById('pTrendSecB');
+    const brkB = document.getElementById('pTrendBreakB');
+    if (secA) secA.style.display = (scMode === 'B') ? 'none' : '';
+    if (secB) secB.style.display = (scMode === 'A') ? 'none' : '';
+    if (brkB) brkB.style.display = (scMode === 'both') ? '' : 'none';
+
+    const buildRows = (suffix) => lastSeries.map((p) => {
+      const cell = (v) => `<td>${isNaN(v) ? '—' : roundMan(v * HFP)}</td>`;
+      return `<tr><td class="lbl">${yearLabel(p.year)}</td>` +
+        cell(p[`saizokuT_${suffix}`]) + cell(p[`houjinT_${suffix}`]) + cell(p[`ruijiT_${suffix}`]) +
+        cell(p[`junsisanT_${suffix}`]) + cell(p[`rimT_${suffix}`]) + '</tr>';
+    }).join('');
+    const bodyA = document.getElementById('pTrendBodyA');
+    const bodyB = document.getElementById('pTrendBodyB');
+    if (bodyA) bodyA.innerHTML = buildRows('A');
+    if (bodyB) bodyB.innerHTML = buildRows('B');
 
     // 印刷用の凡例(現在選択中の指標)
     renderLegend(document.getElementById('pChartLegend'));
