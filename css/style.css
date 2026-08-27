@@ -2183,22 +2183,34 @@ img {
   animation: lampPulse 1.8s ease-in-out infinite;
 }
 
-/* 評価額推移表: 列ごとの色分け(タイル・ヘッダーと同系色を淡く) */
-/* 列ごとに違う色を付けるとパッチワーク状になるため、シナリオA/Bの2トーンのみに簡略化 */
+/* 評価額推移表: シナリオA/Bを配色で明確に分ける(A=ブルー系 / B=ネイビー系) */
 #trendTable td.col-saizoku-a,
 #trendTable td.col-houjin-a,
 #trendTable td.col-ruiji-a,
 #trendTable td.col-junsisan-a,
 #trendTable td.col-rim-a {
-  background-color: rgba(59, 110, 165, 0.08);
+  background-color: rgba(59, 110, 165, 0.10);
 }
 #trendTable td.col-saizoku-b,
 #trendTable td.col-houjin-b,
 #trendTable td.col-ruiji-b,
-#trendTable td.col-junsisan-b
+#trendTable td.col-junsisan-b,
 #trendTable td.col-rim-b {
-  background-color: rgba(15, 42, 74, 0.05);
+  background-color: rgba(15, 42, 74, 0.12);
 }
+/* シナリオA/Bの境界に太い区切り線を入れて2ブロックを視覚的に分ける */
+#trendTable td.col-saizoku-b {
+  border-left: 2.5px solid #0f2a4a !important;
+}
+#trendTable th.sc-b-start {
+  border-left: 2.5px solid #fff !important;
+}
+#trendTable td.col-rim-a {
+  border-right: 2.5px solid #0f2a4a;
+}
+/* A/Bグループヘッダーの色をタイル/PDFと統一 */
+#trendTable thead .grp-a { background-color: #3b6ea5 !important; }
+#trendTable thead .grp-b { background-color: #0f2a4a !important; }
 
 /* 別枠強調ボックス(退職金・生命保険の契約条件) */
 .field-highlight {
