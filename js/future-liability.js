@@ -13,8 +13,9 @@
  *    → ②余りは簿外資産の充当に組み込む → ③充当が将来負債を超えたら押し上げ。
  *    予測BSの取り崩し = 不足分 + 枠の埋まっていない純額(差益は一度だけ効く。二重計上禁止)
  * 7. 債務超過なし時は下余白ゼロ(タブレット1枚絵表示を優先)
- * 8. 総額ラベルは「実体のある価値」の合計: 対策分の空白(白点線)は実質ゼロ資産のため
- *    数えない(バーの高さ・頭ぞろえには含める)。簿外資産カードの合計は表示3行の単純合計
+ * 8. 総額ラベルは「実体のある価値」の合計: 対策分の空白(白点線)と不足分(白)は
+ *    実体が無いため数えない(バーの高さ・頭ぞろえには含める)。
+ *    簿外資産カード・印刷の合計は表示3行(生保+一時払対策+保険差益)の単純合計
  */
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('futureLiabForm');
@@ -820,9 +821,9 @@ document.addEventListener('DOMContentLoaded', function () {
             text.textContent = '';
           }
         }
-        // 将来負債対策分の空白(白点線)は実質ゼロ資産のため総額には数えない
+        // 将来負債対策分の空白(白点線)と不足分(白)は実体の無い枠のため総額には数えない
         // (バーの高さとしては場所を占め、頭ぞろえ・バランスの見た目は保つ)
-        if (!seg.earmark) total += seg.value;
+        if (!seg.earmark && !seg.placeholder) total += seg.value;
         if (!isNeg) yPos -= h;
         if (seg.offBalance && seg.value !== 0) {
           if (offBalTop === null || segY < offBalTop) offBalTop = segY;
@@ -975,7 +976,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 簿外資産ゾーンは表示モードに関わらず「点線の枠=準備必要額(将来負債合計)」を先に見せ、
     // 入力された簿外資産(生命保険金+その他)が下から積み上がり、埋まっていない部分が白抜きの
     // 「不足分」として残るゲージ表現にする(未入力時は枠全体が不足分)
-    const shortfallSeg = { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true };
+    const shortfallSeg = { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true, placeholder: true };
     const offBalanceAssetSegs = detailMode
       ? [
           // 保険差益は常に一時払対策の下(将来負債対策分のすぐ上)。色は区別できるようブルーグリーン系。
@@ -1263,7 +1264,7 @@ document.addEventListener('DOMContentLoaded', function () {
       set('pOtherCov', man(otherCov));
       set('pInsGain', man(insGain));
       set('pShortfall', man(shortfall));
-      set('pOffBalTotal', man(lifeIns + otherCov + insGain + shortfall));
+      set('pOffBalTotal', man(lifeIns + otherCov + insGain));
       const nRet = numRaw('nextRetirement'), nSuc = numRaw('nextSuccession'), nOth = numRaw('nextOtherFuture');
       set('pNextRetirement', man(nRet));
       set('pNextSuccession', man(nSuc));
