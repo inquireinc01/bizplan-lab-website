@@ -13,6 +13,8 @@
  *    → ②余りは簿外資産の充当に組み込む → ③充当が将来負債を超えたら押し上げ。
  *    予測BSの取り崩し = 不足分 + 枠の埋まっていない純額(差益は一度だけ効く。二重計上禁止)
  * 7. 債務超過なし時は下余白ゼロ(タブレット1枚絵表示を優先)
+ * 8. 総額ラベルは「実体のある価値」の合計: 対策分の空白(白点線)は実質ゼロ資産のため
+ *    数えない(バーの高さ・頭ぞろえには含める)。簿外資産カードの合計は表示3行の単純合計
  */
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('futureLiabForm');
@@ -257,7 +259,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const anyCoverageFilled = !isNaN(lifeIns) || !isNaN(otherCov) || !isNaN(insGain);
     const anyFilled = anyFutureFilled || anyCoverageFilled;
 
-    document.getElementById('checkOffBalanceTotal').textContent = anyFilled ? man(covered + shortfall) : '-';
+    // カードの合計は表示3行の単純合計(不足分の充当計算はcoveredで別途行う)
+    const lifeInsV = isNaN(lifeIns) ? 0 : lifeIns;
+    document.getElementById('checkOffBalanceTotal').textContent = anyFilled ? man(lifeInsV + otherCovV + insGainV) : '-';
   }
 
   BS_CHECK_IDS.forEach((id) => {
@@ -816,7 +820,9 @@ document.addEventListener('DOMContentLoaded', function () {
             text.textContent = '';
           }
         }
-        total += seg.value;
+        // 将来負債対策分の空白(白点線)は実質ゼロ資産のため総額には数えない
+        // (バーの高さとしては場所を占め、頭ぞろえ・バランスの見た目は保つ)
+        if (!seg.earmark) total += seg.value;
         if (!isNeg) yPos -= h;
         if (seg.offBalance && seg.value !== 0) {
           if (offBalTop === null || segY < offBalTop) offBalTop = segY;
@@ -1257,7 +1263,7 @@ document.addEventListener('DOMContentLoaded', function () {
       set('pOtherCov', man(otherCov));
       set('pInsGain', man(insGain));
       set('pShortfall', man(shortfall));
-      set('pOffBalTotal', man(lifeIns + otherCov + gainRemP + shortfall));
+      set('pOffBalTotal', man(lifeIns + otherCov + insGain + shortfall));
       const nRet = numRaw('nextRetirement'), nSuc = numRaw('nextSuccession'), nOth = numRaw('nextOtherFuture');
       set('pNextRetirement', man(nRet));
       set('pNextSuccession', man(nSuc));
