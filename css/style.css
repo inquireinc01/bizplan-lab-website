@@ -2232,8 +2232,9 @@ img {
 #trendTableBody tr:nth-child(even) td.col-junsisan-b,
 #trendTableBody tr:nth-child(even) td.col-rim-b { background-color: rgba(15, 42, 74, 0.14); }
 #trendTableBody tr:nth-child(even) td:first-child { background-color: #f3f6f9; }
-/* 5年ごと(現在・5年後・10年後…=1,6,11…行目)の上端に区切り線 */
-#trendTableBody tr:nth-child(5n + 1) td { border-top: 1.5px solid #aeb9c6; }
+/* 5年ごとの区切り線。現在はブロックに含めず1つズラす(現在 | 1〜5年後 | 6〜10年後 | …)。
+   線は1年後・6年後・11年後…(2,7,12…行目)の上端に引く */
+#trendTableBody tr:nth-child(5n + 2) td { border-top: 1.5px solid #aeb9c6; }
 /* シナリオA/Bの境界に太い区切り線を1本だけ入れて2ブロックを視覚的に分ける。
    グループ帯・項目行・本文のすべてで同じ濃紺2.5pxを引き、上から下まで一直線にする */
 #trendTable td.col-saizoku-b,
