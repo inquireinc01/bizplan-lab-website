@@ -350,8 +350,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // 負債側の内訳(退職金/自社株買取/その他)と平仄を合わせる。
   // 一時払対策は直下の「将来負債対策分」(振替元)と隣り合う位置に置く
   const OFF_BALANCE_ASSET_SEGS = [
-    { label: '一時払対策', offBalance: true, assetSide: true },
     { label: '保険差益', offBalance: true, assetSide: true },
+    { label: '一時払対策', offBalance: true, assetSide: true },
     { label: '生命保険金', offBalance: true, assetSide: true },
     { label: '不足分', offBalance: true, assetSide: true },
   ];
@@ -930,9 +930,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const shortfallSeg = { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true };
     const offBalanceAssetSegs = detailMode
       ? [
-          { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
-          // 保険差益は生命保険金・一時払対策(グリーン)と区別できるようブルーグリーン系にする
+          // 保険差益は常に一時払対策の下(将来負債対策分のすぐ上)。色は区別できるようブルーグリーン系
           { label: '保険差益', value: gainRemainder, offBalance: true, assetSide: true, alwaysShowLabel: true, fill: '#45939b', fillOpacity: 1, textFill: '#fff' },
+          { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           { label: '生命保険金', value: isNaN(lifeInsRaw) ? 0 : lifeInsRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           shortfallSeg,
         ]
@@ -1016,8 +1016,8 @@ document.addEventListener('DOMContentLoaded', function () {
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
       a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
         { label: '', value: 0, earmark: true },
-        { label: '一時払対策', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
         { label: '', value: 0, offBalance: true, assetSide: true },
+        { label: '一時払対策', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
         { label: '生命保険金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
         { label: '不足分', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
       l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
