@@ -343,8 +343,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const LIAB_SEGS_BASE = [{ label: '純資産' }, { label: '固定負債' }, { label: '流動負債' }];
   // a2/l2の簿外部分は、ひとまとめ表示では1本、内訳表示では複数本(充当分+不足分/退職金+自社株買取+その他)に分かれるため、
   // 要素数が最大になる内訳表示の枠数で確保しておく(未使用の枠はvalue=0で非表示になる)
+  // 内訳表示では充当分をひとまとめにせず「一時払対策」「生命保険金」に分けて
+  // 負債側の内訳(退職金/自社株買取/その他)と平仄を合わせる。
+  // 一時払対策は直下の「将来負債対策分」(振替元)と隣り合う位置に置く
   const OFF_BALANCE_ASSET_SEGS = [
-    { label: '充当分', offBalance: true, assetSide: true },
+    { label: '一時払対策', offBalance: true, assetSide: true },
+    { label: '生命保険金', offBalance: true, assetSide: true },
     { label: '不足分', offBalance: true, assetSide: true },
   ];
   const OFF_BALANCE_LIAB_SEGS = [
@@ -580,6 +584,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // 1行に収まらない要素名+金額は、判読できる最小サイズ(6px)まで自動的に縮小して収める。
   // それでも収まらない場合は空白にする(はみ出し・重なりを防ぐため)
   const MIN_FONT_SIZE = 6;
+  // テキストの概算幅(px)。全角≒フォントサイズ、半角≒0.56倍で見積もる
+  // (描画前に「金額を出すか名前だけにするか」を判定するために使う)
+  function estTextW(str, size) {
+    let w = 0;
+    for (const ch of String(str)) w += ch.charCodeAt(0) > 255 ? size : size * 0.56;
+    return w;
+  }
   function fitSingleLine(text, content, maxWidth, startSize) {
     text.textContent = content;
     let size = startSize;
@@ -711,9 +722,18 @@ document.addEventListener('DOMContentLoaded', function () {
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
             // 「将来負債対策分」など名前が長いラベルは、バー幅に収まるようラベル行だけさらに縮小する
             const labelSize = Math.max(6, Math.min(8, (currentBarWidth - 8) / Math.max(seg.label.length, 1)));
+            // 簿外系(不足分・充当分・将来負債対策分等)は、金額行が幅からはみ出すなら金額なしの名前だけにする
+            const amtOk = !(seg.offBalance || seg.earmark) || estTextW(man(seg.value), 10) <= currentBarWidth - 4;
             text.setAttribute('y', midY.toFixed(1));
-            text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="${labelSize}" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
-          } else if (showValues && h > 16) {
+            if (amtOk) {
+              text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="${labelSize}" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
+            } else {
+              text.setAttribute('y', (midY + 3).toFixed(1));
+              text.setAttribute('font-weight', 'bold');
+              text.setAttribute('font-size', String(labelSize));
+              text.textContent = seg.label;
+            }
+          } else if (showValues && h > 16 && !((seg.offBalance || seg.earmark) && forceLabel)) {
             // 1行に「要素名+金額」(またはforceLabelでなければ金額のみ)を収める。
             // 幅に収まらなければ6pxまで自動縮小し、それでも収まらなければ空白にする
             text.setAttribute('y', (midY + 4).toFixed(1));
@@ -726,11 +746,13 @@ document.addEventListener('DOMContentLoaded', function () {
             text.setAttribute('font-weight', 'bold');
             fitSingleLine(text, `${seg.label} ${man(seg.value)}`, currentBarWidth - 8, 8);
           } else if (showValues && forceLabel && (seg.offBalance || seg.earmark) && h > 0) {
-            // 不足分・充当分・将来負債対策分は帯が低くても必ず表示する(横にはみ出しても可)
+            // 不足分・充当分・将来負債対策分は帯が低くても必ず帯内に表示する。
+            // 「名前+金額」が幅に収まらないときは金額を省いて名前だけにする(数字のはみ出しはしない)
+            const full = `${seg.label} ${man(seg.value)}`;
             text.setAttribute('y', (midY + 3).toFixed(1));
             text.setAttribute('font-weight', 'bold');
             text.setAttribute('font-size', '8');
-            text.textContent = `${seg.label} ${man(seg.value)}`;
+            text.textContent = estTextW(full, 8) <= currentBarWidth - 4 ? full : seg.label;
           } else {
             text.textContent = '';
           }
@@ -866,14 +888,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // 簿外資産ゾーンは表示モードに関わらず「点線の枠=準備必要額(将来負債合計)」を先に見せ、
     // 入力された簿外資産(生命保険金+その他)が下から積み上がり、埋まっていない部分が白抜きの
     // 「不足分」として残るゲージ表現にする(未入力時は枠全体が不足分)
+    const shortfallSeg = { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true };
     const offBalanceAssetSegs = detailMode
       ? [
-          { label: '充当分', value: coveredPortion, offBalance: true, assetSide: true, alwaysShowLabel: true },
-          { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true },
+          { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          { label: '生命保険金', value: isNaN(lifeInsRaw) ? 0 : lifeInsRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          shortfallSeg,
         ]
       : [
           { label: '簿外資産', value: coveredPortion, offBalance: true, assetSide: true, alwaysShowLabel: true },
-          { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true },
+          { label: '', value: 0, offBalance: true, assetSide: true },
+          shortfallSeg,
         ];
     const offBalanceLiabSegs = detailMode
       ? [
@@ -948,8 +973,9 @@ document.addEventListener('DOMContentLoaded', function () {
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
       a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
         { label: '', value: 0, earmark: true },
-        { label: '充当分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
-        { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
+        { label: '一時払対策', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
+        { label: '生命保険金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
+        { label: '不足分', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
       l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
         { label: '退職金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
         { label: '自社株買取', value: DUMMY_VALUE / 3, offBalance: true, assetSide: false },
@@ -974,6 +1000,7 @@ document.addEventListener('DOMContentLoaded', function () {
         a2: [blank, assetDummy, blank,
           { label: '', value: 0, earmark: true },
           { label: '簿外資産', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
+          { label: '', value: 0, offBalance: true, assetSide: true },
           { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
         a3: [blank, assetDummy, blank],
