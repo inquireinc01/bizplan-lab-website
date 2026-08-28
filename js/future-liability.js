@@ -826,14 +826,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const assetsTriggered = detailMode ? assetsTriggeredDetail : toGroupedAsset(assetsTriggeredDetail);
     const liabNetTriggered = detailMode ? liabNetTriggeredDetail : toGroupedLiab(liabNetTriggeredDetail);
 
+    // 簿外資産ゾーンは表示モードに関わらず「点線の枠=準備必要額(将来負債合計)」を先に見せ、
+    // 入力された簿外資産(生命保険金+その他)が下から積み上がり、埋まっていない部分が白抜きの
+    // 「不足分」として残るゲージ表現にする(未入力時は枠全体が不足分)
     const offBalanceAssetSegs = detailMode
       ? [
           { label: '充当分', value: coveredPortion, offBalance: true, assetSide: true },
-          { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d' },
+          { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true },
         ]
       : [
-          { label: '簿外資産', value: futureLiabTotal, offBalance: true, assetSide: true },
-          { label: '', value: 0, offBalance: true, assetSide: true },
+          { label: '簿外資産', value: coveredPortion, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true },
         ];
     const offBalanceLiabSegs = detailMode
       ? [
@@ -923,7 +926,9 @@ document.addEventListener('DOMContentLoaded', function () {
       return {
         a1: [blank, assetDummy, blank],
         l1: [netAssetsDummy, liabDummy, blank],
-        a2: [blank, assetDummy, blank, dummySeg('簿外資産', true, true), blank],
+        a2: [blank, assetDummy, blank,
+          { label: '簿外資産', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
+          { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
         a3: [blank, assetDummy, blank],
         l3: [netAssetsDummy, liabDummy, blank],
