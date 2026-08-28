@@ -900,14 +900,15 @@ document.addEventListener('DOMContentLoaded', function () {
           { label: '', value: 0, offBalance: true, assetSide: true },
           shortfallSeg,
         ];
+    // 将来負債の明細も資産側と同じ表示ルール(帯内必須表示・幅に収まらなければ数字のみ)にする
     const offBalanceLiabSegs = detailMode
       ? [
-          { label: '退職金', value: fields.retirement.value, offBalance: true, assetSide: false },
-          { label: '自社株買取', value: fields.succession.value, offBalance: true, assetSide: false },
-          { label: 'その他', value: fields.otherFuture.value, offBalance: true, assetSide: false },
+          { label: '退職金', value: fields.retirement.value, offBalance: true, assetSide: false, alwaysShowLabel: true },
+          { label: '自社株買取', value: fields.succession.value, offBalance: true, assetSide: false, alwaysShowLabel: true },
+          { label: 'その他', value: fields.otherFuture.value, offBalance: true, assetSide: false, alwaysShowLabel: true },
         ]
       : [
-          { label: '将来負債', value: futureLiabTotal, offBalance: true, assetSide: false },
+          { label: '将来負債', value: futureLiabTotal, offBalance: true, assetSide: false, alwaysShowLabel: true },
           { label: '', value: 0, offBalance: true, assetSide: false },
           { label: '', value: 0, offBalance: true, assetSide: false },
         ];
@@ -915,16 +916,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // 簿外資産/将来負債(将来予測BSの数値の上に載せるゾーン。チャート上は「次世代」を付けずグループ2と同じ表記にする)。
     // 簿外資産側の値は自動的に次世代将来負債の合計と同額にする(生命保険等の充当区分は無いため常に1本)
     const nextOffBalanceAssetSegs = [
-      { label: '簿外資産', value: nextFutureLiabTotal, offBalance: true, assetSide: true },
+      { label: '簿外資産', value: nextFutureLiabTotal, offBalance: true, assetSide: true, alwaysShowLabel: true },
     ];
     const nextOffBalanceLiabSegs = detailMode
       ? [
-          { label: '退職金', value: num('nextRetirement').value, offBalance: true, assetSide: false },
-          { label: '自社株買取', value: num('nextSuccession').value, offBalance: true, assetSide: false },
-          { label: 'その他', value: num('nextOtherFuture').value, offBalance: true, assetSide: false },
+          { label: '退職金', value: num('nextRetirement').value, offBalance: true, assetSide: false, alwaysShowLabel: true },
+          { label: '自社株買取', value: num('nextSuccession').value, offBalance: true, assetSide: false, alwaysShowLabel: true },
+          { label: 'その他', value: num('nextOtherFuture').value, offBalance: true, assetSide: false, alwaysShowLabel: true },
         ]
       : [
-          { label: '将来負債', value: nextFutureLiabTotal, offBalance: true, assetSide: false },
+          { label: '将来負債', value: nextFutureLiabTotal, offBalance: true, assetSide: false, alwaysShowLabel: true },
           { label: '', value: 0, offBalance: true, assetSide: false },
           { label: '', value: 0, offBalance: true, assetSide: false },
         ];
