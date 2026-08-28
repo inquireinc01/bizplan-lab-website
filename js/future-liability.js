@@ -849,7 +849,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 予測BS(簿外負債が発動した場合)は「生命保険金あり/なし」トグルで、実際にBSへ影響する金額を切り替える。
     // あり: 生命保険金等でカバーされる分は相殺されるため、不足分だけがBSに影響する。なし: 全額がそのまま影響する。
-    const impactAmount = withInsurance ? shortfallPortion : futureLiabTotal;
+    // 生命保険あり: 不足分に加え、一時払対策で振り替えた分(将来負債対策分)も資産から差し引く。
+    // 対策分は保険料としてすでに手元を離れた実質ゼロ資産であり、発動時の保険金は
+    // 将来負債の支払いに充当されて資産には戻らないため
+    const impactAmount = withInsurance ? shortfallPortion + earmarkTotal : futureLiabTotal;
 
     // 純資産と流動資産から取り崩す。流動資産で足りなければその他資産、それでも足りなければ固定資産も取り崩す。
     // (純資産・固定資産は取り崩しきれない場合マイナス=債務超過になり得るが、上のupdateChartが基準線の上下で
