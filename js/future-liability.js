@@ -697,10 +697,10 @@ document.addEventListener('DOMContentLoaded', function () {
             rect.setAttribute('stroke', '#fff');
             rect.setAttribute('stroke-width', '1.5');
           }
-          // 債務超過バンドは要素本来の色(青系等)ではなく赤系の背景にする
+          // 債務超過バンドは要素本来の色(青系等)ではなく赤系ソリッド+白抜き文字にする
           if (isNeg) {
-            rect.setAttribute('fill', '#a83d3d');
-            rect.setAttribute('fill-opacity', '0.25');
+            rect.setAttribute('fill', '#f4697a');
+            rect.setAttribute('fill-opacity', '1');
           }
           // 帯が小さく文字が入りきらない場合でも、ポインタを乗せれば要素名・金額を確認できるようにする
           if (showValues && seg.label && seg.value !== 0) {
@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function () {
             text.setAttribute('y', (midY + 3).toFixed(1));
             text.setAttribute('font-weight', 'bold');
             text.setAttribute('font-size', String(fs));
-            text.setAttribute('fill', '#a02020');
+            text.setAttribute('fill', '#fff');
             text.textContent = estTextW(full, fs) <= currentBarWidth - 4 ? full : man(-seg.value);
           } else if (showValues && seg.value !== 0 && h > 0) {
             // BS本体・簿外を問わず全セグメント共通: 帯が低くても必ず帯内に1行で表示する。
