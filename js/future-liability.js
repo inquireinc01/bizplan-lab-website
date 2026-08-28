@@ -781,7 +781,10 @@ document.addEventListener('DOMContentLoaded', function () {
       { label: '流動負債', value: fields.curLiab.value },
     ];
     const totalBase = fields.curAssets.value + fields.fixedAssets.value + fields.otherAssets.value;
-    const totalAdjusted = totalBase + futureLiabTotal;
+    // 実質BSの資産側合計。簿外ゾーンは充当分+不足分=max(備え合計, 将来負債合計)ぶんの高さになる
+    const totalAdjusted = totalBase + Math.max(
+      (isNaN(num('lifeInsurance').value) ? 0 : num('lifeInsurance').value) + (isNaN(num('otherCoverage').value) ? 0 : num('otherCoverage').value),
+      futureLiabTotal);
 
     // 簿外資産(準備状況)は表示モードに関わらず常に集計する。
     // 内訳表示のときは、簿外資産を「充当分(生命保険金+その他)」「不足分」に、
@@ -789,7 +792,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const lifeInsRaw = num('lifeInsurance').value;
     const otherCovRaw = num('otherCoverage').value;
     const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
-    const coveredPortion = Math.min(coveredRaw, futureLiabTotal);
+    // 簿外資産ゾーンは負債側とバランスさせない: 備えが将来負債を超える場合は
+    // クランプせず、超えた分だけゾーンが高く表示される(不足時のみ白い不足分が残る)
+    const coveredPortion = coveredRaw;
     const shortfallPortion = Math.max(0, futureLiabTotal - coveredRaw);
 
     // 一時払対策(otherCoverage)は手元資産を保険に置き換える対策のため、実質BSでは
