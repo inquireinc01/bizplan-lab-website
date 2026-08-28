@@ -396,8 +396,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const attrs = seg.offBalance
           ? (() => { const s = offBalanceStyle(seg.assetSide); return `fill="${s.fill}" fill-opacity="${s.opacity}" stroke="#fff" stroke-width="1"`; })()
           : seg.earmark
-            // 将来負債対策分: 資産から振り替えた分を示す点線ボックス(淡いグリーン+緑の点線枠)
-            ? `fill="#5c8272" fill-opacity="0.12" stroke="#3f5a4d" stroke-width="1.2" stroke-dasharray="4,3"`
+            // 将来負債対策分: 資産から振り替えて空いた分を示す白背景+緑点線のボックス
+            ? `fill="#ffffff" fill-opacity="1" stroke="#3f5a4d" stroke-width="1.2" stroke-dasharray="4,3"`
             : `fill="${segColor(seg.label)}"`;
         svgOut += `<rect id="bs-${barKey}-${i}" x="0" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
@@ -706,11 +706,11 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
               text.textContent = '';
             }
-          } else if (showValues && (h > 34 || (seg.earmark && h > 22))) {
+          } else if (showValues && (h > 34 || ((seg.earmark || seg.alwaysShowLabel) && h > 22))) {
             // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
-            // 将来負債対策分は名前が長い(7文字)ため、バー幅に収まるようラベル行だけさらに縮小する
-            const labelSize = seg.earmark ? Math.max(6, Math.min(8, (currentBarWidth - 8) / seg.label.length)) : 8;
+            // 「将来負債対策分」など名前が長いラベルは、バー幅に収まるようラベル行だけさらに縮小する
+            const labelSize = Math.max(6, Math.min(8, (currentBarWidth - 8) / Math.max(seg.label.length, 1)));
             text.setAttribute('y', midY.toFixed(1));
             text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="${labelSize}" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
           } else if (showValues && h > 16) {
@@ -719,11 +719,18 @@ document.addEventListener('DOMContentLoaded', function () {
             text.setAttribute('y', (midY + 4).toFixed(1));
             text.setAttribute('font-weight', 'bold');
             fitSingleLine(text, forceLabel ? `${seg.label} ${man(seg.value)}` : man(seg.value), currentBarWidth - 8, 9);
-          } else if (showValues && (isNeg || forceLabel) && seg.value !== 0) {
-            // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する
+          } else if (showValues && (isNeg || (forceLabel && !seg.offBalance && !seg.earmark)) && seg.value !== 0) {
+            // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する。
+            // (積み上げの途中に挟まる簿外セグメント・将来負債対策分は下のラベルと重なるため対象外。次分岐で帯内に出す)
             text.setAttribute('y', (segY + h + 12).toFixed(1));
             text.setAttribute('font-weight', 'bold');
             fitSingleLine(text, `${seg.label} ${man(seg.value)}`, currentBarWidth - 8, 8);
+          } else if (showValues && forceLabel && (seg.offBalance || seg.earmark) && h > 0) {
+            // 不足分・充当分・将来負債対策分は帯が低くても必ず表示する(横にはみ出しても可)
+            text.setAttribute('y', (midY + 3).toFixed(1));
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('font-size', '8');
+            text.textContent = `${seg.label} ${man(seg.value)}`;
           } else {
             text.textContent = '';
           }
@@ -788,8 +795,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 一時払対策(otherCoverage)は手元資産を保険に置き換える対策のため、実質BSでは
     // 入力額を流動資産→その他資産→固定資産の順で取り崩し、取り崩した分を同じ位置に
     // 点線の「将来負債対策分」として残す(枠が場所を占めるので左右のバランスは崩れない)。
-    // 資産合計を超える入力分は振替えない(超過分は簿外資産の充当のみに効く)
-    const earmarkRaw = isNaN(otherCovRaw) ? 0 : Math.max(otherCovRaw, 0);
+    // 資産合計を超える入力分は振替えない(超過分は簿外資産の充当のみに効く)。
+    // 「簿外資産なし」トグル中は備えを見せない状態のため、振替も行わず資産を元の値のまま表示する
+    const earmarkRaw = (!showOffBalAsset || isNaN(otherCovRaw)) ? 0 : Math.max(otherCovRaw, 0);
     const em1 = Math.min(earmarkRaw, Math.max(fields.curAssets.value, 0));
     const em2 = Math.min(earmarkRaw - em1, Math.max(fields.otherAssets.value, 0));
     const em3 = Math.min(earmarkRaw - em1 - em2, Math.max(fields.fixedAssets.value, 0));
@@ -855,7 +863,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 「不足分」として残るゲージ表現にする(未入力時は枠全体が不足分)
     const offBalanceAssetSegs = detailMode
       ? [
-          { label: '充当分', value: coveredPortion, offBalance: true, assetSide: true },
+          { label: '充当分', value: coveredPortion, offBalance: true, assetSide: true, alwaysShowLabel: true },
           { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true },
         ]
       : [
@@ -898,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const assetsRealBase = detailMode ? assetsRealBaseDetail : toGroupedAsset(assetsRealBaseDetail);
     const earmarkSeg = {
       label: '将来負債対策分', value: earmarkTotal, earmark: true,
-      fill: '#5c8272', fillOpacity: 0.12, textFill: '#3f5a4d', alwaysShowLabel: true,
+      fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true,
     };
     const assetsAdjusted = assetsRealBase.concat([earmarkSeg], offBalanceAssetSegs);
     const liabNetAdjusted = liabNetBase.concat(offBalanceLiabSegs);
