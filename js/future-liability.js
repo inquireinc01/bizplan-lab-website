@@ -411,8 +411,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // 将来負債対策分: 資産から振り替えて空いた分を示す白背景+緑点線のボックス
             ? `fill="#ffffff" fill-opacity="1" stroke="#3f5a4d" stroke-width="1.2" stroke-dasharray="4,3"`
             : seg.earmarkFill
-              // 対策分の空白を保険差益が埋めた部分(ブルーグリーン白抜き)
-              ? `fill="#45939b" fill-opacity="1" stroke="#fff" stroke-width="1"`
+              // 対策分の空白を保険差益が埋めた部分(ブルーグリーン白抜き)。枠線は対策分と同じ緑点線にして
+              // 「1つの点線ボックスの中が埋まっていく」見た目にする
+              ? `fill="#45939b" fill-opacity="1" stroke="#3f5a4d" stroke-width="1.2" stroke-dasharray="4,3"`
               : `fill="${segColor(seg.label)}"`;
         svgOut += `<rect id="bs-${barKey}-${i}" x="0" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
@@ -709,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function () {
           rect.setAttribute('fill-opacity', seg.fillOpacity != null ? seg.fillOpacity : (seg.offBalance ? offBalanceStyle(seg.assetSide).opacity : segOpacity(seg.label)));
           // 背景がグレーのため、通常セグメントは白フチを付けて輪郭をくっきりさせる
           // (簿外セグメント・将来負債対策分は初期化時に設定した点線枠のまま上書きしない)
-          if (!seg.offBalance && !seg.earmark) {
+          if (!seg.offBalance && !seg.earmark && !seg.earmarkFill) {
             rect.setAttribute('stroke', '#fff');
             rect.setAttribute('stroke-width', '1.5');
           }
