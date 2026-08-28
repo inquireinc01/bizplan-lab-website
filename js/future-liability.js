@@ -930,9 +930,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const shortfallSeg = { label: '不足分', value: shortfallPortion, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true };
     const offBalanceAssetSegs = detailMode
       ? [
-          // 保険差益は常に一時払対策の下(将来負債対策分のすぐ上)。色は区別できるようブルーグリーン系
+          // 保険差益は常に一時払対策の下(将来負債対策分のすぐ上)。色は区別できるようブルーグリーン系。
+          // 対策分が差益で完全に打ち消されているときは、一時払対策も同じブルーグリーンの白抜きにして
+          // 「差益で自己完結した対策」であることが一目で分かるようにする
           { label: '保険差益', value: gainRemainder, offBalance: true, assetSide: true, alwaysShowLabel: true, fill: '#45939b', fillOpacity: 1, textFill: '#fff' },
-          { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          (gainTotal >= otherCovVal && otherCovVal > 0
+            ? { label: '一時払対策', value: otherCovVal, offBalance: true, assetSide: true, alwaysShowLabel: true, fill: '#45939b', fillOpacity: 1, textFill: '#fff' }
+            : { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true }),
           { label: '生命保険金', value: isNaN(lifeInsRaw) ? 0 : lifeInsRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           shortfallSeg,
         ]
