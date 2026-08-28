@@ -183,8 +183,8 @@
           
           <div class="calc-logic" id="calcLogic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>資産合計 / 負債・純資産合計</dt><dd>資産合計 = <code>流動資産 ＋ 固定資産 ＋ その他資産</code>、負債・純資産合計 = <code>流動負債 ＋ 固定負債 ＋ 純資産</code></dd><dt>貸借の一致チェック</dt><dd>6項目すべてを入力した時点で左右を比較し、差額が生じている場合は両カードの枠を薄い赤で警告します。</dd><dt>将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（未入力の項目は0として扱います）</dd><dt>次世代将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（次世代分。将来負債とは別枠の任意入力）</dd><dt>不足分（自動計算）</dt><dd><code>max(0, 将来負債合計 − (生命保険金 ＋ その他))</code>。備えが将来負債に届かない差額を自動で埋め、簿外資産合計が将来負債合計と一致するようにしています。</dd><dt>簿外資産合計</dt><dd><code>生命保険金 ＋ その他 ＋ 不足分</code></dd></dl>
-            <p class="calc-logic-note">金額はすべて万円単位です。不足分は入力欄ではなく自動算出値のため、直接編集できません。</p>
+            <dl><dt>資産合計 / 負債・純資産合計</dt><dd>資産合計 = <code>流動資産 ＋ 固定資産 ＋ その他資産</code>、負債・純資産合計 = <code>流動負債 ＋ 固定負債 ＋ 純資産</code></dd><dt>貸借の一致チェック</dt><dd>6項目すべてを入力した時点で左右を比較し、差額が生じている場合は両カードの枠を薄い赤で警告します。</dd><dt>将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（未入力の項目は0として扱います）</dd><dt>次世代将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（次世代分。将来負債とは別枠の任意入力）</dd><dt>不足分（自動計算）</dt><dd><code>max(0, 将来負債合計 − (生命保険金 ＋ 一時払対策 ＋ 保険差益))</code>。備えが将来負債に届かない差額です。</dd><dt>簿外資産合計</dt><dd><code>生命保険金 ＋ 一時払対策 ＋ 保険差益 ＋ 不足分</code></dd></dl>
+            <p class="calc-logic-note">金額はすべて万円単位です。不足分は自動算出され、グラフ上の白い帯として表示されます。</p>
           </div>
 </div>
         </div>
@@ -256,8 +256,8 @@
                   <input type="number" id="otherCoverage" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
-                  <label for="shortfall" class="text-xs text-gray-600">不足分</label>
-                  <input type="number" id="shortfall" readonly tabindex="-1" class="num-input form-input w-24 rounded px-2 py-1 text-sm bg-gray-100 text-gray-500 cursor-not-allowed" />
+                  <label for="insuranceGain" class="text-xs text-gray-600">保険差益</label>
+                  <input type="number" id="insuranceGain" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
               </div>
               <div class="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border-t border-gray-200">
@@ -315,7 +315,7 @@
         
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>① 貸借対照表</dt><dd>入力した決算書の数値そのまま。資産 / 負債＋純資産 を積み上げて表示します。</dd><dt>② 実質BS</dt><dd>①に簿外資産（生命保険金・その他・不足分）と簿外負債（将来負債）を加えたBS。将来発生する負債を織り込んだ実質的な財政状態を表します。</dd><dt>③ 将来BS</dt><dd>将来負債が実際に発生し、簿外資産で充当した後のBS。純資産は <code>元の純資産 − 不足分</code> となります。</dd><dt>④ 次世代実質BS</dt><dd>③にさらに次世代将来負債と、それに対応する簿外資産を加えたBS。</dd><dt>自己資本比率</dt><dd><code>純資産 ÷ 資産合計 × 100</code>。純資産がマイナス、または資産合計が0以下の場合は「債務超過」と表示します。</dd><dt>BS内訳 / 自己資本％ / 生命保険なし / 簿外資産</dt><dd>「BS内訳」は各帯の内訳項目名と金額の表示切替、「自己資本％」は自己資本比率ボックスの表示切替、「生命保険なし」は生命保険金を0として再計算した場合との比較切替です。「簿外資産なし/あり」は実質BS・次世代実質BSの簿外資産(生命保険金・その他・不足分)の表示切替で、既定は非表示。まず将来負債の存在を示してから、ボタンで備えを重ねて見せられます。</dd></dl>
+            <dl><dt>① 貸借対照表</dt><dd>入力した決算書の数値そのまま。資産 / 負債＋純資産 を積み上げて表示します。</dd><dt>② 実質BS</dt><dd>①に簿外資産（生命保険金・一時払対策・保険差益）と簿外負債（将来負債）を加えたBS。将来発生する負債を織り込んだ実質的な財政状態を表します。</dd><dt>③ 将来BS</dt><dd>将来負債が実際に発生し、簿外資産で充当した後のBS。純資産は <code>元の純資産 − 不足分</code> となります。</dd><dt>④ 次世代実質BS</dt><dd>③にさらに次世代将来負債と、それに対応する簿外資産を加えたBS。</dd><dt>自己資本比率</dt><dd><code>純資産 ÷ 資産合計 × 100</code>。純資産がマイナス、または資産合計が0以下の場合は「債務超過」と表示します。</dd><dt>BS内訳 / 自己資本％ / 生命保険なし / 簿外資産</dt><dd>「BS内訳」は各帯の内訳項目名と金額の表示切替、「自己資本％」は自己資本比率ボックスの表示切替、「生命保険なし」は生命保険金を0として再計算した場合との比較切替です。「簿外資産なし/あり」は実質BS・次世代実質BSの簿外資産(生命保険金・一時払対策・保険差益)の表示切替で、既定は非表示。まず将来負債の存在を示してから、ボタンで備えを重ねて見せられます。</dd></dl>
             <p class="calc-logic-note">各帯にカーソルを合わせると、その要素の名称と金額がポップアップで表示されます。</p>
           </div>
 </div>
@@ -414,7 +414,8 @@
         <thead><tr><th class="lbl">項目</th><th>金額</th></tr></thead>
         <tbody>
           <tr><td class="lbl">生命保険金</td><td id="pLifeIns"></td></tr>
-          <tr><td class="lbl">その他</td><td id="pOtherCov"></td></tr>
+          <tr><td class="lbl">一時払対策</td><td id="pOtherCov"></td></tr>
+          <tr><td class="lbl">保険差益</td><td id="pInsGain"></td></tr>
           <tr><td class="lbl">不足分(自動計算)</td><td id="pShortfall"></td></tr>
           <tr class="total"><td class="lbl">簿外資産合計</td><td id="pOffBalTotal"></td></tr>
         </tbody>
@@ -441,6 +442,6 @@
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260826a"></script>
 <script src="js/data-backup.js?v=20260827a"></script>
-<script src="js/future-liability.js?v=20260828p"></script>
+<script src="js/future-liability.js?v=20260828q"></script>
 </body>
 </html>

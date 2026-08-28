@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!raw) return;
       const data = JSON.parse(raw);
       form.querySelectorAll('input[id]').forEach(function (el) {
-        if (el.id === 'shortfall') return; // 不足分は自動計算値のため保存・復元の対象外
         if (data[el.id] !== undefined) el.value = data[el.id];
       });
     } catch (e) {}
@@ -224,21 +223,21 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('checkNextFutureLiabTotal').textContent = anyFilled ? man(nextFutureLiabTotalNow()) : '-';
   }
 
-  // ===== 簿外資産(将来負債の備え): 生命保険金+その他で足りない分を「不足分」に自動で入れ、
-  // 3項目の合計(簿外負債合計)が将来負債合計と一致するようにする =====
-  const OFF_BALANCE_ASSET_IDS = ['lifeInsurance', 'otherCoverage'];
+  // ===== 簿外資産(将来負債の備え): 生命保険金+一時払対策+保険差益で足りない分が「不足分」。
+  // 合計欄には 充当額+不足分(=最低でも将来負債合計) を表示する =====
+  const OFF_BALANCE_ASSET_IDS = ['lifeInsurance', 'otherCoverage', 'insuranceGain'];
   function updateOffBalanceAsset() {
     const lifeIns = num('lifeInsurance').value;
     const otherCov = num('otherCoverage').value;
-    const covered = (isNaN(lifeIns) ? 0 : lifeIns) + (isNaN(otherCov) ? 0 : otherCov);
+    const insGain = num('insuranceGain').value;
+    const covered = (isNaN(lifeIns) ? 0 : lifeIns) + (isNaN(otherCov) ? 0 : otherCov) + (isNaN(insGain) ? 0 : insGain);
     const futureLiabTotal = futureLiabTotalNow();
     const shortfall = Math.max(0, futureLiabTotal - covered);
 
     const anyFutureFilled = FUTURE_LIAB_IDS.some((id) => !isNaN(num(id).value));
-    const anyCoverageFilled = !isNaN(lifeIns) || !isNaN(otherCov);
+    const anyCoverageFilled = !isNaN(lifeIns) || !isNaN(otherCov) || !isNaN(insGain);
     const anyFilled = anyFutureFilled || anyCoverageFilled;
 
-    document.getElementById('shortfall').value = anyFilled ? shortfall : '';
     document.getElementById('checkOffBalanceTotal').textContent = anyFilled ? man(covered + shortfall) : '-';
   }
 
@@ -349,6 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 一時払対策は直下の「将来負債対策分」(振替元)と隣り合う位置に置く
   const OFF_BALANCE_ASSET_SEGS = [
     { label: '一時払対策', offBalance: true, assetSide: true },
+    { label: '保険差益', offBalance: true, assetSide: true },
     { label: '生命保険金', offBalance: true, assetSide: true },
     { label: '不足分', offBalance: true, assetSide: true },
   ];
@@ -825,7 +825,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 簿外負債を「退職金」「自社株買取」「その他」に分けて表示する(色は簿外資産/簿外負債のまま。不足分だけ白背景にする)
     const lifeInsRaw = num('lifeInsurance').value;
     const otherCovRaw = num('otherCoverage').value;
-    const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
+    const insGainRaw = num('insuranceGain').value;
+    const gainTotal = isNaN(insGainRaw) ? 0 : Math.max(insGainRaw, 0);
+    const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw) + gainTotal;
     // 簿外資産ゾーンは負債側とバランスさせない: 備えが将来負債を超える場合は
     // クランプせず、超えた分だけゾーンが高く表示される(不足時のみ白い不足分が残る)
     const coveredPortion = coveredRaw;
@@ -851,8 +853,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // あり: 生命保険金等でカバーされる分は相殺されるため、不足分だけがBSに影響する。なし: 全額がそのまま影響する。
     // 生命保険あり: 不足分に加え、一時払対策で振り替えた分(将来負債対策分)も資産から差し引く。
     // 対策分は保険料としてすでに手元を離れた実質ゼロ資産であり、発動時の保険金は
-    // 将来負債の支払いに充当されて資産には戻らないため
-    const impactAmount = withInsurance ? shortfallPortion + earmarkTotal : futureLiabTotal;
+    // 将来負債の支払いに充当されて資産には戻らないため。
+    // 保険差益は不足分の計算(coveredRaw)で一度充当に使われており、将来負債を充当してなお
+    // 余った分(gainUnused)だけが会社に残って対策分の目減りを取り戻す(二重計上はしない)
+    const gainUnused = Math.min(gainTotal, Math.max(0, coveredRaw - futureLiabTotal));
+    const impactAmount = withInsurance ? shortfallPortion + earmarkTotal - gainUnused : futureLiabTotal;
 
     // 純資産と流動資産から取り崩す。流動資産で足りなければその他資産、それでも足りなければ固定資産も取り崩す。
     // (純資産・固定資産は取り崩しきれない場合マイナス=債務超過になり得るが、上のupdateChartが基準線の上下で
@@ -907,11 +912,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const offBalanceAssetSegs = detailMode
       ? [
           { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          { label: '保険差益', value: gainTotal, offBalance: true, assetSide: true, alwaysShowLabel: true },
           { label: '生命保険金', value: isNaN(lifeInsRaw) ? 0 : lifeInsRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           shortfallSeg,
         ]
       : [
           { label: '簿外資産', value: coveredPortion, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          { label: '', value: 0, offBalance: true, assetSide: true },
           { label: '', value: 0, offBalance: true, assetSide: true },
           shortfallSeg,
         ];
@@ -990,6 +997,7 @@ document.addEventListener('DOMContentLoaded', function () {
       a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
         { label: '', value: 0, earmark: true },
         { label: '一時払対策', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
+        { label: '', value: 0, offBalance: true, assetSide: true },
         { label: '生命保険金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
         { label: '不足分', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
       l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
@@ -1016,6 +1024,7 @@ document.addEventListener('DOMContentLoaded', function () {
         a2: [blank, assetDummy, blank,
           { label: '', value: 0, earmark: true },
           { label: '簿外資産', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
+          { label: '', value: 0, offBalance: true, assetSide: true },
           { label: '', value: 0, offBalance: true, assetSide: true },
           { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
@@ -1169,11 +1178,14 @@ document.addEventListener('DOMContentLoaded', function () {
       };
       const lifeIns = numRaw('lifeInsurance');
       const otherCov = numRaw('otherCoverage');
-      const shortfall = numRaw('shortfall');
+      const insGain = numRaw('insuranceGain');
+      const flTotalP = numRaw('retirement') + numRaw('succession') + numRaw('otherFuture');
+      const shortfall = Math.max(0, flTotalP - (lifeIns + otherCov + insGain));
       set('pLifeIns', man(lifeIns));
       set('pOtherCov', man(otherCov));
+      set('pInsGain', man(insGain));
       set('pShortfall', man(shortfall));
-      set('pOffBalTotal', man(lifeIns + otherCov + shortfall));
+      set('pOffBalTotal', man(lifeIns + otherCov + insGain + shortfall));
       const nRet = numRaw('nextRetirement'), nSuc = numRaw('nextSuccession'), nOth = numRaw('nextOtherFuture');
       set('pNextRetirement', man(nRet));
       set('pNextSuccession', man(nSuc));
