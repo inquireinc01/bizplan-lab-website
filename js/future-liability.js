@@ -722,9 +722,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
             // 「将来負債対策分」など名前が長いラベルは、バー幅に収まるようラベル行だけさらに縮小する
             const labelSize = Math.max(6, Math.min(8, (currentBarWidth - 8) / Math.max(seg.label.length, 1)));
-            // 簿外系(不足分・簿外資産・将来負債対策分等)は、金額行が幅からはみ出すなら
-            // 要素名を省いて数字のみの1行表示にする(名前はホバーのツールチップで確認)
-            const amtOk = !(seg.offBalance || seg.earmark) || estTextW(man(seg.value), 10) <= currentBarWidth - 4;
+            // 全セグメント共通ルール: 金額行が幅からはみ出すなら要素名を省いて
+            // 数字のみの1行表示にする(名前はホバーのツールチップで確認)
+            const amtOk = estTextW(man(seg.value), 10) <= currentBarWidth - 4;
             text.setAttribute('y', midY.toFixed(1));
             if (amtOk) {
               text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="${labelSize}" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
@@ -733,26 +733,20 @@ document.addEventListener('DOMContentLoaded', function () {
               text.setAttribute('font-weight', 'bold');
               fitSingleLine(text, man(seg.value), currentBarWidth - 4, 9);
             }
-          } else if (showValues && h > 16 && !((seg.offBalance || seg.earmark) && forceLabel)) {
-            // 1行に「要素名+金額」(またはforceLabelでなければ金額のみ)を収める。
-            // 幅に収まらなければ6pxまで自動縮小し、それでも収まらなければ空白にする
-            text.setAttribute('y', (midY + 4).toFixed(1));
-            text.setAttribute('font-weight', 'bold');
-            fitSingleLine(text, forceLabel ? `${seg.label} ${man(seg.value)}` : man(seg.value), currentBarWidth - 8, 9);
-          } else if (showValues && (isNeg || (forceLabel && !seg.offBalance && !seg.earmark)) && seg.value !== 0) {
-            // マイナス値や「ひとまとめ」表示で帯が小さい場合でも、要素名・金額を見失わないよう帯のすぐ下に表示する。
-            // (積み上げの途中に挟まる簿外セグメント・将来負債対策分は下のラベルと重なるため対象外。次分岐で帯内に出す)
+          } else if (showValues && isNeg && seg.value !== 0) {
+            // マイナス値(債務超過等)は帯が基準線の下に伸びるため、見失わないよう帯のすぐ下に表示する
             text.setAttribute('y', (segY + h + 12).toFixed(1));
             text.setAttribute('font-weight', 'bold');
             fitSingleLine(text, `${seg.label} ${man(seg.value)}`, currentBarWidth - 8, 8);
-          } else if (showValues && forceLabel && (seg.offBalance || seg.earmark) && h > 0) {
-            // 不足分・簿外資産・将来負債対策分は帯が低くても必ず帯内に表示する。
+          } else if (showValues && seg.value !== 0 && h > 0) {
+            // BS本体・簿外を問わず全セグメント共通: 帯が低くても必ず帯内に1行で表示する。
             // 「名前+金額」が幅に収まらないときは要素名を省いて数字のみにする(名前はツールチップで確認)
-            const full = `${seg.label} ${man(seg.value)}`;
+            const fs = h > 16 ? 9 : 8;
+            const full = seg.label ? `${seg.label} ${man(seg.value)}` : man(seg.value);
             text.setAttribute('y', (midY + 3).toFixed(1));
             text.setAttribute('font-weight', 'bold');
-            text.setAttribute('font-size', '8');
-            text.textContent = estTextW(full, 8) <= currentBarWidth - 4 ? full : man(seg.value);
+            text.setAttribute('font-size', String(fs));
+            text.textContent = estTextW(full, fs) <= currentBarWidth - 4 ? full : man(seg.value);
           } else {
             text.textContent = '';
           }
