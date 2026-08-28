@@ -131,7 +131,7 @@ button:hover,
 .metric-tile:hover,
 .wobble:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(15, 42, 74, 0.14);
+  box-shadow: 0 8px 18px rgba(59, 110, 165, 0.13);
 }
 button:active,
 .btn-accent:active,
@@ -2209,28 +2209,28 @@ img {
   animation: lampPulse 1.8s ease-in-out infinite;
 }
 
-/* 評価額推移表: シナリオA/Bを配色で分け(A=ブルー系/B=ネイビー系)、行ゼブラで濃淡を付ける */
+/* 評価額推移表: シナリオA/Bを配色で分け(A=ネイビー系(基調)/B=ブルー系(対策後=ライト))、行ゼブラで濃淡を付ける */
 #trendTable td.col-saizoku-a,
 #trendTable td.col-houjin-a,
 #trendTable td.col-ruiji-a,
 #trendTable td.col-junsisan-a,
-#trendTable td.col-rim-a { background-color: rgba(59, 110, 165, 0.05); }
+#trendTable td.col-rim-a { background-color: rgba(15, 42, 74, 0.06); }
 #trendTable td.col-saizoku-b,
 #trendTable td.col-houjin-b,
 #trendTable td.col-ruiji-b,
 #trendTable td.col-junsisan-b,
-#trendTable td.col-rim-b { background-color: rgba(15, 42, 74, 0.06); }
+#trendTable td.col-rim-b { background-color: rgba(59, 110, 165, 0.05); }
 /* 行ゼブラ(偶数行を少し濃く) */
 #trendTableBody tr:nth-child(even) td.col-saizoku-a,
 #trendTableBody tr:nth-child(even) td.col-houjin-a,
 #trendTableBody tr:nth-child(even) td.col-ruiji-a,
 #trendTableBody tr:nth-child(even) td.col-junsisan-a,
-#trendTableBody tr:nth-child(even) td.col-rim-a { background-color: rgba(59, 110, 165, 0.13); }
+#trendTableBody tr:nth-child(even) td.col-rim-a { background-color: rgba(15, 42, 74, 0.14); }
 #trendTableBody tr:nth-child(even) td.col-saizoku-b,
 #trendTableBody tr:nth-child(even) td.col-houjin-b,
 #trendTableBody tr:nth-child(even) td.col-ruiji-b,
 #trendTableBody tr:nth-child(even) td.col-junsisan-b,
-#trendTableBody tr:nth-child(even) td.col-rim-b { background-color: rgba(15, 42, 74, 0.14); }
+#trendTableBody tr:nth-child(even) td.col-rim-b { background-color: rgba(59, 110, 165, 0.13); }
 #trendTableBody tr:nth-child(even) td:first-child { background-color: #f3f6f9; }
 /* 5年ごとの区切り線。現在はブロックに含めず1つズラす(現在 | 1〜5年後 | 6〜10年後 | …)。
    線は1年後・6年後・11年後…(2,7,12…行目)の上端に引く */
@@ -2649,7 +2649,7 @@ a,
 button,
 .nav-btn,
 .lift-card {
-  -webkit-tap-highlight-color: rgba(15, 42, 74, 0.06);
+  -webkit-tap-highlight-color: rgba(59, 110, 165, 0.05);
 }
 
 /* SVGグラフ・画像はコンテナ幅に追従(はみ出し防止) */
@@ -2708,7 +2708,7 @@ svg {
   border: 1px solid var(--color-gray-200);
   border-radius: 1rem;
   padding: 1.4rem 1.3rem 1.1rem;
-  box-shadow: 0 8px 24px rgba(15, 42, 74, 0.06);
+  box-shadow: 0 8px 24px rgba(59, 110, 165, 0.05);
   text-align: center;
 }
 .rb-headline-lead {
@@ -4035,10 +4035,10 @@ a.portal-feed-row:hover .portal-feed-text {
   font-size: 11px;
   flex-shrink: 0;
 }
-.print-scenario-head.is-a { background: #eaf0f7; color: #2d5580; }
-.print-scenario-head.is-a .ps-badge { background-color: #3b6ea5; }
-.print-scenario-head.is-b { background: #e9edf3; color: #0f2a4a; }
-.print-scenario-head.is-b .ps-badge { background-color: #0f2a4a; }
+.print-scenario-head.is-a { background: #e9edf3; color: #0f2a4a; }
+.print-scenario-head.is-a .ps-badge { background-color: #0f2a4a; }
+.print-scenario-head.is-b { background: #eaf0f7; color: #2d5580; }
+.print-scenario-head.is-b .ps-badge { background-color: #3b6ea5; }
 /* 推移表: 5年ごとに薄い帯を敷いて行を追いやすくする */
 .print-trend tbody tr:nth-child(5n + 1) td { background-color: #f4f7fa; }
 .print-trend td.lbl { font-weight: 600; }
@@ -4076,12 +4076,12 @@ a.portal-feed-row:hover .portal-feed-text {
 .print-trend-cols .print-trend thead th { text-align: center; }
 .print-trend-cols .print-trend td.lbl { text-align: center; }
 /* シナリオごとにイメージカラーを変える(A=青系 / B=紺系) */
-.print-trend-cols.sc-a .print-trend thead th { background-color: #3b6ea5; color: #fff; }
-.print-trend-cols.sc-a .print-trend tbody tr:nth-child(5n + 1) td { background-color: #eaf1f8; }
-.print-trend-cols.sc-a .print-trend td.lbl { color: #2d5580; }
-.print-trend-cols.sc-b .print-trend thead th { background-color: #0f2a4a; color: #fff; }
-.print-trend-cols.sc-b .print-trend tbody tr:nth-child(5n + 1) td { background-color: #e8ebf1; }
-.print-trend-cols.sc-b .print-trend td.lbl { color: #0f2a4a; }
+.print-trend-cols.sc-a .print-trend thead th { background-color: #0f2a4a; color: #fff; }
+.print-trend-cols.sc-a .print-trend tbody tr:nth-child(5n + 1) td { background-color: #e8ebf1; }
+.print-trend-cols.sc-a .print-trend td.lbl { color: #0f2a4a; }
+.print-trend-cols.sc-b .print-trend thead th { background-color: #3b6ea5; color: #fff; }
+.print-trend-cols.sc-b .print-trend tbody tr:nth-child(5n + 1) td { background-color: #eaf1f8; }
+.print-trend-cols.sc-b .print-trend td.lbl { color: #2d5580; }
 
 /* 金庫株の印刷: パターンA/Bの強調ヘッダー */
 .print-pattern-head {
