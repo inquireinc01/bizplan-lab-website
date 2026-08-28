@@ -781,10 +781,13 @@ document.addEventListener('DOMContentLoaded', function () {
               // 下の(先に描いた)ラベルと重なってしまう極薄の帯はラベルを出さない(ホバーで確認)
               text.textContent = '';
             } else {
+              // 「名前+金額」は横幅・縦幅の両方に収まる場合のみ。どちらかにはみ出すなら数字のみ
+              const fitsW = estTextW(full, fs) <= currentBarWidth - 4;
+              const fitsH = h >= fs + 2;
               text.setAttribute('y', yText.toFixed(1));
               text.setAttribute('font-weight', 'bold');
               text.setAttribute('font-size', String(fs));
-              text.textContent = estTextW(full, fs) <= currentBarWidth - 4 ? full : man(seg.value);
+              text.textContent = (fitsW && fitsH) ? full : man(seg.value);
               lastLabelTop = yText - fs;
             }
           } else {
