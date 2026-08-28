@@ -722,7 +722,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
             // 「将来負債対策分」など名前が長いラベルは、バー幅に収まるようラベル行だけさらに縮小する
             const labelSize = Math.max(6, Math.min(8, (currentBarWidth - 8) / Math.max(seg.label.length, 1)));
-            // 簿外系(不足分・充当分・将来負債対策分等)は、金額行が幅からはみ出すなら金額なしの名前だけにする
+            // 簿外系(不足分・簿外資産・将来負債対策分等)は、金額行が幅からはみ出すなら
+            // 要素名を省いて数字のみの1行表示にする(名前はホバーのツールチップで確認)
             const amtOk = !(seg.offBalance || seg.earmark) || estTextW(man(seg.value), 10) <= currentBarWidth - 4;
             text.setAttribute('y', midY.toFixed(1));
             if (amtOk) {
@@ -730,8 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
               text.setAttribute('y', (midY + 3).toFixed(1));
               text.setAttribute('font-weight', 'bold');
-              text.setAttribute('font-size', String(labelSize));
-              text.textContent = seg.label;
+              fitSingleLine(text, man(seg.value), currentBarWidth - 4, 9);
             }
           } else if (showValues && h > 16 && !((seg.offBalance || seg.earmark) && forceLabel)) {
             // 1行に「要素名+金額」(またはforceLabelでなければ金額のみ)を収める。
@@ -746,13 +746,13 @@ document.addEventListener('DOMContentLoaded', function () {
             text.setAttribute('font-weight', 'bold');
             fitSingleLine(text, `${seg.label} ${man(seg.value)}`, currentBarWidth - 8, 8);
           } else if (showValues && forceLabel && (seg.offBalance || seg.earmark) && h > 0) {
-            // 不足分・充当分・将来負債対策分は帯が低くても必ず帯内に表示する。
-            // 「名前+金額」が幅に収まらないときは金額を省いて名前だけにする(数字のはみ出しはしない)
+            // 不足分・簿外資産・将来負債対策分は帯が低くても必ず帯内に表示する。
+            // 「名前+金額」が幅に収まらないときは要素名を省いて数字のみにする(名前はツールチップで確認)
             const full = `${seg.label} ${man(seg.value)}`;
             text.setAttribute('y', (midY + 3).toFixed(1));
             text.setAttribute('font-weight', 'bold');
             text.setAttribute('font-size', '8');
-            text.textContent = estTextW(full, 8) <= currentBarWidth - 4 ? full : seg.label;
+            text.textContent = estTextW(full, 8) <= currentBarWidth - 4 ? full : man(seg.value);
           } else {
             text.textContent = '';
           }
