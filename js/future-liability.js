@@ -733,7 +733,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const text = document.getElementById(`bs-${barKey}-t${i}`);
         if (text) {
-          const midY = segY + h / 2;
+          // 頭ぞろえのため基準線の下まで沈んでいる正のセグメントは、下側が債務超過バンドに
+          // 隠れるので、ラベルは「基準線より上に見えている部分」の中央に置き、
+          // 分岐判定(2行にするか等)も見えている高さで行う
+          const visBottom = isNeg ? segY + h : Math.min(segY + h, yBottom);
+          const hVis = isNeg ? h : Math.max(0, visBottom - segY);
+          const midY = (segY + visBottom) / 2;
           text.setAttribute('fill', seg.textFill || (seg.offBalance ? offBalanceStyle(seg.assetSide).text : (LIGHT_SEGS.includes(seg.label) ? '#2b2f36' : '#fff')));
           // 「ひとまとめ」表示のセグメントは高さが小さくても要素名・金額を必ず表示する
           const forceLabel = showValues && seg.alwaysShowLabel && seg.value !== 0;
@@ -745,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
               text.textContent = '';
             }
-          } else if (showValues && !isNeg && (h > 34 || ((seg.earmark || seg.alwaysShowLabel) && h > 22))) {
+          } else if (showValues && !isNeg && (hVis > 34 || ((seg.earmark || seg.alwaysShowLabel) && hVis > 22))) {
             // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
             // 「将来負債対策分」など名前が長いラベルは、バー幅に収まるようラベル行だけさらに縮小する
@@ -772,10 +777,10 @@ document.addEventListener('DOMContentLoaded', function () {
             text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.25em" font-size="${lblSize.toFixed(1)}" font-weight="700">債務超過</tspan><tspan x="${text.getAttribute('x')}" dy="1.2em" font-size="${amtSize.toFixed(1)}" font-weight="bold">${amt}</tspan>`;
             text.parentNode.appendChild(text);
             lastLabelTop = midY - 12;
-          } else if (showValues && seg.value !== 0 && h > 0) {
+          } else if (showValues && seg.value !== 0 && hVis > 0) {
             // BS本体・簿外を問わず全セグメント共通: 帯が低くても必ず帯内に1行で表示する。
             // 「名前+金額」が幅に収まらないときは要素名を省いて数字のみにする(名前はツールチップで確認)
-            const fs = h > 16 ? 9 : (h < 9 ? 7 : 8);
+            const fs = hVis > 16 ? 9 : (hVis < 9 ? 7 : 8);
             const full = seg.label ? `${seg.label} ${man(seg.value)}` : man(seg.value);
             const yText = midY + 3;
             if (yText > lastLabelTop - 1) {
@@ -784,7 +789,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
               // 「名前+金額」は横幅・縦幅の両方に収まる場合のみ。どちらかにはみ出すなら数字のみ
               const fitsW = estTextW(full, fs) <= currentBarWidth - 4;
-              const fitsH = h >= fs + 2;
+              const fitsH = hVis >= fs + 2;
               text.setAttribute('y', yText.toFixed(1));
               text.setAttribute('font-weight', 'bold');
               text.setAttribute('font-size', String(fs));
