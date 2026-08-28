@@ -373,8 +373,12 @@ document.addEventListener('DOMContentLoaded', function () {
     { label: 'その他', offBalance: true, assetSide: false },
   ];
   // 実質BSの資産側に挟む「将来負債対策分」枠: 一時払対策に入力した金額を流動資産等から
-  // 振り替えたことを示す点線ボックス(簿外ゾーンではなくオンバランス側に置くためoffBalanceにしない)
-  const EARMARK_SEG = [{ label: '将来負債対策分', earmark: true }];
+  // 振り替えたことを示すボックス(簿外ゾーンではなくオンバランス側に置くためoffBalanceにしない)。
+  // 下=まだ埋まっていない空白(白点線)、上=保険差益で埋まった部分(ブルーグリーン白抜き)の2段構成
+  const EARMARK_SEG = [
+    { label: '将来負債対策分', earmark: true },
+    { label: '保険差益', earmarkFill: true },
+  ];
   // x位置は持たず、常に0で初期化する(表示ON/OFFの組み合わせに応じてupdateLayoutが毎回設定するため)
   const BAR_DEFS = {
     a1: { segs: ASSET_SEGS_BASE },
@@ -406,7 +410,10 @@ document.addEventListener('DOMContentLoaded', function () {
           : seg.earmark
             // 将来負債対策分: 資産から振り替えて空いた分を示す白背景+緑点線のボックス
             ? `fill="#ffffff" fill-opacity="1" stroke="#3f5a4d" stroke-width="1.2" stroke-dasharray="4,3"`
-            : `fill="${segColor(seg.label)}"`;
+            : seg.earmarkFill
+              // 対策分の空白を保険差益が埋めた部分(ブルーグリーン白抜き)
+              ? `fill="#45939b" fill-opacity="1" stroke="#fff" stroke-width="1"`
+              : `fill="${segColor(seg.label)}"`;
         svgOut += `<rect id="bs-${barKey}-${i}" x="0" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
       def.segs.forEach((seg, i) => {
@@ -859,12 +866,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // 点線の「将来負債対策分」として残す(枠が場所を占めるので左右のバランスは崩れない)。
     // 資産合計を超える入力分は振替えない(超過分は簿外資産の充当のみに効く)。
     // 「簿外資産なし」トグル中は備えを見せない状態のため、振替も行わず資産を元の値のまま表示する。
-    // 保険差益で打ち消した後の純額(一時払対策 − 差益)だけを振り替える。差益≧対策なら対策分は消える
-    const earmarkRaw = !showOffBalAsset ? 0 : Math.max(0, otherCovVal - gainTotal);
+    // 対策分の枠は一時払対策の全額分を常に確保し、保険差益が枠の中を埋めていく
+    const earmarkRaw = !showOffBalAsset ? 0 : otherCovVal;
     const em1 = Math.min(earmarkRaw, Math.max(fields.curAssets.value, 0));
     const em2 = Math.min(earmarkRaw - em1, Math.max(fields.otherAssets.value, 0));
     const em3 = Math.min(earmarkRaw - em1 - em2, Math.max(fields.fixedAssets.value, 0));
     const earmarkTotal = em1 + em2 + em3;
+    // 対策分の枠のうち保険差益で埋まった部分。残り(純額)だけが実質ゼロ資産として予測BSの取り崩しに効く
+    const gainFill = Math.min(gainTotal, earmarkTotal);
+    const earmarkNet = earmarkTotal - gainFill;
     const assetsRealBaseDetail = [
       { label: 'その他資産', value: fields.otherAssets.value - em2 },
       { label: '固定資産', value: fields.fixedAssets.value - em3 },
@@ -874,9 +884,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 予測BS(簿外負債が発動した場合)は「生命保険金あり/なし」トグルで、実際にBSへ影響する金額を切り替える。
     // あり: 生命保険金等でカバーされる分は相殺されるため、不足分だけがBSに影響する。なし: 全額がそのまま影響する。
     // 生命保険あり: 不足分に加え、差益打ち消し後の対策分(純額)も資産から差し引く。
-    // 保険差益は「対策分の打ち消し」→「余りは充当(coveredRaw)」の順で使い切っているため、
+    // 保険差益は「対策分の埋め」→「余りは充当(coveredRaw)」の順で使い切っているため、
     // ここでさらに差し引くと二重計上になる(追加減算はしない)
-    const impactAmount = withInsurance ? shortfallPortion + earmarkTotal : futureLiabTotal;
+    const impactAmount = withInsurance ? shortfallPortion + earmarkNet : futureLiabTotal;
 
     // 純資産と流動資産から取り崩す。流動資産で足りなければその他資産、それでも足りなければ固定資産も取り崩す。
     // (純資産・固定資産は取り崩しきれない場合マイナス=債務超過になり得るが、上のupdateChartが基準線の上下で
@@ -934,9 +944,7 @@ document.addEventListener('DOMContentLoaded', function () {
           // 対策分が差益で完全に打ち消されているときは、一時払対策も同じブルーグリーンの白抜きにして
           // 「差益で自己完結した対策」であることが一目で分かるようにする
           { label: '保険差益', value: gainRemainder, offBalance: true, assetSide: true, alwaysShowLabel: true, fill: '#45939b', fillOpacity: 1, textFill: '#fff' },
-          (gainTotal >= otherCovVal && otherCovVal > 0
-            ? { label: '一時払対策', value: otherCovVal, offBalance: true, assetSide: true, alwaysShowLabel: true, fill: '#45939b', fillOpacity: 1, textFill: '#fff' }
-            : { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true }),
+          { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           { label: '生命保険金', value: isNaN(lifeInsRaw) ? 0 : lifeInsRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           shortfallSeg,
         ]
@@ -981,11 +989,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // 実質BSの資産側は「振替後の資産+点線の将来負債対策分+簿外ゾーン」で構成する
     // (会計上のBS(a1)は入力値のまま。振替は実質BSの見せ方だけに効かせる)
     const assetsRealBase = detailMode ? assetsRealBaseDetail : toGroupedAsset(assetsRealBaseDetail);
-    const earmarkSeg = {
-      label: '将来負債対策分', value: earmarkTotal, earmark: true,
+    // 下=まだ空白の対策分(白点線)、上=差益で埋まった部分(ブルーグリーン)。上端はゾーンの保険差益(余り)と連続する
+    const earmarkRestSeg = {
+      label: '将来負債対策分', value: earmarkNet, earmark: true,
       fill: '#ffffff', fillOpacity: 1, textFill: '#3f5a4d', alwaysShowLabel: true,
     };
-    const assetsAdjusted = assetsRealBase.concat([earmarkSeg], offBalanceAssetSegs);
+    const earmarkFillSeg = {
+      label: '保険差益', value: gainFill, earmarkFill: true,
+      fill: '#45939b', fillOpacity: 1, textFill: '#fff', alwaysShowLabel: true,
+    };
+    const assetsAdjusted = assetsRealBase.concat([earmarkRestSeg, earmarkFillSeg], offBalanceAssetSegs);
     const liabNetAdjusted = liabNetBase.concat(offBalanceLiabSegs);
     // 将来予測実質BS = 将来予測BSの数値(assetsTriggered/liabNetTriggered)をそのまま土台にし、次世代将来負債を上に乗せるだけ
     const assetsFinalAdjusted = assetsTriggered.concat(nextOffBalanceAssetSegs);
@@ -1020,6 +1033,7 @@ document.addEventListener('DOMContentLoaded', function () {
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
       a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
         { label: '', value: 0, earmark: true },
+        { label: '', value: 0 },
         { label: '', value: 0, offBalance: true, assetSide: true },
         { label: '一時払対策', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
         { label: '生命保険金', value: DUMMY_VALUE / 3, offBalance: true, assetSide: true },
@@ -1047,6 +1061,7 @@ document.addEventListener('DOMContentLoaded', function () {
         l1: [netAssetsDummy, liabDummy, blank],
         a2: [blank, assetDummy, blank,
           { label: '', value: 0, earmark: true },
+          { label: '', value: 0 },
           { label: '簿外資産', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
           { label: '', value: 0, offBalance: true, assetSide: true },
           { label: '', value: 0, offBalance: true, assetSide: true },
