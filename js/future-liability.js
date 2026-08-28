@@ -697,10 +697,10 @@ document.addEventListener('DOMContentLoaded', function () {
       let offBalBottom = null;
       segments.forEach((seg, i) => {
         const isNeg = seg.value < 0;
-        // マイナス(債務超過)のバンドは最低でも固定の縦幅(2行表示が入る高さ)で描き、
-        // 超過の実寸がそれより大きい場合は実寸に合わせる。頭ぞろえのために正の要素が
-        // 基準線の下まで伸びるぶん(barNegPx)を、バンドが必ず覆い隠せるようにする
-        const h = isNeg ? Math.max(NEG_BAND_H, Math.abs(seg.value) * pxPerYen) : Math.abs(seg.value) * pxPerYen;
+        // マイナス(債務超過)のバンドは金額に関わらず固定の縦幅。縦スケール側で
+        // 「超過の実寸がバンドに収まる」ようpxPerYenを圧縮しているため、
+        // 頭ぞろえ用に基準線の下へ伸びた正の要素は必ずバンドに覆われる
+        const h = isNeg ? NEG_BAND_H : Math.abs(seg.value) * pxPerYen;
         const segY = isNeg ? yBottom : (yPos - h);
         const rect = document.getElementById(`bs-${barKey}-${i}`);
         if (rect) {
@@ -925,7 +925,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const positiveTriggeredLiab = Math.max(netAssetsTriggered, 0) + fields.fixedLiab.value + fields.curLiab.value;
     const triggeredStackMax = Math.max(positiveTriggeredAssets, positiveTriggeredLiab) + nextFutureLiabTotal;
     const maxTotal = Math.max(totalAdjusted, triggeredStackMax, 1);
-    const pxPerYen = plotH / maxTotal;
+    let pxPerYen = plotH / maxTotal;
+    // 債務超過バンドは金額に関わらず固定の縦幅(NEG_BAND_H)。どんなに大きな債務超過でも
+    // 「基準線の下への実寸のはみ出し」がバンドの中に収まるよう、必要ならスケール全体を圧縮する
+    const maxDeficitYen = Math.max(0, -netAssetsTriggered, -fixedAssetsTriggered);
+    if (maxDeficitYen > 0 && maxDeficitYen * pxPerYen > NEG_BAND_H) {
+      pxPerYen = NEG_BAND_H / maxDeficitYen;
+    }
 
     const assetsTriggeredDetail = [
       { label: 'その他資産', value: otherAssetsTriggered },
