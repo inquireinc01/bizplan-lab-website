@@ -154,7 +154,7 @@
         <div id="flResultArea" class="space-y-6">
           <p id="flBalanceNote" class="hidden warning-box text-xs rounded-lg p-3"></p>
 
-          <div class="calc-section bg-gray-50 p-6 sm:p-8">
+          <div class="calc-section bg-gray-50 px-6 pt-6 pb-2 sm:px-8 sm:pt-8 sm:pb-2">
             <div class="mb-4 rounded-lg px-3 py-2.5 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto" style="background-color:rgba(61,79,92,0.5)">
               <div class="flex flex-nowrap items-center gap-1.5 shrink-0">
                 <button type="button" id="showGroup1Toggle" aria-pressed="true" class="overlay-toggle overlay-toggle-navy overlay-toggle-compact is-on"><span class="dot"></span><span class="toggle-label">決算書BS</span></button>
@@ -181,11 +181,12 @@
         </div>
       </div>
 
-      <div id="flErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4 mt-6"></div>
+      <div id="flErrorArea" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4 mt-2"></div>
 
-      <form id="futureLiabForm" class="space-y-10 mt-6">
+      <form id="futureLiabForm" class="space-y-10 mt-2">
 
-        <div class="calc-section bg-white p-6 sm:p-8">
+        <div class="calc-section bg-white relative px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
+          <div class="absolute top-2 right-4 sm:right-6"><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2">データクリア</button></div>
           <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <!-- 資産、負債・純資産、簿外資産は詰めて幅を抑え、将来負債(現行+次世代)に広さを回す -->
             <div id="assetsCard" class="rounded-lg border border-gray-200 overflow-hidden">
@@ -302,7 +303,6 @@
               </div>
             </div>
           </div>
-          <div class="mt-3 flex justify-end"><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></div>
         
           <div class="calc-logic">
             <p class="calc-logic-title">計算ロジック</p>
