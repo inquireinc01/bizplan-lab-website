@@ -273,7 +273,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const plotH = yBottom - yTop;
   // 純資産等がマイナス(債務超過)になった場合、基準線(yBottom)から下向きに積む専用の帯。
   // 債務超過が無いときはこの帯を確保せず、グラフ下の余白が出ないようにする(updateLayoutで動的に切替)。
-  const NEG_ZONE_H = 90;
   // 2〜3組表示時の標準サイズ(この見た目を基準とする)。4組すべて表示する時だけ、updateLayoutが
   // FOUR_GROUP_SCALEを掛けて縮小したサイズ(currentBarWidth等)を使う
   const barWidth = 78;
@@ -503,12 +502,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // 見出し・SVG全体の高さを、債務超過の有無に応じて動的に調整する。
-  // マイナス値が無ければNEG_ZONE_Hの帯を確保せず、グラフ下の余白を無くす。
   // 会計上/実質的/将来予測/将来予測実質の4つのBSは最低1組から自由に選んで表示できる仕様。
   // 1〜3組の時はバーの大きさ・間隔を変えずに中央寄せで並べ直すだけだが、4組全部を選んだ時だけ
   // 1本1本が細くなりすぎないよう、FOUR_GROUP_SCALE分だけバー幅・間隔を縮小して収める。
-  function updateLayout(anyNeg) {
-    const negZone = anyNeg ? NEG_ZONE_H : 0;
+  function updateLayout(maxNegPx) {
+    // 債務超過のはみ出しバンド(赤)の実寸分だけ見出し等を下げる。無ければ余白ゼロで1枚絵表示を保つ
+    const negZone = maxNegPx > 0 ? maxNegPx + 4 : 0;
     const zoneBottom = yBottom + negZone;
 
     const visibleGroups = [1, 2, 3, 4].filter((n) => showGroup[n]);
@@ -668,21 +667,23 @@ document.addEventListener('DOMContentLoaded', function () {
       }));
     }
     initChartOnce();
-    const anyNeg = Object.values(dataByBar).some((segs) => segs.some((s) => s.value < 0));
-    updateLayout(anyNeg);
+    // 債務超過(マイナス値)のはみ出しバンドの最大高さ(px)。見出し等をその分だけ下げる
+    const maxNegPx = Math.max(0, ...Object.values(dataByBar).map((segs) =>
+      segs.reduce((s, x) => s + (x.value < 0 ? Math.abs(x.value) * pxPerYen : 0), 0)));
+    updateLayout(maxNegPx);
     Object.entries(dataByBar).forEach(([barKey, segments]) => {
-      let yPos = yBottom; // 0以上の要素: 基準線から上に積む
-      let yNeg = yBottom; // 0未満の要素: 基準線から下に積む
+      // 債務超過のバーは、正の要素を超過分だけ基準線の下から積み始める。
+      // こうすると正味合計が同じ左右のバーの頭がそろう(BSはバランスしているように見える)
+      const barNegPx = segments.reduce((s, x) => s + (x.value < 0 ? Math.abs(x.value) * pxPerYen : 0), 0);
+      let yPos = yBottom + barNegPx; // 0以上の要素はここから上に積む
       let total = 0;
       let offBalTop = null;
       let offBalBottom = null;
       segments.forEach((seg, i) => {
         const isNeg = seg.value < 0;
-        // マイナス側はNEG_ZONE_H(帯の残り幅)を超えないようクランプし、どんなに大きな債務超過でも表示が崩れないようにする
-        const h = isNeg
-          ? Math.max(0, Math.min(Math.abs(seg.value) * pxPerYen, yBottom + NEG_ZONE_H - yNeg))
-          : Math.abs(seg.value) * pxPerYen;
-        const segY = isNeg ? yNeg : (yPos - h);
+        // マイナス(債務超過)は基準線の下へのはみ出しバンドとして実寸で描く
+        const h = Math.abs(seg.value) * pxPerYen;
+        const segY = isNeg ? yBottom : (yPos - h);
         const rect = document.getElementById(`bs-${barKey}-${i}`);
         if (rect) {
           rect.setAttribute('y', segY.toFixed(1));
@@ -695,6 +696,11 @@ document.addEventListener('DOMContentLoaded', function () {
           if (!seg.offBalance && !seg.earmark) {
             rect.setAttribute('stroke', '#fff');
             rect.setAttribute('stroke-width', '1.5');
+          }
+          // 債務超過バンドは要素本来の色(青系等)ではなく赤系の背景にする
+          if (isNeg) {
+            rect.setAttribute('fill', '#a83d3d');
+            rect.setAttribute('fill-opacity', '0.25');
           }
           // 帯が小さく文字が入りきらない場合でも、ポインタを乗せれば要素名・金額を確認できるようにする
           if (showValues && seg.label && seg.value !== 0) {
@@ -717,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
               text.textContent = '';
             }
-          } else if (showValues && (h > 34 || ((seg.earmark || seg.alwaysShowLabel) && h > 22))) {
+          } else if (showValues && !isNeg && (h > 34 || ((seg.earmark || seg.alwaysShowLabel) && h > 22))) {
             // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
             // 「将来負債対策分」など名前が長いラベルは、バー幅に収まるようラベル行だけさらに縮小する
@@ -733,11 +739,15 @@ document.addEventListener('DOMContentLoaded', function () {
               text.setAttribute('font-weight', 'bold');
               fitSingleLine(text, man(seg.value), currentBarWidth - 4, 9);
             }
-          } else if (showValues && isNeg && seg.value !== 0) {
-            // マイナス値(債務超過等)は帯が基準線の下に伸びるため、見失わないよう帯のすぐ下に表示する
-            text.setAttribute('y', (segY + h + 12).toFixed(1));
+          } else if (showValues && isNeg) {
+            // 債務超過バンド: バンド内に赤字で「債務超過 ○○万円」(幅に収まらなければ数字のみ)
+            const fs = h > 16 ? 9 : 8;
+            const full = `債務超過 ${man(-seg.value)}`;
+            text.setAttribute('y', (midY + 3).toFixed(1));
             text.setAttribute('font-weight', 'bold');
-            fitSingleLine(text, `${seg.label} ${man(seg.value)}`, currentBarWidth - 8, 8);
+            text.setAttribute('font-size', String(fs));
+            text.setAttribute('fill', '#a02020');
+            text.textContent = estTextW(full, fs) <= currentBarWidth - 4 ? full : man(-seg.value);
           } else if (showValues && seg.value !== 0 && h > 0) {
             // BS本体・簿外を問わず全セグメント共通: 帯が低くても必ず帯内に1行で表示する。
             // 「名前+金額」が幅に収まらないときは要素名を省いて数字のみにする(名前はツールチップで確認)
@@ -752,7 +762,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
         total += seg.value;
-        if (isNeg) { yNeg += h; } else { yPos -= h; }
+        if (!isNeg) yPos -= h;
         if (seg.offBalance && seg.value !== 0) {
           if (offBalTop === null || segY < offBalTop) offBalTop = segY;
           if (offBalBottom === null || segY + h > offBalBottom) offBalBottom = segY + h;
