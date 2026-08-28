@@ -183,7 +183,7 @@
           
           <div class="calc-logic" id="calcLogic">
             <p class="calc-logic-title">計算ロジック</p>
-            <dl><dt>資産合計 / 負債・純資産合計</dt><dd>資産合計 = <code>流動資産 ＋ 固定資産 ＋ その他資産</code>、負債・純資産合計 = <code>流動負債 ＋ 固定負債 ＋ 純資産</code></dd><dt>貸借の一致チェック</dt><dd>6項目すべてを入力した時点で左右を比較し、差額が生じている場合は両カードの枠を薄い赤で警告します。</dd><dt>将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（未入力の項目は0として扱います）</dd><dt>次世代将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（次世代分。将来負債とは別枠の任意入力）</dd><dt>不足分（自動計算）</dt><dd><code>max(0, 将来負債合計 − (生命保険金 ＋ 一時払対策 ＋ 保険差益))</code>。備えが将来負債に届かない差額です。</dd><dt>簿外資産合計</dt><dd><code>生命保険金 ＋ 一時払対策 ＋ 保険差益 ＋ 不足分</code></dd></dl>
+            <dl><dt>資産合計 / 負債・純資産合計</dt><dd>資産合計 = <code>流動資産 ＋ 固定資産 ＋ その他資産</code>、負債・純資産合計 = <code>流動負債 ＋ 固定負債 ＋ 純資産</code></dd><dt>貸借の一致チェック</dt><dd>6項目すべてを入力した時点で左右を比較し、差額が生じている場合は両カードの枠を薄い赤で警告します。</dd><dt>将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（未入力の項目は0として扱います）</dd><dt>次世代将来負債合計</dt><dd><code>退職金 ＋ 自社株買取 ＋ その他</code>（次世代分。将来負債とは別枠の任意入力）</dd><dt>保険差益</dt><dd>まず将来負債対策分(一時払対策の振替)を打ち消し、対策分を超えた余りだけを簿外資産の充当に組み込みます。</dd><dt>不足分（自動計算）</dt><dd><code>max(0, 将来負債合計 − (生命保険金 ＋ 一時払対策 ＋ 対策分を超える保険差益))</code>。備えが将来負債に届かない差額です。</dd></dl>
             <p class="calc-logic-note">金額はすべて万円単位です。不足分は自動算出され、グラフ上の白い帯として表示されます。</p>
           </div>
 </div>
@@ -256,7 +256,7 @@
                   <input type="number" id="otherCoverage" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
                 <div class="flex items-center justify-between gap-2 py-2">
-                  <label for="insuranceGain" class="text-xs text-gray-600">保険差益<span class="help-tip" tabindex="0">?<span class="help-text">法人税差し引き後の値を入力してください。</span></span></label>
+                  <label for="insuranceGain" class="text-xs text-gray-600 whitespace-nowrap">保険差益<span class="help-tip" tabindex="0">?<span class="help-text">法人税差し引き後の値を入力してください。</span></span></label>
                   <input type="number" id="insuranceGain" class="num-input form-input w-24 rounded px-2 py-1 text-sm" />
                 </div>
               </div>
@@ -442,6 +442,6 @@
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260826a"></script>
 <script src="js/data-backup.js?v=20260827a"></script>
-<script src="js/future-liability.js?v=20260828s"></script>
+<script src="js/future-liability.js?v=20260828u"></script>
 </body>
 </html>
