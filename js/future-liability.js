@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function () {
           } else if (showValues && seg.value !== 0 && h > 0) {
             // BS本体・簿外を問わず全セグメント共通: 帯が低くても必ず帯内に1行で表示する。
             // 「名前+金額」が幅に収まらないときは要素名を省いて数字のみにする(名前はツールチップで確認)
-            const fs = h > 16 ? 9 : 8;
+            const fs = h > 16 ? 9 : (h < 9 ? 7 : 8);
             const full = seg.label ? `${seg.label} ${man(seg.value)}` : man(seg.value);
             text.setAttribute('y', (midY + 3).toFixed(1));
             text.setAttribute('font-weight', 'bold');
@@ -912,7 +912,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const offBalanceAssetSegs = detailMode
       ? [
           { label: '一時払対策', value: isNaN(otherCovRaw) ? 0 : otherCovRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
-          { label: '保険差益', value: gainTotal, offBalance: true, assetSide: true, alwaysShowLabel: true },
+          // 保険差益は生命保険金・一時払対策(グリーン)と区別できるようブルーグリーン系にする
+          { label: '保険差益', value: gainTotal, offBalance: true, assetSide: true, alwaysShowLabel: true, fill: '#45939b', fillOpacity: 1, textFill: '#fff' },
           { label: '生命保険金', value: isNaN(lifeInsRaw) ? 0 : lifeInsRaw, offBalance: true, assetSide: true, alwaysShowLabel: true },
           shortfallSeg,
         ]
