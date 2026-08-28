@@ -364,11 +364,14 @@ document.addEventListener('DOMContentLoaded', function () {
     { label: '自社株買取', offBalance: true, assetSide: false },
     { label: 'その他', offBalance: true, assetSide: false },
   ];
+  // 実質BSの資産側に挟む「将来負債対策分」枠: 一時払対策に入力した金額を流動資産等から
+  // 振り替えたことを示す点線ボックス(簿外ゾーンではなくオンバランス側に置くためoffBalanceにしない)
+  const EARMARK_SEG = [{ label: '将来負債対策分', earmark: true }];
   // x位置は持たず、常に0で初期化する(表示ON/OFFの組み合わせに応じてupdateLayoutが毎回設定するため)
   const BAR_DEFS = {
     a1: { segs: ASSET_SEGS_BASE },
     l1: { segs: LIAB_SEGS_BASE },
-    a2: { segs: ASSET_SEGS_BASE.concat(OFF_BALANCE_ASSET_SEGS) },
+    a2: { segs: ASSET_SEGS_BASE.concat(EARMARK_SEG, OFF_BALANCE_ASSET_SEGS) },
     l2: { segs: LIAB_SEGS_BASE.concat(OFF_BALANCE_LIAB_SEGS) },
     a3: { segs: ASSET_SEGS_BASE },
     l3: { segs: LIAB_SEGS_BASE },
@@ -392,7 +395,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // 点線の外枠はこの後まとめて1本のborder用rectで描画する。内側の区切りは白の細い実線にする。
         const attrs = seg.offBalance
           ? (() => { const s = offBalanceStyle(seg.assetSide); return `fill="${s.fill}" fill-opacity="${s.opacity}" stroke="#fff" stroke-width="1"`; })()
-          : `fill="${segColor(seg.label)}"`;
+          : seg.earmark
+            // 将来負債対策分: 資産から振り替えた分を示す点線ボックス(淡いグリーン+緑の点線枠)
+            ? `fill="#5c8272" fill-opacity="0.12" stroke="#3f5a4d" stroke-width="1.2" stroke-dasharray="4,3"`
+            : `fill="${segColor(seg.label)}"`;
         svgOut += `<rect id="bs-${barKey}-${i}" x="0" y="${yBottom}" width="${barWidth}" height="0" ${attrs}/>`;
       });
       def.segs.forEach((seg, i) => {
@@ -673,8 +679,9 @@ document.addEventListener('DOMContentLoaded', function () {
           // seg.fill があれば「ひとまとめ」表示の専用色、なければ詳細表示の通常配色を使う
           rect.setAttribute('fill', seg.fill || (seg.offBalance ? offBalanceStyle(seg.assetSide).fill : segColor(seg.label)));
           rect.setAttribute('fill-opacity', seg.fillOpacity != null ? seg.fillOpacity : (seg.offBalance ? offBalanceStyle(seg.assetSide).opacity : segOpacity(seg.label)));
-          // 背景がグレーのため、通常セグメントは白フチを付けて輪郭をくっきりさせる(簿外セグメントは点線の色付き枠のまま)
-          if (!seg.offBalance) {
+          // 背景がグレーのため、通常セグメントは白フチを付けて輪郭をくっきりさせる
+          // (簿外セグメント・将来負債対策分は初期化時に設定した点線枠のまま上書きしない)
+          if (!seg.offBalance && !seg.earmark) {
             rect.setAttribute('stroke', '#fff');
             rect.setAttribute('stroke-width', '1.5');
           }
@@ -699,11 +706,13 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
               text.textContent = '';
             }
-          } else if (showValues && h > 34) {
+          } else if (showValues && (h > 34 || (seg.earmark && h > 22))) {
             // 十分な高さがあるときは要素名(小)＋金額(太字)の2行を直接セグメント内に表示する
             // (バー幅に収まるよう、通常よりやや小さめのフォントサイズにして重なり・はみ出しを防ぐ)
+            // 将来負債対策分は名前が長い(7文字)ため、バー幅に収まるようラベル行だけさらに縮小する
+            const labelSize = seg.earmark ? Math.max(6, Math.min(8, (currentBarWidth - 8) / seg.label.length)) : 8;
             text.setAttribute('y', midY.toFixed(1));
-            text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="8" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
+            text.innerHTML = `<tspan x="${text.getAttribute('x')}" dy="-0.35em" font-size="${labelSize}" font-weight="400">${seg.label}</tspan><tspan x="${text.getAttribute('x')}" dy="1.15em" font-size="10" font-weight="bold">${man(seg.value)}</tspan>`;
           } else if (showValues && h > 16) {
             // 1行に「要素名+金額」(またはforceLabelでなければ金額のみ)を収める。
             // 幅に収まらなければ6pxまで自動縮小し、それでも収まらなければ空白にする
@@ -775,6 +784,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const coveredRaw = (isNaN(lifeInsRaw) ? 0 : lifeInsRaw) + (isNaN(otherCovRaw) ? 0 : otherCovRaw);
     const coveredPortion = Math.min(coveredRaw, futureLiabTotal);
     const shortfallPortion = Math.max(0, futureLiabTotal - coveredRaw);
+
+    // 一時払対策(otherCoverage)は手元資産を保険に置き換える対策のため、実質BSでは
+    // 入力額を流動資産→その他資産→固定資産の順で取り崩し、取り崩した分を同じ位置に
+    // 点線の「将来負債対策分」として残す(枠が場所を占めるので左右のバランスは崩れない)。
+    // 資産合計を超える入力分は振替えない(超過分は簿外資産の充当のみに効く)
+    const earmarkRaw = isNaN(otherCovRaw) ? 0 : Math.max(otherCovRaw, 0);
+    const em1 = Math.min(earmarkRaw, Math.max(fields.curAssets.value, 0));
+    const em2 = Math.min(earmarkRaw - em1, Math.max(fields.otherAssets.value, 0));
+    const em3 = Math.min(earmarkRaw - em1 - em2, Math.max(fields.fixedAssets.value, 0));
+    const earmarkTotal = em1 + em2 + em3;
+    const assetsRealBaseDetail = [
+      { label: 'その他資産', value: fields.otherAssets.value - em2 },
+      { label: '固定資産', value: fields.fixedAssets.value - em3 },
+      { label: '流動資産', value: fields.curAssets.value - em1 },
+    ];
 
     // 予測BS(簿外負債が発動した場合)は「生命保険金あり/なし」トグルで、実際にBSへ影響する金額を切り替える。
     // あり: 生命保険金等でカバーされる分は相殺されるため、不足分だけがBSに影響する。なし: 全額がそのまま影響する。
@@ -869,7 +893,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // detailMode時、次世代将来負債の各項目が未入力(NaN)だと積み上げが崩れるため0に補正する
     nextOffBalanceLiabSegs.forEach((seg) => { if (isNaN(seg.value)) seg.value = 0; });
 
-    const assetsAdjusted = assetsBase.concat(offBalanceAssetSegs);
+    // 実質BSの資産側は「振替後の資産+点線の将来負債対策分+簿外ゾーン」で構成する
+    // (会計上のBS(a1)は入力値のまま。振替は実質BSの見せ方だけに効かせる)
+    const assetsRealBase = detailMode ? assetsRealBaseDetail : toGroupedAsset(assetsRealBaseDetail);
+    const earmarkSeg = {
+      label: '将来負債対策分', value: earmarkTotal, earmark: true,
+      fill: '#5c8272', fillOpacity: 0.12, textFill: '#3f5a4d', alwaysShowLabel: true,
+    };
+    const assetsAdjusted = assetsRealBase.concat([earmarkSeg], offBalanceAssetSegs);
     const liabNetAdjusted = liabNetBase.concat(offBalanceLiabSegs);
     // 将来予測実質BS = 将来予測BSの数値(assetsTriggered/liabNetTriggered)をそのまま土台にし、次世代将来負債を上に乗せるだけ
     const assetsFinalAdjusted = assetsTriggered.concat(nextOffBalanceAssetSegs);
@@ -903,6 +934,7 @@ document.addEventListener('DOMContentLoaded', function () {
       a1: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産')],
       l1: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債')],
       a2: [dummySeg('その他資産'), dummySeg('固定資産'), dummySeg('流動資産'),
+        { label: '', value: 0, earmark: true },
         { label: '充当分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
         { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
       l2: [dummySeg('純資産'), dummySeg('固定負債'), dummySeg('流動負債'),
@@ -927,6 +959,7 @@ document.addEventListener('DOMContentLoaded', function () {
         a1: [blank, assetDummy, blank],
         l1: [netAssetsDummy, liabDummy, blank],
         a2: [blank, assetDummy, blank,
+          { label: '', value: 0, earmark: true },
           { label: '簿外資産', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true },
           { label: '不足分', value: DUMMY_VALUE / 2, offBalance: true, assetSide: true, fill: '#ffffff', fillOpacity: 1 }],
         l2: [netAssetsDummy, liabDummy, blank, dummySeg('簿外負債', true, false), blank, blank],
