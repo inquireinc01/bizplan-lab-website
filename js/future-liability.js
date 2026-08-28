@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', function () {
           // 債務超過バンドは要素本来の色(青系等)ではなく赤系ソリッド+白抜き文字にする。
           // 正セグメントの下端が基準線の下まで伸びて重なるため、バンドを最前面に移動する
           if (isNeg) {
-            rect.setAttribute('fill', '#f4697a');
+            rect.setAttribute('fill', '#9c3d4c');
             rect.setAttribute('fill-opacity', '1');
             rect.setAttribute('stroke', '#fff');
             rect.setAttribute('stroke-width', '1.5');
