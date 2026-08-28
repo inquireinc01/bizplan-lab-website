@@ -697,9 +697,10 @@ document.addEventListener('DOMContentLoaded', function () {
       let offBalBottom = null;
       segments.forEach((seg, i) => {
         const isNeg = seg.value < 0;
-        // マイナス(債務超過)のバンドは金額に関わらず固定の縦幅で描く
-        // (正の要素のオフセットには実寸(barNegPx)を使うため、バーの頭ぞろえは維持される)
-        const h = isNeg ? NEG_BAND_H : Math.abs(seg.value) * pxPerYen;
+        // マイナス(債務超過)のバンドは最低でも固定の縦幅(2行表示が入る高さ)で描き、
+        // 超過の実寸がそれより大きい場合は実寸に合わせる。頭ぞろえのために正の要素が
+        // 基準線の下まで伸びるぶん(barNegPx)を、バンドが必ず覆い隠せるようにする
+        const h = isNeg ? Math.max(NEG_BAND_H, Math.abs(seg.value) * pxPerYen) : Math.abs(seg.value) * pxPerYen;
         const segY = isNeg ? yBottom : (yPos - h);
         const rect = document.getElementById(`bs-${barKey}-${i}`);
         if (rect) {
