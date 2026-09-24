@@ -31,16 +31,16 @@ document.addEventListener('DOMContentLoaded', function () {
     taxAssets: 15000, taxLiabilities: 8000, bookAssets: 12000, bookLiabilities: 8000,
     simA: 480, simB: 6.0, simC: 45, simD: 350, ownB: 4.0, ownC: 60, ownD: 420,
     sharesOutstanding: 200000, capitalAmount: 10000000,
-    corpTaxRateProj: 30, annualProfit: 3000, annualProfitB: 2000, annualDividend: 0,
+    corpTaxRateProj: 30, annualProfit: 5000, annualProfitB: 4040, annualDividend: 0,
     retirementYear: 10, retirementAmount: 20000, mvNetAssets: 20000, realOpProfit: 2500,
     // その他特別損失(発生時期を指定して純資産の推移に反映。未入力なら影響なし)
     specialLossYear: 15, specialLossAmount: 10000,
     // 生命保険の契約条件(死亡保険金額のグラフ表示・参考情報として保持)
-    insuranceAmount: 30000, insuranceGrowthRate: 3, coveragePeriod: 25, premiumAmount: 500, deductibleRatio: 60,
+    insuranceAmount: 40000, insuranceGrowthRate: 0, coveragePeriod: 50, premiumAmount: 2400, deductibleRatio: 40,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30000, ss0_ruiji: 30000, ss0_junsisan: 60000, ss0_houjin: 45000,
     // 残余利益方式(検討中の新方式)の起点: 簿価純資産・平常時税引後利益(万円)
-    rim0_book: 50000, rim0_profit: 5000, rimProfitB: 5000,
+    rim0_book: 50000, rim0_profit: 5000, rimProfitB: 4328,
   };
   // trial用のゼロ既定(companySizeとcorpTaxRateProj以外は全て0)
   const TRIAL_DEF = (function () {

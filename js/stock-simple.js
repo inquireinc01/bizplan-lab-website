@@ -500,6 +500,15 @@ document.addEventListener('DOMContentLoaded', function () {
     seedDummyData();
     persistOnly();
   }
+  // 残余利益方式は未入力ならダミーの既定値を入れておく(開いた時点で参考評価額が見えるように)。
+  // 手入力・データクリア後の保存値があればそちらを優先する
+  (function () {
+    var rimDefaults = { ssRimBook: '500,000,000', ssRimProfit: '50,000,000' };
+    Object.keys(rimDefaults).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && !el.value) el.value = rimDefaults[id];
+    });
+  })();
   recalcAll();
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');
