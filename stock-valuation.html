@@ -694,9 +694,9 @@
 
         <!-- 残余利益方式(検討中の新方式・任意入力) -->
         <div class="calc-section p-6 sm:p-8" id="rimSection" style="background-color:#fbf4f4;border:1px solid rgba(158,47,47,0.18)">
-          <h3 class="font-bold text-base mb-2 flex items-center justify-between"><span class="flex items-center"><span class="step-badge" style="background-color:#9e2f2f">参考</span>残余利益方式（RIM・検討中の新方式）<span class="help-tip" tabindex="0">?<span class="help-text">RIMはResidual Income Model(残余利益方式)の略です。国税庁の有識者会議で審議中の新しい評価方式(2028年1月適用開始の可能性)。簿価純資産に、超過収益(税引後当期純利益−簿価純資産×割引率)×現価係数を加減して評価します。制度は検討段階のため、あくまで参考試算です。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
+          <h3 class="font-bold text-base mb-2 flex items-center justify-between"><span class="flex items-center"><span class="step-badge" style="background-color:#9e2f2f">参考</span>残余利益方式（RIM・検討中の新方式）<span class="help-tip" tabindex="0">?<span class="help-text">RIMはResidual Income Model(残余利益方式)の略です。国税庁の有識者会議で審議中の新しい評価方式(2028年1月適用開始の可能性)。評価額＝(簿価純資産×0.68 ＋ 税引後純利益×3.40)×しんしゃく率0.8 で概算します(国税庁・経済産業省の公表資料 2026年9月16日時点に基づく整理)。制度は検討段階のため、あくまで参考試算です。</span></span></span><button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button></h3>
           <p class="text-xs text-gray-500 mb-1">任意入力です。入力すると、結果ページに「残余利益方式」の評価額タイルが表示され、グラフ・年齢・株価表で比較できます。</p>
-          <p class="text-xs font-bold mb-4" style="color:#9e2f2f">※国税庁で審議中の新方式の参考試算です（算式・率・年数は未確定）。退職金等の一時損失は平常時利益から除外して算定します（簿価純資産の減少は反映され、超過収益の増加で一部相殺されます）。</p>
+          <p class="text-xs font-bold mb-4" style="color:#9e2f2f">※国税庁で審議中の新方式の参考試算です（0.68・3.40は「5年・還元率8％・配当なし」の概算係数、しんしゃく率0.8は試算上の仮置き）。退職金等の一時損失は平常時利益から除外し、簿価純資産の減少として反映します。</p>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div>
               <label class="flex items-center text-sm font-medium mb-1.5" for="ssRimBook">簿価純資産（円）<span class="help-tip" tabindex="0">?<span class="help-text">直前期末の貸借対照表の純資産の部合計(帳簿価額)です。含み益の時価評価は行いません。</span></span></label>
@@ -706,26 +706,8 @@
               <label class="flex items-center text-sm font-medium mb-1.5" for="ssRimProfit">税引後当期純利益（円・年）<span class="help-tip" tabindex="0">?<span class="help-text">平常時の税引後当期純利益です。役員退職金などの一時的な損失は除いた、毎年続く水準の利益を入力してください。</span></span></label>
               <input type="text" id="ssRimProfit" class="js-num form-input w-full rounded-lg px-3 py-2 text-sm text-right" placeholder="入力例：50,000,000 円" />
             </div>
-            <div>
-              <label class="flex items-center justify-between gap-2 text-sm font-medium mb-1.5" for="ssRimRate">
-                <span class="flex items-center">割引率（%）<span class="help-tip" tabindex="0">?<span class="help-text">通常期待される利益率です。簿価純資産×割引率が「通常期待される利益」となり、これを超える利益が超過収益になります。既定は5%(審議中の有力水準)で、変えたい場合は「手入力する」を押してください。</span></span></span>
-                <button type="button" id="ssRimRateManualBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
-              </label>
-              <input type="text" id="ssRimRate" readonly inputmode="decimal" class="js-num form-input w-full rounded-lg px-3 py-2 text-sm text-right bg-gray-50" />
-            </div>
-            <div>
-              <label class="flex items-center justify-between gap-2 text-sm font-medium mb-1.5" for="ssRimYears">
-                <span class="flex items-center">超過収益加算年数（年）<span class="help-tip" tabindex="0">?<span class="help-text">超過収益を何年分加算するかです。既定は5年(有識者会議で有力とされる年数)。変えたい場合は「手入力する」を押してください(割引率とあわせて編集できます)。</span></span></span>
-                <button type="button" id="ssRimYearsManualBtn" class="text-[11px] font-bold text-[#3b6ea5] underline decoration-dotted whitespace-nowrap">手入力する</button>
-              </label>
-              <input type="text" id="ssRimYears" readonly class="js-num form-input w-full rounded-lg px-3 py-2 text-sm text-right bg-gray-50" />
-            </div>
-            <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="ssRimCoef">現価係数（自動）<span class="help-tip" tabindex="0">?<span class="help-text">超過収益が毎年末に発生すると仮定した年金現価係数 (1−(1+割引率)^−年数)÷割引率 です。5年・5%なら4.33になります。</span></span></label>
-              <input type="text" id="ssRimCoef" class="form-input w-full rounded-lg px-3 py-2 text-sm text-right bg-gray-50" readonly data-no-count />
-            </div>
-            <div>
-              <label class="flex items-center text-sm font-medium mb-1.5" for="ssRimValue">参考評価額（自動・円）<span class="help-tip" tabindex="0">?<span class="help-text">簿価純資産＋超過収益×現価係数で計算した現在時点の参考評価額(時価総額)です。</span></span></label>
+<div>
+              <label class="flex items-center text-sm font-medium mb-1.5" for="ssRimValue">参考評価額（自動・円）<span class="help-tip" tabindex="0">?<span class="help-text">(簿価純資産×0.68 ＋ 税引後純利益×3.40)×0.8 で計算した現在時点の参考評価額(時価総額)です。0.68は純資産から期待利益(純資産×8％)5年分の現価(0.32)を除いた係数、3.40は利益5年分の現価合計(3.99)から内部留保で翌年以降の超過収益が減る分(0.59)を差し引いた係数、0.8はしんしゃく率(未確定のため国税庁の試算例と同じ仮置き)です。</span></span></label>
               <input type="text" id="ssRimValue" class="form-input w-full rounded-lg px-3 py-2 text-sm text-right bg-gray-50" readonly data-no-count />
             </div>
           </div>
@@ -979,7 +961,7 @@
 
 <script src="js/menu.js?v=20260803a"></script>
 <script src="js/number-format.js?v=20260826a"></script>
-<script src="js/stock-simple.js?v=20260825e"></script>
+<script src="js/stock-simple.js?v=20260925a"></script>
 <script src="js/stock-detail.js?v=20260724o"></script>
 <script src="js/stock-tdb.js?v=20260825a"></script>
 <script src="js/stock-stepper.js?v=20260724d"></script>

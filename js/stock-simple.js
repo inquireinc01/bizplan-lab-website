@@ -204,45 +204,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== 残余利益方式: 割引率・加算年数の既定値(5%・5年)と手入力モード =====
-  var rimRateManual = false;
-  function applyRimRateState() {
-    var rateEl = document.getElementById('ssRimRate');
-    var yearsEl = document.getElementById('ssRimYears');
-    if (!rateEl || !yearsEl) return;
-    rateEl.readOnly = !rimRateManual;
-    yearsEl.readOnly = !rimRateManual;
-    rateEl.classList.toggle('bg-gray-50', !rimRateManual);
-    yearsEl.classList.toggle('bg-gray-50', !rimRateManual);
-    ['ssRimRateManualBtn', 'ssRimYearsManualBtn'].forEach(function (id) {
-      var btn = document.getElementById(id);
-      if (btn) btn.textContent = rimRateManual ? '既定値に戻す' : '手入力する';
-    });
-    if (!rimRateManual) {
-      rateEl.value = '5';
-      yearsEl.value = '5';
-    }
-  }
-  function onRimRateToggle(focusId) {
-    rimRateManual = !rimRateManual;
-    applyRimRateState();
-    recalcRim();
-    persistOnly();
-    if (rimRateManual) {
-      var el = document.getElementById(focusId);
-      if (el) { try { el.focus({ preventScroll: true }); el.select(); } catch (e) {} }
-    }
-  }
-  var rimRateManualBtn = document.getElementById('ssRimRateManualBtn');
-  if (rimRateManualBtn) rimRateManualBtn.addEventListener('click', function () { onRimRateToggle('ssRimRate'); });
-  var rimYearsManualBtn = document.getElementById('ssRimYearsManualBtn');
-  if (rimYearsManualBtn) rimYearsManualBtn.addEventListener('click', function () { onRimRateToggle('ssRimYears'); });
 
   // ===== 残余利益方式: 現価係数と参考評価額の自動計算 =====
   var MAX_RIM_YEN = 999999999999; // 金額の上限(兆円未満。中小企業の想定を大きく超える値はエラー)
+  // 残余利益方式(新方針 2026-09-16): 評価額 = (簿価純資産×0.68 + 税引後純利益×3.40) × しんしゃく率0.8
+  // 0.68・3.40は「5年・還元率8%・配当なし」の概算係数、0.8は国税庁試算例と同じ仮置き
+  var RIM_BOOK_COEF = 0.68, RIM_PROFIT_COEF = 3.40, RIM_SHINSHAKU = 0.8;
   function recalcRim() {
-    var coefEl = document.getElementById('ssRimCoef');
     var valEl = document.getElementById('ssRimValue');
-    if (!coefEl || !valEl) return;
+    if (!valEl) return;
     var errEl = document.getElementById('ssRimError');
     var errs = [];
     var mark = function (id, bad) {
@@ -259,29 +229,14 @@ document.addEventListener('DOMContentLoaded', function () {
     mark('ssRimProfit', profitOver);
     if (bookOver || profitOver) errs.push('金額は ' + fmt(MAX_RIM_YEN) + ' 円以内で入力してください。');
 
-    var r = num((document.getElementById('ssRimRate') || {}).value);
-    var n = num((document.getElementById('ssRimYears') || {}).value);
-    var rateBad = rimRateManual && !isNaN(r) && (r <= 0 || r > 100);
-    var yearsBad = rimRateManual && !isNaN(n) && (n < 1 || n > 100);
-    mark('ssRimRate', rateBad);
-    mark('ssRimYears', yearsBad);
-    if (rateBad) errs.push('割引率は 0.1〜100% で入力してください。');
-    if (yearsBad) errs.push('超過収益加算年数は 1〜100年 で入力してください。');
-
     if (errEl) {
       errEl.textContent = errs.join(' ');
       errEl.classList.toggle('hidden', errs.length === 0);
     }
-    if (isNaN(r) || r <= 0 || r > 100) r = 5; // 既定5%(範囲外は計算にも使わない)
-    if (isNaN(n) || n < 1 || n > 100) n = 5;  // 既定5年
-    n = Math.round(n);
-    var rr = r / 100;
-    var coef = (1 - Math.pow(1 + rr, -n)) / rr;
-    coefEl.value = coef.toFixed(2);
     if (errs.length > 0) { valEl.value = ''; valEl.placeholder = '入力値を確認してください'; return; }
     if (isNaN(book) || isNaN(profit)) { valEl.value = ''; valEl.placeholder = '自動計算：円'; return; }
-    var value = book + (profit - book * rr) * coef;
-    valEl.value = fmt(value) + ' 円';
+    var value = (book * RIM_BOOK_COEF + profit * RIM_PROFIT_COEF) * RIM_SHINSHAKU;
+    valEl.value = fmt(Math.round(value)) + ' 円';
   }
 
   function recalcAll() { recalcEval(); recalcHolders(); checkSaizokuConsistency(); recalcRim(); }
@@ -325,16 +280,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     data.ss_holders = JSON.stringify(holders);
     // 残余利益方式(任意入力)。表示用の円と、結果ページ用の万円換算を両方保存する
-    ['ssRimBook', 'ssRimProfit', 'ssRimRate', 'ssRimYears'].forEach(function (id) {
+    ['ssRimBook', 'ssRimProfit'].forEach(function (id) {
       data[id] = ((document.getElementById(id) || {}).value || '');
     });
     var rimBook = num((document.getElementById('ssRimBook') || {}).value);
     var rimProfit = num((document.getElementById('ssRimProfit') || {}).value);
     data.rim0_book = isNaN(rimBook) ? '' : String(rimBook / 10000);
     data.rim0_profit = isNaN(rimProfit) ? '' : String(rimProfit / 10000);
-    data.rimRate = ((document.getElementById('ssRimRate') || {}).value || '');
-    data.rimYears = ((document.getElementById('ssRimYears') || {}).value || '');
-    data.ssRimRateManual = rimRateManual ? '1' : '0';
     return data;
   }
   function persistOnly() {
@@ -350,10 +302,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (s.ss_capital && document.getElementById('ssCapital')) document.getElementById('ssCapital').value = s.ss_capital;
     if (s.sharesOutstanding) document.getElementById('ssShares').value = s.sharesOutstanding;
     if (s.ss_parValue) document.getElementById('ssParValue').value = s.ss_parValue;
-    ['ssRimBook', 'ssRimProfit', 'ssRimRate', 'ssRimYears'].forEach(function (id) {
+    ['ssRimBook', 'ssRimProfit'].forEach(function (id) {
       if (s[id] !== undefined && document.getElementById(id)) document.getElementById(id).value = s[id];
     });
-    rimRateManual = s.ssRimRateManual === '1';
     EVAL_KEYS.forEach(function (key) {
       if (s['ssV_' + key] !== undefined && document.getElementById('ssV_' + key)) document.getElementById('ssV_' + key).value = s['ssV_' + key];
     });
@@ -549,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function () {
     seedDummyData();
     persistOnly();
   }
-  applyRimRateState();
   recalcAll();
   var resume = document.getElementById('resumeLink');
   if (restored && resume) resume.classList.remove('hidden');

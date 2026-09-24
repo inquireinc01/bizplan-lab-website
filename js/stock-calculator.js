@@ -39,16 +39,15 @@ document.addEventListener('DOMContentLoaded', function () {
     insuranceAmount: 30000, insuranceGrowthRate: 3, coveragePeriod: 25, premiumAmount: 500, deductibleRatio: 60,
     // 簡易版(DSレイアウト)で転記した評価額の起点(万円)
     ss0_saizoku: 30000, ss0_ruiji: 30000, ss0_junsisan: 60000, ss0_houjin: 45000,
-    // 残余利益方式(検討中の新方式)の起点: 簿価純資産・平常時税引後利益(万円)と割引率(%)・加算年数(年)
-    rim0_book: 50000, rim0_profit: 5000, rimProfitB: 5000, rimRate: 5, rimYears: 5,
+    // 残余利益方式(検討中の新方式)の起点: 簿価純資産・平常時税引後利益(万円)
+    rim0_book: 50000, rim0_profit: 5000, rimProfitB: 5000,
   };
   // trial用のゼロ既定(companySizeとcorpTaxRateProj以外は全て0)
   const TRIAL_DEF = (function () {
     const o = {};
     Object.keys(DEFAULTS).forEach((k) => {
-      // 割引率・加算年数は「未入力なら5%・5年」という既定値ルールのためtrialでも5を使う
       o[k] = k === 'companySize' ? DEFAULTS.companySize
-        : (k === 'corpTaxRateProj' ? 30 : (k === 'rimRate' || k === 'rimYears' ? 5 : 0));
+        : (k === 'corpTaxRateProj' ? 30 : 0);
     });
     return o;
   })();
@@ -221,22 +220,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const afterTaxProfit = annualProfitValue * (1 - shared.corpTaxRate / 100);
     const base0 = year0.netAssetsAtValuation;
 
-    // ===== 残余利益方式(RIM): 簿価純資産_t + (平常時税引後利益 - 簿価純資産_t×割引率)×現価係数 =====
-    // 退職金・特損などの一時損失は「平常時利益」から除外して算定する(有識者会議の方向性)。
-    // ただし簿価純資産の減少はそのまま効く。純資産が減ると通常期待利益(純資産×割引率)も
-    // 下がって超過収益が増えるため、引下げ効果は一部相殺され、支払額ほどは評価が下がらない。
-    // 保険料の損金は毎年続く経常損金として利益(→純資産の蓄積)にそのまま効く。
-    const rimR = (v.rimRate > 0 ? v.rimRate : 5) / 100;
-    const rimN = Math.max(1, Math.round(v.rimYears >= 1 ? v.rimYears : 5));
-    const rimCoef = (1 - Math.pow(1 + rimR, -rimN)) / rimR;
+    // ===== 残余利益方式(RIM・新方針2026-09-16): (簿価純資産_t×0.68 + 平常時税引後利益×3.40) × しんしゃく率0.8 =====
+    // 0.68=純資産から期待利益(純資産×8%)5年分の現価(0.32)を除いた係数、
+    // 3.40=利益5年分の現価合計(3.99)から内部留保による翌年以降の超過収益減(0.59)を差引いた係数
+    // (いずれも「5年・還元率8%・配当なし」の概算係数)。0.8は国税庁試算例と同じ仮置きのしんしゃく率。
+    // 退職金等の一時損失は平常時利益から除外し、簿価純資産の減少(×0.68×0.8)として評価に反映される
+    const RIM_BOOK_COEF = 0.68, RIM_PROFIT_COEF = 3.40, RIM_SHINSHAKU = 0.8;
     const rimValid = !isNaN(v.rim0_book) && !isNaN(v.rim0_profit) && (v.rim0_book !== 0 || v.rim0_profit !== 0);
-    // シナリオごとの平常時税引後利益: 入力値に、税引前利益の差(保険料損金など)の税引後額を加減する
+
     // シナリオBで「【変更後】RIM税引後純利益」を手入力している場合はその値を優先する
     const rimProfit = !rimValid ? NaN
       : (scenarioKey === 'B' && manualRimBMode && !isNaN(v.rimProfitB))
         ? v.rimProfitB
         : v.rim0_profit + (annualProfitValue - v.annualProfit) * (1 - shared.corpTaxRate / 100);
-    const rimAt = (book) => (rimValid ? book + (rimProfit - book * rimR) * rimCoef : NaN);
+    const rimAt = (book) => (rimValid ? (book * RIM_BOOK_COEF + rimProfit * RIM_PROFIT_COEF) * RIM_SHINSHAKU : NaN);
 
     function metricsFor(t, netAssetsT) {
       const netAssetPerShare = (netAssetsT * 10000) / shares;
@@ -553,8 +550,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // ===== 残余利益方式の注意文言(選択中のみ、グラフ上部の空欄に赤字で表示) =====
     let rimCaution = '';
     if (selectedMetrics.some((k) => METRICS[k].base === 'rim')) {
-      rimCaution = `<text x="${padL + 10}" y="${padT + 16}" font-size="10.5" fill="#9e2f2f" font-weight="700">※残余利益方式は国税庁で審議中の新方式の参考試算です（算式・率・年数は未確定）</text>
-        <text x="${padL + 10}" y="${padT + 30}" font-size="9.5" fill="#9e2f2f">※退職金等の一時損失は平常時利益から除外して算定（簿価純資産の減少は反映。超過収益の増加で一部相殺され、支払額ほどは下がりません）</text>`;
+      rimCaution = `<text x="${padL + 10}" y="${padT + 16}" font-size="10.5" fill="#9e2f2f" font-weight="700">※残余利益方式は国税庁で審議中の新方式の参考試算です（係数0.68・3.40としんしゃく率0.8は概算の仮置き）</text>
+        <text x="${padL + 10}" y="${padT + 30}" font-size="9.5" fill="#9e2f2f">※退職金等の一時損失は平常時利益から除外して算定（簿価純資産の減少×係数分が評価に反映されます）</text>`;
     }
 
     // ===== 年齢・株価のデータテーブル(バーとX位置を揃えたExcel風の横並び表示) =====
