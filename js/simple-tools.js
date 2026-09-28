@@ -17,6 +17,19 @@
     return window.numFmt ? window.numFmt(x) : String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
   function man(v) { return fmt(v) + '万円'; }
+  // 課税所得x(万円)に対する所得税(速算表)+住民税10%の概算(退職所得・一時所得の税計算用)
+  function incomeTaxOn(x) {
+    if (x <= 0) return 0;
+    var t;
+    if (x <= 195) t = x * 0.05;
+    else if (x <= 330) t = x * 0.10 - 9.75;
+    else if (x <= 695) t = x * 0.20 - 42.75;
+    else if (x <= 900) t = x * 0.23 - 63.6;
+    else if (x <= 1800) t = x * 0.33 - 153.6;
+    else if (x <= 4000) t = x * 0.40 - 279.6;
+    else t = x * 0.45 - 479.6;
+    return t + x * 0.10;
+  }
   function setText(id, s) { var el = document.getElementById(id); if (el) el.textContent = s; }
   // 大きな結果数値: 数字は太字・単位は小さく(単位は数字より小さくルール)
   function setBig(id, v, unit) {
@@ -585,6 +598,303 @@
       setBig('statAsset', assetPart);
       setText('statMsg', '納税が ' + man(taxBefore - taxAfter) + ' 減り、' + man(prem) + ' を保障付きで社外に準備。ただし現金も動くため、節税ではなく「税の繰延べ＋保障の獲得」と説明するのが誠実です');
       return { 加入前の納税: man(taxBefore), 加入後の納税: man(taxAfter), 納税の減少: man(taxBefore - taxAfter), 保険で準備: man(prem) };
+    },
+    // Opus.20 遺族年金ギャップ×生命保険
+    survivor: function () {
+      var avg = n('avgStd'), py = n('pensionYears'), kids = Math.max(0, Math.round(n('kids')));
+      var cost = n('familyCost'), until = Math.max(1, Math.round(n('untilYears')));
+      // 遺族厚生年金(年額)の概算 = 平均標準報酬月額×12×5.481/1000×加入月数相当×3/4
+      var kosei = avg * 12 * 0.005481 * py * 0.75;
+      // 遺族基礎年金(年額)の概算(18歳未満の子がいる間)
+      var kiso = kids > 0 ? 81.6 + 23.5 * Math.min(kids, 2) + 7.8 * Math.max(0, kids - 2) : 0;
+      var pubM = (kosei + kiso) / 12;
+      var gapM = Math.max(0, cost - pubM);
+      var total = gapM * 12 * until;
+      renderGauge('chartBox', {
+        frameLabel: '遺族の生活費(月)', frameTotal: cost,
+        segs: [
+          { label: '遺族厚生年金', value: kosei / 12, color: '#0f2a4a' },
+          { label: '遺族基礎年金', value: kiso / 12, color: '#3b6ea5' },
+        ],
+        shortLabel: '不足(月)',
+        sideTitle: '公的保障の年額(概算)',
+        sideItems: [
+          { label: '遺族厚生年金(年)', value: kosei },
+          { label: '遺族基礎年金(年)', value: kiso },
+        ],
+      });
+      setText('statPublic', pubM.toFixed(1) + '万円/月');
+      setText('statGap', gapM.toFixed(1) + '万円/月');
+      setBig('statTotal', total);
+      setText('statMsg', gapM > 0
+        ? '公的保障だけでは月 ' + gapM.toFixed(1) + '万円 不足。' + until + '年分で ' + man(total) + ' が民間保障の役割です'
+        : '想定した生活費は公的保障の範囲内です');
+      return { '公的保障(月)': pubM.toFixed(1) + '万円', '不足(月)': gapM.toFixed(1) + '万円', 必要保障の総額: man(total) };
+    },
+
+    // Opus.21 積立vs保険〈四角形と三角形〉
+    saveins: function () {
+      var goal = n('svGoal'), save = n('svMonthly'), prem = n('svPremium');
+      var years = save > 0 ? Math.ceil(goal / (save * 12)) : 40;
+      years = Math.max(1, Math.min(years, 40));
+      var lineSave = [], lineIns = [];
+      for (var t = 0; t <= years; t++) {
+        lineSave.push(Math.min(goal, save * 12 * t));
+        lineIns.push(goal);
+      }
+      renderLines('chartBox', {
+        years: years,
+        lines: [
+          { label: '積立の残高(三角形)', color: '#a5703a', values: lineSave },
+          { label: '保険の保障額(四角形)', color: '#3b6ea5', values: lineIns },
+        ],
+      });
+      setText('statYears', years + '年');
+      setBig('statDay1', goal);
+      setBig('statPremTotal', prem * 12 * years);
+      setText('statMsg', '積立は目標到達まで ' + years + '年。保険は加入した初日から ' + man(goal) + ' の四角形が立ちます');
+      return { 目標額: man(goal), 積立での到達年数: years + '年', 保険が初日に用意する額: man(goal), 同期間の総保険料: man(prem * 12 * years) };
+    },
+
+    // Opus.22 役員報酬vs退職金〈生涯手取り最大化〉
+    compvsretire: function () {
+      var extra = n('crExtra'), yrs = Math.max(1, Math.round(n('crYears')));
+      var it = n('crIncomeTax') / 100, sp = n('crSocial') / 100, sv = Math.max(1, Math.round(n('crService')));
+      var total = extra * yrs;
+      var netSalary = Math.round(total * (1 - it - sp));
+      var deduct = sv <= 20 ? 40 * sv : 800 + 70 * (sv - 20);
+      var taxable = Math.max(0, total - deduct) / 2; // 退職所得 = (収入−控除)×1/2
+      var tax = Math.round(incomeTaxOn(taxable));
+      var netRetire = total - tax;
+      renderCompare('chartBox', {
+        unitNote: '単位: 万円',
+        bars: [
+          { title: '役員報酬で受け取る', segs: [
+            { label: '手取り', value: netSalary, color: '#0f2a4a' },
+            { label: '税・社会保険料', value: total - netSalary, color: '#9c3d4c' },
+          ] },
+          { title: '退職金で受け取る', note: '退職所得控除 ' + fmt(deduct) + '万円 + 1/2課税', segs: [
+            { label: '手取り', value: netRetire, color: '#0f2a4a' },
+            { label: '税', value: tax, color: '#9c3d4c' },
+          ] },
+        ],
+      });
+      setBig('statSalary', netSalary); setBig('statRetire', netRetire); setBig('statDiff', netRetire - netSalary);
+      setText('statMsg', '同じ ' + man(total) + ' でも、退職金なら手取りが ' + man(netRetire - netSalary) + ' 増えます(退職所得控除と2分の1課税の効果)');
+      return { 受取総額: man(total), 報酬の手取り: man(netSalary), 退職金の手取り: man(netRetire), 差額: man(netRetire - netSalary) };
+    },
+
+    // Opus.23 経営セーフティ共済vs生命保険
+    safetyvs: function () {
+      var pay = n('smAnnual'), yrs = Math.max(1, Math.round(n('smYears')));
+      var tax = n('smTaxRate') / 100, dedIns = n('smDedIns') / 100;
+      var paid = pay * yrs;
+      var kyosai = Math.min(paid, 800);
+      var over = Math.max(0, paid - 800);
+      var kyosaiSaved = Math.round(kyosai * tax);
+      var insSaved = Math.round(paid * dedIns * tax);
+      renderCompare('chartBox', {
+        unitNote: '単位: 万円(損金にできる額)',
+        bars: [
+          { title: '経営セーフティ共済', note: '40ヶ月以上で掛金100%戻り(解約時は全額益金)', segs: [
+            { label: '全額損金(上限800万円)', value: kyosai, color: '#826f5c' },
+            { label: '上限超過(掛けられない)', value: over, color: '#8a929c', dashed: true },
+          ] },
+          { title: '生命保険', note: '死亡保障が立つ・金額の上限なし', segs: [
+            { label: '損金算入分', value: Math.round(paid * dedIns), color: '#3b6ea5' },
+            { label: '資産計上分', value: Math.round(paid * (1 - dedIns)), color: '#45939b', dashed: true },
+          ] },
+        ],
+      });
+      setBig('statKyosai', kyosaiSaved); setBig('statIns', insSaved); setBig('statOver', over);
+      setText('statMsg', over > 0
+        ? '共済の上限800万円を ' + man(over) + ' 超えています。まず共済の枠を使い切り、超える分と保障ニーズは保険で備えるのが定石です'
+        : '共済の枠内です。共済には保障機能がないため、万一への備えは保険との併用で設計します');
+      return { 拠出総額: man(paid), 共済の税軽減: man(kyosaiSaved), 保険の税軽減: man(insSaved), 共済の上限超過: man(over) };
+    },
+
+    // Opus.24 従業員退職金×福利厚生プラン
+    welfare: function () {
+      var cnt = Math.max(1, Math.round(n('wfCount'))), avg = n('wfAvgRetire');
+      var yrs = Math.max(1, Math.round(n('wfYears'))), prem = n('wfPremium'), tax = n('wfTaxRate') / 100;
+      var need = cnt * avg;
+      var buildup = prem * yrs;
+      var short = Math.max(0, need - buildup);
+      var saved = Math.round(prem / 2 * yrs * tax); // ハーフタックス(1/2損金)の税軽減
+      renderGauge('chartBox', {
+        frameLabel: '要準備総額', frameTotal: need,
+        segs: [{ label: '養老保険での積立見込み', value: buildup, color: '#5c8272' }],
+        shortLabel: '不足分',
+        sideTitle: '前提',
+        sideItems: [
+          { label: '対象 ' + cnt + '人 × 平均 ' + fmt(avg) + '万円', value: need },
+          { label: '年間保険料 × ' + yrs + '年', value: buildup },
+        ],
+      });
+      setBig('statNeed', need); setBig('statBuildup', buildup); setBig('statSaved', saved);
+      setText('statMsg', '福利厚生プラン(養老保険)は保険料の2分の1が損金。積立と同時に在職中の死亡保障も全員に立ちます');
+      return { 要準備総額: man(need), 積立見込み: man(buildup), 不足: man(short), 'ハーフタックスの税軽減': man(saved) };
+    },
+
+    // Opus.25 弔慰金規程×総合福祉団体定期
+    groupterm: function () {
+      var cnt = Math.max(1, Math.round(n('gtCount'))), sal = n('gtSalary');
+      var mOn = n('gtMonthsOn'), mOff = n('gtMonthsOff');
+      var perOff = sal * mOff, perOn = sal * mOn;
+      var corpTotal = perOff * cnt;
+      renderCompare('chartBox', {
+        unitNote: '単位: 万円(従業員1人あたり)',
+        bars: [
+          { title: '業務外の死亡(1人あたり)', note: '月給 × ' + fmt(mOff) + 'ヶ月', segs: [
+            { label: '弔慰金', value: perOff, color: '#45939b' },
+          ] },
+          { title: '業務上の死亡(1人あたり)', note: '月給 × ' + fmt(mOn) + 'ヶ月', segs: [
+            { label: '弔慰金', value: perOn, color: '#2d5580' },
+          ] },
+        ],
+      });
+      setBig('statPerOff', perOff); setBig('statPerOn', perOn); setBig('statCorp', corpTotal);
+      setText('statMsg', '規程を整備し総合福祉団体定期で全員分(' + man(corpTotal) + '〜)を準備。弔慰金は遺族の相続税でも非課税枠が別枠です');
+      return { '1人あたり(業務外)': man(perOff), '1人あたり(業務上)': man(perOn), '会社全体の必要保障(業務外ベース)': man(corpTotal) };
+    },
+
+    // Opus.26 代償分割×生命保険〈自社株は分けられない〉
+    daisho: function () {
+      var stock = n('ddStock'), other = n('ddOther'), heirs = Math.max(1, Math.round(n('ddHeirs')));
+      var total = stock + other;
+      var nonH = Math.max(0, heirs - 1);
+      var legit = heirs > 1 ? total * 0.5 * nonH / heirs : 0; // 非後継者の遺留分合計(子のみ均等の前提)
+      var need = Math.max(0, legit - other);
+      renderCompare('chartBox', {
+        unitNote: '単位: 万円',
+        bars: [
+          { title: '後継者(自社株を集中)', segs: [
+            { label: '自社株', value: stock, color: '#0f2a4a' },
+          ] },
+          { title: '後継者以外 ' + nonH + '人', note: '遺留分の合計 ' + man(legit), segs: [
+            { label: 'その他の財産', value: other, color: '#3b6ea5' },
+            { label: '代償金(保険で準備)', value: need, color: '#9c3d4c', dashed: true },
+          ] },
+        ],
+      });
+      setBig('statLegit', legit); setBig('statOther', other); setBig('statNeed', need);
+      setText('statMsg', need > 0
+        ? '自社株を後継者に集中させるには、他の相続人へ ' + man(need) + ' の代償金が必要。後継者を受取人にした保険が定番の財源です'
+        : 'その他の財産で遺留分を満たせる見込みです');
+      return { 財産合計: man(total), 非後継者の遺留分: man(legit), その他の財産: man(other), 必要な代償金: man(need) };
+    },
+
+    // Opus.27 保険料贈与プラン〈生前贈与×生命保険〉
+    giftplan: function () {
+      var gift = n('gpAnnual'), yrs = Math.max(1, Math.round(n('gpYears')));
+      var benefit = n('gpBenefit'), inh = n('gpInhTax') / 100;
+      var totalGift = gift * yrs;
+      var cashNet = Math.round(totalGift * (1 - inh));
+      // 子が契約者・受取人: 死亡保険金は一時所得 (受取−払込保険料−50万)×1/2 に課税
+      var oneTaxable = Math.max(0, (benefit - totalGift - 50)) / 2;
+      var oneTax = Math.round(incomeTaxOn(oneTaxable));
+      var giftNet = benefit - oneTax;
+      renderCompare('chartBox', {
+        unitNote: '単位: 万円',
+        bars: [
+          { title: '現金のまま相続', segs: [
+            { label: '手残り', value: cashNet, color: '#0f2a4a' },
+            { label: '相続税', value: totalGift - cashNet, color: '#9c3d4c' },
+          ] },
+          { title: '贈与して保険料に(保険料贈与)', note: '死亡保険金 ' + man(benefit) + ' を一時所得で受取', segs: [
+            { label: '手残り', value: giftNet, color: '#0f2a4a' },
+            { label: '一時所得の税', value: oneTax, color: '#9c3d4c' },
+          ] },
+        ],
+      });
+      setBig('statCash', cashNet); setBig('statGift', giftNet); setBig('statDiff', giftNet - cashNet);
+      setText('statMsg', '毎年 ' + man(gift) + ' の贈与を保険料に変えると、受取は ' + man(benefit) + '。現金のまま相続するより ' + man(giftNet - cashNet) + ' 多く遺せます');
+      return { 贈与総額: man(totalGift), 現金相続の手残り: man(cashNet), 保険料贈与の手残り: man(giftNet), 差額: man(giftNet - cashNet) };
+    },
+
+    // Opus.28 適正退職金計算機〈功績倍率+弔慰金〉
+    properretire: function () {
+      var sal = n('prSalary'), sv = Math.max(1, Math.round(n('prService')));
+      var mult = n('prMultiplier'), heirs = Math.max(1, Math.round(n('prHeirs')));
+      var proper = Math.round(sal * sv * mult);
+      var choOff = sal * 6, choOn = sal * 36;
+      var hikazei = 500 * heirs;
+      renderYearBars('chartBox', {
+        bars: [
+          { label: '適正退職金の目安', value: proper, color: '#0f2a4a' },
+          { label: '弔慰金(業務外)', value: choOff, color: '#45939b' },
+          { label: '弔慰金(業務上)', value: choOn, color: '#2d5580' },
+          { label: '死亡退職金の非課税枠', value: hikazei, color: '#2d8056' },
+        ],
+        topNote: '功績倍率法: ' + fmt(sal) + '万円 × ' + sv + '年 × ' + mult + '倍',
+      });
+      setBig('statProper', proper);
+      setText('statCho', fmt(choOff) + ' / ' + fmt(choOn) + '万円');
+      setBig('statHikazei', hikazei);
+      setText('statMsg', '税務上説明しやすい退職金の目安は ' + man(proper) + '。弔慰金(業務外' + man(choOff) + '・業務上' + man(choOn) + ')は退職金とは別枠で非課税です');
+      return { 適正退職金の目安: man(proper), '弔慰金(業務外/業務上)': man(choOff) + ' / ' + man(choOn), 死亡退職金の非課税枠: man(hikazei) };
+    },
+
+    // Opus.29 利益平準化シミュレーション
+    smoothing: function () {
+      var good = n('psGood'), bad = n('psBad'), prem = n('psPremium');
+      var ded = n('psDed') / 100, cvr = n('psCv') / 100;
+      var YEARS = 8; // 3年好況→1年不況のサイクル×2
+      var before = [], after = [];
+      var py = 0, asset = 0, firstZatsu = 0;
+      for (var y = 1; y <= YEARS; y++) {
+        var isBad = (y % 4 === 0);
+        before.push(isBad ? bad : good);
+        if (!isBad) {
+          after.push(good - prem * ded);
+          py++; asset += prem * (1 - ded);
+        } else {
+          var cv = prem * py * cvr;
+          var zatsu = Math.max(0, cv - asset);
+          if (!firstZatsu) firstZatsu = zatsu;
+          after.push(bad + zatsu);
+          py = 0; asset = 0;
+        }
+      }
+      renderLines('chartBox', {
+        years: YEARS - 1,
+        lines: [
+          { label: '対策前の課税所得', color: '#8a929c', values: before },
+          { label: '保険で平準化した課税所得', color: '#0f2a4a', values: after },
+        ],
+      });
+      var rangeB = Math.max.apply(null, before) - Math.min.apply(null, before);
+      var rangeA = Math.max.apply(null, after) - Math.min.apply(null, after);
+      setBig('statCut', prem * ded);
+      setBig('statLift', firstZatsu);
+      setText('statRange', fmt(rangeB) + ' → ' + fmt(rangeA) + '万円');
+      setText('statMsg', '好況年は保険料の損金で ' + man(prem * ded) + ' 圧縮、不況年は解約益で ' + man(firstZatsu) + ' 底上げ。利益のブレが小さいほど銀行格付け・信用は安定します');
+      return { 好況年の圧縮: man(prem * ded), 不況年の底上げ: man(firstZatsu), '利益のブレ(対策前→後)': fmt(rangeB) + ' → ' + fmt(rangeA) + '万円' };
+    },
+
+    // Opus.30 契約者貸付×緊急資金〈第二の銀行〉
+    policyloan: function () {
+      var sales = n('plSales'), months = Math.max(1, Math.round(n('plMonths')));
+      var cash = n('plCash'), cv = n('plCV'), ratio = n('plRatio') / 100;
+      var need = sales * months;
+      var cap = Math.round(cv * ratio);
+      var short = Math.max(0, need - cash - cap);
+      renderGauge('chartBox', {
+        frameLabel: '必要運転資金', frameTotal: need,
+        segs: [
+          { label: '現預金', value: cash, color: '#0f2a4a' },
+          { label: '契約者貸付の枠', value: cap, color: '#45939b' },
+        ],
+        shortLabel: '不足分',
+        sideTitle: '前提',
+        sideItems: [
+          { label: '月商 ' + fmt(sales) + '万円 × ' + months + 'ヶ月', value: need },
+          { label: '解約返戻金 × ' + fmt(ratio * 100) + '%', value: cap },
+        ],
+      });
+      setBig('statNeed', need); setBig('statReady', cash + cap); setBig('statShort', short);
+      setText('statMsg', '契約者貸付は解約せず・審査なしで返戻金の約9割をすぐ借りられる「第二の銀行」。保障を残したまま緊急資金になります');
+      return { 必要運転資金: man(need), 'すぐ用意できる資金(現預金+貸付枠)': man(cash + cap), 不足: man(short) };
     },
   };
 

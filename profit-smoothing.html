@@ -6,15 +6,15 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>借入準備vs保険準備 | BizPlan Laboratory</title>
-<meta name="description" content="退職金などの将来資金を「その時に借りる」場合と「保険で準備する」場合の総コストを比較します。" />
+<title>利益平準化シミュレーション | BizPlan Laboratory</title>
+<meta name="description" content="好況年に保険料で利益を抑え、不況年に解約返戻金で埋める「利益のならし」効果を折れ線で示します。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/style.css?v=2026082953" />
 </head>
-<body class="bg-white text-[#2b2f36]" data-app="borrowvs">
+<body class="bg-white text-[#2b2f36]" data-app="smoothing">
 
 <!-- ===== グローバルヘッダー ===== -->
 <header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
@@ -115,11 +115,11 @@
   <section class="hero-pattern relative py-1 sm:py-2">
     <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
-        <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">借入準備vs保険準備<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
+        <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">利益平準化シミュレーション<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
         <p class="hero-io-badge font-brand-en font-black tracking-[0.15em]"><span class="io-glow-in">INPUT</span> <span class="io-sep">/</span> <span class="io-glow-out">OUTPUT</span></p>
-        <p class="hero-info-text hidden">退職金や設備更新などの大きな資金は、「必要になった時に借りる」こともできます。しかし借入には利息がかかり、審査に通る保証もありません。借入の総返済額と保険の総支払保険料を並べ、さらに保険には「準備期間中に万一があれば即座に必要額が用意される」機能があることを示します。</p>
+        <p class="hero-info-text hidden">利益の乱高下は納税負担だけでなく、銀行格付けや信用にも悪影響を与えます。好況年に保険料の損金で課税所得を抑え、不況年に解約返戻金の雑収入で底上げする「利益の平準化」を、8年間のシミュレーションで見える化します。</p>
       </div>
-      <div class="hero-actions" data-backup-keys="bpl_borrowvs_v1">
+      <div class="hero-actions" data-backup-keys="bpl_smoothing_v1">
         <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
         <a href="tools.html" class="hero-util-btn" title="ツール一覧へ">
           <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
@@ -151,20 +151,20 @@
 
       <!-- ===== 結果(下の入力に連動してリアルタイムに描き替わる) ===== -->
       <div class="rb-main">
-        <p class="rb-headline-lead">その時に借りるか、いま保険で準備するか<span class="help-tip" tabindex="0">?<span class="help-text">借入の利息は毎年均等に元金を返済する前提の概算です。保険は総支払保険料で比較し、解約返戻金や配当は保守的に見込んでいません。実際は返戻金の分だけ保険がさらに有利になります。</span></span></p>
+        <p class="rb-headline-lead">利益の山を削って、谷を埋める<span class="help-tip" tabindex="0">?<span class="help-text">3年好況→1年不況のサイクルを2回繰り返す前提です。好況年は保険料×損金割合だけ課税所得を圧縮し、不況年に解約して返戻金の雑収入で底上げします(解約後は再加入)。</span></span></p>
         <div id="chartBox" class="mt-2"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
           <div class="rounded-lg bg-[#f4f7fa] border border-gray-200 px-4 py-3 text-center">
-            <p class="text-xs font-bold text-gray-500 mb-1">借入の総返済(概算)</p>
-            <p class="rb-headline-num" id="statBorrow" style="font-size:1.6rem">-</p>
+            <p class="text-xs font-bold text-gray-500 mb-1">好況年の圧縮</p>
+            <p class="rb-headline-num" id="statCut" style="font-size:1.6rem">-</p>
           </div>
           <div class="rounded-lg bg-[#f4f7fa] border border-gray-200 px-4 py-3 text-center">
-            <p class="text-xs font-bold text-gray-500 mb-1">保険の総支払</p>
-            <p class="rb-headline-num" id="statInsure" style="font-size:1.6rem">-</p>
+            <p class="text-xs font-bold text-gray-500 mb-1">不況年の底上げ</p>
+            <p class="rb-headline-num" id="statLift" style="font-size:1.6rem">-</p>
           </div>
           <div class="rounded-lg bg-[#f4f7fa] border border-gray-200 px-4 py-3 text-center">
-            <p class="text-xs font-bold text-gray-500 mb-1">差額</p>
-            <p class="rb-headline-num" id="statDiff" style="font-size:1.6rem">-</p>
+            <p class="text-xs font-bold text-gray-500 mb-1">利益のブレ(前→後)</p>
+            <p class="rb-headline-num" id="statRange" style="font-size:1.6rem">-</p>
           </div>
         </div>
         <p id="statMsg" class="text-center text-sm font-bold mt-3" style="color:#0f2a4a"></p>
@@ -173,40 +173,40 @@
       <!-- ===== 入力 ===== -->
       <div class="rb-card" data-clear-scope>
         <div class="rb-card-head">
-          <h2 class="rb-card-title">必要資金と条件を入力</h2>
+          <h2 class="rb-card-title">利益のブレと保険の条件を入力</h2>
           <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
         </div>
 
         <div class="rb-cols">
           <div>
             <div class="rb-field">
-              <label for="bvNeed">必要額<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">退職金・設備資金など、将来必要になるまとまった資金です。</span></span></label>
-              <input type="number" id="bvNeed" value="5000" class="form-input num-input" placeholder="入力例：5000" />
+              <label for="psGood">好況年の課税所得<span class="rb-field-unit">万円</span></label>
+              <input type="number" id="psGood" value="8000" class="form-input num-input" placeholder="入力例：8000" />
             </div>
             <div class="rb-field">
-              <label for="bvRate">借入金利<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">その時に借りる場合の想定金利(年利)です。</span></span></label>
-              <input type="number" id="bvRate" value="2.0" step="0.1" class="form-input num-input" placeholder="入力例：2.0" />
+              <label for="psBad">不況年の課税所得<span class="rb-field-unit">万円</span></label>
+              <input type="number" id="psBad" value="1000" class="form-input num-input" placeholder="入力例：1000" />
             </div>
             <div class="rb-field">
-              <label for="bvRepayYears">返済年数<span class="rb-field-unit">年</span><span class="help-tip" tabindex="0">?<span class="help-text">借入の返済期間です。利息の概算に使います。</span></span></label>
-              <input type="number" id="bvRepayYears" value="10" class="form-input num-input" placeholder="入力例：10" />
+              <label for="psPremium">年払保険料<span class="rb-field-unit">万円/年</span></label>
+              <input type="number" id="psPremium" value="2000" class="form-input num-input" placeholder="入力例：2000" />
             </div>
           </div>
           <div>
             <div class="rb-field">
-              <label for="bvPremium">年間保険料<span class="rb-field-unit">万円/年</span><span class="help-tip" tabindex="0">?<span class="help-text">保険で準備する場合の年払保険料です。</span></span></label>
-              <input type="number" id="bvPremium" value="450" class="form-input num-input" placeholder="入力例：450" />
+              <label for="psDed">損金割合<span class="rb-field-unit">％</span></label>
+              <input type="number" id="psDed" value="40" class="form-input num-input" placeholder="入力例：40" />
             </div>
             <div class="rb-field">
-              <label for="bvYears">支払年数<span class="rb-field-unit">年</span><span class="help-tip" tabindex="0">?<span class="help-text">保険料の支払期間です。</span></span></label>
-              <input type="number" id="bvYears" value="10" class="form-input num-input" placeholder="入力例：10" />
+              <label for="psCv">解約返戻率<span class="rb-field-unit">％</span><span class="help-tip" tabindex="0">?<span class="help-text">不況年に解約した場合の返戻率の想定です。</span></span></label>
+              <input type="number" id="psCv" value="85" class="form-input num-input" placeholder="入力例：85" />
             </div>
           </div>
         </div>
 
         <div class="calc-logic">
           <p class="calc-logic-title">計算ロジック</p>
-          <dl><dt>借入の利息(概算)</dt><dd><code>必要額 × 金利 × (返済年数+1) ÷ 2</code>(毎年均等返済の前提)</dd><dt>保険の総支払</dt><dd><code>年間保険料 × 支払年数</code>(解約返戻金は保守的に見込まない)</dd><dt>考え方</dt><dd>総コストの比較に加え、保険には「準備の途中で万一が起きても即座に必要額が立つ」という借入にはない機能があります。</dd></dl>
+          <dl><dt>好況年</dt><dd><code>課税所得 − 保険料 × 損金割合</code></dd><dt>不況年</dt><dd><code>課税所得 ＋ 雑収入(解約返戻金 − 資産計上累計)</code></dd><dt>考え方</dt><dd>平準化の効果は納税の分散だけではありません。利益が安定して見えることが、金融機関の格付けと調達力を守ります。</dd></dl>
           
         </div>
       </div>
@@ -244,7 +244,7 @@
       <span class="print-ic">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1"/></svg>
       </span>
-      借入準備vs保険準備 シミュレーション
+      利益平準化シミュレーション シミュレーション
     </h1>
     <div class="print-meta">作成日: <span id="pDate"></span></div>
   </div>
@@ -261,7 +261,7 @@
     <tbody id="pResultBody"></tbody>
   </table>
 
-  <div class="print-keymsg">借りれば利息がかかり、貯めれば時間がかかる。保険は「時間のリスク」までカバーする準備手段です。</div>
+  <div class="print-keymsg">保険は利益の「山を削って谷を埋める」調整弁。決算の見栄えの安定は、信用そのものです。</div>
 
   <div class="print-foot">
     <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の判断は税理士等の専門家にご確認ください。</p>
