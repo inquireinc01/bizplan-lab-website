@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>納税資金×生命保険 | BizPlan Laboratory</title>
+<meta name="description" content="社長個人の財産構成から相続税を概算し、すぐに使える金融資産で納税できるかのギャップを確認します。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=2026082953" />
+</head>
+<body class="bg-white text-[#2b2f36]" data-app="inherit">
+
+<!-- ===== グローバルヘッダー ===== -->
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="header-row flex items-center justify-between gap-4 min-h-20 py-2">
+      <a href="index.html" class="flex items-center shrink-0">
+        <img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" class="h-10 sm:h-12 w-auto" />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2.5 ml-auto">
+        <div class="mega-item">
+          <button type="button" class="mega-trigger active" data-mega="sim">
+            <span class="mega-trigger-label">生命保険ツール</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="stock-valuation.html" class="mega-panel-item"><span class="mega-num">1</span>自社株×生命保険</a>
+      <a href="future-liability.html" class="mega-panel-item"><span class="mega-num">2</span>将来負債×生命保険</a>
+      <a href="treasury-stock.html" class="mega-panel-item"><span class="mega-num">3</span>金庫株×生命保険</a>
+      <a href="retirement-benefit.html" class="mega-panel-item"><span class="mega-num">4</span>退職金×生命保険</a>
+      <a href="tax-exemption.html" class="mega-panel-item"><span class="mega-num">5</span>非課税×生命保険</a>
+      <a href="premium-funding.html" class="mega-panel-item"><span class="mega-num teal">6</span>原資創出モデル</a>
+      <a href="reduced-new-contract.html" class="mega-panel-item"><span class="mega-num teal">7</span>減額充当モデル</a>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <button type="button" class="mega-trigger" data-mega="ds">
+            <span class="mega-trigger-label">ディスカッションシート</span>
+            <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mega-panel">
+      <a href="medical-ds.html" class="mega-panel-item"><span class="mega-num ds">8</span>医療法人×DS</a>
+      <a href="religious-ds.html" class="mega-panel-item"><span class="mega-num ds">9</span>宗教法人×DS</a>
+      <a href="venture-ds.html" class="mega-panel-item"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+      <a href="asset-management-ds.html" class="mega-panel-item"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+      <a href="deficit-company-ds.html" class="mega-panel-item"><span class="mega-num ds">12</span>赤字会社×DS</a>
+      <a href="holdings-ds.html" class="mega-panel-item"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="portal.html" class="portal-link-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h6v6H4zM14 6h6v4h-6zM14 14h6v4h-6zM4 16h6v2H4z"/></svg>
+          <span class="portal-link-label">ポータルサイトへ</span>
+        </a>
+        <button type="button" id="menu-button" aria-expanded="false" class="site-menu-btn p-2 text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden">
+    <nav class="flex flex-col gap-2 p-3">
+
+      <div class="mobile-accordion open">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="sim">
+          <span class="mobile-accordion-trigger-label">生命保険ツール</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="stock-valuation.html" class="mobile-accordion-link"><span class="mega-num">1</span>自社株×生命保険</a>
+        <a href="future-liability.html" class="mobile-accordion-link"><span class="mega-num">2</span>将来負債×生命保険</a>
+        <a href="treasury-stock.html" class="mobile-accordion-link"><span class="mega-num">3</span>金庫株×生命保険</a>
+        <a href="retirement-benefit.html" class="mobile-accordion-link"><span class="mega-num">4</span>退職金×生命保険</a>
+        <a href="tax-exemption.html" class="mobile-accordion-link"><span class="mega-num">5</span>非課税×生命保険</a>
+        <a href="premium-funding.html" class="mobile-accordion-link"><span class="mega-num teal">6</span>原資創出モデル</a>
+        <a href="reduced-new-contract.html" class="mobile-accordion-link"><span class="mega-num teal">7</span>減額充当モデル</a>
+        </div>
+      </div>
+
+      <div class="mobile-accordion">
+        <button type="button" class="mobile-accordion-trigger" data-accordion="ds">
+          <span class="mobile-accordion-trigger-label">ディスカッションシート</span>
+          <svg class="chevron" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-accordion-panel">
+        <a href="medical-ds.html" class="mobile-accordion-link"><span class="mega-num ds">8</span>医療法人×DS</a>
+        <a href="religious-ds.html" class="mobile-accordion-link"><span class="mega-num ds">9</span>宗教法人×DS</a>
+        <a href="venture-ds.html" class="mobile-accordion-link"><span class="mega-num ds">10</span>ベンチャー企業×DS</a>
+        <a href="asset-management-ds.html" class="mobile-accordion-link"><span class="mega-num ds">11</span>資産管理会社×DS</a>
+        <a href="deficit-company-ds.html" class="mobile-accordion-link"><span class="mega-num ds">12</span>赤字会社×DS</a>
+        <a href="holdings-ds.html" class="mobile-accordion-link"><span class="mega-num ds">13</span>ホールディングス×DS</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<main>
+
+  <!-- ===== ページヒーロー ===== -->
+  <section class="hero-pattern relative py-1 sm:py-2">
+    <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <h1 class="text-white font-black text-xl sm:text-2xl flex items-center">納税資金×生命保険<button type="button" class="hero-info-btn" aria-expanded="false">?</button></h1>
+        <p class="hero-io-badge font-brand-en font-black tracking-[0.15em]"><span class="io-glow-in">INPUT</span> <span class="io-sep">/</span> <span class="io-glow-out">OUTPUT</span></p>
+        <p class="hero-info-text hidden">オーナー経営者の財産は自社株と不動産に偏りがちで、相続税は発生するのに「払うおカネがない」状態になりやすい構造です。財産構成から相続税を概算し、金融資産でまかなえるか、不足がいくらかを確認します。生命保険(受取人=相続人)は請求後すぐ支払われる納税資金として最も確実な備えです。</p>
+      </div>
+      <div class="hero-actions" data-backup-keys="bpl_inherit_v1">
+        <span class="js-backup-msg hidden w-full text-right text-xs text-white font-bold"></span>
+        <a href="tools.html" class="hero-util-btn" title="ツール一覧へ">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
+          <span class="hero-util-label">トップ</span>
+        </a>
+        <button type="button" class="js-backup-load hero-util-btn" title="ファイルから読み込む">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15V4m0 0L8 8m4-4l4 4M5 16v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
+          <span class="hero-util-label">読込み</span>
+        </button>
+        <button type="button" class="js-backup-save hero-util-btn" title="ファイルに保存">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 4h11l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 4v5h7V4M8 20v-6h8v6"/></svg>
+          <span class="hero-util-label">保存</span>
+        </button>
+        <button type="button" class="js-pdf-btn hero-util-btn" title="PDFに出力する">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2z"/></svg>
+          <span class="hero-util-label">PDF</span>
+        </button>
+        <button type="button" id="heroClearBtn" class="hero-util-btn hero-util-danger" title="全データクリア">
+          <svg class="hero-util-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12M9 7V4h6v3m-8 0l1 13a2 2 0 002 2h4a2 2 0 002-2l1-13"/></svg>
+          <span class="hero-util-label">全データクリア</span>
+        </button>
+        <input type="file" class="js-backup-file hidden" accept=".txt,.json,text/plain,application/json" />
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 sm:py-7">
+    <div class="max-w-5xl mx-auto px-5 space-y-5">
+
+      <!-- ===== 結果(下の入力に連動してリアルタイムに描き替わる) ===== -->
+      <div class="rb-main">
+        <p class="rb-headline-lead">相続税は払えるか。自社株と不動産では払えない<span class="help-tip" tabindex="0">?<span class="help-text">相続税(点線の枠)に対して、すぐに使える金融資産がどこまで埋まるかを表示します。自社株・不動産は評価額があっても納税には使いにくいため、枠の外の内訳表示にしています。税額は法定相続人が法定相続分で取得したと仮定した概算で、配偶者の税額軽減などは考慮していません。</span></span></p>
+        <div id="chartBox" class="mt-2"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+          <div class="rounded-lg bg-[#f4f7fa] border border-gray-200 px-4 py-3 text-center">
+            <p class="text-xs font-bold text-gray-500 mb-1">相続税(概算)</p>
+            <p class="rb-headline-num" id="statTax" style="font-size:1.6rem">-</p>
+          </div>
+          <div class="rounded-lg bg-[#f4f7fa] border border-gray-200 px-4 py-3 text-center">
+            <p class="text-xs font-bold text-gray-500 mb-1">金融資産</p>
+            <p class="rb-headline-num" id="statLiquid" style="font-size:1.6rem">-</p>
+          </div>
+          <div class="rounded-lg bg-[#f4f7fa] border border-gray-200 px-4 py-3 text-center">
+            <p class="text-xs font-bold text-gray-500 mb-1">納税資金の不足</p>
+            <p class="rb-headline-num" id="statShort" style="font-size:1.6rem">-</p>
+          </div>
+        </div>
+        <p id="statMsg" class="text-center text-sm font-bold mt-3" style="color:#0f2a4a"></p>
+      </div>
+
+      <!-- ===== 入力 ===== -->
+      <div class="rb-card" data-clear-scope>
+        <div class="rb-card-head">
+          <h2 class="rb-card-title">社長個人の財産を入力</h2>
+          <button type="button" class="section-clear-btn text-xs font-normal text-gray-400 hover:text-[#0f2a4a] underline underline-offset-2 shrink-0 ml-2">データクリア</button>
+        </div>
+
+        <div class="rb-cols">
+          <div>
+            <div class="rb-field">
+              <label for="ihStock">自社株の評価額<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">自社株×生命保険ツールで計算した相続税評価額を使うと精度が上がります。</span></span></label>
+              <input type="number" id="ihStock" value="30000" class="form-input num-input" placeholder="入力例：30000" />
+            </div>
+            <div class="rb-field">
+              <label for="ihRealty">不動産<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">自宅・事業用不動産などの相続税評価額です。</span></span></label>
+              <input type="number" id="ihRealty" value="5000" class="form-input num-input" placeholder="入力例：5000" />
+            </div>
+          </div>
+          <div>
+            <div class="rb-field">
+              <label for="ihFinancial">金融資産<span class="rb-field-unit">万円</span><span class="help-tip" tabindex="0">?<span class="help-text">預貯金・有価証券など、納税にすぐ使える資産です。</span></span></label>
+              <input type="number" id="ihFinancial" value="5000" class="form-input num-input" placeholder="入力例：5000" />
+            </div>
+            <div class="rb-field">
+              <label for="ihHeirs">法定相続人の数<span class="rb-field-unit">人</span><span class="help-tip" tabindex="0">?<span class="help-text">配偶者と子の合計人数です。基礎控除(3,000万円+600万円×人数)の計算に使います。</span></span></label>
+              <input type="number" id="ihHeirs" value="2" class="form-input num-input" placeholder="入力例：2" />
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-logic">
+          <p class="calc-logic-title">計算ロジック</p>
+          <dl><dt>課税対象</dt><dd><code>財産合計 − 基礎控除(3,000万円 ＋ 600万円 × 法定相続人数)</code></dd><dt>相続税(概算)</dt><dd>課税対象を法定相続人が均等に取得したと仮定し、相続税の速算表で計算した概算値です。配偶者の税額軽減・小規模宅地等の特例は考慮していません。</dd><dt>考え方</dt><dd>不足分は延納・物納・自社株の売却といった望ましくない選択につながります。死亡保険金は請求後速やかに支払われ、非課税枠(500万円×法定相続人数)もある納税資金の定番です。</dd></dl>
+          
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== フッター ===== -->
+<footer class="bg-[#091a30] text-white py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 flex flex-wrap gap-3">
+      <a href="newsletter.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">DailyBrief by TK&amp;Company 配信登録<span class="ml-1" style="color:#ffd23f">(無料期間中)</span></a>
+      <a href="feedback.html" class="inline-flex items-center px-6 py-2.5 rounded-full text-sm font-bold border-2 border-white/40 text-white hover:bg-white hover:text-[#0f2a4a] transition-colors">不具合報告・改善提案</a>
+    </div>
+    <div class="max-w-3xl space-y-3 mb-6">
+      <p class="text-xs text-gray-500 leading-relaxed">
+        各ツールの試算結果は、概算把握を目的とした簡易シミュレーションによる目安です。実際の税務・法務上の判断や各種申告書類の作成に用いる数値は、直近の公表データや会社の詳細な決算内容をもとに、税理士等の専門家が算定する必要があります。
+      </p>
+      <p class="text-xs text-gray-500 leading-relaxed">
+        ご入力いただいた会社名・氏名等の情報は、お客様のブラウザ内にのみ保存され、弊社が取得することはありません。
+      </p>
+    </div>
+    <p class="font-brand-en text-sm text-gray-400">&copy; 2026 TK&amp;Company Inc. All rights reserved.</p>
+  </div>
+</footer>
+
+
+<!-- ===== 印刷用シート(PDF出力) ===== -->
+<div class="print-sheet" id="printSheet">
+  <div class="print-page-cr">&copy; 2026 TK&amp;Company Inc. All Rights Reserved.</div>
+  <div class="print-head">
+    <h1 class="print-title">
+      <span class="print-ic">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1"/></svg>
+      </span>
+      納税資金×生命保険 シミュレーション
+    </h1>
+    <div class="print-meta">作成日: <span id="pDate"></span></div>
+  </div>
+
+  <div class="print-sec">入力条件</div>
+  <table class="print-table">
+    <thead><tr><th class="lbl">項目</th><th>入力値</th></tr></thead>
+    <tbody id="pInputsBody"></tbody>
+  </table>
+
+  <div class="print-sec">試算結果</div>
+  <table class="print-table">
+    <thead><tr><th class="lbl">項目</th><th>結果</th></tr></thead>
+    <tbody id="pResultBody"></tbody>
+  </table>
+
+  <div class="print-keymsg">財産はあるのに納税資金がない、がオーナー経営者の典型的なリスクです。不足額が保険で備える金額の目安になります。</div>
+
+  <div class="print-foot">
+    <p>本シートの各数値は概算把握を目的とした簡易試算値です。実際の判断は税理士等の専門家にご確認ください。</p>
+    <p class="cr">&copy; 2026 TK&amp;Company Inc. All rights reserved.</p>
+  </div>
+</div>
+
+<script src="js/menu.js?v=20260803a"></script>
+<script src="js/number-format.js?v=20260826a"></script>
+<script src="js/data-backup.js?v=20260827a"></script>
+<script src="js/simple-tools.js?v=20260928a"></script>
+</body>
+</html>
