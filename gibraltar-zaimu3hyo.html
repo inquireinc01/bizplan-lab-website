@@ -249,7 +249,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
   <div class="hero-inner">
     <div>
       <h1>財務3表マスター<span style="font-size:.6em;font-weight:700;opacity:.8">For Gibraltar</span></h1>
-      <p class="hero-mode" id="stageDisp">モードを選んでください</p>
+      <p class="hero-mode" id="stageDisp"></p>
     </div>
   </div>
 </section>
@@ -894,7 +894,7 @@ function startMode(m){
   window.scrollTo(0,0);
 }
 function goHome(){
-  $("stageDisp").textContent="モードを選んでください";
+  $("stageDisp").textContent="";
   $("compare").style.display="none";
   $("kakunin").style.display="none";
   $("game").style.display="none";$("home").style.display="block";
