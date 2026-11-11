@@ -148,6 +148,9 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 /* 一致ルールが正しい値で揃った瞬間のMATCH!エフェクト(一致元・一致先の両方に出す) */
 @keyframes matchPop{0%{opacity:0;transform:translate(-50%,6px) scale(.5)}18%{opacity:1;transform:translate(-50%,-8px) scale(1.18)}55%{opacity:1;transform:translate(-50%,-12px) scale(1)}100%{opacity:0;transform:translate(-50%,-26px) scale(1)}}
 .match-pop{position:absolute;left:50%;top:-8px;z-index:40;font:900 12px/1 Arial,sans-serif;letter-spacing:.08em;color:#fff;background:var(--lkc,#b9822f);padding:4px 11px;border-radius:9999px;box-shadow:0 4px 12px rgba(0,0,0,.28);pointer-events:none;white-space:nowrap;animation:matchPop 1.4s ease forwards}
+/* 全問正解時に画面中央へ出す称賛エフェクト */
+@keyframes praisePop{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-6deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg)}32%{transform:translate(-50%,-50%) scale(1) rotate(0deg)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-58%) scale(1.06)}}
+.praise-pop{position:fixed;left:50%;top:45%;z-index:300;font:900 clamp(40px,9vw,84px)/1 Arial,sans-serif;letter-spacing:.04em;background:linear-gradient(135deg,#f3c74f,#d8912b 55%,#b9822f);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 18px rgba(0,0,0,.28));pointer-events:none;white-space:nowrap;animation:praisePop 1.6s ease forwards}
 .cell:empty::before{content:"";color:#bbb}
 .cell.active{border-color:var(--navy);background:#F0F5FF;box-shadow:0 0 0 2px rgba(42,63,110,.18)}
 .cell.wrong{border-color:var(--red);background:#FBEAE8;animation:shake .3s}
@@ -731,6 +734,12 @@ function lkSheetIndex(id){return PL_ROWS.some(r=>r[0]===id)?0:BS_ROWS.some(r=>r[
 function lkFlash(cell){cell.classList.remove("lk-flash");void cell.offsetWidth;cell.classList.add("lk-flash");setTimeout(()=>cell.classList.remove("lk-flash"),1300);}
 /* 一致ルール(①〜④)が正しい値で揃った瞬間、両方のセルにMATCH!を出す。
    fire=falseは状態の同期のみ(プリセット・答えを見る等でエフェクトを出さない) */
+const PRAISES=["EXCELLENT!","PERFECT!","BRILLIANT!","OUTSTANDING!","MAGNIFICENT!"];
+function praiseBurst(){
+  const b=document.createElement("div");b.className="praise-pop";
+  b.textContent=PRAISES[Math.floor(Math.random()*PRAISES.length)];
+  document.body.appendChild(b);setTimeout(()=>b.remove(),1700);
+}
 let lkMatched=[false,false,false,false];
 function lkCur(id){return (typeof AUTO_DEFS!=="undefined"&&AUTO_DEFS[id])?AUTO_DEFS[id].reduce((s,k)=>s+(values[k]||0),0):(values[id]||0);}
 function checkLinkMatches(fire){
@@ -931,6 +940,7 @@ function judge(){
     msg+=`PL純利益→BS剰余金、CS期末現金→BS現金、3表がつながった！`;
     if(mode==="intermediate"&&currentProblem().endPeriod===2)msg+=`<br><b>🏆 2期目の決算まで完走おめでとう！</b> 資本金500の会社が総資産${fmt(expected.assets)}<span class="unit">万円</span>・純資産${fmt(expected.equity)}<span class="unit">万円</span>に成長した。`;
     box.className="result clear show";box.innerHTML=msg;
+    praiseBurst();
     $("judgeBtn").disabled=true;
     /* 進捗保存はクリア時点で行い、遷移は「次に進む」ボタンで(入力した正答をその場で確認できるように) */
     if(mode==="basic")localStorage.setItem("z3g_trial_basic_step",String(stepIdx+1));
