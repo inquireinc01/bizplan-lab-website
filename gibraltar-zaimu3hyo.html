@@ -555,7 +555,7 @@ const INSURANCE=[
 ];
 
 /* ================= 状態 ================= */
-let mode=null, stepIdx=0, misses=0, streak=0;
+let mode=null, stepIdx=0, misses=0, streak=0, afterClear=null;
 let values={}, expected={}, activeCell=null, kpBuf="", randomOrder=[];
 const $=id=>document.getElementById(id);
 const store={get k(){return "z3g_gib_"+ (mode||"");}};
@@ -949,7 +949,7 @@ function currentProblem(){
   return INSURANCE[stepIdx];
 }
 function loadProblem(){
-  misses=0;
+  misses=0;afterClear=null;
   const p=currentProblem();
   expected={};ALL_IDS.forEach(id=>expected[id]=0);
   Object.assign(expected,p.e);
@@ -1016,27 +1016,28 @@ function judge(){
     if(mode==="random")msg+=`連続正解 ${streak} 回目！ `;
     msg+=`PL純利益→BS剰余金、CS期末現金→BS現金、3表がつながった！`;
     if(mode==="intermediate"&&currentProblem().endPeriod===2)msg+=`<br><b>🏆 2期目の決算まで完走おめでとう！</b> 資本金500の会社が総資産${fmt(expected.assets)}<span class="unit">万円</span>・純資産${fmt(expected.equity)}<span class="unit">万円</span>に成長した。`;
-    box.className="result clear show";box.innerHTML=msg;
-    $("judgeBtn").disabled=true;
-    /* 進捗保存 & 次へ */
-    setTimeout(()=>{
+    /* 進捗保存はクリア時点で行い、遷移は「次に進む」ボタンで(入力した正答をその場で確認できるように) */
+    if(mode==="basic")localStorage.setItem("z3g_gib_basic_step",String(stepIdx+1));
+    else if(mode==="intermediate")localStorage.setItem("z3g_gib_int_step",String(stepIdx+1));
+    else if(mode==="insurance")localStorage.setItem("z3g_gib_ins_step",String(stepIdx+1));
+    afterClear=()=>{
       if(mode==="basic"){
         const p=currentProblem();
-        localStorage.setItem("z3g_gib_basic_step",String(stepIdx+1));
         if(p.endPeriod===1){showOverlay("🏆 ベーシック編クリア！","第1期の決算まで完走おめでとうございます！<br><br>続きはMODE 2（中級編）へ。第2期の決算まで進み、最後に2期分のBSを見比べる○×クイズが待っています。",goHome);}
         else next();
       }else if(mode==="intermediate"){
         const p=currentProblem();
-        localStorage.setItem("z3g_gib_int_step",String(stepIdx+1));
         if(p.endPeriod===1){showOverlay("第1期 決算完了！","PLとCSは1年間の「フロー」なので第2期はゼロからスタート。BSは会社の「ストック」なのでそのまま繰り越します。<br><br>第1期末の現金370万円が、第2期のCS「期首の現金」になります。",next);}
         else if(p.endPeriod===2){showOverlay("🏆 2期完走！","第2期の決算まで完了。仕上げに、第1期末と第2期末のBSを見比べて○×クイズに挑戦しよう。",showCompare);}
         else next();
       }else if(mode==="insurance"){
-        localStorage.setItem("z3g_gib_ins_step",String(stepIdx+1));
         if(stepIdx>=INSURANCE.length-1){showOverlay("🏆 保険の経理処理 マスター！","全額損金・４割損金・全額資産計上・解約の4パターンを制覇。<br><br>ポイント: 「損金にできる保険は出口（解約時）で課税される」— 保険は課税の繰り延べであって節税そのものではない、が今日イチの学びです。",goHome);}
         else next();
       }else next();
-    },1400);
+    };
+    msg+=`<br><button type="button" class="btn-primary" style="margin-top:10px" onclick="afterClear&&afterClear()">次に進む ▶</button>`;
+    box.className="result clear show";box.innerHTML=msg;
+    $("judgeBtn").disabled=true;
   }else{
     misses++;streak=mode==="random"?0:streak;
     wrong.forEach(id=>$("cell_"+id).classList.add("wrong"));
