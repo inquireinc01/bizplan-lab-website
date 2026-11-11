@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 171 205"
+     width="171"
+     height="205"
+     role="img"
+     aria-labelledby="frog-title frog-desc">
+  <title id="frog-title">悲しんでいるカエル</title>
+  <desc id="frog-desc">涙を流し、悲しそうな口をしたカエル</desc>
+
+  <!-- Fixed character body. Exactly two flat colors are used. -->
+
+  <rect width="171" height="205" fill="#FFFFFF"/>
+
+  <g fill="#052957">
+    <ellipse cx="45" cy="160" rx="27" ry="24"/>
+    <ellipse cx="130" cy="160" rx="27" ry="24"/>
+    <ellipse cx="88" cy="165" rx="30" ry="17"/>
+    <ellipse cx="35" cy="126" rx="14" ry="10.5"/>
+    <ellipse cx="141" cy="126" rx="14" ry="10.5"/>
+    <ellipse cx="51" cy="50" rx="22" ry="23"/>
+    <ellipse cx="126" cy="50" rx="22" ry="23"/>
+    <path d="
+      M 60 50
+      C 68 45, 77 43, 88 44
+      C 99 43, 108 45, 116 50
+      C 136 57, 149 74, 149 94
+      C 149 106, 145 114, 138 119
+      C 144 124, 146 131, 142 136
+      C 138 141, 130 143, 124 146
+      C 115 151, 109 158, 104 164
+      C 99 170, 94 173, 88 173
+      C 82 173, 77 170, 72 164
+      C 67 158, 61 151, 52 146
+      C 46 143, 38 141, 34 136
+      C 30 131, 32 124, 38 119
+      C 31 114, 27 106, 27 94
+      C 27 74, 40 57, 60 50
+      Z"/>
+  </g>
+
+  <!-- Variant expression. -->
+
+  <ellipse cx="51" cy="51" rx="13" ry="15" fill="#FFFFFF"/>
+  <ellipse cx="126" cy="51" rx="13" ry="14.5" fill="#FFFFFF"/>
+  <ellipse cx="55" cy="53" rx="5" ry="6" fill="#052957"/>
+  <ellipse cx="129" cy="53" rx="5" ry="6" fill="#052957"/>
+  <path d="M 75 94 C 82 84, 94 84, 101 94"
+        fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 43 70 C 38 77, 38 82, 43 84 C 48 82, 48 77, 43 70 Z
+           M 134 70 C 129 77, 129 82, 134 84 C 139 82, 139 77, 134 70 Z"
+        fill="#FFFFFF"/>
+
+  <!-- Fixed belly. -->
+  <ellipse cx="88" cy="147" rx="30" ry="27" fill="#FFFFFF"/>
+  <!-- Variant prop or accent. -->
+
+</svg>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>配信停止 | 銀行員の平日</title>
+<meta name="description" content="「銀行員の平日」メールマガジンの配信停止ページです。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../css/style.css?v=2026081233" />
+<style>
+.mail-panel { max-width: 620px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: .75rem; padding: 28px 26px 26px; }
+.mail-panel h2 { font-size: var(--fs-6); font-weight: 700; color: var(--color-navy); line-height: 1.4; }
+.mail-panel p { font-size: var(--fs-3); color: #4a5460; line-height: 1.85; margin-top: 12px; }
+.mail-panel .sub { font-size: var(--fs-2); color: var(--color-slate-light); }
+.mail-panel a.back { display: inline-block; margin-top: 20px; font-size: var(--fs-2); color: var(--color-navy); text-decoration: underline; }
+.state-mark { font-size: 30px; line-height: 1; }
+.stop-form { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; max-width: 380px; }
+.stop-form input[type="email"] {
+  width: 100%; border: 1px solid var(--line); border-radius: .5rem;
+  padding: 9px 11px; font-size: var(--fs-3); color: #2b2f36; background: #fff;
+}
+.stop-form input[type="email"]:focus { outline: none; border-color: var(--color-navy); box-shadow: 0 0 0 3px rgba(15,42,74,.10); }
+.stop-form button { width: 100%; font-size: var(--fs-3); font-weight: 700; padding: 8px 16px; }
+</style>
+</head>
+<body class="bg-[#f8f9fb] text-[#2b2f36]">
+
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between gap-5 min-h-[78px] py-2.5 flex-wrap">
+      <a href="index.html" class="flex items-center shrink-0 no-underline">
+        <img src="../images/logo-weekday.png?v=101" alt="銀行員の平日 — Bankers Weekday" class="h-[46px] sm:h-[54px] w-auto" />
+      </a>
+      <nav class="flex items-center gap-4 sm:gap-5" aria-label="シリーズ内リンク">
+        <a href="../weekend/" class="opacity-70 hover:opacity-100 transition-opacity" title="銀行員の休日"><img src="../images/logo.png?v=103" alt="銀行員の休日" class="h-[26px] w-auto" /></a>
+        <a href="../toolbox/" class="opacity-70 hover:opacity-100 transition-opacity" title="銀行員の道具箱"><img src="../images/logo-toolbox.png?v=101" alt="銀行員の道具箱" class="h-[26px] w-auto" /></a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<section class="hero-pattern hero-pattern--weekday relative overflow-hidden h-[86px] sm:h-[104px]">
+  <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">WEEKDAY</span>
+  <span class="hero-brand-mark hero-brand-mark--br" aria-hidden="true">BANKERS</span>
+  <div class="relative z-10 max-w-[1400px] mx-auto px-5 sm:px-8 h-full flex items-center">
+    <h1 class="text-white text-[16px] sm:text-[20px] font-bold tracking-[.12em] pl-3.5 border-l-[3px] border-[#9cc4ef]">
+      メールマガジン 配信停止
+    </h1>
+  </div>
+</section>
+
+<main class="max-w-[1400px] mx-auto px-5 sm:px-8 py-10">
+  <div class="mail-panel">
+
+    <!-- メール内リンクから来た場合(トークンあり) -->
+    <div id="panel-loading" hidden>
+      <h2>手続きをしています…</h2>
+      <p class="sub">この画面のままお待ちください。</p>
+    </div>
+
+    <div id="panel-stopped" hidden>
+      <div class="state-mark" aria-hidden="true">✓</div>
+      <h2>配信を停止しました</h2>
+      <p>
+        「銀行員の平日」の配信を停止しました。今後、本メールマガジンはお届けしません。<br />
+        ご購読ありがとうございました。
+      </p>
+      <p class="sub">気が向いたときは、いつでもトップページから再登録いただけます。</p>
+      <a class="back" href="index.html">銀行員の平日 トップへ</a>
+    </div>
+
+    <div id="panel-already" hidden>
+      <div class="state-mark" aria-hidden="true">✓</div>
+      <h2>すでに停止済みです</h2>
+      <p>このアドレスへの配信はすでに停止しています。手続きは不要です。</p>
+      <a class="back" href="index.html">銀行員の平日 トップへ</a>
+    </div>
+
+    <!-- リンクが無い / 無効だった場合: アドレスを入力して停止 -->
+    <div id="panel-form" hidden>
+      <h2>配信を停止する</h2>
+      <p>
+        ご登録中のメールアドレスを入力してください。<br />
+        確認の手順はありません。送信した時点で配信を停止します。
+      </p>
+      <form id="stop-form" class="stop-form" novalidate>
+        <input type="email" id="stop-email" placeholder="mail@example.com" autocomplete="email" aria-label="メールアドレス" />
+        <input type="text" id="stop-company" name="company" tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+        <button type="submit" class="btn-primary">配信を停止する</button>
+      </form>
+      <p class="sub" style="margin-top:14px;">
+        お届けしたメールの末尾にあるリンクからは、アドレスを入力せず1クリックで停止できます。<br />
+        うまくいかない場合は <a href="mailto:info@bizplanlabo.com" style="color:var(--color-navy);text-decoration:underline;">info@bizplanlabo.com</a> までご連絡ください。
+      </p>
+    </div>
+
+    <div id="panel-done" hidden>
+      <div class="state-mark" aria-hidden="true">✓</div>
+      <h2>受け付けました</h2>
+      <p>
+        ご入力のアドレスが登録されていれば、配信を停止しました。<br />
+        確認のメールをお送りしています。
+      </p>
+      <p class="sub">すでに送信処理に入っている当日分が1通だけ届く場合があります。翌営業日以降は届きません。</p>
+      <a class="back" href="index.html">銀行員の平日 トップへ</a>
+    </div>
+
+  </div>
+</main>
+
+<footer class="mt-6 py-7 text-center text-[12px] text-[#6b7684]">
+  発行者：株式会社TK＆Company feat. Biz Plan Laboratory Inc.
+</footer>
+
+<script>
+/* ============================================================
+   配信停止
+   ------------------------------------------------------------
+   経路は2つ:
+     (1) メール末尾のワンクリックリンク  → ?t=<トークン> で来る。JSONPで即時停止
+     (2) リンクを無くした人のフォーム    → アドレスをPOSTして即時停止
+
+   (2)で確認メールを挟まないのは意図的。オプトアウトに手間をかけさせないため
+   (特定電子メール法が求める「受信拒否の容易さ」)。第三者が他人を止められる
+   余地は残るが、被害は「再登録すれば戻る」程度で、止められない不便より軽い。
+   本人が気づけるよう、停止した旨をそのアドレスへ通知している。
+   ============================================================ */
+var MAIL_API = 'https://script.google.com/macros/s/PASTE_WEEKDAY_MAIL_DEPLOYMENT_ID/exec';
+
+var PANELS = ['panel-loading', 'panel-stopped', 'panel-already', 'panel-form', 'panel-done'];
+function show(id) {
+  PANELS.forEach(function (p) { document.getElementById(p).hidden = (p !== id); });
+}
+
+function getParam(name) {
+  var m = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+window.__wdStopDone = function (res) {
+  if (res && res.ok && res.status === 'stopped')   { show('panel-stopped'); }
+  else if (res && res.status === 'already')        { show('panel-already'); }
+  else                                             { show('panel-form'); }   // 無効なリンクは手入力へ誘導
+};
+
+(function () {
+  var token = getParam('t');
+  if (!token) { show('panel-form'); return; }
+
+  show('panel-loading');
+  var s = document.createElement('script');
+  s.src = MAIL_API + '?action=stop&t=' + encodeURIComponent(token) + '&callback=__wdStopDone';
+  s.onerror = function () { show('panel-form'); };
+  document.body.appendChild(s);
+
+  setTimeout(function () {
+    if (!document.getElementById('panel-loading').hidden) { show('panel-form'); }
+  }, 15000);
+})();
+
+document.getElementById('stop-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var input = document.getElementById('stop-email');
+  var v = input.value.trim();
+  if (!v || v.indexOf('@') < 1) {
+    input.style.borderColor = '#a83d3d';
+    input.focus();
+    return;
+  }
+  var btn = e.target.querySelector('button[type="submit"]');
+  if (btn) { btn.disabled = true; btn.textContent = '送信中…'; }
+
+  fetch(MAIL_API, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action: 'stop',
+      email: v,
+      company: document.getElementById('stop-company').value   // ハニーポット
+    })
+  })['catch'](function () { /* no-cors では成否を区別できない */ })
+   .then(function () { show('panel-done'); });
+});
+
+document.getElementById('stop-email').addEventListener('change', function () {
+  this.style.borderColor = '';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>登録の確認 | 銀行員の平日</title>
+<meta name="description" content="「銀行員の平日」メールマガジンの登録確認ページです。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../css/style.css?v=2026081233" />
+<style>
+.mail-panel { max-width: 620px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: .75rem; padding: 28px 26px 26px; }
+.mail-panel h2 { font-size: var(--fs-6); font-weight: 700; color: var(--color-navy); line-height: 1.4; }
+.mail-panel p { font-size: var(--fs-3); color: #4a5460; line-height: 1.85; margin-top: 12px; }
+.mail-panel .sub { font-size: var(--fs-2); color: var(--color-slate-light); }
+.mail-panel a.back { display: inline-block; margin-top: 20px; font-size: var(--fs-2); color: var(--color-navy); text-decoration: underline; }
+.state-mark { font-size: 30px; line-height: 1; }
+</style>
+</head>
+<body class="bg-[#f8f9fb] text-[#2b2f36]">
+
+<header id="site-header" class="sticky top-0 z-50 bg-white border-b border-gray-100">
+  <div class="max-w-[1400px] mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between gap-5 min-h-[78px] py-2.5 flex-wrap">
+      <a href="index.html" class="flex items-center shrink-0 no-underline">
+        <img src="../images/logo-weekday.png?v=101" alt="銀行員の平日 — Bankers Weekday" class="h-[46px] sm:h-[54px] w-auto" />
+      </a>
+      <nav class="flex items-center gap-4 sm:gap-5" aria-label="シリーズ内リンク">
+        <a href="../weekend/" class="opacity-70 hover:opacity-100 transition-opacity" title="銀行員の休日"><img src="../images/logo.png?v=103" alt="銀行員の休日" class="h-[26px] w-auto" /></a>
+        <a href="../toolbox/" class="opacity-70 hover:opacity-100 transition-opacity" title="銀行員の道具箱"><img src="../images/logo-toolbox.png?v=101" alt="銀行員の道具箱" class="h-[26px] w-auto" /></a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<section class="hero-pattern hero-pattern--weekday relative overflow-hidden h-[86px] sm:h-[104px]">
+  <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">WEEKDAY</span>
+  <span class="hero-brand-mark hero-brand-mark--br" aria-hidden="true">BANKERS</span>
+  <div class="relative z-10 max-w-[1400px] mx-auto px-5 sm:px-8 h-full flex items-center">
+    <h1 class="text-white text-[16px] sm:text-[20px] font-bold tracking-[.12em] pl-3.5 border-l-[3px] border-[#9cc4ef]">
+      メールマガジン 登録の確認
+    </h1>
+  </div>
+</section>
+
+<main class="max-w-[1400px] mx-auto px-5 sm:px-8 py-10">
+  <div class="mail-panel">
+    <div id="panel-loading">
+      <h2>確認しています…</h2>
+      <p class="sub">この画面のままお待ちください。</p>
+    </div>
+
+    <div id="panel-ok" hidden>
+      <div class="state-mark" aria-hidden="true">✓</div>
+      <h2>登録が完了しました</h2>
+      <p>
+        ご登録ありがとうございます。<br />
+        <strong>次の平日の朝6時</strong>から「銀行員の平日」をお届けします。
+      </p>
+      <p class="sub">
+        配信の停止は、お届けするメールの末尾にあるリンクからいつでも1クリックで行えます。
+      </p>
+      <a class="back" href="index.html">銀行員の平日 トップへ</a>
+    </div>
+
+    <div id="panel-already" hidden>
+      <div class="state-mark" aria-hidden="true">✓</div>
+      <h2>すでに登録済みです</h2>
+      <p>このアドレスはすでに配信対象になっています。手続きは不要です。</p>
+      <a class="back" href="index.html">銀行員の平日 トップへ</a>
+    </div>
+
+    <div id="panel-ng" hidden>
+      <h2>リンクを確認できませんでした</h2>
+      <p>
+        リンクの有効期限が切れているか、URLが途中で切れている可能性があります。<br />
+        お手数ですが、トップページからもう一度ご登録ください。
+      </p>
+      <p class="sub">メールソフトによっては長いURLが2行に折り返され、後半が欠けた状態で開かれることがあります。</p>
+      <a class="back" href="index.html">もう一度登録する</a>
+    </div>
+  </div>
+</main>
+
+<footer class="mt-6 py-7 text-center text-[12px] text-[#6b7684]">
+  発行者：株式会社TK＆Company feat. Biz Plan Laboratory Inc.<br />
+  <a href="unsubscribe.html" class="underline">配信停止</a>
+</footer>
+
+<script>
+/* ============================================================
+   確認リンクの処理
+   ------------------------------------------------------------
+   Apps Script へ JSONP で問い合わせる。fetch ではなく <script> タグを使うのは、
+   Apps Script が任意オリジンへの CORS ヘッダを返せず、fetch(no-cors) だと
+   結果が読めない = 成功/失敗を画面に出せないため。
+   URLに載るのはランダムなトークンだけで、メールアドレスは載せていない。
+   ============================================================ */
+var MAIL_API = 'https://script.google.com/macros/s/PASTE_WEEKDAY_MAIL_DEPLOYMENT_ID/exec';
+
+function show(id) {
+  ['panel-loading', 'panel-ok', 'panel-already', 'panel-ng'].forEach(function (p) {
+    document.getElementById(p).hidden = (p !== id);
+  });
+}
+
+function getParam(name) {
+  var m = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+window.__wdConfirmDone = function (res) {
+  if (res && res.ok && res.status === 'confirmed') { show('panel-ok'); }
+  else if (res && res.status === 'already')        { show('panel-already'); }
+  else                                             { show('panel-ng'); }
+};
+
+(function () {
+  var token = getParam('t');
+  if (!token) { show('panel-ng'); return; }
+
+  var s = document.createElement('script');
+  s.src = MAIL_API + '?action=confirm&t=' + encodeURIComponent(token) + '&callback=__wdConfirmDone';
+  s.onerror = function () { show('panel-ng'); };
+  document.body.appendChild(s);
+
+  // 応答が返らないまま「確認しています…」で固まらないようにする
+  setTimeout(function () {
+    if (!document.getElementById('panel-loading').hidden) { show('panel-ng'); }
+  }, 15000);
+})();
+</script>
+</body>
+</html>
