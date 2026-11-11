@@ -147,7 +147,10 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .row.sub{font-weight:bold}
 .sheet.pl .row.sub{background:var(--plbg)} .sheet.bs .row.sub{background:var(--bsbg)} .sheet.cs .row.sub{background:var(--csbg)}
 .row .divhead{flex:1;font-size:11px;font-weight:bold;color:#fff;padding:3px 8px}
-.cell{flex:1;font-family:Arial;font-size:13.5px;text-align:right;padding:5px 8px;margin:2px 6px 2px 0;border:1.5px solid #D9DEE7;border-radius:6px;background:#FBFCFE;min-width:74px;cursor:pointer;min-height:29px}
+.cell{flex:1;font-family:Arial;font-size:13.5px;text-align:right;padding:5px 8px;margin:2px 6px 2px 0;border:1.5px solid #D9DEE7;border-radius:6px;background:#FBFCFE;min-width:74px;cursor:pointer;min-height:29px;position:relative}
+/* 一致ルールが正しい値で揃った瞬間のMATCH!エフェクト(一致元・一致先の両方に出す) */
+@keyframes matchPop{0%{opacity:0;transform:translate(-50%,6px) scale(.5)}18%{opacity:1;transform:translate(-50%,-8px) scale(1.18)}55%{opacity:1;transform:translate(-50%,-12px) scale(1)}100%{opacity:0;transform:translate(-50%,-26px) scale(1)}}
+.match-pop{position:absolute;left:50%;top:-8px;z-index:40;font:900 12px/1 Arial,sans-serif;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#d8a931,#b9822f);padding:4px 11px;border-radius:9999px;box-shadow:0 4px 12px rgba(0,0,0,.28);pointer-events:none;white-space:nowrap;animation:matchPop 1.4s ease forwards}
 .cell:empty::before{content:"";color:#bbb}
 .cell.active{border-color:var(--navy);background:#F0F5FF;box-shadow:0 0 0 2px rgba(42,63,110,.18)}
 .cell.wrong{border-color:var(--red);background:#FBEAE8;animation:shake .3s}
@@ -649,6 +652,7 @@ function kpOk(){
   $("keypad").classList.remove("show");
   lkClearGlow();
   renderValues();
+  checkLinkMatches(true);
 }
 document.addEventListener("keydown",e=>{
   if(!activeCell)return;
@@ -859,6 +863,24 @@ function lkPartner(id){for(let i=0;i<LINK_PAIRS.length;i++){const p=LINK_PAIRS[i
 function lkClearGlow(){document.querySelectorAll(".cell.lk-glow").forEach(c=>c.classList.remove("lk-glow"));}
 function lkSheetIndex(id){return PL_ROWS.some(r=>r[0]===id)?0:BS_ROWS.some(r=>r[0]===id)?1:2;}
 function lkFlash(cell){cell.classList.remove("lk-flash");void cell.offsetWidth;cell.classList.add("lk-flash");setTimeout(()=>cell.classList.remove("lk-flash"),1300);}
+/* 一致ルール(①〜④)が正しい値で揃った瞬間、両方のセルにMATCH!を出す。
+   fire=falseは状態の同期のみ(プリセット・答えを見る等でエフェクトを出さない) */
+let lkMatched=[false,false,false,false];
+function lkCur(id){return (typeof AUTO_DEFS!=="undefined"&&AUTO_DEFS[id])?AUTO_DEFS[id].reduce((s,k)=>s+(values[k]||0),0):(values[id]||0);}
+function checkLinkMatches(fire){
+  LINK_PAIRS.forEach((p,i)=>{
+    const ok=p.cells.every(id=>lkCur(id)===(expected[id]||0));
+    if(ok&&!lkMatched[i]&&fire){
+      p.cells.forEach(id=>{
+        const c=$("cell_"+id);if(!c)return;
+        lkFlash(c);
+        const b=document.createElement("span");b.className="match-pop";b.textContent="MATCH!";
+        c.appendChild(b);setTimeout(()=>b.remove(),1500);
+      });
+    }
+    lkMatched[i]=ok;
+  });
+}
 function lkJump(idx,fromId){
   const p=LINK_PAIRS[idx];const partner=p.cells.find(x=>x!==fromId);
   const cell=$("cell_"+partner);if(!cell)return;
@@ -1002,6 +1024,7 @@ function loadProblem(){
   document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow","lk-glow","lk-flash"));
   renderGameProg();
   renderValues();
+  checkLinkMatches(false);
 }
 function toggleTip(){
   const on=$("cardTip").classList.toggle("show");
@@ -1014,6 +1037,7 @@ function clearInputs(){ /* 全セルを空(0)にする */
   values={};ALL_IDS.forEach(id=>values[id]=0);
   document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong","right","glow"));
   renderValues();
+  checkLinkMatches(false);
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
@@ -1086,6 +1110,7 @@ function proceedNext(){
 function showAnswer(){
   ALL_IDS.forEach(id=>{values[id]=expected[id]||0;});
   renderValues();
+  checkLinkMatches(false);
   document.querySelectorAll(".cell").forEach(c=>c.classList.remove("wrong"));
   $("resultBox").className="result";$("resultBox").innerHTML="";
 }
@@ -1104,7 +1129,7 @@ function showSheet(i,btn){
 
 /* ================= 起動 ================= */
 buildRows();initLinkPairs();renderProgress();
-window.__game={values,get expected(){return expected},judge,startMode,set:(id,v)=>{values[id]=v;renderValues();}};
+window.__game={values,get expected(){return expected},judge,startMode,set:(id,v)=>{values[id]=v;renderValues();checkLinkMatches(true);}};
 </script>
 </body>
 </html>
