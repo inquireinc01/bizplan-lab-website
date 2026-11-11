@@ -29,8 +29,6 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .hero-kicker{font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Yu Gothic UI Semilight","Segoe UI",Arial,sans-serif;font-stretch:condensed;font-weight:350;font-size:11px;letter-spacing:.25em;color:rgba(255,255,255,.7);margin-bottom:3px}
 .hero h1{font-size:22px;font-weight:900;letter-spacing:.02em}
 .hero-mode{font-size:12.5px;color:rgba(255,255,255,.85);margin-top:4px;font-weight:bold}
-.hero .score{font-size:13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);padding:6px 16px;border-radius:14px;white-space:nowrap}
-.hero .score b{font-family:Arial;font-size:17px}
 /* ---- ヒーロー帯のすぐ下: 前のページに戻る ---- */
 .page-back{display:inline-block;font-size:12.5px;font-weight:bold;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 14px;text-decoration:none;margin-bottom:14px}
 .page-back:hover{border-color:var(--navy)}
@@ -115,6 +113,8 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .cmp-diff-down{color:var(--red);font-weight:bold}
 .quiz-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
 .quiz-item .q{font-size:13.5px;font-weight:bold;color:var(--navy);margin-bottom:8px}
+.qz-btn.choice{display:block;width:100%;text-align:left;margin:6px 0;white-space:normal;line-height:1.5}
+#kakunin{max-width:860px;margin:0 auto;padding:24px 20px 60px}
 .qz-btn{font-size:15px;font-weight:bold;border:1.5px solid var(--line);background:#fff;border-radius:9999px;padding:6px 22px;margin-right:8px;cursor:pointer;font-family:inherit}
 .qz-btn:disabled{opacity:.45;cursor:default}
 .qz-btn.pick-ok{border-color:var(--ok);background:#E3F4EB;color:var(--ok);opacity:1}
@@ -243,14 +243,13 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
   </div>
 </header>
 
-<!-- ===== ヒーロー帯(ネイビーグラデ: キッカー+タイトル+モード名 / 右にスコア) ===== -->
+<!-- ===== ヒーロー帯(ネイビーグラデ: キッカー+タイトル+モード名) ===== -->
 <section class="hero">
   <div class="hero-inner">
     <div>
       <h1>財務3表マスター<span style="font-size:.6em;font-weight:700;opacity:.8">For Gibraltar</span></h1>
       <p class="hero-mode" id="stageDisp">モードを選んでください</p>
     </div>
-    <span class="score">SCORE <b id="scoreDisp">0</b></span>
   </div>
 </section>
 
@@ -283,7 +282,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
           <div class="prog-label"><span id="progIntText">未プレイ</span><b id="progIntPct">0%</b></div>
         </div>
       </div>
-      <div class="mode-card mc-disabled" style="--mc:#5c8272">
+      <div class="mode-card" style="--mc:#5c8272" onclick="startMode('insurance')">
         <span class="mc-wm">INSURANCE</span>
         <span class="mc-bar"></span>
         <div class="mc-no">MODE.<b>3</b></div>
@@ -295,17 +294,23 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
           <div class="prog-label"><span id="progInsText">未プレイ</span><b id="progInsPct">0%</b></div>
         </div>
       </div>
-      <div class="mode-card mc-disabled" style="--mc:#826f5c">
-        <span class="mc-wm">RANDOM</span>
-        <span class="mc-bar"></span>
-        <div class="mc-no">MODE.<b>4</b></div>
-        <div class="mc-line"></div>
-        <h3>ランダムゲームトライアル</h3>
-        <p>次々に出てくる取引カードを3表に反映するスピード勝負。連続正解でボーナス。1取引ずつの影響だけを入力するシンプルルール。</p>
-        <p class="prog" id="progRandom"></p>
-      </div>
     </div>
+    <h2 style="margin-top:34px">研修 確認テスト</h2>
+    <p style="font-size:13px;color:#56626f;margin:4px 0 14px">研修 第1回〜第5回の内容から○×形式で各回4問・全20問。解説つきで、採点はありません。</p>
+    <div class="modes" id="testCards"></div>
+
     <footer>TK&amp;Company Inc. All Rights Reserved.</footer>
+  </div>
+
+  <!-- ============ 研修 確認テスト ============ -->
+  <div id="kakunin" style="display:none">
+    <div class="cmp-head">
+      <h2 id="ktTitle"></h2>
+      <p class="cmp-lead" id="ktLead"></p>
+    </div>
+    <div id="ktArea"></div>
+    <p style="margin:14px 0 20px"><span class="cmp-result" id="ktResult"></span></p>
+    <button class="btn-primary" onclick="goHome()">モード選択へ戻る</button>
   </div>
 
   <!-- ============ GAME ============ -->
@@ -550,13 +555,11 @@ const INSURANCE=[
 ];
 
 /* ================= 状態 ================= */
-let mode=null, stepIdx=0, misses=0, streak=0, score=0;
+let mode=null, stepIdx=0, misses=0, streak=0;
 let values={}, expected={}, activeCell=null, kpBuf="", randomOrder=[];
 const $=id=>document.getElementById(id);
 const store={get k(){return "z3g_gib_"+ (mode||"");}};
 
-function loadScore(){score=Number(localStorage.getItem("z3g_gib_score")||0);$("scoreDisp").textContent=fmt(score,false);}
-function saveScore(){localStorage.setItem("z3g_gib_score",String(score));$("scoreDisp").textContent=fmt(score,false);}
 
 /* ================= 表示ユーティリティ ================= */
 function fmt(n,neg=true){
@@ -704,17 +707,97 @@ function buildCompare(){
       btns.forEach(x=>x.disabled=true);
       const correct=pick===ok;
       bn.classList.add(correct?"pick-ok":"pick-ng");
-      quizDone++;if(correct){quizRight++;score+=20;saveScore();}
-      ans.innerHTML=`<b class="${correct?"ok":"ng"}">${correct?"正解！ +20pt":"ざんねん…"}</b>（答えは ${ok?"○":"×"}）　${qz.ex(a,b)}`;
+      quizDone++;if(correct){quizRight++;}
+      ans.innerHTML=`<b class="${correct?"ok":"ng"}">${correct?"正解！":"ざんねん…"}</b>（答えは ${ok?"○":"×"}）　${qz.ex(a,b)}`;
       ans.classList.add("show");
       if(quizDone===QUIZ.length){
-        $("quizResult").textContent=`クイズ結果: ${quizRight}/${QUIZ.length} 問正解（+${quizRight*20}pt）`;
+        $("quizResult").textContent=`クイズ結果: ${quizRight}/${QUIZ.length} 問正解`;
         localStorage.setItem("z3g_gib_int_quiz",String(quizRight));
       }
     }));
     qa.appendChild(div);
   });
 }
+
+/* ================= 研修 確認テスト(第1回〜第5回・○×各4問、全20問) =================
+   q:問題文 / ans:true(○)かfalse(×) / ex:解説。
+   採点はしない(学習用)。何度でも答え直しができ、選ぶたびに解説が表示される。
+   questionsが空の回はカードが「問題準備中」になる */
+const KAKUNIN_TESTS=[
+ {no:1,title:"第1回 確認テスト",sub:"法人案件アドバイスのための基礎知識",questions:[
+  {q:"中小企業が潰れる原因のほとんどは「財務（資金調達）」「キャッシュフロー（資金繰り）」「自社株（事業承継）」「必要保障（経営者万一）」の4つに集約される。",ans:true,ex:"会社の99.9％はこの4つが原因で潰れる、というのが法人コンサルティングの出発点。だからこそ決算書をこの「4つの観点」で視て、課題解決として生命保険を活用する。"},
+  {q:"契約者貸付で法人が保険会社から借りたお金は、法人の雑収入として課税される。",ans:false,ex:"契約者貸付は解約返戻金を担保にした「借入（負債）」なので、収益（益金）にはならず課税されない。必要な時に審査なしでキャッシュを引き出せる、生命保険ならではの資金調達機能。"},
+  {q:"「貯蓄は三角、保険は四角」とは、貯蓄は積み立てた分しか使えないのに対し、保険は加入直後から満額の保障（現金）が準備できることを表している。",ans:true,ex:"貯蓄は時間をかけて三角形に積み上がるが、保険は契約が成立した瞬間に四角形＝満額が立ち上がる。「対策が即完了する」ことが生命保険の大きな強み。"},
+  {q:"受取人が指定された死亡保険金も、原則として相続財産に含まれ、遺産分割協議の対象になる。",ans:false,ex:"死亡保険金は最高裁判例により「受取人固有の権利」とされ、原則として相続財産に属さず遺産分割の対象外。お金に名前（受取人）を付けて、必要な人に確実に届けられるのが保険の強み。"},
+ ]},
+ {no:2,title:"第2回 確認テスト",sub:"財務三表と生命保険・財務の観点",questions:[
+  {q:"銀行から300万円を借り入れると、PL（損益計算書）の利益も300万円増える。",ans:false,ex:"借入はPLを1円も動かさない。BSの現金と借入金、CSの財務CFが増えるだけ。利益と現金はまったく別の数字で、銀行はそのPLの利益を見て貸すかどうかを決める。"},
+  {q:"PLの当期純利益はBSの利益剰余金に積み上がり、CSの期末の現金はBSの現金と必ず一致する。",ans:true,ex:"財務3表をつなぐ線。①PL当期純利益→BS利益剰余金、②CS期末現金＝BS現金、③PL税引前利益→CSの出発点、④BSの左右は必ずバランス。ズレたらどこかが間違っている。"},
+  {q:"減価償却費を計上すると、利益が減ると同時に現金も同じ額だけ減る。",ans:false,ex:"減価償却費は現金が1円も出ていかないのに利益だけが減る費用。逆に借入元金の返済は、現金が出ていくのに費用にならない。この「利益と現金のズレ」が資金繰りの急所。"},
+  {q:"終身保険の保険料は、原則として全額を資産（保険積立金）として計上する。",ans:true,ex:"終身保険は全額資産計上。平準払定期保険は最高返戻率50％以下なら全額損金、70％超85％以下なら当初4割損金など、保険の種類・返戻率によって経理処理が変わる（MODE3で体験できる）。"},
+ ]},
+ {no:3,title:"第3回 確認テスト",sub:"CFの観点",questions:[
+  {q:"事前確定届出給与は、税務署に届け出た支給日・金額と多少違っても損金算入できる。",ans:false,ex:"届出どおりの「日」と「金額」で支給しなければ全額損金不算入。年3回以下の賞与扱いになるため社会保険料の上限（健保は年度573万円・厚年は月150万円）を活用できる反面、業績悪化時に減額しづらい等のデメリットにも留意。"},
+  {q:"役員退職金には「退職所得控除・2分の1課税・分離課税」に加え、社会保険料がかからないというメリットがある。",ans:true,ex:"3大メリットは誰もが話す内容。4つ目の「社会保険料負担なし」（税金より社保が重い時代の急所）、5つ目の「受取人固有の財産」まで語れるかが、選ばれる分かれ目になる。"},
+  {q:"役員退職金の目安は「最終報酬月額×役員在任年数×役位別功績倍率」で計算する。",ans:true,ex:"いわゆる功績倍率方式。これに功労加算（退職金額の10〜30％目安）を加えることもある。退職金は本業と関係なく将来必ず発生するコスト＝簿外債務（将来負債）として認識することが重要。"},
+  {q:"資本金1億円以下の中小企業は、交際費を1円も損金にできない。",ans:false,ex:"中小企業には「年間800万円の定額控除」か「接待飲食費の50％」の特例があり、選択した上限まで損金算入できる。1人あたり1万円以下の飲食費は会議費にでき、800万円の枠も消費しない。"},
+ ]},
+ {no:4,title:"第4回 確認テスト",sub:"自社株の観点・周辺知識",questions:[
+  {q:"類似業種比準価額方式による自社株評価は、一般的に純資産価額方式より高くなる。",ans:false,ex:"一般的には類似業種比準価額方式のほうが安くなるため採用されやすい。上場企業の類似業種と配当・利益・純資産の3要素を比較し、会社規模に応じた斟酌率（0.7〜0.5）を掛けて計算する。"},
+  {q:"役員退職金の支給は、会社の利益と純資産を一時的に大きく減らすため、自社株評価の引き下げに有効である。",ans:true,ex:"自社株評価は配当・利益・純資産から算出される。本業が順調な会社で利益と純資産を一時的に大きく減らせる数少ない方法が退職金。後継者を決めなくても打てる対策の中心となる。"},
+  {q:"純資産価額方式では資産を帳簿価額（簿価）のまま評価するため、土地などの含み益は株価に影響しない。",ans:false,ex:"純資産価額方式はすべての資産を相続税評価額で再評価する。含み益から法人税相当額37％を控除した残りが評価に乗るため、含み益のある会社ほど見た目より高く評価される。"},
+  {q:"単に持株会社（ホールディングス）を設立しただけでは自社株の評価は下がらず、節税にならないどころかコスト増になり得る。",ans:true,ex:"設立しただけでは株価は変わらない。コンサルフィー・設立費用・毎年の維持費用で数千万円に達する例もあり、税務リスクも高い。コスト・手続き・わかりやすさで生命保険活用と比較することが重要。"},
+ ]},
+ {no:5,title:"第5回 確認テスト",sub:"必要保障の観点と保険料原資",questions:[
+  {q:"法人が受け取る死亡保険金は益金になるため、必要額に対して約1.51倍の保険金額を設定する。",ans:true,ex:"保険金は法人の益金となり法人税等（約33.58％）が課される。税引後に必要額が残るよう、必要額÷(1−0.3358)≒必要額×1.51を保険金額とする。"},
+  {q:"弔慰金の非課税の目安は、業務上の死亡の場合「報酬月額×6か月分」である。",ans:false,ex:"業務上の死亡は報酬月額×36か月、業務外の死亡が×6か月。死亡退職金の非課税枠（500万円×法定相続人）とは別枠なので、会社の規程で退職金と弔慰金の区分を決めておくことが重要。"},
+  {q:"相続した非上場株式を相続開始の翌日から3年10か月以内に発行会社へ売却（金庫株）すると、総合課税のみなし配当ではなく約20％の譲渡所得課税となる特例がある。",ans:true,ex:"原則は総合課税（最高約55％）のみなし配当課税だが、期限内の売却なら申告分離・約20％の譲渡所得課税に。相続税を取得費に加算できる特例もあり、買取原資は生命保険金で準備するのが王道。"},
+  {q:"金庫株（会社による自社株買取）を使った事業承継対策は、後継者が決まっていないと実行できない。",ans:false,ex:"「後継者を決めなくても対策ができる」ことこそ金庫株＋生命保険の一番の売り。社長万一の際は遺族が相続した株を会社が保険金で買い取り、納税資金を届けられる。"},
+ ]},
+];
+function renderTestCards(){
+  const wrap=$("testCards");if(!wrap)return;
+  wrap.innerHTML="";
+  KAKUNIN_TESTS.forEach(t=>{
+    const ready=t.questions.length>0;
+    const div=document.createElement("div");
+    div.className="mode-card"+(ready?"":" mc-disabled");
+    div.style.setProperty("--mc","#b98a2f");
+    div.innerHTML=`<span class="mc-wm">TEST ${t.no}</span><span class="mc-bar"></span>
+      <div class="mc-no">第<b>${t.no}</b>回</div><div class="mc-line"></div>
+      <h3>${t.title}</h3>
+      <p>${ready?`「${t.sub}」から○×形式で${t.questions.length}問。解説つきで、何度でも答え直せます。`:"問題準備中です。公開をお待ちください。"}</p>`;
+    if(ready)div.addEventListener("click",()=>startTest(t.no));
+    wrap.appendChild(div);
+  });
+}
+function startTest(no){
+  const t=KAKUNIN_TESTS.find(x=>x.no===no);if(!t||!t.questions.length)return;
+  $("home").style.display="none";$("game").style.display="none";$("compare").style.display="none";
+  $("kakunin").style.display="block";
+  $("stageDisp").textContent=`研修 ${t.title}`;
+  $("ktTitle").textContent=t.title+" ― "+t.sub;
+  $("ktLead").textContent=`○×で答えてください(全${t.questions.length}問)。選ぶと解説が表示され、何度でも答え直せます。採点はありません。`;
+  $("ktResult").textContent="";
+  const area=$("ktArea");area.innerHTML="";
+  t.questions.forEach((qz,i)=>{
+    const div=document.createElement("div");div.className="quiz-item";
+    div.innerHTML=`<div class="q">Q${i+1}. ${qz.q}</div>
+      <button class="qz-btn" data-v="1">○</button><button class="qz-btn" data-v="0">×</button>
+      <div class="qz-ans"></div>`;
+    const btns=div.querySelectorAll(".qz-btn"),ans=div.querySelector(".qz-ans");
+    btns.forEach(bn=>bn.addEventListener("click",()=>{
+      btns.forEach(x=>x.classList.remove("pick-ok","pick-ng"));
+      const pick=bn.dataset.v==="1",correct=pick===qz.ans;
+      bn.classList.add(correct?"pick-ok":"pick-ng");
+      ans.innerHTML=`<b class="${correct?"ok":"ng"}">${correct?"正解！":"ざんねん…"}</b>（答えは ${qz.ans?"○":"×"}）　${qz.ex||""}`;
+      ans.classList.add("show");
+    }));
+    area.appendChild(div);
+  });
+  window.scrollTo(0,0);
+}
+renderTestCards();
 
 /* ================= 3表の一致箇所リンク(1〜4) =================
    1:PL当期純利益=BS利益剰余金 2:BS現金=CS期末の現金
@@ -782,6 +865,7 @@ function startMode(m){
 function goHome(){
   $("stageDisp").textContent="モードを選んでください";
   $("compare").style.display="none";
+  $("kakunin").style.display="none";
   $("game").style.display="none";$("home").style.display="block";
   $("keypad").classList.remove("show");activeCell=null;
   renderProgress();
@@ -799,8 +883,6 @@ function renderProgress(){
   setBar("progIntFill","progIntText","progIntPct",m2,BASIC.length,"★ 2期完走！仕上げは比較クイズ",`STEP ${m2}/${BASIC.length} クリア`);
   const i=Math.min(Number(localStorage.getItem("z3g_gib_ins_step")||0),INSURANCE.length);
   setBar("progInsFill","progInsText","progInsPct",i,INSURANCE.length,"★ 全4ステージクリア！",`STAGE ${i}/4 クリア`);
-  const hs=Number(localStorage.getItem("z3g_gib_random_best")||0);
-  $("progRandom").textContent=hs>0?`最高連続正解: ${hs}`:"";
 }
 function renderGameProg(){
   const wrap=$("gameProg");
@@ -892,8 +974,6 @@ function judge(){
   const box=$("resultBox");
   if(wrong.length===0){
     /* クリア */
-    const pts=Math.max(100-misses*20,20)+(mode==="random"?streak*10:0);
-    score+=pts;saveScore();
     if(mode==="random"){streak++;const best=Number(localStorage.getItem("z3g_gib_random_best")||0);if(streak>best)localStorage.setItem("z3g_gib_random_best",String(streak));}
     ALL_IDS.forEach(id=>{if((expected[id]||0)!==0)$("cell_"+id).classList.add("right");});
     /* 一致ペア1→4の順に同色でリレー点灯して「3表のつながり」を見せる */
@@ -902,7 +982,7 @@ function judge(){
     });
     if(mode!=="random")fillGameProg();
     const p=currentProblem();
-    let msg=`<span class="big">🎉 クリア！ +${pts}pt</span><br>`;
+    let msg=`<span class="big">🎉 クリア！</span><br>`;
     if(mode==="random")msg+=`連続正解 ${streak} 回目！ `;
     msg+=`PL純利益→BS剰余金、CS期末現金→BS現金、3表がつながった！`;
     if(mode==="intermediate"&&currentProblem().endPeriod===2)msg+=`<br><b>🏆 2期目の決算まで完走おめでとう！</b> 資本金500の会社が総資産${fmt(expected.assets)}<span class="unit">万円</span>・純資産${fmt(expected.equity)}<span class="unit">万円</span>に成長した。`;
@@ -968,7 +1048,7 @@ function showSheet(i,btn){
 }
 
 /* ================= 起動 ================= */
-buildRows();initLinkPairs();loadScore();renderProgress();
+buildRows();initLinkPairs();renderProgress();
 window.__game={values,get expected(){return expected},judge,startMode,set:(id,v)=>{values[id]=v;renderValues();}};
 </script>
 </body>
