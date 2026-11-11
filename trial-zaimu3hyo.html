@@ -259,7 +259,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
   <span class="head-logo"><img src="images/logo-horizontal.png?v=20260722c" alt="TK&amp;Company Inc. feat. BizPlanLaboratory" /></span>
   <div class="head-actions">
     <button type="button" class="head-mode-btn" onclick="goHome()">モード選択に戻る</button>
-    <button type="button" class="head-sub-btn" onclick="clearHistory()">回答履歴をクリア</button>
+    <button type="button" class="head-sub-btn" onclick="clearHistory()">進捗をリセット</button>
   </div>
 </header>
 
@@ -369,7 +369,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
 
     <div class="actions">
       <button class="btn-primary" id="judgeBtn" onclick="judge()">判定する</button>
-      <button class="btn-ghost" onclick="resetInputs()">入力データリセット</button>
+      <button class="btn-ghost" onclick="resetInputs()">入力前に戻す</button>
       <button class="btn-ghost" onclick="clearInputs()">入力データクリア</button>
       <button class="btn-ghost" id="answerBtn" onclick="showAnswer()">答えを見る</button>
       <button class="btn-ghost" id="prevStepBtn" onclick="prevStep()">◀ 前に戻る</button>
@@ -823,7 +823,7 @@ function startMode(m){
   window.scrollTo(0,0);
 }
 function clearHistory(){
-  if(!confirm("回答履歴（各モードの進捗）をすべてクリアします。よろしいですか？"))return;
+  if(!confirm("保存された進捗（各モードの到達状況・テストの回答記録）をすべてリセットします。よろしいですか？"))return;
   ["z3g_trial_basic_step","z3g_trial_int_step","z3g_trial_ins_step","z3g_trial_int_quiz","z3g_trial_random_best","z3g_trial_score"].forEach(k=>localStorage.removeItem(k));
   goHome();
 }
