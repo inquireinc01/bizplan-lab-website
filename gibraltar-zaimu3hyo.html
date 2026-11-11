@@ -58,6 +58,8 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .mode-card.mc-done .prog-label{color:rgba(255,255,255,.75)}
 .mode-card.mc-done .prog-label b{color:#fff}
 .mode-card.mc-done .prog{color:#8fe0b8}
+/* 完了カードの斜めCOMPLETE!スタンプ(ハンコ風) */
+.mode-card.mc-done::after{content:"COMPLETE!";position:absolute;top:18px;right:12px;transform:rotate(-12deg);font:900 14px/1 Arial,sans-serif;letter-spacing:.14em;color:#ff8d78;border:4px double #ff8d78;border-radius:9px;padding:7px 12px;opacity:.95;pointer-events:none}
 .mode-card .mc-wm{font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Yu Gothic UI Semilight","Segoe UI",Arial,sans-serif;font-stretch:condensed;font-weight:350;position:absolute;right:-4px;bottom:-16px;font-size:60px;opacity:.1;color:var(--mc);pointer-events:none;user-select:none;letter-spacing:.02em}
 .mode-card .mc-no{font-size:44px;font-weight:900;line-height:1;letter-spacing:-.02em;color:var(--navy);font-family:Arial,"BIZ UDPGothic",sans-serif}
 .mode-card .mc-no b{color:var(--mc)}
