@@ -232,7 +232,7 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .ov-box h3{color:var(--navy);font-size:19px;margin-bottom:10px}
 .ov-box p{font-size:13px;line-height:1.9;color:#444;text-align:left}
 .ov-box .btn-primary{margin-top:16px}
-footer{text-align:center;font-size:42px;color:#98A2B3;padding:30px 0 10px}
+footer{text-align:center;font-size:21px;color:#98A2B3;padding:30px 0 10px}
 </style>
 </head>
 <body>
@@ -277,7 +277,7 @@ footer{text-align:center;font-size:42px;color:#98A2B3;padding:30px 0 10px}
         <div class="mc-no">MODE.<b>2</b></div>
         <div class="mc-line"></div>
         <h3>中級編</h3>
-        <p>第1期から第2期の決算までフル完走。仕上げに2期分のBSを見比べて、会社がどう育ったかを○×クイズで読み解く。</p>
+        <p>第1期から第2期の決算までフル完走。仕上げに2期分のBSを見比べて、会社がどう育ったかを比較クイズで読み解く。</p>
         <div class="prog-wrap">
           <div class="prog-track"><div class="prog-fill" id="progIntFill"></div></div>
           <div class="prog-label"><span id="progIntText">未プレイ</span><b id="progIntPct">0%</b></div>
@@ -297,7 +297,7 @@ footer{text-align:center;font-size:42px;color:#98A2B3;padding:30px 0 10px}
       </div>
     </div>
     <h2 style="margin-top:34px">研修 確認テスト</h2>
-    <p style="font-size:13px;color:#56626f;margin:4px 0 14px">研修 第1回〜第5回の内容から○×形式で各回10問・全50問。採点はありません。</p>
+    <p style="font-size:13px;color:#56626f;margin:4px 0 14px">研修 第1回〜第5回の内容から○×形式で各回10問・全50問。</p>
     <div class="modes" id="testCards"></div>
 
     <footer><a href="https://tk-company.co.jp/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px dotted currentColor">TK&amp;Company Inc.</a> All Rights Reserved.</footer>
@@ -370,7 +370,7 @@ footer{text-align:center;font-size:42px;color:#98A2B3;padding:30px 0 10px}
   <div id="compare" style="display:none">
     <div class="cmp-head">
       <h2>BSはどう育った？ ― 第1期末と第2期末のくらべ読み</h2>
-      <p class="cmp-lead">数字はすべて<span class="unit">万円</span>。まず表を眺めてから、下の○×クイズで読み取りをチェックしよう（正解1問+20pt）。</p>
+      <p class="cmp-lead">数字はすべて<span class="unit">万円</span>。まず表を眺めてから、下の比較クイズで読み取りをチェックしよう。</p>
     </div>
     <table class="cmp-table" id="cmpTable"></table>
     <div id="quizArea"></div>
@@ -682,7 +682,7 @@ let quizDone=0,quizRight=0;
 function showCompare(){
   $("game").style.display="none";$("home").style.display="none";
   $("compare").style.display="block";
-  $("stageDisp").textContent="MODE 2 中級編　BS比較○×クイズ";
+  $("stageDisp").textContent="MODE 2 中級編　BS比較クイズ";
   buildCompare();window.scrollTo(0,0);
 }
 function buildCompare(){
@@ -808,7 +808,7 @@ function startTest(no){
   $("kakunin").style.display="block";
   $("stageDisp").textContent=`研修 ${t.title}`;
   $("ktTitle").textContent=t.title+" ― "+t.sub;
-  $("ktLead").textContent=`○×で答えてください（全${t.questions.length}問・採点はありません）。`;
+  $("ktLead").textContent=`○×で答えてください（全${t.questions.length}問）。`;
   $("ktResult").textContent="";
   const area=$("ktArea");area.innerHTML="";
   t.questions.forEach((qz,i)=>{
@@ -1024,12 +1024,12 @@ function judge(){
     afterClear=()=>{
       if(mode==="basic"){
         const p=currentProblem();
-        if(p.endPeriod===1){showOverlay("🏆 ベーシック編クリア！","第1期の決算まで完走おめでとうございます！<br><br>続きはMODE 2（中級編）へ。第2期の決算まで進み、最後に2期分のBSを見比べる○×クイズが待っています。",goHome);}
+        if(p.endPeriod===1){showOverlay("🏆 ベーシック編クリア！","第1期の決算まで完走おめでとうございます！<br><br>続きはMODE 2（中級編）へ。第2期の決算まで進み、最後に2期分のBSを見比べる比較クイズが待っています。",goHome);}
         else next();
       }else if(mode==="intermediate"){
         const p=currentProblem();
         if(p.endPeriod===1){showOverlay("第1期 決算完了！","PLとCSは1年間の「フロー」なので第2期はゼロからスタート。BSは会社の「ストック」なのでそのまま繰り越します。<br><br>第1期末の現金370万円が、第2期のCS「期首の現金」になります。",next);}
-        else if(p.endPeriod===2){showOverlay("🏆 2期完走！","第2期の決算まで完了。仕上げに、第1期末と第2期末のBSを見比べて○×クイズに挑戦しよう。",showCompare);}
+        else if(p.endPeriod===2){showOverlay("🏆 2期完走！","第2期の決算まで完了。仕上げに、第1期末と第2期末のBSを見比べて比較クイズに挑戦しよう。",showCompare);}
         else next();
       }else if(mode==="insurance"){
         if(stepIdx>=INSURANCE.length-1){showOverlay("🏆 保険の経理処理 マスター！","全額損金・４割損金・全額資産計上・解約の4パターンを制覇。<br><br>ポイント: 「損金にできる保険は出口（解約時）で課税される」— 保険は課税の繰り延べであって節税そのものではない、が今日イチの学びです。",goHome);}
