@@ -16,6 +16,8 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 /* ---- ヘッダー(他ツールと同じ白・下線・sticky) ---- */
 .site-head{background:#091a30;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:50;min-height:64px}
 .head-logo{cursor:pointer}
+.head-note{font-size:11.5px;font-weight:bold;color:rgba(255,255,255,.75);letter-spacing:.05em;white-space:nowrap}
+@media(max-width:560px){.head-note{font-size:10px}}
 .head-logo img{height:34px;width:auto;display:block}
 .head-mode-btn{font-size:14px;font-weight:bold;color:#fff;background:transparent;border:1.5px solid rgba(255,255,255,.75);border-radius:9999px;padding:10px 22px;cursor:pointer;font-family:inherit;transition:background .2s ease,color .2s ease}
 .head-mode-btn:hover{background:#fff;color:var(--navy)}
@@ -260,6 +262,7 @@ footer{text-align:center;font-size:16px;color:#98A2B3;padding:30px 0 10px}
 <!-- ===== ヘッダー(他ツールと同じ白ヘッダー: 左ロゴ・右モード選択) ===== -->
 <header class="site-head">
   <span class="head-logo" onclick="goHome()" title="トップへ戻る"><img src="images/logo-tk-white.png?v=20261111" alt="TK&amp;Company Inc." /></span>
+  <span class="head-note">※PC環境を推奨します</span>
   <div class="head-actions">
     <button type="button" class="head-mode-btn" onclick="goHome()">モード選択に戻る</button>
     <button type="button" class="head-sub-btn" onclick="clearHistory()">回答履歴をクリア</button>
@@ -643,14 +646,17 @@ function renderValues(){
 }
 
 /* ================= キーパッド ================= */
+/* 画面内キーパッドはタッチ端末(iPad等)のみ表示。PCは物理キーボードで直接入力 */
+const IS_TOUCH=matchMedia("(pointer:coarse)").matches||navigator.maxTouchPoints>0;
 function selectCell(c){
+  if(activeCell&&activeCell!==c&&kpBuf!=="")kpOk(); /* 別セルへ移った時は入力途中の値を確定 */
   document.querySelectorAll(".cell.active").forEach(x=>x.classList.remove("active"));
   c.classList.add("active");activeCell=c;kpBuf="";
   lkClearGlow();
   const lp=lkPartner(c.dataset.id);
   if(lp){const q=$("cell_"+lp.partner);if(q)q.classList.add("lk-glow");}
   $("kpTarget").innerHTML=`<b>${c.dataset.label}</b> に入力（±でマイナス）`;
-  $("keypad").classList.add("show");
+  if(IS_TOUCH)$("keypad").classList.add("show");
 }
 function kp(d){if(!activeCell)return;kpBuf+=d;activeCell.textContent=fmt(Number(kpBuf)||0);previewNeg();}
 function kpDel(){kpBuf=kpBuf.slice(0,-1);if(activeCell)activeCell.textContent=kpBuf?fmt(Number(kpBuf)):"";}
