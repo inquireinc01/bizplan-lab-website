@@ -172,6 +172,7 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .row.autorow{background:#F7F9FB}
 .row.autorow .lbl{color:#7a8594}
 .cell.auto{background:#EEF1F5;border-style:dashed;color:#556;cursor:default}
+.cell.auto::before{content:"自動";position:absolute;left:5px;top:50%;transform:translateY(-50%);font-size:8.5px;font-weight:bold;color:#8a97ad;letter-spacing:.1em;border:1px solid #c6d0de;border-radius:4px;padding:0 3px;line-height:1.6;background:#fff;pointer-events:none}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 @keyframes glow{0%,100%{box-shadow:0 0 2px rgba(232,163,61,.4)}50%{box-shadow:0 0 12px rgba(232,163,61,.95);border-color:var(--gold)}}
 
@@ -352,7 +353,7 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
       <span class="chk" id="chkBS">BS: 資産合計 ＝ 負債＋純資産</span>
       <span class="chk" id="chkCS1">CS: 増減 ＝ 営業＋投資＋財務</span>
       <span class="chk" id="chkCS2">CS: 期末 ＝ 期首＋増減</span>
-      <span style="font-size:11px;color:#888;align-self:center">（単位:万円 ／ マイナスは ± キー）</span>
+      <span style="font-size:11px;color:#888;align-self:center">（単位:万円 ／ マイナスは ± キー ／ 「自動」セルは自動計算）</span>
     </div>
 
     <div class="stabs">
@@ -427,10 +428,10 @@ footer{text-align:center;font-size:10.5px;color:#98A2B3;padding:30px 0 10px}
 "use strict";
 /* ================= 行定義 ================= */
 const PL_ROWS=[
- ["sales","売上高"],["cogs","売上原価"],["gross","売上総利益","sub"],
+ ["sales","売上高"],["cogs","売上原価"],["gross","売上総利益","auto"],
  ["labor","人件費"],["rent","地代家賃"],["ins","保険料","","red"],["dep","減価償却費"],
- ["sga","販管費 計","sub"],["op","営業利益","sub"],["misc","雑収入","","red"],
- ["ord","経常利益","sub"],["exg","特別利益"],["exl","特別損失"],
+ ["sga","販管費 計","auto"],["op","営業利益","auto"],["misc","雑収入","","red"],
+ ["ord","経常利益","auto"],["exg","特別利益"],["exl","特別損失"],
  ["pretax","税引前利益","sub"],["tax","法人税等"],["net","当期純利益","sub"]];
 const BS_ROWS=[
  ["_h1","【資産】","head"],
@@ -451,13 +452,20 @@ const BS_ROWS=[
  ["equity","純資産合計","sub"],["total","負債＋純資産","sub"]];
 const CS_ROWS=[
  ["cs_pretax","税引前利益"],["cs_dep","減価償却費"],["cs_ar","売掛金 増減"],["cs_inv","在庫 増減"],
- ["cs_tax","法人税 支払"],["cs_op","営業CF","sub"],
- ["cs_capex","固定資産の取得"],["cs_other","保険など資産の増減","","red"],["cs_invcf","投資CF","sub"],
- ["cs_finin","資本金・借入"],["cs_repay","元金の返済"],["cs_fin","財務CF","sub"],
- ["cs_delta","現金の増減","sub"],["cs_open","期首の現金"],["cs_close","期末の現金","sub"]];
-/* BSの区分計(自動計算・入力不可)。値は明細の合計から常に自動で埋める。
-   流動負債 計=買掛金+未払金 */
-const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["building","land","fixed"],aOth:["prepaid","insasset"],lCur:["ap","accrued"],lFix:["debt"]};
+ ["cs_tax","法人税 支払"],["cs_op","営業CF","auto"],
+ ["cs_capex","固定資産の取得"],["cs_other","保険など資産の増減","","red"],["cs_invcf","投資CF","auto"],
+ ["cs_finin","資本金・借入"],["cs_repay","元金の返済"],["cs_fin","財務CF","auto"],
+ ["cs_delta","現金の増減","auto"],["cs_open","期首の現金"],["cs_close","期末の現金","sub"]];
+/* 自動計算セル(入力不可)。値は明細から常に自動で埋める。"-id"は符号反転、自動セル同士の参照も可。
+   BS区分計に加え、PLの売上総利益・販管費計・営業利益・経常利益、CSの営業/投資/財務CF・現金の増減も自動
+   (税引前利益・当期純利益・期末の現金は3表のつながりを体験するため入力式のまま) */
+const AUTO_DEFS={aCur:["cash","ar","inv"],aFix:["building","land","fixed"],aOth:["prepaid","insasset"],lCur:["ap","accrued"],lFix:["debt"],
+ gross:["sales","-cogs"],sga:["labor","rent","ins","dep"],op:["gross","-sga"],ord:["op","misc"],
+ cs_op:["cs_pretax","cs_dep","cs_ar","cs_inv","cs_tax"],cs_invcf:["cs_capex","cs_other"],cs_fin:["cs_finin","cs_repay"],cs_delta:["cs_op","cs_invcf","cs_fin"]};
+function calcAuto(id){
+  if(!AUTO_DEFS[id])return values[id]||0;
+  return AUTO_DEFS[id].reduce((s,k)=>{const neg=k.charAt(0)==="-";const key=neg?k.slice(1):k;return s+(neg?-1:1)*calcAuto(key);},0);
+}
 const ALL_IDS=[...PL_ROWS,...BS_ROWS,...CS_ROWS].map(r=>r[0]).filter(id=>!id.startsWith("_")&&!(id in AUTO_DEFS));
 
 /* ================= 問題データ（単位:万円） ================= */
@@ -626,10 +634,10 @@ function renderValues(){
     c.textContent=v===0?"":fmt(v);
     c.classList.toggle("neg",v<0);
   });
-  /* BSの区分計(自動計算) */
+  /* 自動計算セル */
   Object.keys(AUTO_DEFS).forEach(id=>{
     const c=$("cell_"+id);if(!c)return;
-    const v=AUTO_DEFS[id].reduce((sum,k)=>sum+(values[k]||0),0);
+    const v=calcAuto(id);
     c.textContent=v===0?"":fmt(v);
     c.classList.toggle("neg",v<0);
   });
@@ -675,7 +683,7 @@ document.addEventListener("keydown",e=>{
 
 /* ================= 整合性ライブチェック ================= */
 function liveChecks(){
-  const v=id=>values[id]||0;
+  const v=id=>calcAuto(id);
   set("chkBS",v("assets")===v("total")&&(v("assets")!==0||v("total")!==0),v("assets")===0&&v("total")===0);
   set("chkCS1",v("cs_delta")===v("cs_op")+v("cs_invcf")+v("cs_fin")&&hasCS(),!hasCS());
   set("chkCS2",v("cs_close")===v("cs_open")+v("cs_delta")&&hasCS(),!hasCS());
@@ -760,7 +768,7 @@ function praiseBurst(){
   document.body.appendChild(b);setTimeout(()=>b.remove(),1700);
 }
 let lkMatched=[false,false,false,false];
-function lkCur(id){return (typeof AUTO_DEFS!=="undefined"&&AUTO_DEFS[id])?AUTO_DEFS[id].reduce((s,k)=>s+(values[k]||0),0):(values[id]||0);}
+function lkCur(id){return calcAuto(id);}
 function checkLinkMatches(fire){
   LINK_PAIRS.forEach((p,i)=>{
     const ok=p.cells.every(id=>lkCur(id)===(expected[id]||0));
