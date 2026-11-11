@@ -683,8 +683,8 @@ const QUIZ=[
  {q:"第2期末の純資産合計は負債合計より大きい",f:(a,b)=>b.equity>b.liab,ex:(a,b)=>`純資産 ${fmt(b.equity)} ＞ 負債 ${fmt(b.liab)}。返さなくてよいお金が過半を占める安定した形。`},
  {q:"自己資本比率（純資産÷総資産）は第1期末より改善した",f:(a,b)=>(b.equity/b.total)>(a.equity/a.total),ex:(a,b)=>`${Math.round(a.equity/a.total*100)}% → ${Math.round(b.equity/b.total*100)}%。財務体質が強くなった。`},
  {q:"売掛金は第1期末より減った",f:(a,b)=>b.ar<a.ar,ex:(a,b)=>`売掛金は ${fmt(a.ar)} → ${fmt(b.ar)}。売上の伸びに伴って新しいツケも増えている。`},
+ {q:"第2期末も、BSの資産合計と負債・純資産合計は一致している",f:(a,b)=>b.assets===b.total,ex:(a,b)=>`資産合計 ${fmt(b.assets)} ＝ 負債＋純資産 ${fmt(b.total)}。同じお金を「何に変えたか」と「どこから集めたか」の裏表から見ているので、必ず一致する。`},
 ];
-let quizDone=0,quizRight=0;
 function showCompare(){
   $("game").style.display="none";$("home").style.display="none";
   $("compare").style.display="block";
@@ -700,7 +700,7 @@ function buildCompare(){
     html+=`<tr${r[2]?' class="sub"':''}><td>${r[1]}</td><td>${fmt(x)}</td><td>${fmt(y)}</td><td class="${d>0?'cmp-diff-up':d<0?'cmp-diff-down':''}">${d>0?"+":""}${fmt(d)}</td></tr>`;
   });
   $("cmpTable").innerHTML=html;
-  quizDone=0;quizRight=0;$("quizResult").textContent="";
+  $("quizResult").textContent="";
   const qa=$("quizArea");qa.innerHTML="";
   QUIZ.forEach((qz,i)=>{
     const ok=qz.f(a,b);
@@ -711,16 +711,11 @@ function buildCompare(){
     const btns=div.querySelectorAll(".qz-btn"),ans=div.querySelector(".qz-ans");
     btns.forEach(bn=>bn.addEventListener("click",()=>{
       const pick=bn.dataset.v==="1";
-      btns.forEach(x=>x.disabled=true);
+      btns.forEach(x=>x.classList.remove("pick-ok","pick-ng"));
       const correct=pick===ok;
       bn.classList.add(correct?"pick-ok":"pick-ng");
-      quizDone++;if(correct){quizRight++;}
       ans.innerHTML=`<b class="${correct?"ok":"ng"}">${correct?"正解！":"ざんねん…"}</b>（答えは ${ok?"○":"×"}）　${qz.ex(a,b)}`;
       ans.classList.add("show");
-      if(quizDone===QUIZ.length){
-        $("quizResult").textContent=`クイズ結果: ${quizRight}/${QUIZ.length} 問正解`;
-        localStorage.setItem("z3g_gib_int_quiz",String(quizRight));
-      }
     }));
     qa.appendChild(div);
   });
