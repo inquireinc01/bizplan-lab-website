@@ -753,11 +753,10 @@ function lkFlash(cell){cell.classList.remove("lk-flash");void cell.offsetWidth;c
 /* 称賛は序盤ひかえめ→終盤どんどん大げさに(進捗率ではしごを登る) */
 const PRAISES=["OK!","GOOD!","NICE!","WELL DONE!","GREAT!","SUPERB!","EXCELLENT!","AWESOME!","FANTASTIC!","BRILLIANT!","INCREDIBLE!","OUTSTANDING!","MAGNIFICENT!","PHENOMENAL!","UNSTOPPABLE!","LEGENDARY!"];
 function praiseBurst(){
-  let r=1;
-  if(mode==="random")r=Math.min(streak/10,1);
-  else{const t=modeTotal();r=t>1?stepIdx/(t-1):1;}
+  /* ステップ番号そのままで昇段(問題数の多いモードほど上の称賛に届く) */
+  const i=mode==="random"?Math.max(streak-1,0):stepIdx;
   const b=document.createElement("div");b.className="praise-pop";
-  b.textContent=PRAISES[Math.round(r*(PRAISES.length-1))];
+  b.textContent=PRAISES[Math.min(i,PRAISES.length-1)];
   document.body.appendChild(b);setTimeout(()=>b.remove(),1700);
 }
 let lkMatched=[false,false,false,false];
