@@ -30,6 +30,9 @@
   right:.15em; bottom:-.16em;
   font-size:clamp(28px,5vw,54px);
 }
+/* ===== テスト用ページ注意帯(黄×黒ストライプ) ===== */
+.caution-stripe{height:10px;background:repeating-linear-gradient(-45deg,#f7c600 0 14px,#111 14px 28px)}
+.caution-text{background:#111;color:#f7c600;font-weight:900;text-align:center;font-size:13px;letter-spacing:.06em;line-height:1.7;margin:0;padding:9px 16px}
 </style>
 </head>
 <body class="bg-white text-[#2b2f36]">
@@ -115,6 +118,13 @@
     <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Portal</span>
     <h1 class="hero-brand-mark hero-brand-mark--br">By TK&amp;Company</h1>
   </section>
+
+  <!-- ===== テスト用ページ注意帯 ===== -->
+  <div role="alert">
+    <div class="caution-stripe"></div>
+    <p class="caution-text">⚠ テスト用ページ ― 対応ＰＣ以外が利用するとＰＣデータが破損する可能性があるため、ブラウザを閉じてください</p>
+    <div class="caution-stripe"></div>
+  </div>
 
   <!-- ===== メインサービス ===== -->
   <section class="pt-14 sm:pt-16 pb-8">
