@@ -24,6 +24,9 @@
 }
 .hero-brand-mark--tl{ left:.12em; top:-.12em; font-size:clamp(22px,3.6vw,40px); }
 .hero-brand-mark--br{ right:.15em; bottom:-.16em; font-size:clamp(28px,5vw,54px); }
+/* ===== テスト用ページ注意帯(黄×黒ストライプ) ===== */
+.caution-stripe{height:10px;background:repeating-linear-gradient(-45deg,#f7c600 0 14px,#111 14px 28px)}
+.caution-text{background:#111;color:#f7c600;font-weight:900;text-align:center;font-size:13px;letter-spacing:.06em;line-height:1.7;margin:0;padding:9px 16px}
 </style>
 </head>
 <body class="bg-white text-[#2b2f36]">
@@ -123,9 +126,16 @@
 
   <!-- ===== ヒーロー(ブランド帯) ===== -->
   <section class="hero-pattern relative overflow-hidden h-14 sm:h-[72px]">
-    <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Daily Portal</span>
-    <h1 class="hero-brand-mark hero-brand-mark--br">By TK&amp;Company</h1>
+    <span class="hero-brand-mark hero-brand-mark--tl" aria-hidden="true">Debug Mode</span>
+    <h1 class="hero-brand-mark hero-brand-mark--br">Testing Environment</h1>
   </section>
+
+  <!-- ===== テスト用ページ注意帯 ===== -->
+  <div role="alert">
+    <div class="caution-stripe"></div>
+    <p class="caution-text">⚠ テスト用ページ ― 対応ＰＣ以外が利用するとＰＣデータが破損する可能性があるため、ブラウザを閉じてください</p>
+    <div class="caution-stripe"></div>
+  </div>
 
   <!-- ===== テーマタブ + 起動ページ設定 ===== -->
   <div class="portal-tabbar">
