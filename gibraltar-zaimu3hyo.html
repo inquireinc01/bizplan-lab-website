@@ -868,10 +868,14 @@ function lkSheetIndex(id){return PL_ROWS.some(r=>r[0]===id)?0:BS_ROWS.some(r=>r[
 function lkFlash(cell){cell.classList.remove("lk-flash");void cell.offsetWidth;cell.classList.add("lk-flash");setTimeout(()=>cell.classList.remove("lk-flash"),1300);}
 /* 一致ルール(①〜④)が正しい値で揃った瞬間、両方のセルにMATCH!を出す。
    fire=falseは状態の同期のみ(プリセット・答えを見る等でエフェクトを出さない) */
-const PRAISES=["EXCELLENT!","PERFECT!","BRILLIANT!","OUTSTANDING!","MAGNIFICENT!"];
+/* 称賛は序盤ひかえめ→終盤どんどん大げさに(進捗率ではしごを登る) */
+const PRAISES=["OK!","GOOD!","NICE!","GREAT!","EXCELLENT!","AWESOME!","BRILLIANT!","OUTSTANDING!","MAGNIFICENT!","PHENOMENAL!","LEGENDARY!"];
 function praiseBurst(){
+  let r=1;
+  if(mode==="random")r=Math.min(streak/10,1);
+  else{const t=modeTotal();r=t>1?stepIdx/(t-1):1;}
   const b=document.createElement("div");b.className="praise-pop";
-  b.textContent=PRAISES[Math.floor(Math.random()*PRAISES.length)];
+  b.textContent=PRAISES[Math.round(r*(PRAISES.length-1))];
   document.body.appendChild(b);setTimeout(()=>b.remove(),1700);
 }
 let lkMatched=[false,false,false,false];
