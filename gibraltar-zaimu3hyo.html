@@ -47,6 +47,17 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .mode-card:hover .mc-bar{transform:scaleX(1)}
 .mode-card.mc-disabled{opacity:.45;filter:grayscale(.7);cursor:default;pointer-events:none}
 .mode-card.mc-disabled:hover{transform:none;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+/* 100%完了したカードはネイビー×ホワイトに反転(一目で進捗がわかるように) */
+.mode-card.mc-done{background:linear-gradient(145deg,#15264a,#1E2D50);border-color:#1E2D50}
+.mode-card.mc-done .mc-no,.mode-card.mc-done .mc-no b,.mode-card.mc-done h3{color:#fff}
+.mode-card.mc-done p{color:rgba(255,255,255,.78)}
+.mode-card.mc-done .mc-wm{color:#fff;opacity:.13}
+.mode-card.mc-done .mc-line{background:rgba(255,255,255,.65)}
+.mode-card.mc-done .prog-track{background:rgba(255,255,255,.22)}
+.mode-card.mc-done .prog-fill{background:linear-gradient(90deg,#49c48f,#2AA772)}
+.mode-card.mc-done .prog-label{color:rgba(255,255,255,.75)}
+.mode-card.mc-done .prog-label b{color:#fff}
+.mode-card.mc-done .prog{color:#8fe0b8}
 .mode-card .mc-wm{font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Yu Gothic UI Semilight","Segoe UI",Arial,sans-serif;font-stretch:condensed;font-weight:350;position:absolute;right:-4px;bottom:-16px;font-size:60px;opacity:.1;color:var(--mc);pointer-events:none;user-select:none;letter-spacing:.02em}
 .mode-card .mc-no{font-size:44px;font-weight:900;line-height:1;letter-spacing:-.02em;color:var(--navy);font-family:Arial,"BIZ UDPGothic",sans-serif}
 .mode-card .mc-no b{color:var(--mc)}
@@ -816,17 +827,27 @@ function renderTestCards(){
     const ready=t.questions.length>0;
     const div=document.createElement("div");
     div.className="mode-card"+(ready?"":" mc-disabled");
+    let ansN=0;try{ansN=JSON.parse(localStorage.getItem("z3g_gib_test"+t.no)||"[]").length;}catch(e){}
+    const total=t.questions.length, done=ready&&ansN>=total;
+    if(done)div.classList.add("mc-done");
+    const pct=ready?Math.min(Math.round(ansN/total*100),100):0;
     div.style.setProperty("--mc","#b98a2f");
     div.innerHTML=`<span class="mc-wm">${t.wm||`TEST ${t.no}`}</span><span class="mc-bar"></span>
       <div class="mc-no">${t.label||`第<b>${t.no}</b>回`}</div><div class="mc-line"></div>
       <h3>${t.title}</h3>
-      <p>${ready?(t.desc||`「${t.sub}」から○×形式で${t.questions.length}問。`):"問題準備中です。公開をお待ちください。"}</p>`;
+      <p>${ready?(t.desc||`「${t.sub}」から○×形式で${t.questions.length}問。`):"問題準備中です。公開をお待ちください。"}</p>
+      ${ready?`<div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill${done?" done":""}" style="width:${pct}%"></div></div>
+        <div class="prog-label"><span>${done?"★ 全問回答！":ansN>0?`回答 ${ansN}/${total}問`:"未回答"}</span><b>${pct}%</b></div>
+      </div>`:""}`;
     if(ready)div.addEventListener("click",()=>startTest(t.no));
     wrap.appendChild(div);
   });
 }
 function startTest(no){
   const t=KAKUNIN_TESTS.find(x=>x.no===no);if(!t||!t.questions.length)return;
+  const akey="z3g_gib_test"+t.no;
+  let answered;try{answered=new Set(JSON.parse(localStorage.getItem(akey)||"[]"));}catch(e){answered=new Set();}
   $("home").style.display="none";$("game").style.display="none";$("compare").style.display="none";
   $("kakunin").style.display="block";
   $("stageDisp").textContent=`研修 ${t.title}`;
@@ -846,6 +867,7 @@ function startTest(no){
       bn.classList.add(correct?"pick-ok":"pick-ng");
       ans.innerHTML=`<b class="${correct?"ok":"ng"}">${correct?"正解！":"ざんねん…"}</b>（答えは ${qz.ans?"○":"×"}）　${qz.ex||""}`;
       ans.classList.add("show");
+      answered.add(i);localStorage.setItem(akey,JSON.stringify([...answered]));
     }));
     area.appendChild(div);
   });
@@ -946,7 +968,7 @@ function startMode(m){
 }
 function clearHistory(){
   if(!confirm("回答履歴（各モードの進捗）をすべてクリアします。よろしいですか？"))return;
-  ["z3g_gib_basic_step","z3g_gib_int_step","z3g_gib_ins_step","z3g_gib_int_quiz","z3g_gib_random_best"].forEach(k=>localStorage.removeItem(k));
+  Object.keys(localStorage).filter(k=>k.startsWith("z3g_gib_")).forEach(k=>localStorage.removeItem(k));
   goHome();
 }
 function goHome(){
@@ -955,7 +977,7 @@ function goHome(){
   $("kakunin").style.display="none";
   $("game").style.display="none";$("home").style.display="block";
   $("keypad").classList.remove("show");activeCell=null;
-  renderProgress();
+  renderProgress();renderTestCards();
 }
 function renderProgress(){
   const setBar=(fillId,textId,pctId,done,total,doneMsg,playMsg)=>{
@@ -970,6 +992,9 @@ function renderProgress(){
   setBar("progIntFill","progIntText","progIntPct",m2,BASIC.length,"★ 2期完走！仕上げは2期のBS比較",`STEP ${m2}/${BASIC.length} クリア`);
   const i=Math.min(Number(localStorage.getItem("z3g_gib_ins_step")||0),INSURANCE.length);
   setBar("progInsFill","progInsText","progInsPct",i,INSURANCE.length,"★ 全4ステージクリア！",`STAGE ${i}/4 クリア`);
+  /* 100%完了したモードカードをネイビー反転 */
+  const doneCard=(sel,on)=>{const el=document.querySelector(`.mode-card[onclick*="${sel}"]`);if(el)el.classList.toggle("mc-done",on);};
+  doneCard("basic",b>=P1_LEN);doneCard("intermediate",m2>=BASIC.length);doneCard("insurance",i>=INSURANCE.length);
 }
 function renderGameProg(){
   const wrap=$("gameProg");

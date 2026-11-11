@@ -46,6 +46,17 @@ body{font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Sans",sans-serif;color
 .mode-card:hover .mc-bar{transform:scaleX(1)}
 .mode-card.mc-disabled{opacity:.45;filter:grayscale(.7);cursor:default;pointer-events:none}
 .mode-card.mc-disabled:hover{transform:none;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+/* 100%完了したカードはネイビー×ホワイトに反転(一目で進捗がわかるように) */
+.mode-card.mc-done{background:linear-gradient(145deg,#15264a,#1E2D50);border-color:#1E2D50}
+.mode-card.mc-done .mc-no,.mode-card.mc-done .mc-no b,.mode-card.mc-done h3{color:#fff}
+.mode-card.mc-done p{color:rgba(255,255,255,.78)}
+.mode-card.mc-done .mc-wm{color:#fff;opacity:.13}
+.mode-card.mc-done .mc-line{background:rgba(255,255,255,.65)}
+.mode-card.mc-done .prog-track{background:rgba(255,255,255,.22)}
+.mode-card.mc-done .prog-fill{background:linear-gradient(90deg,#49c48f,#2AA772)}
+.mode-card.mc-done .prog-label{color:rgba(255,255,255,.75)}
+.mode-card.mc-done .prog-label b{color:#fff}
+.mode-card.mc-done .prog{color:#8fe0b8}
 .mode-card .mc-wm{font-family:"Bahnschrift SemiLight Condensed",Bahnschrift,"Yu Gothic UI Semilight","Segoe UI",Arial,sans-serif;font-stretch:condensed;font-weight:350;position:absolute;right:-4px;bottom:-16px;font-size:60px;opacity:.1;color:var(--mc);pointer-events:none;user-select:none;letter-spacing:.02em}
 .mode-card .mc-no{font-size:44px;font-weight:900;line-height:1;letter-spacing:-.02em;color:var(--navy);font-family:Arial,"BIZ UDPGothic",sans-serif}
 .mode-card .mc-no b{color:var(--mc)}
@@ -835,6 +846,9 @@ function renderProgress(){
   setBar("progIntFill","progIntText","progIntPct",m2,BASIC.length,"★ 2期完走！仕上げは2期のBS比較",`STEP ${m2}/${BASIC.length} クリア`);
   const i=Math.min(Number(localStorage.getItem("z3g_trial_ins_step")||0),INSURANCE.length);
   setBar("progInsFill","progInsText","progInsPct",i,INSURANCE.length,"★ 全4ステージクリア！",`STAGE ${i}/4 クリア`);
+  /* 100%完了したモードカードをネイビー反転 */
+  const doneCard=(sel,on)=>{const el=document.querySelector(`.mode-card[onclick*="${sel}"]`);if(el)el.classList.toggle("mc-done",on);};
+  doneCard("basic",b>=P1_LEN);doneCard("intermediate",m2>=BASIC.length);doneCard("insurance",i>=INSURANCE.length);
   const hs=Number(localStorage.getItem("z3g_trial_random_best")||0);
   $("progRandom").textContent=hs>0?`最高連続正解: ${hs}`:"";
 }
